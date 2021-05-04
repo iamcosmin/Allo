@@ -1,17 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:allo/core/error_codes.dart';
 import 'package:allo/interface/home/home.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'core.dart';
+final authProvider = Provider<AuthRepository>((ref) => AuthRepository());
 
-class Auth extends Core {
-  static User user = User();
-
+class AuthRepository {
   /// Initialises Firebase components.
   Future initFirebase() async {
     await Firebase.initializeApp();
@@ -128,5 +127,3 @@ class Auth extends Core {
     }
   }
 }
-
-class User extends Auth {}
