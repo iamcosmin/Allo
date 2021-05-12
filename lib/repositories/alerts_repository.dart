@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'core.dart';
+final alertsProvider = Provider<AlertsRepository>((ref) => AlertsRepository());
 
-class Alerts extends Core {
+class AlertsRepository {
   void noSuchMethodError(BuildContext context) {
     showCupertinoDialog(
         context: context,

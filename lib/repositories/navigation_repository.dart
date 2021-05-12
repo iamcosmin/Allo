@@ -1,12 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:allo/interface/home/home.dart';
 import 'package:allo/interface/login/welcome.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'core.dart';
+final navigationProvider =
+    Provider<NavigationRepository>((ref) => NavigationRepository());
 
-class Navigation extends Core {
+class NavigationRepository {
   to(BuildContext context, Widget route) {
     return Navigator.push(
         context, CupertinoPageRoute(builder: (context) => route));

@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:allo/core/core.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ChooseUsername extends StatefulWidget {
-  @override
-  _ChooseUsernameState createState() => _ChooseUsernameState();
-}
+final usernameProvider = ChangeNotifierProvider<UsernameProvider>()
 
-class _ChooseUsernameState extends State<ChooseUsername> {
+class ChooseUsername extends HookWidget {
   String _username = "";
   String errorCode = "";
 

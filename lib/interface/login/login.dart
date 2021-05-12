@@ -1,21 +1,33 @@
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:allo/core/main.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Login extends StatefulWidget {
-  @override
-  _LoginState createState() => _LoginState();
+final loginProvider =
+    ChangeNotifierProvider<LoginProvider>((ref) => LoginProvider());
+
+class LoginProvider extends ChangeNotifier {
+  String error = "";
+  String get getError {
+    return error;
+  }
+
+  void changeErrorMessage(context, String error) {
+    error = error;
+    notifyListeners();
+  }
 }
 
-class _LoginState extends State<Login> {
+class Login extends HookWidget {
   String _email = "";
   String _password = "";
-  String error = "";
-
   TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final login = useProvider(loginProvider);
+    final auth = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.black,
@@ -36,7 +48,7 @@ class _LoginState extends State<Login> {
           AutofillGroup(
             child: CupertinoFormSection.insetGrouped(
                 footer: Text(
-                  error,
+                  login.getError,
                   style: TextStyle(color: CupertinoColors.systemYellow),
                 ),
                 children: [
@@ -62,11 +74,8 @@ class _LoginState extends State<Login> {
                 CupertinoButton(
                     child: Text('Autentificare'),
                     onPressed: () {
-                      Core.auth
-                          .login(_email, _password, context)
-                          .then((value) => setState(() {
-                                error = value;
-                              }));
+                      auth.login(_email, _password, context).then(
+                          (value) => login.changeErrorMessage(context, value));
                     },
                     color: CupertinoTheme.of(context).primaryColor),
                 CupertinoButton(
