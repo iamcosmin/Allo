@@ -8,9 +8,25 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+// Spec:
+// Use a error provider to provide error input to a function
+
+final errorProvider =
+    StateNotifierProvider<ErrorProvider, String>((ref) => ErrorProvider());
+
+class ErrorProvider extends StateNotifier<String> {
+  ErrorProvider() : super("");
+
+  void passError(String error) {
+    state = error;
+  }
+}
+
 final authProvider = Provider<AuthRepository>((ref) => AuthRepository());
 
 class AuthRepository {
+  final errorProviderFunctions = useProvider(errorProvider.notifier);
+
   /// Initialises Firebase components.
   Future initFirebase() async {
     await Firebase.initializeApp();
@@ -27,18 +43,18 @@ class AuthRepository {
           .signInWithEmailAndPassword(email: _email, password: _password);
       Navigator.pushAndRemoveUntil(context,
           CupertinoPageRoute(builder: (context) => Home()), (route) => false);
-      return ErrorCodes.succes;
+      errorProviderFunctions.passError("");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
-        return ErrorCodes.invalidEmail;
+        errorProviderFunctions.passError(ErrorCodes.invalidEmail);
       } else if (e.code == 'user-disabled') {
-        return ErrorCodes.userDisabled;
+        errorProviderFunctions.passError(ErrorCodes.userDisabled);
       } else if (e.code == 'user-not-found') {
-        return ErrorCodes.userNotFound;
+        errorProviderFunctions.passError(ErrorCodes.userNotFound);
       } else if (e.code == 'wrong-password') {
-        return ErrorCodes.wrongPassword;
+        errorProviderFunctions.passError(ErrorCodes.wrongPassword);
       } else {
-        return ErrorCodes.noAccount;
+        errorProviderFunctions.passError(ErrorCodes.noAccount);
       }
     }
   }
@@ -59,18 +75,18 @@ class AuthRepository {
               context,
               CupertinoPageRoute(builder: (context) => VerifyEmail()),
               (route) => false);
-          return ErrorCodes.succes;
+          errorProviderFunctions.passError("");
         } on FirebaseAuthException catch (e) {
           if (e.code == 'email-already-in-use') {
-            return ErrorCodes.emailAlreadyInUse;
+            errorProviderFunctions.passError(ErrorCodes.emailAlreadyInUse);
           } else if (e.code == 'invalid-email') {
-            return ErrorCodes.invalidEmail;
+            errorProviderFunctions.passError(ErrorCodes.invalidEmail);
           } else if (e.code == 'operation-not-allowed') {
-            return ErrorCodes.operationNotAllowed;
+            errorProviderFunctions.passError(ErrorCodes.operationNotAllowed);
           } else if (e.code == 'weak-password') {
-            return ErrorCodes.weakPassword;
+            errorProviderFunctions.passError(ErrorCodes.weakPassword);
           } else {
-            return ErrorCodes.nullFields;
+            errorProviderFunctions.passError(ErrorCodes.nullFields);
           }
         }
       } else {
@@ -93,9 +109,9 @@ class AuthRepository {
           context,
           CupertinoPageRoute(builder: (context) => ChooseUsername()),
           (route) => false);
-      return ErrorCodes.succes;
+      errorProviderFunctions.passError(ErrorCodes.succes);
     } else if (!isVerified) {
-      return ErrorCodes.stillNotVerified;
+      errorProviderFunctions.passError(ErrorCodes.stillNotVerified);
     }
   }
 

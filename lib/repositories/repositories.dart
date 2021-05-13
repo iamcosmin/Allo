@@ -8,6 +8,7 @@ export 'theme_repository.dart';
 import 'package:allo/repositories/alerts_repository.dart';
 import 'package:allo/repositories/chats_repository.dart';
 import 'package:allo/repositories/theme_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'auth_repository.dart';
 import 'error_codes.dart';
@@ -22,6 +23,9 @@ class Repositories {
   static final errorCodes = ErrorCodes;
   static final Provider<NavigationRepository> navigation = navigationProvider;
   static final Provider<AppTheme> theme = appThemeProvider;
+  static final Provider<SharedPreferences> sharedPreferences =
+      sharedPreferencesProvider;
+  static final Provider<SharedUtility> sharedUtility = sharedUtilityProvider;
   static final StateNotifierProvider<AppThemeNotifier, bool> themeState =
       appThemeStateProvider;
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/progress.dart';
-import 'package:allo/core/main.dart';
 import 'package:allo/interface/login/login.dart';
 import 'package:allo/interface/login/signup/signup.dart';
 

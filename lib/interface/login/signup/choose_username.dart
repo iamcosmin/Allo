@@ -1,16 +1,17 @@
+import 'package:allo/repositories/auth_repository.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:allo/core/core.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final usernameProvider = ChangeNotifierProvider<UsernameProvider>()
-
 class ChooseUsername extends HookWidget {
   String _username = "";
-  String errorCode = "";
 
   @override
   Widget build(BuildContext context) {
+    // ignore: invalid_use_of_protected_member
+    final errorCode = useProvider(errorProvider.notifier).state;
+    final authProvider = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.black,
@@ -46,13 +47,8 @@ class ChooseUsername extends HookWidget {
               alignment: FractionalOffset.bottomCenter,
               child: CupertinoButton(
                 child: Text('Aplică'),
-                onPressed: () => Core.auth
-                    .configureUsername(_username, context)
-                    .then((value) {
-                  setState(() {
-                    errorCode = value;
-                  });
-                }),
+                onPressed: () =>
+                    authProvider.configureUsername(_username, context),
                 color: CupertinoColors.activeBlue,
               ),
             ),
