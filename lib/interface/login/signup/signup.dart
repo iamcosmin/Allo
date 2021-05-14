@@ -1,21 +1,24 @@
+import 'package:allo/repositories/auth_repository.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:allo/core/core.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Signup extends StatefulWidget {
-  @override
-  _SignupState createState() => _SignupState();
-}
-
-class _SignupState extends State<Signup> {
+// ignore: must_be_immutable
+class Signup extends HookWidget {
   String _name = "";
   String _email = "";
   String _password1 = "";
   String _password2 = "";
-  String errorCode1 = "Detalii de contact";
-  String errorCode2 = "Securitate";
+
+  final String errorCode1 = "Detalii de contact";
+  final String errorCode2 = "Securitate";
 
   @override
   Widget build(BuildContext context) {
+    // ignore: invalid_use_of_protected_member
+    final error = useProvider(errorProvider);
+    final authProvider = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.black,
@@ -34,7 +37,7 @@ class _SignupState extends State<Signup> {
             padding: EdgeInsets.only(top: 60),
           ),
           CupertinoFormSection.insetGrouped(
-            header: Text(errorCode1),
+            header: Text(error != "" ? error : "Detalii de contact"),
             children: [
               CupertinoTextFormFieldRow(
                 placeholder: 'Nume',
@@ -47,7 +50,7 @@ class _SignupState extends State<Signup> {
             ],
           ),
           CupertinoFormSection.insetGrouped(
-            header: Text(errorCode2),
+            header: Text(error != "" ? error : "Securitate"),
             children: [
               CupertinoTextFormFieldRow(
                 placeholder: 'Parolă',
@@ -68,11 +71,8 @@ class _SignupState extends State<Signup> {
                 padding: const EdgeInsets.only(bottom: 20),
                 child: CupertinoButton(
                   child: Text('Continuă'),
-                  onPressed: () => Core.auth
-                      .signup(_name, _email, _password1, _password2, context)
-                      .then((value) => setState(() {
-                            errorCode1 = value;
-                          })),
+                  onPressed: () => authProvider.signup(
+                      _name, _email, _password1, _password2, context),
                   color: CupertinoTheme.of(context).primaryColor,
                 ),
               ),

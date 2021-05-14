@@ -1,23 +1,20 @@
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:allo/core/core.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class VerifyEmail extends StatefulWidget {
-  @override
-  _VerifyEmailState createState() => _VerifyEmailState();
-}
-
-class _VerifyEmailState extends State<VerifyEmail> {
+// ignore: must_be_immutable
+class VerifyEmail extends HookWidget {
   String errorCode1 =
       'Pentru a confirma contul, accesează emailul trimis de noi.';
-
-  @override
-  void initState() {
-    super.initState();
-    Core.auth.sendEmailVerification();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final auth = useProvider(Repositories.auth);
+    // ignore: invalid_use_of_protected_member
+    final error = useProvider(errorProvider);
+    useEffect(() {
+      auth.sendEmailVerification();
+    }, const []);
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
           backgroundColor: CupertinoColors.black,
@@ -36,7 +33,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
             CupertinoFormSection.insetGrouped(children: [
               CupertinoFormRow(
                 child: Text(
-                  errorCode1,
+                  error != "" ? error : errorCode1,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -49,17 +46,12 @@ class _VerifyEmailState extends State<VerifyEmail> {
                   children: [
                     CupertinoButton(
                       child: Text('Am confirmat'),
-                      onPressed: () =>
-                          Core.auth.isVerified(context).then((value) {
-                        setState(() {
-                          errorCode1 = value;
-                        });
-                      }),
+                      onPressed: () => auth.isVerified(context),
                       color: CupertinoTheme.of(context).primaryColor,
                     ),
                     CupertinoButton(
                       child: Text('Retrimite emailul'),
-                      onPressed: () => Core.auth.sendEmailVerification(),
+                      onPressed: () => auth.sendEmailVerification(),
                     )
                   ],
                 ),

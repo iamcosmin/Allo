@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 enum _PersonPictureType { profilePicture, initials }
 
 // ignore: must_be_immutable
-class PersonPicture extends StatelessWidget {
+class PersonPicture extends HookWidget {
   final double radius;
   final _PersonPictureType _type;
   Color? color;

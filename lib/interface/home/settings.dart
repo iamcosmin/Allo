@@ -1,6 +1,7 @@
-import 'package:allo/core/theme.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:allo/components/person_picture.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -8,8 +9,9 @@ class Settings extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: invalid_use_of_protected_member
-    final themeState = useProvider(appThemeStateProvider.notifier).state;
-    final theme = useProvider(appThemeStateProvider.notifier);
+    final themeState = useProvider(Repositories.themeState.notifier).state;
+    final theme = useProvider(Repositories.themeState.notifier);
+    final auth = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: [
@@ -17,6 +19,7 @@ class Settings extends HookWidget {
             largeTitle: Text('Setări'),
           ),
           SliverSafeArea(
+            minimum: EdgeInsets.only(top: 20),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 CupertinoFormSection.insetGrouped(
@@ -31,7 +34,8 @@ class Settings extends HookWidget {
                               child: PersonPicture.initials(
                                   radius: 100,
                                   initials: 'CR',
-                                  color: CupertinoTheme.of(context).primaryColor)),
+                                  color:
+                                      CupertinoTheme.of(context).primaryColor)),
                           Text('Cosmin'),
                           Padding(padding: EdgeInsets.only(bottom: 10))
                         ],
@@ -83,6 +87,26 @@ class Settings extends HookWidget {
                             }
                           },
                         ))
+                  ],
+                ),
+                CupertinoFormSection.insetGrouped(
+                  header: Text('Gestionare sesiune'),
+                  children: [
+                    GestureDetector(
+                      onTap: () async => await auth.signOut(),
+                      child: CupertinoFormRow(
+                        prefix: Text('Deconectare'),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10, bottom: 10, right: 5),
+                          child: Icon(
+                            CupertinoIcons.right_chevron,
+                            color: CupertinoColors.systemGrey,
+                            size: 15,
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 )
               ]),

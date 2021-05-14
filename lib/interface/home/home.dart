@@ -1,19 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/refresh.dart';
-import 'package:allo/core/main.dart';
 import 'package:allo/interface/home/chat/chat.dart';
+import 'package:allo/repositories/repositories.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
-
-  @override
-  _HomeState createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
+class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final auth = useProvider(Repositories.auth);
+    final navigation = useProvider(Repositories.navigation);
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth > 600) {
         return CupertinoPageScaffold(
@@ -67,16 +64,12 @@ class _HomeState extends State<Home> {
                         child: Image.network(
                             'https://hosty.xxx/i/06eefb21055d293d34baec1da27312c49e76adaa.jpg'),
                       ),
-                      onTap: () => Core.navigate.to(
+                      onTap: () => navigation.to(
                           context,
                           Chat(
                             title: 'stricoii',
                           )),
                     ),
-                    CupertinoButton(
-                      child: Text('Deconectare'),
-                      onPressed: () async => await Core.auth.signOut(),
-                    )
                   ]),
                 ))
               ],

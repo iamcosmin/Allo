@@ -1,21 +1,35 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:allo/core/error_codes.dart';
 import 'package:allo/interface/home/home.dart';
+import 'package:allo/interface/home/stack_navigator.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
+import 'package:allo/repositories/repositories.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'core.dart';
+// Spec:
+// Use a error provider to provide error input to a function
 
-class Auth extends Core {
-  static User user = User();
+final errorProvider =
+    StateNotifierProvider<ErrorProvider, String>((ref) => ErrorProvider());
 
-  /// Initialises Firebase components.
-  Future initFirebase() async {
-    await Firebase.initializeApp();
+class ErrorProvider extends StateNotifier<String> {
+  ErrorProvider() : super("");
+
+  void passError(String error) {
+    state = error;
   }
+}
+
+final authProvider = Provider<AuthRepository>((ref) {
+  final errorFunctions = ref.read(errorProvider.notifier);
+  return AuthRepository(errorFunctions);
+});
+
+class AuthRepository {
+  AuthRepository(this.errorProviderFunctions) : super();
+  var errorProviderFunctions;
 
   Future returnUserDetails() async {
     return FirebaseAuth.instance.currentUser;
@@ -26,20 +40,22 @@ class Auth extends Core {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _email, password: _password);
-      Navigator.pushAndRemoveUntil(context,
-          CupertinoPageRoute(builder: (context) => Home()), (route) => false);
-      return ErrorCodes.succes;
+      Navigator.pushAndRemoveUntil(
+          context,
+          CupertinoPageRoute(builder: (context) => StackNavigator()),
+          (route) => false);
+      errorProviderFunctions.passError("");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
-        return ErrorCodes.invalidEmail;
+        errorProviderFunctions.passError(ErrorCodes.invalidEmail);
       } else if (e.code == 'user-disabled') {
-        return ErrorCodes.userDisabled;
+        errorProviderFunctions.passError(ErrorCodes.userDisabled);
       } else if (e.code == 'user-not-found') {
-        return ErrorCodes.userNotFound;
+        errorProviderFunctions.passError(ErrorCodes.userNotFound);
       } else if (e.code == 'wrong-password') {
-        return ErrorCodes.wrongPassword;
+        errorProviderFunctions.passError(ErrorCodes.wrongPassword);
       } else {
-        return ErrorCodes.noAccount;
+        errorProviderFunctions.passError(ErrorCodes.noAccount);
       }
     }
   }
@@ -60,18 +76,18 @@ class Auth extends Core {
               context,
               CupertinoPageRoute(builder: (context) => VerifyEmail()),
               (route) => false);
-          return ErrorCodes.succes;
+          errorProviderFunctions.passError("");
         } on FirebaseAuthException catch (e) {
           if (e.code == 'email-already-in-use') {
-            return ErrorCodes.emailAlreadyInUse;
+            errorProviderFunctions.passError(ErrorCodes.emailAlreadyInUse);
           } else if (e.code == 'invalid-email') {
-            return ErrorCodes.invalidEmail;
+            errorProviderFunctions.passError(ErrorCodes.invalidEmail);
           } else if (e.code == 'operation-not-allowed') {
-            return ErrorCodes.operationNotAllowed;
+            errorProviderFunctions.passError(ErrorCodes.operationNotAllowed);
           } else if (e.code == 'weak-password') {
-            return ErrorCodes.weakPassword;
+            errorProviderFunctions.passError(ErrorCodes.weakPassword);
           } else {
-            return ErrorCodes.nullFields;
+            errorProviderFunctions.passError(ErrorCodes.nullFields);
           }
         }
       } else {
@@ -94,9 +110,9 @@ class Auth extends Core {
           context,
           CupertinoPageRoute(builder: (context) => ChooseUsername()),
           (route) => false);
-      return ErrorCodes.succes;
+      errorProviderFunctions.passError(ErrorCodes.succes);
     } else if (!isVerified) {
-      return ErrorCodes.stillNotVerified;
+      errorProviderFunctions.passError(ErrorCodes.stillNotVerified);
     }
   }
 
@@ -114,8 +130,10 @@ class Auth extends Core {
           .update({
         FirebaseAuth.instance.currentUser!.uid: _username,
       });
-      Navigator.pushAndRemoveUntil(context,
-          CupertinoPageRoute(builder: (context) => Home()), (route) => false);
+      Navigator.pushAndRemoveUntil(
+          context,
+          CupertinoPageRoute(builder: (context) => StackNavigator()),
+          (route) => false);
       return "";
     }
   }
@@ -128,5 +146,3 @@ class Auth extends Core {
     }
   }
 }
-
-class User extends Auth {}

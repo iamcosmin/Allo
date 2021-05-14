@@ -2,7 +2,8 @@ import 'package:allo/components/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:allo/core/main.dart';
+import 'package:allo/repositories/repositories.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Provides input actions for the Chat object.
 // ignore: must_be_immutable
@@ -14,6 +15,9 @@ class MessageInput extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final alerts = useProvider(Repositories.alerts);
+    final chats = useProvider(Repositories.chats);
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: Material(
@@ -29,7 +33,7 @@ class MessageInput extends HookWidget {
                 iconSize: 25,
                 color: CupertinoColors.systemGrey,
                 icon: Icon(CupertinoIcons.paperclip),
-                onPressed: () => Core.alerts.noSuchMethodError(context),
+                onPressed: () => alerts.noSuchMethodError(context),
               ),
               Container(
                 width: MediaQuery.of(context).size.width - 110,
@@ -49,12 +53,8 @@ class MessageInput extends HookWidget {
                 alignment: Alignment.center,
                 iconSize: 27.5,
                 icon: Icon(CupertinoIcons.arrow_up_circle_fill),
-                onPressed: () => Core.chats.sendMessage(
-                    _messageTextContent,
-                    null,
-                    MessageType.TEXT_ONLY,
-                    _chatReference,
-                    _messageController),
+                onPressed: () => chats.sendMessage(_messageTextContent, null,
+                    MessageType.TEXT_ONLY, _chatReference, _messageController),
               ),
             ],
           ),

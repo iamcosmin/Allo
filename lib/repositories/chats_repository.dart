@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'core.dart';
 
 enum MessageType {
   TEXT_ONLY,
@@ -14,7 +13,9 @@ enum MessageType {
   UNSUPPORTED,
 }
 
-class Chats extends Core {
+final chatsProvider = Provider<ChatsRepository>((ref) => ChatsRepository());
+
+class ChatsRepository {
   /// The sendMessage() function is experimental and its use is not recommended.
   /// Please use the writeMessage() function below to send legacy messages
   /// to the database.

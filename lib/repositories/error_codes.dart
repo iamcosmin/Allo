@@ -10,5 +10,6 @@ class ErrorCodes {
   static String operationNotAllowed = "Operațiunea nu este permisă momentan.";
   static String weakPassword = "Parola este prea slabă.";
   static String succes = "Succes.";
-  static String stillNotVerified = "Se pare că încă nu ai verificat emailul. Pentru a continua, accesează emailul primit de la noi.";
+  static String stillNotVerified =
+      "Se pare că încă nu ai verificat emailul. Pentru a continua, accesează emailul primit de la noi.";
 }

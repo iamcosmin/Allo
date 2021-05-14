@@ -7,27 +7,20 @@ import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/message_bubble.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/progress.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 // ignore: must_be_immutable
-class Chat extends StatefulWidget {
+class Chat extends HookWidget {
+  String _chatReference = 'DFqPHH2R4E5j0tM55fIm';
   String? title;
   Chat({this.title});
-  @override
-  _ChatState createState() => _ChatState();
-}
-
-class _ChatState extends State<Chat> {
-  String _chatReference = 'DFqPHH2R4E5j0tM55fIm';
 
   @override
-  void initState() {
-    super.initState();
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        systemNavigationBarColor: CupertinoColors.darkBackgroundGray));
-  }
-
-  @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
+    useEffect(() {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+          systemNavigationBarColor: CupertinoColors.darkBackgroundGray));
+    }, const []);
     return CupertinoPageScaffold(
         navigationBar: ChatNavigationBar(
           middle: Column(

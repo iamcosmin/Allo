@@ -1,21 +1,20 @@
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:allo/core/main.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Login extends StatefulWidget {
-  @override
-  _LoginState createState() => _LoginState();
-}
-
-class _LoginState extends State<Login> {
+// ignore: must_be_immutable
+class Login extends HookWidget {
   String _email = "";
   String _password = "";
-  String error = "";
-
   TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    // ignore: invalid_use_of_protected_member
+    final error = useProvider(errorProvider);
+    final auth = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.black,
@@ -62,11 +61,7 @@ class _LoginState extends State<Login> {
                 CupertinoButton(
                     child: Text('Autentificare'),
                     onPressed: () {
-                      Core.auth
-                          .login(_email, _password, context)
-                          .then((value) => setState(() {
-                                error = value;
-                              }));
+                      auth.login(_email, _password, context);
                     },
                     color: CupertinoTheme.of(context).primaryColor),
                 CupertinoButton(
