@@ -4,14 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+// ignore: must_be_immutable
 class Signup extends HookWidget {
   String _name = "";
   String _email = "";
   String _password1 = "";
   String _password2 = "";
 
-  String errorCode1 = "Detalii de contact";
-  String errorCode2 = "Securitate";
+  final String errorCode1 = "Detalii de contact";
+  final String errorCode2 = "Securitate";
 
   @override
   Widget build(BuildContext context) {

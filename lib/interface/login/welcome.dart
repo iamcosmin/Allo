@@ -1,17 +1,16 @@
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/progress.dart';
 import 'package:allo/interface/login/login.dart';
 import 'package:allo/interface/login/signup/signup.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Welcome extends StatefulWidget {
-  @override
-  _WelcomeState createState() => _WelcomeState();
-}
-
-class _WelcomeState extends State<Welcome> {
+class Welcome extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final navigation = useProvider(Repositories.navigation);
     return CupertinoPageScaffold(
       child: Container(
         child: Column(
@@ -37,12 +36,12 @@ class _WelcomeState extends State<Welcome> {
             Padding(padding: EdgeInsets.only(top: 35)),
             CupertinoButton(
               child: Text('Conectează-te'),
-              onPressed: () => Core.navigate.to(context, Login()),
+              onPressed: () => navigation.to(context, Login()),
               color: CupertinoTheme.of(context).primaryColor,
             ),
             CupertinoButton(
               child: Text('Nu ai cont? Creează unul!'),
-              onPressed: () => Core.navigate.to(context, Signup()),
+              onPressed: () => navigation.to(context, Signup()),
             )
           ],
         ),

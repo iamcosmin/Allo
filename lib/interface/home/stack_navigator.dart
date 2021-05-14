@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'home.dart';
 import 'settings.dart';
 
-class StackNavigator extends StatelessWidget {
+class StackNavigator extends HookWidget {
   final List<Widget> pages = [Home(), Settings()];
 
   @override

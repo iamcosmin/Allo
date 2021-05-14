@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+// ignore: must_be_immutable
 class ChooseUsername extends HookWidget {
   String _username = "";
 

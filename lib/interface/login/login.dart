@@ -4,21 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final loginProvider =
-    ChangeNotifierProvider<LoginProvider>((ref) => LoginProvider());
-
-class LoginProvider extends ChangeNotifier {
-  String error = "";
-  String get getError {
-    return error;
-  }
-
-  void changeErrorMessage(context, String error) {
-    error = error;
-    notifyListeners();
-  }
-}
-
 class Login extends HookWidget {
   String _email = "";
   String _password = "";
@@ -26,7 +11,8 @@ class Login extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final login = useProvider(loginProvider);
+    // ignore: invalid_use_of_protected_member
+    final error = useProvider(errorProvider.notifier).state;
     final auth = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -48,7 +34,7 @@ class Login extends HookWidget {
           AutofillGroup(
             child: CupertinoFormSection.insetGrouped(
                 footer: Text(
-                  login.getError,
+                  error,
                   style: TextStyle(color: CupertinoColors.systemYellow),
                 ),
                 children: [
@@ -74,8 +60,7 @@ class Login extends HookWidget {
                 CupertinoButton(
                     child: Text('Autentificare'),
                     onPressed: () {
-                      auth.login(_email, _password, context).then(
-                          (value) => login.changeErrorMessage(context, value));
+                      auth.login(_email, _password, context);
                     },
                     color: CupertinoTheme.of(context).primaryColor),
                 CupertinoButton(
