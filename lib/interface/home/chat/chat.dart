@@ -9,6 +9,7 @@ import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/progress.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+// ignore: must_be_immutable
 class Chat extends HookWidget {
   String _chatReference = 'DFqPHH2R4E5j0tM55fIm';
   String? title;

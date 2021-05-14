@@ -1,5 +1,6 @@
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -10,7 +11,7 @@ import 'interface/login/welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AuthRepository().initFirebase();
+  await Firebase.initializeApp();
   final _kSharedPreferences = await SharedPreferences.getInstance();
   runApp(
     ProviderScope(

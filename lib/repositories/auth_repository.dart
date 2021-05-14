@@ -22,15 +22,14 @@ class ErrorProvider extends StateNotifier<String> {
   }
 }
 
-final authProvider = Provider<AuthRepository>((ref) => AuthRepository());
+final authProvider = Provider<AuthRepository>((ref) {
+  final errorFunctions = ref.read(errorProvider.notifier);
+  return AuthRepository(errorFunctions);
+});
 
 class AuthRepository {
-  final errorProviderFunctions = useProvider(errorProvider.notifier);
-
-  /// Initialises Firebase components.
-  Future initFirebase() async {
-    await Firebase.initializeApp();
-  }
+  AuthRepository(this.errorProviderFunctions) : super();
+  var errorProviderFunctions;
 
   Future returnUserDetails() async {
     return FirebaseAuth.instance.currentUser;
