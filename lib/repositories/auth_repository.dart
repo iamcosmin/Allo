@@ -1,10 +1,10 @@
 import 'package:allo/interface/home/home.dart';
+import 'package:allo/interface/home/stack_navigator.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -40,8 +40,10 @@ class AuthRepository {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _email, password: _password);
-      Navigator.pushAndRemoveUntil(context,
-          CupertinoPageRoute(builder: (context) => Home()), (route) => false);
+      Navigator.pushAndRemoveUntil(
+          context,
+          CupertinoPageRoute(builder: (context) => StackNavigator()),
+          (route) => false);
       errorProviderFunctions.passError("");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
@@ -128,8 +130,10 @@ class AuthRepository {
           .update({
         FirebaseAuth.instance.currentUser!.uid: _username,
       });
-      Navigator.pushAndRemoveUntil(context,
-          CupertinoPageRoute(builder: (context) => Home()), (route) => false);
+      Navigator.pushAndRemoveUntil(
+          context,
+          CupertinoPageRoute(builder: (context) => StackNavigator()),
+          (route) => false);
       return "";
     }
   }

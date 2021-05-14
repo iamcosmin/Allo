@@ -70,10 +70,6 @@ class Home extends HookWidget {
                             title: 'stricoii',
                           )),
                     ),
-                    CupertinoButton(
-                      child: Text('Deconectare'),
-                      onPressed: () async => await auth.signOut(),
-                    )
                   ]),
                 ))
               ],

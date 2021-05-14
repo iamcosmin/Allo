@@ -11,6 +11,7 @@ class Settings extends HookWidget {
     // ignore: invalid_use_of_protected_member
     final themeState = useProvider(Repositories.themeState.notifier).state;
     final theme = useProvider(Repositories.themeState.notifier);
+    final auth = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: [
@@ -18,6 +19,7 @@ class Settings extends HookWidget {
             largeTitle: Text('Setări'),
           ),
           SliverSafeArea(
+            minimum: EdgeInsets.only(top: 20),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 CupertinoFormSection.insetGrouped(
@@ -85,6 +87,26 @@ class Settings extends HookWidget {
                             }
                           },
                         ))
+                  ],
+                ),
+                CupertinoFormSection.insetGrouped(
+                  header: Text('Gestionare sesiune'),
+                  children: [
+                    GestureDetector(
+                      onTap: () async => await auth.signOut(),
+                      child: CupertinoFormRow(
+                        prefix: Text('Deconectare'),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10, bottom: 10, right: 5),
+                          child: Icon(
+                            CupertinoIcons.right_chevron,
+                            color: CupertinoColors.systemGrey,
+                            size: 15,
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 )
               ]),

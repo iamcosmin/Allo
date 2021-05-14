@@ -11,7 +11,7 @@ class ChooseUsername extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: invalid_use_of_protected_member
-    final errorCode = useProvider(errorProvider.notifier).state;
+    final errorCode = useProvider(errorProvider);
     final authProvider = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(

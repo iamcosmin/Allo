@@ -11,7 +11,7 @@ class VerifyEmail extends HookWidget {
   Widget build(BuildContext context) {
     final auth = useProvider(Repositories.auth);
     // ignore: invalid_use_of_protected_member
-    final error = useProvider(errorProvider.notifier).state;
+    final error = useProvider(errorProvider);
     useEffect(() {
       auth.sendEmailVerification();
     }, const []);

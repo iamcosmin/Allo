@@ -13,7 +13,7 @@ class Login extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: invalid_use_of_protected_member
-    final error = useProvider(errorProvider.notifier).state;
+    final error = useProvider(errorProvider);
     final auth = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
