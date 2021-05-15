@@ -1,4 +1,4 @@
-name: Allo CI
+name: Build Android app
 
 on: 
   push: 
@@ -19,10 +19,6 @@ jobs:
         channel: 'stable'
     - name: Prepare packages
       run: flutter pub get
-    - name: Error checking
-      run: |
-           flutter format .
-           flutter analyze . --no-fatal-infos --no-fatal-warnings
     - name: Keystore expansion
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
@@ -31,22 +27,32 @@ jobs:
            gpg -d --passphrase "${{ secrets.PASS_PHRASE }}" --batch release.jks.asc > app/release.jks
            echo "${{ secrets.KEYSTORE_PASS }}" > key.properties
            cd ..
-    - name: App build
+    - name: Build Android
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: flutter build apk --split-per-abi
-    - name: Change built names
-      if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: |
-          cd build/app/outputs/apk/release/
-          mv app-arm64-v8a-release.apk engrish_arm64.apk
-          mv app-armeabi-v7a-release.apk engrish_arm7.apk
-          mv app-x86_64-release.apk engrish_x86.apk
+      run: | 
+          flutter build apk --split-per-abi
+          flutter build appbundle
+          cd build/app/outputs/aab/release
+          mv app.aab ../../apk/release/Allo.aab
+          cd ../../apk/release
+          mv app-arm64-v8a-release.apk Allo_arm64.apk
+          mv app-armeabi-v7a-release.apk Allo_arm7.apk
+          mv app-x86_64-release.apk Allo_x86.apk
           rm -rf app-arm64-v8a-release.apk
           rm -rf app-armeabi-v7a-release.apk
           rm -rf app-x86_64-release.apk
-    - name: Upload release
+    - name: Upload Android Release
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: actions/upload-artifact@v1
       with: 
         name: Allo_Release
         path: build/app/outputs/apk/release/
+    - name: Build web
+      run: flutter build web --web-renderer canvaskit
+      uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALLO_MS }}'
+          projectId: allo-ms
+        env:
+          FIREBASE_CLI_PREVIEWS: hostingchannels
