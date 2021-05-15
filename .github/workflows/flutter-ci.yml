@@ -49,8 +49,8 @@ jobs:
         path: build/app/outputs/apk/release/
     - name: Build web
       run: flutter build web --web-renderer canvaskit
-      uses: FirebaseExtended/action-hosting-deploy@v0
     - name: Deploy web
+      uses: FirebaseExtended/action-hosting-deploy@v0
       with:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALLO_MS }}'
