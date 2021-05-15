@@ -33,7 +33,7 @@ jobs:
           flutter build apk --split-per-abi
           flutter build appbundle
           cd build/app/outputs/bundle/release
-          mv app.aab ../../apk/release/Allo.aab
+          mv app-release.aab ../../apk/release/Allo_appbundle.aab
           cd ../../apk/release
           mv app-arm64-v8a-release.apk Allo_arm64.apk
           mv app-armeabi-v7a-release.apk Allo_arm7.apk
