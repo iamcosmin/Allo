@@ -84,3 +84,26 @@ class SharedUtility {
     return await sharedPreferences.setBool('isDarkModeEnabled', false);
   }
 }
+
+final fluentColors = Provider<FluentColors>((ref) {
+  final darkMode = ref.watch(appThemeStateProvider);
+  return FluentColors(darkMode);
+});
+
+class FluentColors {
+  FluentColors(this.darkMode);
+  bool darkMode;
+
+  Color returnColor(Color light, Color dark) {
+    if (darkMode) {
+      return dark;
+    } else {
+      return light;
+    }
+  }
+
+  Color get messageBubble => returnColor(Color(0xFF292929), Color(0xFFdbdbdb));
+  Color get nonColors => returnColor(Color(0xFFFFFFFF), Color(0xFF000000));
+  Color get messageInput =>
+      returnColor(Color(0xFFFFFFFF), CupertinoColors.darkBackgroundGray);
+}

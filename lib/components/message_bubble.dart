@@ -1,7 +1,8 @@
-import 'package:allo/components/colors.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class MessageBubble extends HookWidget {
   final String senderUsername;
@@ -15,6 +16,7 @@ class MessageBubble extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = useProvider(fluentColors);
     return Align(
       alignment: Alignment.topLeft,
       child: Row(
@@ -37,7 +39,7 @@ class MessageBubble extends HookWidget {
               children: [
                 Container(
                     decoration: BoxDecoration(
-                      color: FluentColors.messageBubble,
+                      color: colors.messageBubble,
                       borderRadius: _messageBubbleBorderRadius,
                     ),
                     child: Padding(
