@@ -22,7 +22,7 @@ jobs:
     - name: Error checking
       run: |
            flutter format .
-           flutter analyze .
+           flutter analyze . --no-fatal-infos --no-fatal-warnings
     - name: Keystore expansion
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
