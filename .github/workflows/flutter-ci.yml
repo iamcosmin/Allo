@@ -20,7 +20,8 @@ jobs:
     - name: Prepare packages
       run: flutter pub get
     - name: Error checking
-      run: flutter format .
+      run: |
+           flutter format .
            flutter analyze .
     - name: Keystore expansion
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
