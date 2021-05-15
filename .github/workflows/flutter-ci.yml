@@ -55,5 +55,6 @@ jobs:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALLO_MS }}'
         projectId: allo-ms
+        channelId: live
       env:
         FIREBASE_CLI_PREVIEWS: hostingchannels
