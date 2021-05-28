@@ -21,11 +21,10 @@ class MessageInput extends HookWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Material(
-        color: Color(0x000000),
+        color: Color(0xFF000000),
         child: Container(
           padding: const EdgeInsets.only(bottom: 2, left: 5, right: 5, top: 2),
           color: colors.messageInput,
-          height: 55,
           child: Row(
             children: [
               IconButton(
@@ -35,12 +34,20 @@ class MessageInput extends HookWidget {
                 icon: Icon(CupertinoIcons.paperclip),
                 onPressed: () => alerts.noSuchMethodError(context),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width - 110,
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 100,
+                  minHeight: 20,
+                  minWidth: MediaQuery.of(context).size.width - 110,
+                  maxWidth: MediaQuery.of(context).size.width - 110,
+                ),
                 child: CupertinoTextField(
+                  scrollPadding: MediaQuery.of(context).viewInsets,
+                  expands: true,
+                  maxLines: null,
                   decoration: BoxDecoration(
                       color: colors.nonColors,
-                      borderRadius: BorderRadius.circular(100)),
+                      borderRadius: BorderRadius.circular(20)),
                   placeholder: 'Mesaj',
                   prefix: Padding(
                     padding: EdgeInsets.only(left: 10),

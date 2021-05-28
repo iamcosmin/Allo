@@ -8,18 +8,16 @@ final navigationProvider =
     Provider<NavigationRepository>((ref) => NavigationRepository());
 
 class NavigationRepository {
-  to(BuildContext context, Widget route) {
+  Future to(BuildContext context, Widget route) {
     return Navigator.push(
         context, CupertinoPageRoute(builder: (context) => route));
   }
 
   Future _returnFirebaseUser() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? firebaseUser = auth.currentUser;
+    var auth = FirebaseAuth.instance;
+    var firebaseUser = auth.currentUser;
 
-    if (firebaseUser == null) {
-      firebaseUser = await auth.authStateChanges().first;
-    }
+    firebaseUser ??= await auth.authStateChanges().first;
 
     return firebaseUser;
   }

@@ -1,7 +1,7 @@
 import 'package:allo/repositories/repositories.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:allo/components/progress.dart';
 import 'package:allo/interface/login/login.dart';
 import 'package:allo/interface/login/signup/signup.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -21,7 +21,6 @@ class Welcome extends HookWidget {
               width: 100,
               child: ProgressRing(
                 activeColor: CupertinoTheme.of(context).primaryColor,
-                backgroundColor: Color(0xFF363636),
                 value: null,
                 strokeWidth: 15,
               ),
@@ -35,13 +34,13 @@ class Welcome extends HookWidget {
             ),
             Padding(padding: EdgeInsets.only(top: 35)),
             CupertinoButton(
-              child: Text('Conectează-te'),
               onPressed: () => navigation.to(context, Login()),
               color: CupertinoTheme.of(context).primaryColor,
+              child: Text('Conectează-te'),
             ),
             CupertinoButton(
-              child: Text('Nu ai cont? Creează unul!'),
               onPressed: () => navigation.to(context, Signup()),
+              child: Text('Nu ai cont? Creează unul!'),
             )
           ],
         ),

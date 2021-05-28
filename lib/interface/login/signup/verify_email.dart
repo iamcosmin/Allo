@@ -33,7 +33,7 @@ class VerifyEmail extends HookWidget {
             CupertinoFormSection.insetGrouped(children: [
               CupertinoFormRow(
                 child: Text(
-                  error != "" ? error : errorCode1,
+                  error != '' ? error : errorCode1,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -45,13 +45,13 @@ class VerifyEmail extends HookWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     CupertinoButton(
-                      child: Text('Am confirmat'),
                       onPressed: () => auth.isVerified(context),
                       color: CupertinoTheme.of(context).primaryColor,
+                      child: Text('Am confirmat'),
                     ),
                     CupertinoButton(
-                      child: Text('Retrimite emailul'),
                       onPressed: () => auth.sendEmailVerification(),
+                      child: Text('Retrimite emailul'),
                     )
                   ],
                 ),

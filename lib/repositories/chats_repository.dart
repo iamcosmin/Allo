@@ -25,16 +25,16 @@ class ChatsRepository {
       MessageType messageType,
       String chatReference,
       TextEditingController inputMethodTextController) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    FirebaseAuth auth = FirebaseAuth.instance;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String senderUsername = prefs.getString('username') ??
+    var db = FirebaseFirestore.instance;
+    var auth = FirebaseAuth.instance;
+    var prefs = await SharedPreferences.getInstance();
+    var senderUsername = prefs.getString('username') ??
         await db.collection('users').doc('usernames').get().then((value) {
           String databaseUsername = value.data()?[auth.currentUser?.uid];
           prefs.setString('username', databaseUsername);
           return prefs.getString('username')!;
         });
-    String senderName = prefs.getString('name') ??
+    var senderName = prefs.getString('name') ??
         await db
             .collection('users')
             .doc(auth.currentUser?.uid)
@@ -62,16 +62,18 @@ class ChatsRepository {
       } else if (messageType == MessageType.IMAGE_WITH_DESCRIPTION) {
         // TODO: Handle image uploading and Firestore behaviour
       }
-    } catch (e) {}
+    } catch (e) {
+      //TODO: Avoid empty catch blocks
+    }
   }
 
   Future writeMessage(String messageTextContent, String chatReference,
       TextEditingController messageController) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    FirebaseAuth auth = FirebaseAuth.instance;
+    var db = FirebaseFirestore.instance;
+    var auth = FirebaseAuth.instance;
     try {
       messageController.clear();
-      String senderUsername =
+      var senderUsername =
           await db.collection('users').doc('usernames').get().then((value) {
         return value.data()?[auth.currentUser?.uid];
       });

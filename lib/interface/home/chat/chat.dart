@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,12 +7,11 @@ import 'package:allo/components/chatnavigationbar.dart';
 import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/message_bubble.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/progress.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 // ignore: must_be_immutable
 class Chat extends HookWidget {
-  String _chatReference = 'DFqPHH2R4E5j0tM55fIm';
+  final String _chatReference = 'DFqPHH2R4E5j0tM55fIm';
   String? title;
   Chat({this.title});
 
@@ -52,6 +52,7 @@ class Chat extends HookWidget {
         ),
         child: SafeArea(
           child: ListView(
+            physics: NeverScrollableScrollPhysics(),
             reverse: true,
             children: [
               MessageInput(_chatReference),

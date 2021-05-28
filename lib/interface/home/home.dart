@@ -1,3 +1,7 @@
+import 'package:allo/components/list/list_section.dart';
+import 'package:allo/components/list/list_tile.dart';
+import 'package:allo/components/person_picture.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/refresh.dart';
@@ -9,7 +13,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final auth = useProvider(Repositories.auth);
     final navigation = useProvider(Repositories.navigation);
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth > 600) {
@@ -25,57 +28,44 @@ class Home extends HookWidget {
           ),
         );
       } else {
-        return DefaultTextStyle(
-          style: TextStyle(fontFamily: '.SF UI Text'),
-          child: CupertinoPageScaffold(
-              child: Material(
-            color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+        return CupertinoPageScaffold(
             child: CustomScrollView(
-              slivers: [
-                CupertinoSliverNavigationBar(
-                  largeTitle: Text(
-                    'Conversații',
-                  ),
-                ),
-                FluentSliverRefreshControl(
-                  onRefresh: () => Future.delayed(Duration(seconds: 3), null),
-                  // ignore: unnecessary_null_comparison
-                ),
-                SliverSafeArea(
-                    sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    Padding(padding: EdgeInsets.only(top: 20)),
-                    ListTile(
-                      isThreeLine: true,
-                      title: Text(
-                        'Allo',
-                        style: TextStyle(
-                            color: CupertinoTheme.of(context)
-                                .primaryContrastingColor),
-                      ),
-                      subtitle: Text(
-                        '\nconversatie principala',
-                        style: TextStyle(
-                            color: CupertinoTheme.of(context)
-                                .primaryContrastingColor),
-                      ),
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                            'https://hosty.xxx/i/06eefb21055d293d34baec1da27312c49e76adaa.jpg'),
-                      ),
-                      onTap: () => navigation.to(
-                          context,
-                          Chat(
-                            title: 'stricoii',
-                          )),
-                    ),
-                  ]),
-                ))
-              ],
+          slivers: [
+            CupertinoSliverNavigationBar(
+              largeTitle: Text(
+                'Conversații',
+              ),
             ),
-          )),
-        );
+            FluentSliverRefreshControl(
+              onRefresh: () => Future.delayed(Duration(seconds: 3), null),
+              // ignore: unnecessary_null_comparison
+            ),
+            SliverSafeArea(
+                sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                Padding(padding: EdgeInsets.only(top: 20)),
+                CupertinoListSection.insetGrouped(
+                  header: Text('Featured'),
+                  children: [
+                    CupertinoListTile(
+                      title: Text('Allo'),
+                      subtitle: Column(children: [
+                        ProgressBar(),
+                        Padding(padding: EdgeInsets.only(bottom: 10))
+                      ]),
+                      leading: PersonPicture.initials(
+                        radius: 30,
+                        initials: 'A',
+                        color: CupertinoColors.systemPurple,
+                      ),
+                      onTap: () => navigation.to(context, Chat(title: 'Allo')),
+                    ),
+                  ],
+                ),
+              ]),
+            ))
+          ],
+        ));
       }
     });
   }

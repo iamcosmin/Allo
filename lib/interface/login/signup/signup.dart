@@ -6,13 +6,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // ignore: must_be_immutable
 class Signup extends HookWidget {
-  String _name = "";
-  String _email = "";
-  String _password1 = "";
-  String _password2 = "";
+  String _name = '';
+  String _email = '';
+  String _password1 = '';
+  String _password2 = '';
 
-  final String errorCode1 = "Detalii de contact";
-  final String errorCode2 = "Securitate";
+  final String errorCode1 = 'Detalii de contact';
+  final String errorCode2 = 'Securitate';
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +20,7 @@ class Signup extends HookWidget {
     final error = useProvider(errorProvider);
     final authProvider = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.black,
-      ),
+      navigationBar: CupertinoNavigationBar(),
       child: Column(
         children: [
           Padding(
@@ -37,7 +35,7 @@ class Signup extends HookWidget {
             padding: EdgeInsets.only(top: 60),
           ),
           CupertinoFormSection.insetGrouped(
-            header: Text(error != "" ? error : "Detalii de contact"),
+            header: Text(error != '' ? error : 'Detalii de contact'),
             children: [
               CupertinoTextFormFieldRow(
                 placeholder: 'Nume',
@@ -50,7 +48,7 @@ class Signup extends HookWidget {
             ],
           ),
           CupertinoFormSection.insetGrouped(
-            header: Text(error != "" ? error : "Securitate"),
+            header: Text(error != '' ? error : 'Securitate'),
             children: [
               CupertinoTextFormFieldRow(
                 placeholder: 'Parolă',
@@ -70,10 +68,10 @@ class Signup extends HookWidget {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: CupertinoButton(
-                  child: Text('Continuă'),
                   onPressed: () => authProvider.signup(
                       _name, _email, _password1, _password2, context),
                   color: CupertinoTheme.of(context).primaryColor,
+                  child: Text('Continuă'),
                 ),
               ),
             ),

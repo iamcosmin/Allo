@@ -1,3 +1,4 @@
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,16 +6,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 final appThemeProvider = Provider<AppTheme>((ref) => AppTheme());
 
 class AppTheme {
-  static CupertinoThemeData _kLightTheme = CupertinoThemeData(
-      barBackgroundColor: CupertinoColors.extraLightBackgroundGray,
-      brightness: Brightness.light,
-      primaryColor: CupertinoColors.activeOrange,
-      primaryContrastingColor: CupertinoColors.black,
-      scaffoldBackgroundColor: CupertinoColors.extraLightBackgroundGray,
-      textTheme: CupertinoTextThemeData());
+  static final CupertinoThemeData _kLightTheme = CupertinoThemeData(
+    barBackgroundColor: CupertinoColors.systemGroupedBackground,
+    brightness: Brightness.light,
+    primaryColor: CupertinoColors.activeOrange,
+    primaryContrastingColor: CupertinoColors.black,
+    scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
+    textTheme: CupertinoTextThemeData(),
+  );
 
-  static CupertinoThemeData _kDarkTheme = CupertinoThemeData(
-      barBackgroundColor: CupertinoColors.darkBackgroundGray,
+  static final CupertinoThemeData _kDarkTheme = CupertinoThemeData(
+      barBackgroundColor: CupertinoColors.black,
       brightness: Brightness.dark,
       primaryColor: CupertinoColors.activeOrange,
       primaryContrastingColor: CupertinoColors.white,
@@ -72,6 +74,22 @@ class SharedUtility {
   SharedUtility({required this.sharedPreferences});
   final SharedPreferences sharedPreferences;
 
+  String returnResult(String parameter) {
+    return sharedPreferences.getString(parameter) ?? '';
+  }
+
+  bool isParamEnabled(String parameter) {
+    return sharedPreferences.getBool(parameter) ?? false;
+  }
+
+  Future<bool> enableParam(String parameter) async {
+    return await sharedPreferences.setBool(parameter, true);
+  }
+
+  Future<bool> disableParam(String parameter) async {
+    return await sharedPreferences.setBool(parameter, false);
+  }
+
   bool isDarkModeEnabled() {
     return sharedPreferences.getBool('isDarkModeEnabled') ?? false;
   }
@@ -102,8 +120,11 @@ class FluentColors {
     }
   }
 
-  Color get messageBubble => returnColor(Color(0xFF292929), Color(0xFFdbdbdb));
+  Color get messageBubble => returnColor(Color(0xFFdbdbdb), Color(0xFF292929));
   Color get nonColors => returnColor(Color(0xFFFFFFFF), Color(0xFF000000));
   Color get messageInput =>
       returnColor(Color(0xFFFFFFFF), CupertinoColors.darkBackgroundGray);
+  Color get tabBarColor =>
+      returnColor(CupertinoColors.white, CupertinoColors.darkBackgroundGray);
+  Color get spinnerColor => returnColor(Color(0xFFD2D2D2), Color(0xFF363636));
 }

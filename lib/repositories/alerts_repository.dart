@@ -14,9 +14,9 @@ class AlertsRepository {
                   'Momentan aceasta metoda nu este implementata. Incercati mai tarziu!'),
               actions: [
                 CupertinoDialogAction(
-                  child: Text('OK'),
                   isDefaultAction: true,
                   onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
                 )
               ],
             )));

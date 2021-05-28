@@ -4,12 +4,12 @@
 
 import 'dart:math';
 
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:allo/components/progress.dart';
 
 const double _kActivityIndicatorRadius = 14.0;
 const double _kActivityIndicatorMargin = 16.0;
@@ -97,13 +97,13 @@ class _RenderFluentSliverRefresh extends RenderSliver
 
   @override
   void performLayout() {
-    final SliverConstraints constraints = this.constraints;
+    final constraints = this.constraints;
     // Only pulling to refresh from the top is currently supported.
     assert(constraints.axisDirection == AxisDirection.down);
     assert(constraints.growthDirection == GrowthDirection.forward);
 
     // The new layout extent this sliver should now have.
-    final double layoutExtent =
+    final layoutExtent =
         (_hasLayoutExtent ? 1.0 : 0.0) * _refreshIndicatorExtent;
     // If the new layoutExtent instructive changed, the SliverGeometry's
     // layoutExtent will take that value (on the next performLayout run). Shift
@@ -120,8 +120,8 @@ class _RenderFluentSliverRefresh extends RenderSliver
       return;
     }
 
-    final bool active = constraints.overlap < 0.0 || layoutExtent > 0.0;
-    final double overscrolledExtent =
+    final active = constraints.overlap < 0.0 || layoutExtent > 0.0;
+    final overscrolledExtent =
         constraints.overlap < 0.0 ? constraints.overlap.abs() : 0.0;
     // Layout the child giving it the space of the currently dragged overscroll
     // which may or may not include a sliver layout extent space that it will
@@ -393,7 +393,7 @@ class FluentSliverRefreshControl extends StatefulWidget {
   /// state that gets passed into the [builder] function. Used for testing.
   @visibleForTesting
   static RefreshIndicatorMode state(BuildContext context) {
-    final _FluentSliverRefreshControlState state =
+    final state =
         context.findAncestorStateOfType<_FluentSliverRefreshControlState>()!;
     return state.refreshState;
   }
@@ -412,7 +412,7 @@ class FluentSliverRefreshControl extends StatefulWidget {
     double refreshTriggerPullDistance,
     double refreshIndicatorExtent,
   ) {
-    final double percentageComplete = pulledExtent / refreshTriggerPullDistance;
+    final percentageComplete = pulledExtent / refreshTriggerPullDistance;
 
     // Place the indicator at the top of the sliver that opens up. Note that we're using
     // a Stack/Positioned widget because the CupertinoActivityIndicator does some internal

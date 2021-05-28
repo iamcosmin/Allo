@@ -1,7 +1,8 @@
+import 'package:allo/interface/home/secret_settings.dart';
 import 'package:allo/repositories/repositories.dart';
+import 'package:fluent_ui/fluent_ui.dart' hide Icon;
 import 'package:flutter/cupertino.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -12,6 +13,7 @@ class Settings extends HookWidget {
     final themeState = useProvider(Repositories.themeState.notifier).state;
     final theme = useProvider(Repositories.themeState.notifier);
     final auth = useProvider(Repositories.auth);
+    final navigation = useProvider(Repositories.navigation);
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: [
@@ -105,6 +107,14 @@ class Settings extends HookWidget {
                             size: 15,
                           ),
                         ),
+                      ),
+                    ),
+                    CupertinoFormRow(
+                      prefix: Text('Debug'),
+                      child: CupertinoButton(
+                        onPressed: () =>
+                            navigation.to(context, SecretSettings()),
+                        child: Text('Access'),
                       ),
                     )
                   ],

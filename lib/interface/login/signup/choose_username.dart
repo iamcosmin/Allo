@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // ignore: must_be_immutable
 class ChooseUsername extends HookWidget {
-  String _username = "";
+  String _username = '';
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +14,7 @@ class ChooseUsername extends HookWidget {
     final errorCode = useProvider(errorProvider);
     final authProvider = useProvider(Repositories.auth);
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.black,
-      ),
+      navigationBar: CupertinoNavigationBar(),
       child: Column(
         children: [
           Padding(padding: EdgeInsets.only(top: 60)),
@@ -47,10 +45,10 @@ class ChooseUsername extends HookWidget {
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: CupertinoButton(
-                child: Text('Aplică'),
                 onPressed: () =>
                     authProvider.configureUsername(_username, context),
                 color: CupertinoColors.activeBlue,
+                child: Text('Aplică'),
               ),
             ),
           ),

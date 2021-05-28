@@ -1,4 +1,3 @@
-import 'package:allo/interface/home/home.dart';
 import 'package:allo/interface/home/stack_navigator.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
@@ -15,7 +14,7 @@ final errorProvider =
     StateNotifierProvider<ErrorProvider, String>((ref) => ErrorProvider());
 
 class ErrorProvider extends StateNotifier<String> {
-  ErrorProvider() : super("");
+  ErrorProvider() : super('');
 
   void passError(String error) {
     state = error;
@@ -40,11 +39,11 @@ class AuthRepository {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _email, password: _password);
-      Navigator.pushAndRemoveUntil(
+      await Navigator.pushAndRemoveUntil(
           context,
           CupertinoPageRoute(builder: (context) => StackNavigator()),
           (route) => false);
-      errorProviderFunctions.passError("");
+      errorProviderFunctions.passError('');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         errorProviderFunctions.passError(ErrorCodes.invalidEmail);
@@ -62,9 +61,9 @@ class AuthRepository {
 
   Future signup(String name, String email, String password1, String password2,
       BuildContext context) async {
-    if (name != "" && email != "" && password1 != "" && password2 != "") {
+    if (name != '' && email != '' && password1 != '' && password2 != '') {
       if (password1 == password2) {
-        String matchedPassword = password2;
+        var matchedPassword = password2;
         try {
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: email, password: matchedPassword);
@@ -72,11 +71,11 @@ class AuthRepository {
               .collection('users')
               .doc(FirebaseAuth.instance.currentUser?.uid)
               .set({'name': name, 'isVerified': false, 'email': email});
-          Navigator.pushAndRemoveUntil(
+          await Navigator.pushAndRemoveUntil(
               context,
               CupertinoPageRoute(builder: (context) => VerifyEmail()),
               (route) => false);
-          errorProviderFunctions.passError("");
+          errorProviderFunctions.passError('');
         } on FirebaseAuthException catch (e) {
           if (e.code == 'email-already-in-use') {
             errorProviderFunctions.passError(ErrorCodes.emailAlreadyInUse);
@@ -103,10 +102,10 @@ class AuthRepository {
   }
 
   Future isVerified(BuildContext context) async {
-    bool isVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    var isVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     await FirebaseAuth.instance.currentUser?.reload();
     if (isVerified) {
-      Navigator.pushAndRemoveUntil(
+      await Navigator.pushAndRemoveUntil(
           context,
           CupertinoPageRoute(builder: (context) => ChooseUsername()),
           (route) => false);
@@ -117,12 +116,12 @@ class AuthRepository {
   }
 
   Future configureUsername(String _username, BuildContext context) async {
-    DocumentSnapshot usernames = await FirebaseFirestore.instance
+    var usernames = await FirebaseFirestore.instance
         .collection('users')
         .doc('usernames')
         .get();
     if (usernames.data()![_username] != null) {
-      return "$_username nu este disponibil!";
+      return '$_username nu este disponibil!';
     } else {
       await FirebaseFirestore.instance
           .collection('users')
@@ -130,11 +129,11 @@ class AuthRepository {
           .update({
         FirebaseAuth.instance.currentUser!.uid: _username,
       });
-      Navigator.pushAndRemoveUntil(
+      await Navigator.pushAndRemoveUntil(
           context,
           CupertinoPageRoute(builder: (context) => StackNavigator()),
           (route) => false);
-      return "";
+      return '';
     }
   }
 
