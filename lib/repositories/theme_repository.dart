@@ -1,3 +1,4 @@
+import 'package:allo/repositories/preferences_repository.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -35,77 +36,12 @@ class AppTheme {
   }
 }
 
-final appThemeStateProvider =
-    StateNotifierProvider<AppThemeNotifier, bool>((ref) {
-  final _kIsDarkModeEnabled =
-      ref.read(sharedUtilityProvider).isDarkModeEnabled();
-  return AppThemeNotifier(_kIsDarkModeEnabled);
-});
-
-class AppThemeNotifier extends StateNotifier<bool> {
-  AppThemeNotifier(this.defaultDarkModeValue) : super(defaultDarkModeValue);
-
-  final bool defaultDarkModeValue;
-
-  void switchToLight(BuildContext context) {
-    context
-        .read(sharedUtilityProvider)
-        .disableDarkMode()
-        .whenComplete(() => {state = false});
-  }
-
-  void switchToDark(BuildContext context) {
-    context
-        .read(sharedUtilityProvider)
-        .enableDarkMode()
-        .whenComplete(() => {state = true});
-  }
-}
-
 final sharedPreferencesProvider =
     Provider<SharedPreferences>((ref) => throw UnimplementedError());
 
-final sharedUtilityProvider = Provider<SharedUtility>((ref) {
-  final _sharedPreferences = ref.watch(sharedPreferencesProvider);
-  return SharedUtility(sharedPreferences: _sharedPreferences);
-});
-
-class SharedUtility {
-  SharedUtility({required this.sharedPreferences});
-  final SharedPreferences sharedPreferences;
-
-  String returnResult(String parameter) {
-    return sharedPreferences.getString(parameter) ?? '';
-  }
-
-  bool isParamEnabled(String parameter) {
-    return sharedPreferences.getBool(parameter) ?? false;
-  }
-
-  Future<bool> enableParam(String parameter) async {
-    return await sharedPreferences.setBool(parameter, true);
-  }
-
-  Future<bool> disableParam(String parameter) async {
-    return await sharedPreferences.setBool(parameter, false);
-  }
-
-  bool isDarkModeEnabled() {
-    return sharedPreferences.getBool('isDarkModeEnabled') ?? false;
-  }
-
-  Future<bool> enableDarkMode() async {
-    return await sharedPreferences.setBool('isDarkModeEnabled', true);
-  }
-
-  Future<bool> disableDarkMode() async {
-    return await sharedPreferences.setBool('isDarkModeEnabled', false);
-  }
-}
-
 final fluentColors = Provider<FluentColors>((ref) {
-  final darkMode = ref.watch(appThemeStateProvider);
-  return FluentColors(darkMode);
+  final dark = ref.watch(darkMode);
+  return FluentColors(dark);
 });
 
 class FluentColors {

@@ -25,7 +25,4 @@ class Repositories {
   static final Provider<AppTheme> theme = appThemeProvider;
   static final Provider<SharedPreferences> sharedPreferences =
       sharedPreferencesProvider;
-  static final Provider<SharedUtility> sharedUtility = sharedUtilityProvider;
-  static final StateNotifierProvider<AppThemeNotifier, bool> themeState =
-      appThemeStateProvider;
 }

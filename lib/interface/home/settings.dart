@@ -1,4 +1,5 @@
 import 'package:allo/interface/home/secret_settings.dart';
+import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Icon;
 import 'package:flutter/cupertino.dart';
@@ -10,15 +11,25 @@ class Settings extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: invalid_use_of_protected_member
-    final themeState = useProvider(Repositories.themeState.notifier).state;
-    final theme = useProvider(Repositories.themeState.notifier);
+    final dark = useProvider(darkMode);
     final auth = useProvider(Repositories.auth);
     final navigation = useProvider(Repositories.navigation);
+    final entry = useProvider(secretEntryProvider);
+    final entryMethod = useProvider(secretEntryProvider.notifier);
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: [
           CupertinoSliverNavigationBar(
-            largeTitle: Text('Setări'),
+            largeTitle: GestureDetector(
+              onTap: () {
+                entryMethod.increment();
+                if (entry == 9) {
+                  navigation.to(context, SecretSettings());
+                  entryMethod.reset();
+                }
+              },
+              child: Text('Setări'),
+            ),
           ),
           SliverSafeArea(
             minimum: EdgeInsets.only(top: 20),
@@ -78,16 +89,10 @@ class Settings extends HookWidget {
                   header: Text('Personalizare'),
                   children: [
                     CupertinoFormRow(
-                        prefix: Text('Activează modul întunecat'),
+                        prefix: Text('Mod Întunecat'),
                         child: CupertinoSwitch(
-                          value: themeState,
-                          onChanged: (value) {
-                            if (themeState) {
-                              return theme.switchToLight(context);
-                            } else {
-                              return theme.switchToDark(context);
-                            }
-                          },
+                          value: dark,
+                          onChanged: null,
                         ))
                   ],
                 ),
@@ -109,14 +114,6 @@ class Settings extends HookWidget {
                         ),
                       ),
                     ),
-                    CupertinoFormRow(
-                      prefix: Text('Debug'),
-                      child: CupertinoButton(
-                        onPressed: () =>
-                            navigation.to(context, SecretSettings()),
-                        child: Text('Access'),
-                      ),
-                    )
                   ],
                 )
               ]),

@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "messenger",
+            "name": "Allo",
             "request": "launch",
             "type": "dart"
         }

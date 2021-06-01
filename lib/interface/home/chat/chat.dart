@@ -51,48 +51,59 @@ class Chat extends HookWidget {
           ),
         ),
         child: SafeArea(
-          child: ListView(
-            physics: NeverScrollableScrollPhysics(),
-            reverse: true,
-            children: [
-              MessageInput(_chatReference),
-              StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('chats')
-                    .doc(_chatReference)
-                    .collection('messages')
-                    .orderBy('time', descending: true)
-                    .limit(15)
-                    .snapshots(),
-                builder: (ctx, AsyncSnapshot<QuerySnapshot> snap) {
-                  if (snap.hasData) {
-                    return Container(
-                      height: MediaQuery.of(context).size.height - 140,
-                      child: ListView.builder(
-                        itemCount: snap.data!.docs.length,
-                        reverse: true,
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
-                        itemBuilder: (BuildContext ctx, int length) {
-                          return MessageBubble(
-                              snap.data!.docs[length]['senderUsername'],
-                              snap.data!.docs[length]['messageTextContent']);
-                        },
+          child: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('chats')
+                .doc(_chatReference)
+                .collection('messages')
+                .orderBy('time', descending: true)
+                .limit(15)
+                .snapshots(),
+            builder: (ctx, AsyncSnapshot<QuerySnapshot> snap) {
+              return AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                switchInCurve: Curves.easeInCubic,
+                switchOutCurve: Curves.easeOutCubic,
+                child: snap.hasData
+                    ? MessageList(chatReference: _chatReference, snap: snap)
+                    : SafeArea(
+                        child: Center(
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            child: ProgressRing(),
+                          ),
+                        ),
                       ),
-                    );
-                  } else {
-                    return SafeArea(
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        alignment: Alignment.center,
-                        child: ProgressRing(),
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
+              );
+            },
           ),
         ));
+  }
+}
+
+class MessageList extends StatelessWidget {
+  final AsyncSnapshot snap;
+  final String chatReference;
+  const MessageList({
+    required this.snap,
+    required this.chatReference,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Expanded(
+        child: ListView.builder(
+          itemCount: snap.data!.docs.length,
+          reverse: true,
+          itemBuilder: (BuildContext ctx, int length) {
+            return MessageBubble(snap.data!.docs[length]['senderUsername'],
+                snap.data!.docs[length]['messageTextContent']);
+          },
+        ),
+      ),
+      MessageInput(chatReference),
+    ]);
   }
 }

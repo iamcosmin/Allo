@@ -27,22 +27,21 @@ class PersonPicture extends HookWidget {
       return Container(
         height: radius,
         width: radius,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(1000)),
+        decoration: BoxDecoration(shape: BoxShape.circle),
         child: Image.network(profilePicture!),
       );
     } else if (_type == _PersonPictureType.initials) {
       return Container(
-        alignment: Alignment.center,
         height: radius,
         width: radius,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(1000),
-            color: color,
-            gradient: gradient),
-        child: Text(
-          initials!,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: radius / 2),
+            shape: BoxShape.circle, color: color, gradient: gradient),
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(
+            initials!,
+            style: TextStyle(fontSize: radius / 2),
+          ),
         ),
       );
     } else {

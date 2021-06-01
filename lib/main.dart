@@ -1,3 +1,4 @@
+import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,9 +30,9 @@ class MyApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final theme = useProvider(appThemeProvider);
-    final themeState = useProvider(appThemeStateProvider);
+    final darkState = useProvider(darkMode);
     return FluentApp(
-      themeMode: themeState ? ThemeMode.dark : ThemeMode.light,
+      themeMode: darkState ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(
         accentColor: Colors.orange,
         activeColor: Colors.orange,
@@ -40,7 +41,7 @@ class MyApp extends HookWidget {
       ),
       home: CupertinoApp(
           title: 'Allo',
-          theme: theme.getAppThemeData(context, themeState),
+          theme: theme.getAppThemeData(context, darkState),
           home: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (BuildContext context, AsyncSnapshot s) {

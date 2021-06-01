@@ -34,9 +34,11 @@ class MessageInput extends HookWidget {
                 icon: Icon(CupertinoIcons.paperclip),
                 onPressed: () => alerts.noSuchMethodError(context),
               ),
-              ConstrainedBox(
+              AnimatedContainer(
+                duration: Duration(seconds: 2),
+                curve: Curves.ease,
                 constraints: BoxConstraints(
-                  maxHeight: 100,
+                  maxHeight: 150,
                   minHeight: 20,
                   minWidth: MediaQuery.of(context).size.width - 110,
                   maxWidth: MediaQuery.of(context).size.width - 110,

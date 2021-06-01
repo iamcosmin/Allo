@@ -1,4 +1,3 @@
-import 'package:allo/interface/home/secret_settings.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
