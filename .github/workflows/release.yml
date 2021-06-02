@@ -1,7 +1,9 @@
-name: Build Allo
+name: Build release
 
 on: 
   push: 
+   branches:
+    - main
 
 jobs:
   build_android: 
@@ -38,15 +40,24 @@ jobs:
           mv app-arm64-v8a-release.apk Allo_arm64.apk
           mv app-armeabi-v7a-release.apk Allo_arm7.apk
           mv app-x86_64-release.apk Allo_x86.apk
-          rm -rf app-arm64-v8a-release.apk
-          rm -rf app-armeabi-v7a-release.apk
-          rm -rf app-x86_64-release.apk
-    - name: Deploy
+    - name: Release
+      uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "New release"
+          files: |
+                build/app/outputs/apk/release/Allo_appbundle.aab
+                build/app/outputs/apk/release/Allo_arm64.apk
+                build/app/outputs/apk/release/Allo_arm7.apk
+                build/app/outputs/apk/release/Allo_x86.apk
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: actions/upload-artifact@v1
       with: 
         name: Allo_Release
         path: build/app/outputs/apk/release/
+    
   build_web:
     runs-on: ubuntu-latest
     steps:
