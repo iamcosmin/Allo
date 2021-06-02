@@ -41,17 +41,17 @@ jobs:
           mv app-armeabi-v7a-release.apk Allo_arm7.apk
           mv app-x86_64-release.apk Allo_x86.apk
     - name: Release
-      uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: false
-          title: "New release"
-          files: |
-                build/app/outputs/apk/release/Allo_appbundle.aab
-                build/app/outputs/apk/release/Allo_arm64.apk
-                build/app/outputs/apk/release/Allo_arm7.apk
-                build/app/outputs/apk/release/Allo_x86.apk
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "New release"
+        files: |
+              build/app/outputs/apk/release/Allo_appbundle.aab
+              build/app/outputs/apk/release/Allo_arm64.apk
+              build/app/outputs/apk/release/Allo_arm7.apk
+              build/app/outputs/apk/release/Allo_x86.apk
     
   build_web:
     runs-on: ubuntu-latest
