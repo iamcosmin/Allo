@@ -14,9 +14,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_auth: ^1.1.0
   firebase_core: ^1.0.3
+  firebase_storage: ^8.1.0
   fluent_ui: ^2.0.1
   flutter_hooks: ^0.16.0
   hooks_riverpod: ^0.14.0+2
+  image_cropper: ^1.4.0
   image_picker: ^0.7.4
   shared_preferences: ^2.0.5
 

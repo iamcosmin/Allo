@@ -1,4 +1,5 @@
 import 'package:allo/interface/home/secret_settings.dart';
+import 'package:allo/interface/home/settings/profile_picture.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide Icon;
@@ -10,12 +11,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class Settings extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    // ignore: invalid_use_of_protected_member
     final dark = useProvider(darkMode);
     final auth = useProvider(Repositories.auth);
     final navigation = useProvider(Repositories.navigation);
     final entry = useProvider(secretEntryProvider);
     final entryMethod = useProvider(secretEntryProvider.notifier);
+    //
+    final eProfilePic = useProvider(experimentalProfilePicture);
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: [
@@ -71,18 +73,24 @@ class Settings extends HookWidget {
                         ),
                       ),
                     ),
-                    CupertinoFormRow(
-                      prefix: Text('Imagine de profil'),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10, bottom: 10, right: 5),
-                        child: Icon(
-                          CupertinoIcons.right_chevron,
-                          color: CupertinoColors.systemGrey,
-                          size: 15,
+                    if (eProfilePic) ...[
+                      GestureDetector(
+                        onTap: () =>
+                            navigation.to(context, ProfilePictureSettings()),
+                        child: CupertinoFormRow(
+                          prefix: Text('Fotografie de profil'),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10, bottom: 10, right: 5),
+                            child: Icon(
+                              CupertinoIcons.right_chevron,
+                              color: CupertinoColors.systemGrey,
+                              size: 15,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
                 CupertinoFormSection.insetGrouped(

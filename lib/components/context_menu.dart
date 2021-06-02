@@ -1322,7 +1322,7 @@ class _ContextMenuSheet extends StatelessWidget {
   _ContextMenuSheet({
     Key? key,
     required this.actions,
-  })  : assert(actions != null && actions.isNotEmpty),
+  })  : assert(actions.isNotEmpty),
         super(key: key);
 
   final List<Widget> actions;

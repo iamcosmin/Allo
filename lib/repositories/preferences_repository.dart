@@ -27,6 +27,14 @@ final newComposeMessage = StateNotifierProvider<PreferenceManager, bool>((ref) {
   return PreferenceManager(returnValue, parameter);
 });
 
+final experimentalProfilePicture =
+    StateNotifierProvider<PreferenceManager, bool>((ref) {
+  final parameter = 'experimentalProfilePicture';
+  final returnValue =
+      ref.read(updatedSharedUtilityProvider).returnBool(parameter);
+  return PreferenceManager(returnValue, parameter);
+});
+
 //? </Preferences>
 
 final updatedSharedUtilityProvider = Provider<UpdatedSharedUtility>((ref) {
@@ -59,7 +67,14 @@ class PreferenceManager extends StateNotifier<bool> {
   PreferenceManager(this.setter, this.parameter) : super(setter);
   final bool setter;
   final String parameter;
+  void _readAndUpdateState(BuildContext context, bool boolean) {
+    context
+        .read(updatedSharedUtilityProvider)
+        .setBool(parameter, boolean)
+        .whenComplete(() => {state = boolean});
+  }
 
+  @Deprecated('Please use the switcher for less boilerplate.')
   void setTrue(BuildContext context) {
     context
         .read(updatedSharedUtilityProvider)
@@ -67,10 +82,19 @@ class PreferenceManager extends StateNotifier<bool> {
         .whenComplete(() => {state = true});
   }
 
+  @Deprecated('Please use the switcher for less boilerplate.')
   void setFalse(BuildContext context) {
     context
         .read(updatedSharedUtilityProvider)
         .setBool('isDarkModeEnabled', false)
         .whenComplete(() => {state = false});
+  }
+
+  void switcher(BuildContext context) {
+    if (state) {
+      _readAndUpdateState(context, false);
+    } else {
+      _readAndUpdateState(context, true);
+    }
   }
 }
