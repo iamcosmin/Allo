@@ -1,5 +1,6 @@
 import 'package:allo/repositories/repositories.dart';
-import 'package:fluent_ui/fluent_ui.dart';
+import 'package:allo/components/progress_rings.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/interface/login/login.dart';
@@ -10,6 +11,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class Welcome extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    useEffect(() {
+      Future.microtask(() async {
+        await FirebaseMessaging.instance.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true,
+        );
+      });
+    }, const []);
     final navigation = useProvider(Repositories.navigation);
     return CupertinoPageScaffold(
       child: Container(

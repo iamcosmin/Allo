@@ -9,7 +9,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/stack_navigator.dart';
 import 'interface/login/welcome.dart';
-import 'package:fluent_ui/fluent_ui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,27 +30,19 @@ class MyApp extends HookWidget {
   Widget build(BuildContext context) {
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
-    return FluentApp(
-      themeMode: darkState ? ThemeMode.dark : ThemeMode.light,
-      theme: ThemeData(
-        accentColor: Colors.orange,
-        activeColor: Colors.orange,
-        scaffoldBackgroundColor: Colors.white,
-        inactiveBackgroundColor: Color(0x00000000),
+    return CupertinoApp(
+      title: 'Allo',
+      theme: theme.getAppThemeData(context, darkState),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (BuildContext context, AsyncSnapshot s) {
+          if (s.hasData) {
+            return StackNavigator();
+          } else {
+            return Welcome();
+          }
+        },
       ),
-      home: CupertinoApp(
-          title: 'Allo',
-          theme: theme.getAppThemeData(context, darkState),
-          home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (BuildContext context, AsyncSnapshot s) {
-              if (s.hasData) {
-                return StackNavigator();
-              } else {
-                return Welcome();
-              }
-            },
-          )),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:allo/interface/home/secret_settings.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
-import 'package:fluent_ui/fluent_ui.dart' hide Icon;
 import 'package:flutter/cupertino.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
