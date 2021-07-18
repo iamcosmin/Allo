@@ -28,7 +28,10 @@ class PersonPicture extends HookWidget {
         height: radius,
         width: radius,
         decoration: BoxDecoration(shape: BoxShape.circle),
-        child: Image.network(profilePicture!),
+        child: ClipRRect(
+          child: Image.network(profilePicture!),
+          borderRadius: BorderRadius.circular(double.infinity),
+        ),
       );
     } else if (_type == _PersonPictureType.initials) {
       return Container(

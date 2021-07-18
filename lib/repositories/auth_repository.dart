@@ -144,4 +144,8 @@ class AuthRepository {
       throw Exception('Something is wrong...');
     }
   }
+
+  returnProfilePicture() {
+    return FirebaseAuth.instance.currentUser!.photoURL;
+  }
 }
