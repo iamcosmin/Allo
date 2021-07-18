@@ -11,19 +11,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class Welcome extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    useEffect(() {
-      Future.microtask(() async {
-        await FirebaseMessaging.instance.requestPermission(
-          alert: true,
-          announcement: false,
-          badge: true,
-          carPlay: false,
-          criticalAlert: false,
-          provisional: false,
-          sound: true,
-        );
-      });
-    }, const []);
     final navigation = useProvider(Repositories.navigation);
     return CupertinoPageScaffold(
       child: Container(
