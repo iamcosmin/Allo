@@ -45,7 +45,7 @@ class MyApp extends HookWidget {
           home: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (BuildContext context, AsyncSnapshot s) {
-              if (s.hasData) {
+              if (s.data != null) {
                 return StackNavigator();
               } else {
                 return Welcome();

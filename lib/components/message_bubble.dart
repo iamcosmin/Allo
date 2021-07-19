@@ -1,5 +1,6 @@
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart' hide CupertinoContextMenu;
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,9 +10,34 @@ import 'context_menu.dart';
 import 'context_menu_action.dart';
 
 class MessageBubble extends HookWidget {
-  final String senderUsername;
-  final String messageTextContent;
-  MessageBubble(this.senderUsername, this.messageTextContent);
+  final Map documentData;
+  MessageBubble(this.documentData);
+
+  String senderUID() {
+    if (documentData.containsKey('senderUID')) {
+      return documentData['senderUID'];
+    } else if (documentData.containsKey('senderUsername')) {
+      return documentData['senderUsername'];
+    } else {
+      return 'Niciun nume';
+    }
+  }
+
+  String senderName() {
+    if (documentData.containsKey('senderName')) {
+      return documentData['senderName'];
+    } else {
+      return senderUID();
+    }
+  }
+
+  String messageTextContent() {
+    if (documentData.containsKey('messageTextContent')) {
+      return documentData['messageTextContent'];
+    } else {
+      return 'Acest utilizator nu a scris nimic in mesaj. Acest lucru nu este posibil. Contacteaza administratorul.';
+    }
+  }
 
   final BorderRadiusGeometry _receiveMessageBubbleBorderRadius =
       BorderRadius.only(
@@ -26,142 +52,78 @@ class MessageBubble extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final colors = useProvider(fluentColors);
-    final shared = useProvider(updatedSharedUtilityProvider);
+    useEffect(() {}, const []);
     final experimentalOptions = useProvider(experimentalMessageOptions);
+    final auth = useProvider(Repositories.auth);
 
-    if (shared.returnString('username') != senderUsername) {
-      if (experimentalOptions == true) {
-        return Align(
-            alignment: Alignment.topLeft,
-            child: CupertinoContextMenu(
-              actions: [
-                CupertinoCtxMenuAction(child: Text('Viziteaza profilul'))
-              ],
-              child: Container(
-                height: 75,
-                width: 325,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Padding(padding: EdgeInsets.only(left: 10)),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: PersonPicture.initials(
-                            radius: 40,
-                            initials: senderUsername.characters.first,
-                            gradient: LinearGradient(colors: [
-                              Color(0xFFcc2b5e),
-                              Color(0xFF753a88),
-                            ])),
-                      ),
-                    ),
-                    Container(
-                      width: 270,
-                      padding: EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                              decoration: BoxDecoration(
-                                color: colors.messageBubble,
-                                borderRadius: _receiveMessageBubbleBorderRadius,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(9.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          bottom: 5, left: 5),
-                                      child: Text(
-                                        senderUsername,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    ),
-                                    Text(
-                                      messageTextContent,
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              )),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ));
-      } else {
-        return Align(
-            alignment: Alignment.topLeft,
-            child: Container(
-              height: 81,
-              width: 325,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Padding(padding: EdgeInsets.only(left: 10)),
-                  Expanded(
-                    child: Align(
+    if (FirebaseAuth.instance.currentUser?.uid != senderUID()) {
+      return Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            height: 81,
+            width: 325,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(padding: EdgeInsets.only(left: 10)),
+                Expanded(
+                  child: Align(
                       alignment: Alignment.topCenter,
-                      child: PersonPicture.initials(
-                          radius: 40,
-                          initials: senderUsername.characters.first,
-                          gradient: LinearGradient(colors: [
-                            Color(0xFFcc2b5e),
-                            Color(0xFF753a88),
-                          ])),
-                    ),
-                  ),
-                  Container(
-                    width: 270,
-                    padding: EdgeInsets.only(left: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            decoration: BoxDecoration(
-                              color: colors.messageBubble,
-                              borderRadius: _receiveMessageBubbleBorderRadius,
+                      child: FutureBuilder<String>(
+                          future: auth.getUserProfilePicture(senderUID()),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return PersonPicture.profilePicture(
+                                  radius: 40, profilePicture: snapshot.data);
+                            } else {
+                              return PersonPicture.initials(
+                                  radius: 40,
+                                  initials:
+                                      auth.returnNameInitials(senderName()));
+                            }
+                          })),
+                ),
+                Container(
+                  width: 270,
+                  padding: EdgeInsets.only(left: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          decoration: BoxDecoration(
+                            color: colors.messageBubble,
+                            borderRadius: _receiveMessageBubbleBorderRadius,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(9.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 5, left: 5),
+                                  child: Text(
+                                    senderName(),
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                Text(
+                                  messageTextContent(),
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(9.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 5, left: 5),
-                                    child: Text(
-                                      senderUsername,
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                  Text(
-                                    messageTextContent,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            )),
-                      ],
-                    ),
+                          )),
+                    ],
                   ),
-                ],
-              ),
-            ));
-      }
+                ),
+              ],
+            ),
+          ));
     } else {
       return Align(
         alignment: Alignment.topRight,
@@ -187,7 +149,7 @@ class MessageBubble extends HookWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              messageTextContent,
+                              messageTextContent(),
                               style: TextStyle(fontSize: 16),
                             ),
                           ],

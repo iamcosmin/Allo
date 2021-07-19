@@ -46,18 +46,11 @@ class Settings extends HookWidget {
                           Container(
                             alignment: Alignment.center,
                             padding: EdgeInsets.only(top: 10, bottom: 10),
-                            child: Stack(children: [
-                              auth.returnProfilePicture() == null
-                                  ? PersonPicture.initials(
-                                      radius: 100,
-                                      initials: 'CR',
-                                      color: CupertinoTheme.of(context)
-                                          .primaryColor)
-                                  : PersonPicture.profilePicture(
-                                      radius: 100,
-                                      profilePicture:
-                                          auth.returnProfilePicture()),
-                            ]),
+                            child: PersonPicture.determine(
+                                radius: 100,
+                                profilePicture: auth.returnProfilePicture(),
+                                initials:
+                                    auth.returnAuthenticatedNameInitials()),
                           ),
                           Text('Cosmin'),
                           Padding(padding: EdgeInsets.only(bottom: 10))
