@@ -58,12 +58,12 @@ class ChatsRepository {
           'time': DateTime.now(),
         });
       } else if (messageType == MessageType.IMAGE_WITHOUT_DESCRIPTION) {
-        // TODO: Handle image uploading and Firestore behaviour
+        // TO DO: Handle image uploading and Firestore behaviour
       } else if (messageType == MessageType.IMAGE_WITH_DESCRIPTION) {
-        // TODO: Handle image uploading and Firestore behaviour
+        // TO DO: Handle image uploading and Firestore behaviour
       }
     } catch (e) {
-      //TODO: Avoid empty catch blocks
+      //TO DO: Avoid empty catch blocks
     }
   }
 
@@ -95,10 +95,10 @@ class ChatsRepository {
   // Future sendPictureMessage() async {
   //   PickedFile selected = await ImagePicker()
   //       .getImage(source: ImageSource.camera)
-  //       .then((value) //  TODO: Add image cropper
+  //       .then((value) //  TO DO: Add image cropper
   //           )
   //       .then(
-  //           (value) // TODO: Add image uploader and compose Firestore and Storage
+  //           (value) // TO DO: Add image uploader and compose Firestore and Storage
   //           );
   // }
 }
