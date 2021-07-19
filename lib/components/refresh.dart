@@ -4,7 +4,7 @@
 
 import 'dart:math';
 
-import 'package:fluent_ui/fluent_ui.dart';
+import 'package:allo/components/progress_rings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';

@@ -1,22 +1,9 @@
 import 'package:allo/repositories/preferences_repository.dart';
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final secretEntryProvider =
-    StateNotifierProvider<SecretSettingsEntry, int>((ref) {
-  return SecretSettingsEntry();
-});
-
-class SecretSettingsEntry extends StateNotifier<int> {
-  SecretSettingsEntry() : super(0);
-
-  void increment() => state++;
-  void reset() => state = 0;
-}
-
-class SecretSettings extends HookWidget {
+class C extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final dark = useProvider(darkMode);
