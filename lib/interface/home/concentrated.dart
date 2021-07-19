@@ -10,7 +10,8 @@ class C extends HookWidget {
     final darkMethod = useProvider(darkMode.notifier);
     final eMessageOpt = useProvider(experimentalMessageOptions);
     final eMessageOptMethod = useProvider(experimentalMessageOptions.notifier);
-
+    final eProfilePic = useProvider(experimentalProfilePicture);
+    final eProfilePicMethod = useProvider(experimentalProfilePicture.notifier);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text('Opțiuni experimentale'),
@@ -30,27 +31,23 @@ class C extends HookWidget {
                       prefix: Text('Mod Întunecat'),
                       child: CupertinoSwitch(
                           value: dark,
-                          onChanged: (value) {
-                            if (dark) {
-                              darkMethod.setFalse(context);
-                            } else {
-                              darkMethod.setTrue(context);
-                            }
-                          }),
+                          onChanged: (value) => darkMethod.switcher(context)),
                     ),
                     CupertinoFormRow(
                       prefix: Text('Opțiuni pentru mesajele primite'),
                       child: CupertinoSwitch(
                         value: eMessageOpt,
-                        onChanged: (value) {
-                          if (eMessageOpt) {
-                            eMessageOptMethod.setFalse(context);
-                          } else {
-                            eMessageOptMethod.setTrue(context);
-                          }
-                        },
+                        onChanged: (value) =>
+                            eMessageOptMethod.switcher(context),
                       ),
                     ),
+                    CupertinoFormRow(
+                        prefix: Text('Încarcă fotografie de profil'),
+                        child: CupertinoSwitch(
+                          value: eProfilePic,
+                          onChanged: (value) =>
+                              eProfilePicMethod.switcher(context),
+                        ))
                   ]),
             ]),
           ))

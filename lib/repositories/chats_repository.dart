@@ -53,7 +53,7 @@ class ChatsRepository {
             .collection('messages')
             .add({
           'messageTextContent': universalTextCommunication,
-          'senderUsername': senderUsername,
+          'senderUID': auth.currentUser?.uid,
           'senderName': senderName,
           'time': DateTime.now(),
         });
@@ -85,6 +85,7 @@ class ChatsRepository {
         'messageTextContent': messageTextContent,
         'senderUsername': senderUsername,
         'time': DateTime.now(),
+        'senderFirebaseUID': auth.currentUser?.uid,
       });
     } catch (e) {
       print(e);

@@ -4,6 +4,7 @@ import 'package:allo/interface/login/signup/verify_email.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -143,5 +144,52 @@ class AuthRepository {
     } catch (e) {
       throw Exception('Something is wrong...');
     }
+  }
+
+  String? returnProfilePicture() {
+    return FirebaseAuth.instance.currentUser?.photoURL;
+  }
+
+  String returnAuthenticatedNameInitials() {
+    final auth = FirebaseAuth.instance.currentUser;
+    var name = auth?.displayName ?? '';
+    final splitedName = name.split(' ');
+    final arrayOfInitials = [];
+    var initials = '';
+    if (splitedName.isEmpty) {
+      initials = splitedName[0].substring(0, 1);
+    } else {
+      for (var strings in splitedName) {
+        if (strings.isNotEmpty) {
+          arrayOfInitials.add(strings.substring(0, 1));
+        }
+      }
+      initials = arrayOfInitials.join('');
+    }
+    return initials;
+  }
+
+  String returnNameInitials(String name) {
+    final splitedName = name.split(' ');
+    final arrayOfInitials = [];
+    var initials = '';
+    if (splitedName.isEmpty) {
+      initials = splitedName[0].substring(0, 1);
+    } else {
+      for (var strings in splitedName) {
+        if (strings.isNotEmpty) {
+          arrayOfInitials.add(strings.substring(0, 1));
+        }
+      }
+      initials = arrayOfInitials.join('');
+    }
+    return initials;
+  }
+
+  Future<String> getUserProfilePicture(String uid) async {
+    return await FirebaseStorage.instance
+        .ref()
+        .child('profilePictures/$uid.png')
+        .getDownloadURL();
   }
 }

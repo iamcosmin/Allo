@@ -83,7 +83,7 @@ class Chat extends HookWidget {
 }
 
 class MessageList extends StatelessWidget {
-  final AsyncSnapshot snap;
+  final AsyncSnapshot<QuerySnapshot> snap;
   final String chatReference;
   const MessageList({
     required this.snap,
@@ -98,8 +98,7 @@ class MessageList extends StatelessWidget {
           itemCount: snap.data!.docs.length,
           reverse: true,
           itemBuilder: (BuildContext ctx, int length) {
-            return MessageBubble(snap.data!.docs[length]['senderUsername'],
-                snap.data!.docs[length]['messageTextContent']);
+            return MessageBubble(snap.data!.docs[length].data() as Map);
           },
         ),
       ),
