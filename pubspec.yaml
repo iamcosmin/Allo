@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 0.0.8+28
+version: 0.0.8+30
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
@@ -15,7 +15,6 @@ dependencies:
   firebase_auth: ^3.0.1
   firebase_core: ^1.4.0
   firebase_storage: ^10.0.1
-  fluent_ui: ^2.2.1
   flutter_hooks: ^0.17.0
   hooks_riverpod: ^0.14.0+4
   image_cropper: ^1.4.1

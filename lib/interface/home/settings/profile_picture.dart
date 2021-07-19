@@ -2,7 +2,7 @@ import 'package:allo/components/person_picture.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:fluent_ui/fluent_ui.dart';
+import 'package:allo/components/progress_rings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

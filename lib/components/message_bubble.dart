@@ -6,9 +6,6 @@ import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'context_menu.dart';
-import 'context_menu_action.dart';
-
 class MessageBubble extends HookWidget {
   final Map documentData;
   MessageBubble(this.documentData);
@@ -57,107 +54,75 @@ class MessageBubble extends HookWidget {
     final auth = useProvider(Repositories.auth);
 
     if (FirebaseAuth.instance.currentUser?.uid != senderUID()) {
-      return Align(
-          alignment: Alignment.topLeft,
-          child: Container(
-            height: 81,
-            width: 325,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Padding(padding: EdgeInsets.only(left: 10)),
-                Expanded(
-                  child: Align(
-                      alignment: Alignment.topCenter,
-                      child: FutureBuilder<String>(
-                          future: auth.getUserProfilePicture(senderUID()),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return PersonPicture.profilePicture(
-                                  radius: 40, profilePicture: snapshot.data);
-                            } else {
-                              return PersonPicture.initials(
-                                  radius: 40,
-                                  initials:
-                                      auth.returnNameInitials(senderName()));
-                            }
-                          })),
-                ),
-                Container(
-                  width: 270,
-                  padding: EdgeInsets.only(left: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          decoration: BoxDecoration(
-                            color: colors.messageBubble,
-                            borderRadius: _receiveMessageBubbleBorderRadius,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(9.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(bottom: 5, left: 5),
-                                  child: Text(
-                                    senderName(),
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                Text(
-                                  messageTextContent(),
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          )),
-                    ],
+      return Container(
+        padding: const EdgeInsets.only(bottom: 15, left: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // Profile picture
+            FutureBuilder<String>(
+                future: auth.getUserProfilePicture(senderUID()),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return PersonPicture.profilePicture(
+                        radius: 40, profilePicture: snapshot.data);
+                  } else {
+                    return PersonPicture.initials(
+                        color: CupertinoColors.systemIndigo,
+                        radius: 40,
+                        initials: auth.returnNameInitials(senderName()));
+                  }
+                }),
+            Padding(padding: EdgeInsets.only(left: 10)),
+            // Chat bubble
+            Container(
+              decoration: BoxDecoration(
+                  color: colors.messageBubble,
+                  borderRadius: _receiveMessageBubbleBorderRadius),
+              padding: EdgeInsets.all(8),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 3, bottom: 4),
+                    child: Text(
+                      senderName(),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ));
+                  Text(messageTextContent()),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
     } else {
-      return Align(
-        alignment: Alignment.topRight,
+      return Container(
+        padding: const EdgeInsets.only(bottom: 15, right: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Padding(padding: EdgeInsets.only(right: 10)),
+            // Chat bubble
             Container(
-              width: 270,
-              padding: EdgeInsets.only(top: 15, right: 10),
+              decoration: BoxDecoration(
+                  color: CupertinoColors.activeOrange,
+                  borderRadius: _sendMessageBubbleBorderRadius),
+              padding: EdgeInsets.all(9),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.5),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                      decoration: BoxDecoration(
-                        color: CupertinoTheme.of(context).primaryColor,
-                        borderRadius: _sendMessageBubbleBorderRadius,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              messageTextContent(),
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      )),
+                  Text(messageTextContent()),
                 ],
               ),
-            ),
+            )
           ],
         ),
       );
