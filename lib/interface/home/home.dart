@@ -1,7 +1,7 @@
 import 'package:allo/components/list/list_section.dart';
 import 'package:allo/components/list/list_tile.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/progress_rings.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/refresh.dart';

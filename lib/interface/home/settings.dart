@@ -1,7 +1,8 @@
+import 'package:allo/interface/home/secret_settings.dart';
 import 'package:allo/interface/home/settings/profile_picture.dart';
-import 'package:allo/interface/home/concentrated.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
+import 'package:fluent_ui/fluent_ui.dart' hide Icon;
 import 'package:flutter/cupertino.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -13,22 +14,22 @@ class Settings extends HookWidget {
     final dark = useProvider(darkMode);
     final auth = useProvider(Repositories.auth);
     final navigation = useProvider(Repositories.navigation);
+    final entry = useProvider(secretEntryProvider);
+    final entryMethod = useProvider(secretEntryProvider.notifier);
+    //
     final eProfilePic = useProvider(experimentalProfilePicture);
-    // DO NOT REMOVE
-    final _a = useState(0);
-    void _b() {
-      _a.value++;
-      if (_a.value == 9) {
-        navigation.to(context, C());
-      }
-    }
-
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: [
           CupertinoSliverNavigationBar(
             largeTitle: GestureDetector(
-              onTap: () => _b(),
+              onTap: () {
+                entryMethod.increment();
+                if (entry == 9) {
+                  navigation.to(context, SecretSettings());
+                  entryMethod.reset();
+                }
+              },
               child: Text('Setări'),
             ),
           ),

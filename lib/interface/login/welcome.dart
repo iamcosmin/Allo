@@ -1,5 +1,5 @@
 import 'package:allo/repositories/repositories.dart';
-import 'package:allo/components/progress_rings.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/interface/login/login.dart';
