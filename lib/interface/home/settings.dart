@@ -13,6 +13,7 @@ class Settings extends HookWidget {
     final dark = useProvider(darkMode);
     final auth = useProvider(Repositories.auth);
     final navigation = useProvider(Repositories.navigation);
+    final darkMethod = useProvider(darkMode.notifier);
     final eProfilePic = useProvider(experimentalProfilePicture);
     // DO NOT REMOVE
     final _a = useState(0);
@@ -20,6 +21,7 @@ class Settings extends HookWidget {
       _a.value++;
       if (_a.value == 9) {
         navigation.to(context, C());
+        _a.value == 0;
       }
     }
 
@@ -61,18 +63,18 @@ class Settings extends HookWidget {
                 CupertinoFormSection.insetGrouped(
                   header: Text('Cont'),
                   children: [
-                    CupertinoFormRow(
-                      prefix: Text('Nume'),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10, bottom: 10, right: 5),
-                        child: Icon(
-                          CupertinoIcons.right_chevron,
-                          color: CupertinoColors.systemGrey,
-                          size: 15,
-                        ),
-                      ),
-                    ),
+                    //     CupertinoFormRow(
+                    //       prefix: Text('Nume'),
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.only(
+                    //             top: 10, bottom: 10, right: 5),
+                    //         child: Icon(
+                    //           CupertinoIcons.right_chevron,
+                    //           color: CupertinoColors.systemGrey,
+                    //           size: 15,
+                    //         ),
+                    //       ),
+                    //     ),             TODO: NON FUNCTIONAL
                     if (eProfilePic) ...[
                       GestureDetector(
                         onTap: () =>
@@ -97,11 +99,11 @@ class Settings extends HookWidget {
                   header: Text('Personalizare'),
                   children: [
                     CupertinoFormRow(
-                        prefix: Text('Mod Întunecat'),
-                        child: CupertinoSwitch(
+                      prefix: Text('Mod întunecat'),
+                      child: CupertinoSwitch(
                           value: dark,
-                          onChanged: null,
-                        ))
+                          onChanged: (value) => darkMethod.switcher(context)),
+                    ),
                   ],
                 ),
                 CupertinoFormSection.insetGrouped(

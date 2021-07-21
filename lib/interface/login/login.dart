@@ -10,7 +10,7 @@ class Login extends HookWidget {
   String _password = '';
   RegExp reg = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-  TextEditingController controller = TextEditingController();
+  TextEditingController controller = useTextEditingController();
 
   @override
   Widget build(BuildContext context) {

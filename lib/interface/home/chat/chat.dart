@@ -3,7 +3,6 @@ import 'package:allo/components/progress_rings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:allo/components/chatnavigationbar.dart';
 import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/message_bubble.dart';
