@@ -34,7 +34,7 @@ jobs:
       run: | 
           flutter build appbundle --flavor prod
           cd build/app/outputs/bundle/prodRelease
-          mv app-release.aab ../../apk/release/Allo.aab
+          mv app-prod-release.aab ../../apk/release/Allo.aab
     - name: Release
       uses: marvinpinto/action-automatic-releases@latest
       with:
