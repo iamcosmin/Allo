@@ -3,7 +3,6 @@ import 'package:allo/components/progress_rings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:allo/components/chatnavigationbar.dart';
 import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/message_bubble.dart';
@@ -12,15 +11,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 // ignore: must_be_immutable
 class Chat extends HookWidget {
-  final String _chatReference = 'DFqPHH2R4E5j0tM55fIm';
-  String? title;
-  Chat({this.title});
+  String title;
+  String chatId;
+  Chat({required this.title, required this.chatId});
 
   @override
   Widget build(BuildContext context) {
-    useEffect(() {
-      FirebaseMessaging.instance.subscribeToTopic('allo_chat_messages');
-    }, const []);
     return CupertinoPageScaffold(
         navigationBar: ChatNavigationBar(
           middle: Column(
@@ -54,10 +50,10 @@ class Chat extends HookWidget {
           child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('chats')
-                .doc(_chatReference)
+                .doc(chatId)
                 .collection('messages')
                 .orderBy('time', descending: true)
-                .limit(15)
+                .limit(10)
                 .snapshots(),
             builder: (ctx, AsyncSnapshot<QuerySnapshot> snap) {
               return AnimatedSwitcher(
@@ -65,7 +61,7 @@ class Chat extends HookWidget {
                 switchInCurve: Curves.easeInCubic,
                 switchOutCurve: Curves.easeOutCubic,
                 child: snap.hasData
-                    ? MessageList(chatReference: _chatReference, snap: snap)
+                    ? MessageList(chatReference: chatId, snap: snap)
                     : SafeArea(
                         child: Center(
                           child: Container(
