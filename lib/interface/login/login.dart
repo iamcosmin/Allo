@@ -10,13 +10,13 @@ class Login extends HookWidget {
   String _password = '';
   RegExp reg = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-  TextEditingController controller = useTextEditingController();
 
   @override
   Widget build(BuildContext context) {
     // ignore: invalid_use_of_protected_member
     final error = useProvider(errorProvider);
     final auth = useProvider(Repositories.auth);
+    var controller = useTextEditingController();
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(),
       child: Column(

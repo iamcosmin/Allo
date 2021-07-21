@@ -15,6 +15,9 @@ class Settings extends HookWidget {
     final navigation = useProvider(Repositories.navigation);
     final darkMethod = useProvider(darkMode.notifier);
     final eProfilePic = useProvider(experimentalProfilePicture);
+    final name =
+        useProvider(sharedPreferencesProvider).getString('displayName') ??
+            'Not set';
     // DO NOT REMOVE
     final _a = useState(0);
     void _b() {
@@ -53,29 +56,29 @@ class Settings extends HookWidget {
                                 initials:
                                     auth.returnAuthenticatedNameInitials()),
                           ),
-                          Text('Cosmin'),
+                          Text(name),
                           Padding(padding: EdgeInsets.only(bottom: 10))
                         ],
                       ),
                     )
                   ],
                 ),
-                CupertinoFormSection.insetGrouped(
-                  header: Text('Cont'),
-                  children: [
-                    //     CupertinoFormRow(
-                    //       prefix: Text('Nume'),
-                    //       child: Padding(
-                    //         padding: const EdgeInsets.only(
-                    //             top: 10, bottom: 10, right: 5),
-                    //         child: Icon(
-                    //           CupertinoIcons.right_chevron,
-                    //           color: CupertinoColors.systemGrey,
-                    //           size: 15,
-                    //         ),
-                    //       ),
-                    //     ),             TODO: NON FUNCTIONAL
-                    if (eProfilePic) ...[
+                if (eProfilePic) ...[
+                  CupertinoFormSection.insetGrouped(
+                    header: Text('Cont'),
+                    children: [
+                      //     CupertinoFormRow(
+                      //       prefix: Text('Nume'),
+                      //       child: Padding(
+                      //         padding: const EdgeInsets.only(
+                      //             top: 10, bottom: 10, right: 5),
+                      //         child: Icon(
+                      //           CupertinoIcons.right_chevron,
+                      //           color: CupertinoColors.systemGrey,
+                      //           size: 15,
+                      //         ),
+                      //       ),
+                      //     ),             TODO: NON FUNCTIONAL
                       GestureDetector(
                         onTap: () =>
                             navigation.to(context, ProfilePictureSettings()),
@@ -93,8 +96,8 @@ class Settings extends HookWidget {
                         ),
                       ),
                     ],
-                  ],
-                ),
+                  ),
+                ],
                 CupertinoFormSection.insetGrouped(
                   header: Text('Personalizare'),
                   children: [
