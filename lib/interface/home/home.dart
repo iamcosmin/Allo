@@ -2,6 +2,8 @@ import 'package:allo/components/list/list_section.dart';
 import 'package:allo/components/list/list_tile.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/progress_rings.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/refresh.dart';
@@ -14,6 +16,46 @@ class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final navigation = useProvider(Repositories.navigation);
+    final chats = useState<List>([]);
+
+    void _getChatsData() {
+      var _chatIdList = [];
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        var _map = snapshot.data() as Map;
+        if (_map.containsKey('chats')) {
+          _chatIdList = _map['chats'] as List<String>;
+        }
+      });
+
+      if (_chatIdList.isNotEmpty) {
+        for (var _chat in _chatIdList) {
+          FirebaseFirestore.instance
+              .collection('chats')
+              .doc(_chat)
+              .get()
+              .then((DocumentSnapshot snapshot) {
+            var _chatInfoMap = snapshot.data() as Map;
+            var _chatInfo;
+            if (_chatInfoMap.containsKey('name')) {
+              _chatInfo = {
+                'name': _chatInfoMap['name'],
+                'chatId': snapshot.id,
+              };
+            }
+            chats.value.add(_chatInfo);
+          });
+        }
+      }
+    }
+
+    useEffect(() {
+      _getChatsData();
+    }, const []);
+
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth > 600) {
         return CupertinoPageScaffold(
@@ -37,7 +79,7 @@ class Home extends HookWidget {
               ),
             ),
             FluentSliverRefreshControl(
-              onRefresh: () => Future.delayed(Duration(seconds: 3), null),
+              onRefresh: () => Future.delayed(Duration(seconds: 2), null),
               // ignore: unnecessary_null_comparison
             ),
             SliverSafeArea(
@@ -62,6 +104,8 @@ class Home extends HookWidget {
                     ),
                   ],
                 ),
+                CupertinoListSection.insetGrouped(
+                    header: Text('Conversații'), children: [])
               ]),
             ))
           ],
