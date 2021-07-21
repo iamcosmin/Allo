@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide ThemeData, Colors;
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/stack_navigator.dart';
@@ -16,6 +17,32 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final _kSharedPreferences = await SharedPreferences.getInstance();
+  if (kIsWeb) {
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+    await FirebaseMessaging.instance.getToken(
+      vapidKey:
+          'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
+    );
+  }
+  const channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'Notificări de conversații', // title
+    'Acest canal este folosit pentru notificări din conversații', // description
+    importance: Importance.max,
+  );
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
   runApp(
     ProviderScope(
       overrides: [
@@ -31,25 +58,7 @@ class MyApp extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    useEffect(() {
-      if (kIsWeb) {
-        Future.microtask(() async {
-          await FirebaseMessaging.instance.requestPermission(
-            alert: true,
-            announcement: false,
-            badge: true,
-            carPlay: false,
-            criticalAlert: false,
-            provisional: false,
-            sound: true,
-          );
-        });
-        FirebaseMessaging.instance.getToken(
-          vapidKey:
-              'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
-        );
-      }
-    }, const []);
+    useEffect(() {}, const []);
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
     return CupertinoApp(

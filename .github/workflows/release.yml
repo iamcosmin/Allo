@@ -32,8 +32,7 @@ jobs:
     - name: Build
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: | 
-          flutter build apk --split-per-abi
-          flutter build appbundle
+          flutter build appbundle --flavor prod
           cd build/app/outputs/bundle/release
           mv app-release.aab ../../apk/release/Allo_appbundle.aab
           cd ../../apk/release

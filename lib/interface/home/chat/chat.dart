@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:allo/components/progress_rings.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +19,7 @@ class Chat extends HookWidget {
   @override
   Widget build(BuildContext context) {
     useEffect(() {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-          systemNavigationBarColor: CupertinoColors.darkBackgroundGray));
+      FirebaseMessaging.instance.subscribeToTopic('allo_chat_messages');
     }, const []);
     return CupertinoPageScaffold(
         navigationBar: ChatNavigationBar(

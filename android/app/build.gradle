@@ -49,6 +49,19 @@ android {
         versionName flutterVersionName
     }
 
+    flavorDimensions "app"
+    productFlavors {
+        dev {
+            dimension "app"
+            applicationId "com.relays.messenger.dev"
+            versionNameSuffix " dev"
+        }
+        prod {
+            dimension "app"
+            applicationId "com.relays.messenger"
+        }
+    }
+
     signingConfigs {
        release {
            keyAlias keystoreProperties['keyAlias']
