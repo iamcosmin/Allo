@@ -17,9 +17,6 @@ class Chat extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    useEffect(() {
-      FirebaseMessaging.instance.subscribeToTopic('allo_chat_messages');
-    }, const []);
     return CupertinoPageScaffold(
         navigationBar: ChatNavigationBar(
           middle: Column(
