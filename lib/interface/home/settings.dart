@@ -24,7 +24,7 @@ class Settings extends HookWidget {
       _a.value++;
       if (_a.value == 9) {
         navigation.to(context, C());
-        _a.value == 0;
+        _a.value = 0;
       }
     }
 
