@@ -1,6 +1,7 @@
 import 'package:allo/interface/home/stack_navigator.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
+import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -191,5 +192,22 @@ class AuthRepository {
         .ref()
         .child('profilePictures/$uid.png')
         .getDownloadURL();
+  }
+
+  String returnName() {
+    return FirebaseAuth.instance.currentUser!.displayName!;
+  }
+
+  void cache(BuildContext context) async {
+    final prefs = context.read(sharedPreferencesProvider);
+    if (prefs.getString('displayName') == null) {
+      final userDocument = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .get();
+      final userDataMap = userDocument.data() as Map;
+      final name = userDataMap['name'];
+      await prefs.setString('displayName', name);
+    }
   }
 }

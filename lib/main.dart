@@ -31,18 +31,20 @@ void main() async {
       vapidKey:
           'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
     );
+  } else {
+    const channel = AndroidNotificationChannel(
+      'high_importance_channel', // id
+      'Notificări de conversații', // title
+      'Acest canal este folosit pentru notificări din conversații', // description
+      importance: Importance.max,
+    );
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
-  const channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'Notificări de conversații', // title
-    'Acest canal este folosit pentru notificări din conversații', // description
-    importance: Importance.max,
-  );
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+
   runApp(
     ProviderScope(
       overrides: [

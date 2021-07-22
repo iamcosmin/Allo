@@ -23,12 +23,128 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="allo">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Allo</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      background-color: black;
+    }
+    .logo {
+      position: absolute;
+      top: 52%;
+      left: 52%;
+      margin-left: -150px;
+      margin-top: -150px;
+      width: 300px;
+      height: 300px;
+    }
+
+    @keyframes progressring {
+      0% {
+        stroke-dasharray: 0% 275%;
+        transform: rotate(-90deg);
+      }
+
+      50% {
+        transform: rotate(360deg);
+        stroke-dasharray: 137.5% 137.5%;
+      }
+
+      100% {
+        stroke-dasharray: 0% 275%;
+        transform: rotate(990deg);
+      }
+    }
+
+    #pgring {
+      position: absolute;
+      top: 50vh;
+      left: 50vw;
+      transform: translate(-50%, -50%);
+    }
+
+    .progress-ring {
+      width: 48px;
+      height: auto;
+      padding-top: 100%;
+    }
+
+    .progress-ring>.ring {
+      width: 100%;
+      height: 100%;
+    }
+
+    .progress-ring>.ring>.static {
+      fill: none;
+      -webkit-transform: rotate(-90deg);
+      -moz-transform: rotate(-90deg);
+      -o-transform: rotate(-90deg);
+      transform: rotate(-90deg);
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      stroke-width: 12.5%;
+      stroke-linecap: round;
+      -webkit-transform-origin: 50% 50%;
+      -moz-transform-origin: 50% 50%;
+      -o-transform-origin: 50% 50%;
+      transform-origin: 50% 50%;
+      width: 100%;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      align-items: center;
+      border-radius: 50%;
+      height: 100%;
+      stroke: rgb(54, 54, 54);
+    }
+
+    .progress-ring>.ring>.dynamic {
+      -webkit-animation: progressring 2s linear infinite;
+      -moz-animation: progressring 2s linear infinite;
+      -o-animation: progressring 2s linear infinite;
+      animation: progressring 2s linear infinite;
+      fill: none;
+      -webkit-transform: rotate(-90deg);
+      -moz-transform: rotate(-90deg);
+      -o-transform: rotate(-90deg);
+      transform: rotate(-90deg);
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      stroke-width: 12.5%;
+      stroke-linecap: round;
+      -webkit-transform-origin: 50% 50%;
+      -moz-transform-origin: 50% 50%;
+      -o-transform-origin: 50% 50%;
+      transform-origin: 50% 50%;
+      height: 100%;
+      border-radius: 50%;
+      stroke: rgb(255, 159, 10);
+    }
+  </style>
 </head>
 
 <body>
+<center>
+  <div id="pgring">
+    <img src="./icons/Icon-512.png" alt="Allo Icon" style="height: 200px; width: 200px">
+    <div class="progress-ring">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="ring">
+        <circle class="static" cx="50%" cy="50%" r="43.75%"></circle>
+        <circle class="dynamic" cx="50%" cy="50%" r="43.75%"></circle>
+      </svg>
+    </div>
+    <div >
+      <p id="open" style="color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 20px;">Se inițiază...</p>
+    </div>
+  </div>
+</center>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
@@ -39,6 +155,7 @@
       if (scriptLoaded) {
         return;
       }
+      document.getElementById('open').innerHTML = 'Se deschide Allo...';
       scriptLoaded = true;
       var scriptTag = document.createElement('script');
       scriptTag.src = 'main.dart.js';
@@ -58,6 +175,7 @@
             function waitForActivation(serviceWorker) {
               serviceWorker.addEventListener('statechange', () => {
                 if (serviceWorker.state == 'activated') {
+                  document.getElementById('open').innerHTML = 'Actualizare instalată.';
                   console.log('Installed new service worker.');
                   loadMainDartJs();
                 }
@@ -71,11 +189,15 @@
               // When the app updates the serviceWorkerVersion changes, so we
               // need to ask the service worker to update.
               console.log('New service worker available.');
+              document.getElementById('open').innerHTML = 'Acualizare disponibilă.';
+              
               reg.update();
+              document.getElementById('open').innerHTML = 'Actualizare în curs...';
               waitForActivation(reg.installing);
             } else {
               // Existing service worker is still good.
               console.log('Loading app from service worker.');
+              document.getElementById('open').innerHTML = 'Se deschide Allo...';
               loadMainDartJs();
             }
           });
@@ -87,6 +209,7 @@
             console.warn(
               'Failed to load app from service worker. Falling back to plain <script> tag.',
             );
+            document.getElementById('open').innerHTML = 'Actualizarea a eșuat.';
             loadMainDartJs();
           }
         }, 4000);
@@ -94,6 +217,7 @@
       navigator.serviceWorker.register("/firebase-messaging-sw.js");
     } else {
       // Service workers not supported. Just drop the <script> tag.
+        document.getElementById('open').innerHTML = 'Caching-ul nu este disponibil.';
       loadMainDartJs();
     }
   </script>
