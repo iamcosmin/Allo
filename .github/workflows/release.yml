@@ -41,7 +41,7 @@ jobs:
         prerelease: false
         title: "New release"
         files: |
-              build/app/outputs/bundle/app-prod-release.aab
+              build/app/outputs/bundle/prodRelease/app-prod-release.aab
     
   build_web:
     runs-on: ubuntu-latest
