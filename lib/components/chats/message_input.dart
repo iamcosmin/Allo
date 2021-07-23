@@ -16,7 +16,7 @@ class MessageInput extends HookWidget {
   Widget build(BuildContext context) {
     final alerts = useProvider(Repositories.alerts);
     final chats = useProvider(Repositories.chats);
-    final colors = useProvider(fluentColors);
+    final colors = useProvider(Repositories.colors);
 
     return Align(
       alignment: Alignment.bottomCenter,

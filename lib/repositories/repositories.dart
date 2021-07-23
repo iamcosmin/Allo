@@ -25,4 +25,5 @@ class Repositories {
   static final Provider<AppTheme> theme = appThemeProvider;
   static final Provider<SharedPreferences> sharedPreferences =
       sharedPreferencesProvider;
+  static final Provider<Colors> colors = colorsProvider;
 }

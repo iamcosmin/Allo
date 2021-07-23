@@ -23,15 +23,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="allo">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Allo</title>
   <link rel="manifest" href="manifest.json">
 
   <style>
-    body {
-      background-color: black;
-    }
     .logo {
       position: absolute;
       top: 52%;
@@ -131,7 +127,6 @@
 </head>
 
 <body>
-<center>
   <div id="pgring">
     <img src="./icons/Icon-512.png" alt="Allo Icon" style="height: 200px; width: 200px">
     <div class="progress-ring">
@@ -144,7 +139,6 @@
       <p id="open" style="color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 20px;">Se inițiază...</p>
     </div>
   </div>
-</center>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
@@ -160,6 +154,7 @@
       var scriptTag = document.createElement('script');
       scriptTag.src = 'main.dart.js';
       scriptTag.type = 'application/javascript';
+      document.getElementById('pgring').remove();
       document.body.append(scriptTag);
     }
 

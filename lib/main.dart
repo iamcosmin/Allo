@@ -18,19 +18,19 @@ void main() async {
   await Firebase.initializeApp();
   final _kSharedPreferences = await SharedPreferences.getInstance();
   if (kIsWeb) {
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-    await FirebaseMessaging.instance.getToken(
-      vapidKey:
-          'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
-    );
+    // await FirebaseMessaging.instance.requestPermission(
+    //   alert: true,
+    //   announcement: false,
+    //   badge: true,
+    //   carPlay: false,
+    //   criticalAlert: false,
+    //   provisional: false,
+    //   sound: true,
+    // );
+    // await FirebaseMessaging.instance.getToken(
+    //   vapidKey:
+    //       'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
+    // );
   } else {
     const channel = AndroidNotificationChannel(
       'high_importance_channel', // id

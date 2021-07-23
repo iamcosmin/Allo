@@ -18,7 +18,7 @@ class StackNavigator extends HookWidget {
         auth.cache(context);
       });
     });
-    final colors = useProvider(fluentColors);
+    final colors = useProvider(Repositories.colors);
     return CupertinoPageScaffold(
       child: CupertinoTabScaffold(
         tabBar: CupertinoTabBar(

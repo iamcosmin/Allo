@@ -38,13 +38,13 @@ class AppTheme {
 final sharedPreferencesProvider =
     Provider<SharedPreferences>((ref) => throw UnimplementedError());
 
-final fluentColors = Provider<FluentColors>((ref) {
+final colorsProvider = Provider<Colors>((ref) {
   final dark = ref.watch(darkMode);
-  return FluentColors(dark);
+  return Colors(dark);
 });
 
-class FluentColors {
-  FluentColors(this.darkMode);
+class Colors {
+  Colors(this.darkMode);
   bool darkMode;
 
   Color returnColor(Color light, Color dark) {
