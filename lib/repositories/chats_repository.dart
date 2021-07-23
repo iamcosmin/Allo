@@ -34,16 +34,7 @@ class ChatsRepository {
           prefs.setString('username', databaseUsername);
           return prefs.getString('username')!;
         });
-    var senderName = prefs.getString('name') ??
-        await db
-            .collection('users')
-            .doc(auth.currentUser?.uid)
-            .get()
-            .then((value) {
-          String databaseUserAccountName = value.data()?['name'];
-          prefs.setString('name', databaseUserAccountName);
-          return prefs.getString('name')!;
-        });
+    var senderName = prefs.getString('displayName');
     try {
       if (messageType == MessageType.TEXT_ONLY) {
         inputMethodTextController.clear();
