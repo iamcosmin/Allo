@@ -1,3 +1,4 @@
+import 'package:allo/interface/newloginexperience/oobe.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -72,7 +73,7 @@ class MyApp extends HookWidget {
           if (s.hasData) {
             return StackNavigator();
           } else {
-            return Welcome();
+            return OOBE();
           }
         },
       ),

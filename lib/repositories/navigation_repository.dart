@@ -1,7 +1,9 @@
 import 'package:allo/interface/home/home.dart';
 import 'package:allo/interface/login/welcome.dart';
+import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final navigationProvider =
@@ -16,6 +18,20 @@ class NavigationRepository {
   Future toPermanent(BuildContext context, Widget route) {
     return Navigator.pushAndRemoveUntil(context,
         CupertinoPageRoute(builder: (context) => route), (route) => false);
+  }
+
+  Future push(BuildContext context, Widget route) {
+    return Navigator.push(
+      context,
+      PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => route,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SharedAxisTransition(
+                animation: animation,
+                secondaryAnimation: secondaryAnimation,
+                transitionType: SharedAxisTransitionType.horizontal);
+          }),
+    );
   }
 
   Future _returnFirebaseUser() async {
