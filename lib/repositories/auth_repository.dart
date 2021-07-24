@@ -1,6 +1,7 @@
 import 'package:allo/interface/home/stack_navigator.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
+import 'package:allo/main.dart';
 // import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -141,7 +142,7 @@ class AuthRepository {
     }
   }
 
-  Future signOut() async {
+  Future signOut(BuildContext context) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
@@ -151,6 +152,7 @@ class AuthRepository {
         }
       }
       await FirebaseAuth.instance.signOut();
+      await context.read(Repositories.navigation).toPermanent(context, MyApp());
     } catch (e) {
       throw Exception('Something is wrong...');
     }

@@ -18,7 +18,7 @@ class Chat extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
-    final documentLoad = useState(20);
+    final documentLoad = useState(15);
     useEffect(() {}, const []);
     return CupertinoPageScaffold(
         navigationBar: ChatNavigationBar(
@@ -66,38 +66,55 @@ class Chat extends HookWidget {
                 child: snap.hasData
                     ? Column(children: [
                         Expanded(
-                          child: ListView.builder(
-                            reverse: true,
-                            controller: scrollController,
-                            itemCount: snap.data!.docs.length,
-                            itemBuilder: (BuildContext ctx, int i) {
-                              final nowData, pastData, nextData;
-                              nowData = snap.data!.docs[i].data() as Map;
-                              if (i == 0) {
-                                nextData = {'senderUID': 'null'};
-                              } else {
-                                nextData = snap.data!.docs[i - 1].data() as Map;
+                          child: NotificationListener(
+                            onNotification: (value) {
+                              if (value is ScrollNotification) {
+                                final before = value.metrics.extentBefore;
+                                final max = value.metrics.maxScrollExtent;
+
+                                if (before == max) {
+                                  documentLoad.value = documentLoad.value + 15;
+                                }
                               }
-                              if (i == snap.data!.docs.length - 1) {
-                                pastData = {'senderUID': 'null'};
-                              } else {
-                                pastData = snap.data!.docs[i + 1].data() as Map;
-                              }
-                              // Above, pastData should have been i-1 and nextData i+1.
-                              // But, as the list needs to be in reverse order, we need
-                              // to consider this workaround.
-                              final pastUID = pastData.containsKey('senderUID')
-                                  ? pastData['senderUID']
-                                  : 'null';
-                              final nextUID = nextData.containsKey('senderUID')
-                                  ? nextData['senderUID']
-                                  : 'null';
-                              return MessageBubble(
-                                documentData: nowData,
-                                pastUID: pastUID,
-                                nextUID: nextUID,
-                              );
+                              return false;
                             },
+                            child: ListView.builder(
+                              reverse: true,
+                              controller: scrollController,
+                              itemCount: snap.data!.docs.length,
+                              itemBuilder: (BuildContext ctx, int i) {
+                                final nowData, pastData, nextData;
+                                nowData = snap.data!.docs[i].data() as Map;
+                                if (i == 0) {
+                                  nextData = {'senderUID': 'null'};
+                                } else {
+                                  nextData =
+                                      snap.data!.docs[i - 1].data() as Map;
+                                }
+                                if (i == snap.data!.docs.length - 1) {
+                                  pastData = {'senderUID': 'null'};
+                                } else {
+                                  pastData =
+                                      snap.data!.docs[i + 1].data() as Map;
+                                }
+                                // Above, pastData should have been i-1 and nextData i+1.
+                                // But, as the list needs to be in reverse order, we need
+                                // to consider this workaround.
+                                final pastUID =
+                                    pastData.containsKey('senderUID')
+                                        ? pastData['senderUID']
+                                        : 'null';
+                                final nextUID =
+                                    nextData.containsKey('senderUID')
+                                        ? nextData['senderUID']
+                                        : 'null';
+                                return MessageBubble(
+                                  documentData: nowData,
+                                  pastUID: pastUID,
+                                  nextUID: nextUID,
+                                );
+                              },
+                            ),
                           ),
                         ),
                         MessageInput(chatId),

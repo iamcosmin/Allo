@@ -63,41 +63,39 @@ class Settings extends HookWidget {
                     )
                   ],
                 ),
-                if (eProfilePic) ...[
-                  CupertinoFormSection.insetGrouped(
-                    header: Text('Cont'),
-                    children: [
-                      //     CupertinoFormRow(
-                      //       prefix: Text('Nume'),
-                      //       child: Padding(
-                      //         padding: const EdgeInsets.only(
-                      //             top: 10, bottom: 10, right: 5),
-                      //         child: Icon(
-                      //           CupertinoIcons.right_chevron,
-                      //           color: CupertinoColors.systemGrey,
-                      //           size: 15,
-                      //         ),
-                      //       ),
-                      //     ),             TODO: NON FUNCTIONAL
-                      GestureDetector(
-                        onTap: () =>
-                            navigation.to(context, ProfilePictureSettings()),
-                        child: CupertinoFormRow(
-                          prefix: Text('Fotografie de profil'),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10, bottom: 10, right: 5),
-                            child: Icon(
-                              CupertinoIcons.right_chevron,
-                              color: CupertinoColors.systemGrey,
-                              size: 15,
-                            ),
+                CupertinoFormSection.insetGrouped(
+                  header: Text('Cont'),
+                  children: [
+                    //     CupertinoFormRow(
+                    //       prefix: Text('Nume'),
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.only(
+                    //             top: 10, bottom: 10, right: 5),
+                    //         child: Icon(
+                    //           CupertinoIcons.right_chevron,
+                    //           color: CupertinoColors.systemGrey,
+                    //           size: 15,
+                    //         ),
+                    //       ),
+                    //     ),             TODO: NON FUNCTIONAL
+                    GestureDetector(
+                      onTap: () =>
+                          navigation.to(context, ProfilePictureSettings()),
+                      child: CupertinoFormRow(
+                        prefix: Text('Fotografie de profil'),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10, bottom: 10, right: 5),
+                          child: Icon(
+                            CupertinoIcons.right_chevron,
+                            color: CupertinoColors.systemGrey,
+                            size: 15,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
                 CupertinoFormSection.insetGrouped(
                   header: Text('Personalizare'),
                   children: [
@@ -113,7 +111,7 @@ class Settings extends HookWidget {
                   header: Text('Gestionare sesiune'),
                   children: [
                     GestureDetector(
-                      onTap: () async => await auth.signOut(),
+                      onTap: () async => await auth.signOut(context),
                       child: CupertinoFormRow(
                         prefix: Text('Deconectare'),
                         child: Padding(

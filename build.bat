@@ -9,14 +9,12 @@ cls
 echo =======================================
 echo = Building for Android (flavor: prod) =
 echo =======================================
-flutter build appbundle --flavor prod
-ping 127.0.0.1 -n 6 > nul
+flutter build appbundle --flavor prod && ping 127.0.0.1 -n 6 > nul
 cls
 echo =====================================
 echo = Building for Web (renderer: html) =
 echo =====================================
-flutter build web
-ping 127.0.0.1 -n 6 > nul
+flutter build web && ping 127.0.0.1 -n 6 > nul
 cls
 echo =======================
 echo = Deploying to server =

@@ -13,6 +13,11 @@ class NavigationRepository {
         context, CupertinoPageRoute(builder: (context) => route));
   }
 
+  Future toPermanent(BuildContext context, Widget route) {
+    return Navigator.pushAndRemoveUntil(context,
+        CupertinoPageRoute(builder: (context) => route), (route) => false);
+  }
+
   Future _returnFirebaseUser() async {
     var auth = FirebaseAuth.instance;
     var firebaseUser = auth.currentUser;
