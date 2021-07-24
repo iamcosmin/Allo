@@ -1,4 +1,3 @@
-import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart' hide CupertinoContextMenu;
@@ -25,14 +24,6 @@ class MessageBubble extends HookWidget {
     }
   }
 
-  String get senderName {
-    if (documentData.containsKey('senderName')) {
-      return documentData['senderName'];
-    } else {
-      return senderUID;
-    }
-  }
-
   String get messageTextContent {
     if (documentData.containsKey('messageTextContent')) {
       return documentData['messageTextContent'];
@@ -45,7 +36,7 @@ class MessageBubble extends HookWidget {
   Widget build(BuildContext context) {
     if (FirebaseAuth.instance.currentUser?.uid != senderUID) {
       return _ReceiveMessageBubble(
-        senderName: senderName,
+        senderName: documentData['senderName'],
         senderUID: senderUID,
         messageTextContent: messageTextContent,
         pastUID: pastUID,
@@ -90,11 +81,6 @@ class _ReceiveMessageBubble extends HookWidget {
       return 15;
     }
   }
-
-  final BorderRadiusGeometry _borderRadius = BorderRadius.only(
-      topLeft: Radius.circular(20),
-      topRight: Radius.circular(20),
-      bottomRight: Radius.circular(20));
 
   @override
   Widget build(BuildContext context) {

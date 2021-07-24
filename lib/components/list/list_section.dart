@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 
 // Margin on top of the list section. This was eyeballed from iOS 14.4 Simulator
 // and should be always present on top of the edge-to-edge variant.
@@ -41,7 +40,7 @@ const EdgeInsetsDirectional _kDefaultInsetGroupedRowsMarginWithHeader =
 
 // Used for iOS "Inset Grouped" border radius, estimated from SwiftUI's Forms in
 // iOS 14.2 SDK.
-// TODO(edrisian): This should be a rounded rectangle once that shape is added.
+// TO DO(edrisian): This should be a rounded rectangle once that shape is added.
 const BorderRadius _kDefaultInsetGroupedBorderRadius =
     BorderRadius.all(Radius.circular(10.0));
 

@@ -1,13 +1,14 @@
 import 'package:allo/interface/home/stack_navigator.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
-import 'package:allo/repositories/preferences_repository.dart';
+// import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Spec:
 // Use a error provider to provide error input to a function
@@ -69,6 +70,7 @@ class AuthRepository {
         try {
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: email, password: matchedPassword);
+          await FirebaseAuth.instance.currentUser!.updateDisplayName(name);
           await FirebaseFirestore.instance
               .collection('users')
               .doc(FirebaseAuth.instance.currentUser?.uid)
@@ -141,6 +143,13 @@ class AuthRepository {
 
   Future signOut() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+      for (final key in keys) {
+        if (key != 'isDarkModeEnabled') {
+          await prefs.remove(key);
+        }
+      }
       await FirebaseAuth.instance.signOut();
     } catch (e) {
       throw Exception('Something is wrong...');

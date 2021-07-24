@@ -60,8 +60,8 @@ class PersonPicture extends HookWidget {
           height: radius,
           width: radius,
           child: ClipRRect(
-            child: Image.network(profilePicture!),
             borderRadius: BorderRadius.circular(100000000000),
+            child: Image.network(profilePicture!),
           ),
         );
       } else {

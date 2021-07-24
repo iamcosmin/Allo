@@ -7,60 +7,46 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final darkMode = StateNotifierProvider<PreferenceManager, bool>((ref) {
   final parameter = 'isDarkModeEnabled';
-  final returnValue =
-      ref.read(updatedSharedUtilityProvider).returnBool(parameter);
+  final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });
 
 final experimentalMessageOptions =
     StateNotifierProvider<PreferenceManager, bool>((ref) {
   final parameter = 'experimentalMessageOptions';
-  final returnValue =
-      ref.read(updatedSharedUtilityProvider).returnBool(parameter);
-  return PreferenceManager(returnValue, parameter);
-});
-
-final newComposeMessage = StateNotifierProvider<PreferenceManager, bool>((ref) {
-  final parameter = 'newComposeEnabled';
-  final returnValue =
-      ref.read(updatedSharedUtilityProvider).returnBool(parameter);
+  final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });
 
 final experimentalProfilePicture =
     StateNotifierProvider<PreferenceManager, bool>((ref) {
   final parameter = 'experimentalProfilePicture';
-  final returnValue =
-      ref.read(updatedSharedUtilityProvider).returnBool(parameter);
+  final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });
 
 //? </Preferences>
 
-final updatedSharedUtilityProvider = Provider<UpdatedSharedUtility>((ref) {
+final preferencesProvider = Provider<Preferences>((ref) {
   final sharedPreferences = ref.read(sharedPreferencesProvider);
-  return UpdatedSharedUtility(sharedPreferences: sharedPreferences);
+  return Preferences(sharedPreferences: sharedPreferences);
 });
 
-class UpdatedSharedUtility {
-  UpdatedSharedUtility({required this.sharedPreferences});
+class Preferences {
+  Preferences({required this.sharedPreferences});
   final SharedPreferences sharedPreferences;
 
-  String returnString(String parameter) {
-    return sharedPreferences.getString(parameter) ?? 'Parameter is undefined.';
-  }
+  String getString(String preference) =>
+      sharedPreferences.getString(preference) ?? 'Empty';
 
-  bool returnBool(String parameter) {
-    return sharedPreferences.getBool(parameter) ?? false;
-  }
+  bool getBool(String preference) =>
+      sharedPreferences.getBool(preference) ?? false;
 
-  Future setString(String parameter, String setter) async {
-    return await sharedPreferences.setString(parameter, setter);
-  }
+  Future setString(String parameter, String setter) async =>
+      await sharedPreferences.setString(parameter, setter);
 
-  Future setBool(String parameter, bool setter) async {
-    return await sharedPreferences.setBool(parameter, setter);
-  }
+  Future setBool(String parameter, bool setter) async =>
+      await sharedPreferences.setBool(parameter, setter);
 }
 
 class PreferenceManager extends StateNotifier<bool> {
@@ -69,25 +55,9 @@ class PreferenceManager extends StateNotifier<bool> {
   final String parameter;
   void _readAndUpdateState(BuildContext context, bool boolean) {
     context
-        .read(updatedSharedUtilityProvider)
+        .read(preferencesProvider)
         .setBool(parameter, boolean)
         .whenComplete(() => {state = boolean});
-  }
-
-  @Deprecated('Please use the switcher for less boilerplate.')
-  void setTrue(BuildContext context) {
-    context
-        .read(updatedSharedUtilityProvider)
-        .setBool(parameter, true)
-        .whenComplete(() => {state = true});
-  }
-
-  @Deprecated('Please use the switcher for less boilerplate.')
-  void setFalse(BuildContext context) {
-    context
-        .read(updatedSharedUtilityProvider)
-        .setBool('isDarkModeEnabled', false)
-        .whenComplete(() => {state = false});
   }
 
   void switcher(BuildContext context) {

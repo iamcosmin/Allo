@@ -16,7 +16,6 @@ class Login extends HookWidget {
     // ignore: invalid_use_of_protected_member
     final error = useProvider(errorProvider);
     final auth = useProvider(Repositories.auth);
-    var controller = useTextEditingController();
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(),
       child: Column(

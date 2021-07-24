@@ -28,12 +28,6 @@ class ChatsRepository {
     var db = FirebaseFirestore.instance;
     var auth = FirebaseAuth.instance;
     var prefs = await SharedPreferences.getInstance();
-    var senderUsername = prefs.getString('username') ??
-        await db.collection('users').doc('usernames').get().then((value) {
-          String databaseUsername = value.data()?[auth.currentUser?.uid];
-          prefs.setString('username', databaseUsername);
-          return prefs.getString('username')!;
-        });
     var senderName = prefs.getString('displayName');
     try {
       if (messageType == MessageType.TEXT_ONLY) {
