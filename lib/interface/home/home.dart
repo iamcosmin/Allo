@@ -2,6 +2,7 @@ import 'package:allo/components/list/list_section.dart';
 import 'package:allo/components/list/list_tile.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/progress_rings.dart';
+import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -86,12 +87,13 @@ class Home extends HookWidget {
                     initials: 'A',
                     color: CupertinoColors.systemPurple,
                   ),
-                  onTap: () => navigation.to(
+                  onTap: () => navigation.push(
                       context,
                       Chat(
                         title: 'Allo',
                         chatId: 'DFqPHH2R4E5j0tM55fIm',
-                      )),
+                      ),
+                      SharedAxisTransitionType.scaled),
                 ),
               ],
             ),
@@ -110,12 +112,13 @@ class Home extends HookWidget {
                             chat['name'],
                           ),
                         ),
-                        onTap: () => navigation.to(
+                        onTap: () => navigation.push(
                             context,
                             Chat(
                               title: chat['name'],
                               chatId: chat['chatId'],
-                            )),
+                            ),
+                            SharedAxisTransitionType.scaled),
                       )
                     ]
                   ] else ...[

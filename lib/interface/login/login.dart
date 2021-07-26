@@ -1,77 +1,106 @@
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/components/oobe_page.dart';
+import 'package:allo/repositories/repositories.dart' hide Colors;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-// ignore: must_be_immutable
 class Login extends HookWidget {
-  String _email = '';
-  String _password = '';
-  RegExp reg = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-
   @override
   Widget build(BuildContext context) {
-    // ignore: invalid_use_of_protected_member
-    final error = useProvider(errorProvider);
+    final error = useState('');
+    final controller = useTextEditingController();
     final auth = useProvider(Repositories.auth);
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 100),
+    return SetupPage(
+      header: [
+        Text(
+          'Să ne conectăm...',
+          style: TextStyle(
+            fontSize: 40,
+            fontWeight: FontWeight.bold,
           ),
-          Text(
-            'Conectare',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.left,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: Text(
+            'Pentru a continua, introdu emailul tău.',
+            style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 100),
-          ),
-          AutofillGroup(
-            child: CupertinoFormSection.insetGrouped(children: [
-              CupertinoFormRow(
-                error: error != '' ? Text(error) : null,
-                child: CupertinoTextField(
-                  placeholder: 'Email',
-                  onChanged: (value) => _email = value.trimRight(),
-                  autofillHints: [AutofillHints.email],
-                  decoration: BoxDecoration(),
-                ),
+        ),
+      ],
+      body: [
+        CupertinoFormSection.insetGrouped(
+          children: [
+            CupertinoFormRow(
+              error: error.value == '' ? null : Text(error.value),
+              child: CupertinoTextField(
+                decoration: BoxDecoration(color: Colors.transparent),
+                placeholder: 'Email',
+                controller: controller,
               ),
-              CupertinoTextFormFieldRow(
-                placeholder: 'Parola',
-                obscureText: true,
-                onChanged: (value) => _password = value,
-                autofillHints: [AutofillHints.password],
-              ),
-            ]),
-          ),
-          Expanded(
-              child: Align(
-            alignment: FractionalOffset.bottomCenter,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                CupertinoButton(
-                    onPressed: () {
-                      auth.login(_email, _password, context);
-                    },
-                    color: CupertinoTheme.of(context).primaryColor,
-                    child: Text('Autentificare')),
-                CupertinoButton(
-                  onPressed: null,
-                  child: Text('Ti-ai uitat parola?'),
-                ),
-              ],
             ),
-          )),
-          Padding(padding: EdgeInsets.only(bottom: 5)),
-        ],
-      ),
+          ],
+        ),
+      ],
+      onButtonPress: () async {
+        await auth.checkAuthenticationAbility(
+            email: controller.text.trim(), error: error, context: context);
+      },
+      isAsync: true,
+    );
+  }
+}
+
+class EnterPassword extends HookWidget {
+  final String email;
+  const EnterPassword({required this.email});
+  @override
+  Widget build(BuildContext context) {
+    final error = useState('');
+    final controller = useTextEditingController();
+    final auth = useProvider(Repositories.auth);
+    return SetupPage(
+      header: [
+        Text(
+          'Bine ai revenit, ',
+          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          '$email!',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+        ),
+        Text(
+          'Pentru a continua, introdu parola contului Allo.',
+          style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
+        ),
+      ],
+      body: [
+        CupertinoFormSection.insetGrouped(
+          children: [
+            CupertinoFormRow(
+              error: error.value == '' ? null : Text(error.value),
+              child: CupertinoTextField(
+                decoration: BoxDecoration(color: Colors.transparent),
+                placeholder: 'Parola',
+                controller: controller,
+                obscureText: true,
+              ),
+            ),
+          ],
+        ),
+      ],
+      onButtonPress: () async {
+        await auth.signIn(
+            email: email,
+            password: controller.text,
+            context: context,
+            error: error);
+      },
+      isAsync: true,
     );
   }
 }

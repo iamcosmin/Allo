@@ -30,3 +30,22 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: VarDisplay
+      fonts: 
+        - asset: fonts/Variable-Display.ttf
+        - asset: fonts/Variable-Display-Bold.ttf
+          weight: 700
+        - asset: fonts/Variable-Display-Light.ttf
+          weight: 300
+        - asset: fonts/Variable-Display-Semibold.ttf
+          weight: 600
+    - family: VarText
+      fonts: 
+        - asset: fonts/Variable-Text.ttf
+        - asset: fonts/Variable-Text-Bold.ttf
+          weight: 700
+        - asset: fonts/Variable-Text-Light.ttf
+          weight: 300
+        - asset: fonts/Variable-Text-Semibold.ttf
+          weight: 600

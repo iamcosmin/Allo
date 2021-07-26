@@ -1,6 +1,7 @@
-import 'package:allo/interface/newloginexperience/oobe.dart';
+import 'package:allo/interface/login/oobe.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
+import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
@@ -64,19 +65,11 @@ class MyApp extends HookWidget {
     useEffect(() {}, const []);
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
+    final prefs = useProvider(preferencesProvider);
     return CupertinoApp(
       title: 'Allo',
       theme: theme.getAppThemeData(context, darkState),
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, AsyncSnapshot s) {
-          if (s.hasData) {
-            return StackNavigator();
-          } else {
-            return OOBE();
-          }
-        },
-      ),
+      home: prefs.getBool('isAuth') ? StackNavigator() : OOBE(),
     );
   }
 }

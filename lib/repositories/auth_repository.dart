@@ -1,9 +1,13 @@
 import 'package:allo/interface/home/stack_navigator.dart';
+import 'package:allo/interface/login/signup.dart';
 import 'package:allo/interface/login/signup/choose_username.dart';
 import 'package:allo/interface/login/signup/verify_email.dart';
+import 'package:allo/interface/login/login.dart';
 import 'package:allo/main.dart';
+import 'package:allo/repositories/preferences_repository.dart';
 // import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
+import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -26,39 +30,66 @@ class ErrorProvider extends StateNotifier<String> {
 }
 
 final authProvider = Provider<AuthRepository>((ref) {
-  final errorFunctions = ref.read(errorProvider.notifier);
-  return AuthRepository(errorFunctions);
+  return AuthRepository(ref);
 });
 
 class AuthRepository {
-  AuthRepository(this.errorProviderFunctions) : super();
-  var errorProviderFunctions;
+  AuthRepository(this.ref) : super();
+  final ProviderReference ref;
 
   Future returnUserDetails() async {
     return FirebaseAuth.instance.currentUser;
   }
 
-  /// Signs in the user with the provided email and password.
-  Future login(String _email, String _password, BuildContext context) async {
+  /// Checks if the user is eligible for login or signup.
+  Future checkAuthenticationAbility(
+      {required String email,
+      required ValueNotifier<String> error,
+      required BuildContext context}) async {
     try {
+      FocusScope.of(context).unfocus();
+      final List instance =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      if (instance.toString() == '[]') {
+        await ref
+            .read(Repositories.navigation)
+            .push(context, SignupName(), SharedAxisTransitionType.horizontal);
+      } else if (instance.toString() == '[password]') {
+        await ref.read(Repositories.navigation).push(
+            context,
+            EnterPassword(
+              email: email,
+            ),
+            SharedAxisTransitionType.horizontal);
+      }
+    } catch (e) {
+      error.value = 'Acest email este invalid.';
+    }
+  }
+
+  Future signIn(
+      {required String email,
+      required String password,
+      required BuildContext context,
+      required ValueNotifier<String> error}) async {
+    try {
+      FocusScope.of(context).unfocus();
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: _email, password: _password);
-      await Navigator.pushAndRemoveUntil(
-          context,
-          CupertinoPageRoute(builder: (context) => StackNavigator()),
-          (route) => false);
-      errorProviderFunctions.passError('');
+          .signInWithEmailAndPassword(email: email, password: password);
+      await context.read(Repositories.navigation).pushPermanent(
+          context, StackNavigator(), SharedAxisTransitionType.scaled);
+      await context.read(preferencesProvider).setBool('isAuth', true);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'invalid-email') {
-        errorProviderFunctions.passError(ErrorCodes.invalidEmail);
-      } else if (e.code == 'user-disabled') {
-        errorProviderFunctions.passError(ErrorCodes.userDisabled);
-      } else if (e.code == 'user-not-found') {
-        errorProviderFunctions.passError(ErrorCodes.userNotFound);
-      } else if (e.code == 'wrong-password') {
-        errorProviderFunctions.passError(ErrorCodes.wrongPassword);
-      } else {
-        errorProviderFunctions.passError(ErrorCodes.noAccount);
+      switch (e.code) {
+        case 'user-disabled':
+          error.value = ErrorCodes.userDisabled;
+          break;
+        case 'wrong-password':
+          error.value = ErrorCodes.wrongPassword;
+          break;
+        default:
+          error.value = 'O eroare s-a întâmplat.';
+          break;
       }
     }
   }
@@ -80,18 +111,22 @@ class AuthRepository {
               context,
               CupertinoPageRoute(builder: (context) => VerifyEmail()),
               (route) => false);
-          errorProviderFunctions.passError('');
+          ref.read(errorProvider.notifier).passError('');
         } on FirebaseAuthException catch (e) {
           if (e.code == 'email-already-in-use') {
-            errorProviderFunctions.passError(ErrorCodes.emailAlreadyInUse);
+            ref
+                .read(errorProvider.notifier)
+                .passError(ErrorCodes.emailAlreadyInUse);
           } else if (e.code == 'invalid-email') {
-            errorProviderFunctions.passError(ErrorCodes.invalidEmail);
+            ref.read(errorProvider.notifier).passError(ErrorCodes.invalidEmail);
           } else if (e.code == 'operation-not-allowed') {
-            errorProviderFunctions.passError(ErrorCodes.operationNotAllowed);
+            ref
+                .read(errorProvider.notifier)
+                .passError(ErrorCodes.operationNotAllowed);
           } else if (e.code == 'weak-password') {
-            errorProviderFunctions.passError(ErrorCodes.weakPassword);
+            ref.read(errorProvider.notifier).passError(ErrorCodes.weakPassword);
           } else {
-            errorProviderFunctions.passError(ErrorCodes.nullFields);
+            ref.read(errorProvider.notifier).passError(ErrorCodes.nullFields);
           }
         }
       } else {
@@ -114,9 +149,9 @@ class AuthRepository {
           context,
           CupertinoPageRoute(builder: (context) => ChooseUsername()),
           (route) => false);
-      errorProviderFunctions.passError(ErrorCodes.succes);
+      ref.read(errorProvider.notifier).passError(ErrorCodes.succes);
     } else if (!isVerified) {
-      errorProviderFunctions.passError(ErrorCodes.stillNotVerified);
+      ref.read(errorProvider.notifier).passError(ErrorCodes.stillNotVerified);
     }
   }
 
@@ -152,7 +187,9 @@ class AuthRepository {
         }
       }
       await FirebaseAuth.instance.signOut();
-      await context.read(Repositories.navigation).toPermanent(context, MyApp());
+      await context
+          .read(Repositories.navigation)
+          .pushPermanent(context, MyApp(), SharedAxisTransitionType.scaled);
     } catch (e) {
       throw Exception('Something is wrong...');
     }
