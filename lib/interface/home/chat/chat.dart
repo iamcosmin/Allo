@@ -21,6 +21,13 @@ class Chat extends HookWidget {
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
     final documentLoad = useState(15);
+    final stream = FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('time', descending: true)
+        .limit(documentLoad.value)
+        .snapshots();
     useEffect(() {
       if (!kIsWeb) {
         FirebaseMessaging.instance.subscribeToTopic(chatId);
@@ -56,86 +63,89 @@ class Chat extends HookWidget {
           ),
         ),
         child: SafeArea(
-          child: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('chats')
-                .doc(chatId)
-                .collection('messages')
-                .orderBy('time', descending: true)
-                .limit(documentLoad.value)
-                .snapshots(),
-            builder: (ctx, AsyncSnapshot<QuerySnapshot> snap) {
-              return AnimatedSwitcher(
-                duration: Duration(milliseconds: 500),
-                switchInCurve: Curves.easeInCubic,
-                switchOutCurve: Curves.easeOutCubic,
-                child: snap.hasData
-                    ? Column(children: [
-                        Expanded(
-                          child: NotificationListener(
-                            onNotification: (value) {
-                              if (value is ScrollNotification) {
-                                final before = value.metrics.extentBefore;
-                                final max = value.metrics.maxScrollExtent;
+          child: Column(
+            children: [
+              Expanded(
+                flex: 1,
+                child: StreamBuilder(
+                  stream: stream,
+                  builder: (ctx, AsyncSnapshot<QuerySnapshot> snap) {
+                    return AnimatedSwitcher(
+                      duration: Duration(milliseconds: 500),
+                      switchInCurve: Curves.easeInCubic,
+                      switchOutCurve: Curves.easeOutCubic,
+                      child: snap.hasData
+                          ? NotificationListener(
+                              onNotification: (value) {
+                                if (value is ScrollNotification) {
+                                  final before = value.metrics.extentBefore;
+                                  final max = value.metrics.maxScrollExtent;
 
-                                if (before == max) {
-                                  documentLoad.value = documentLoad.value + 15;
+                                  if (before == max) {
+                                    documentLoad.value =
+                                        documentLoad.value + 15;
+                                  }
                                 }
-                              }
-                              return false;
-                            },
-                            child: ListView.builder(
-                              reverse: true,
-                              controller: scrollController,
-                              itemCount: snap.data!.docs.length,
-                              itemBuilder: (BuildContext ctx, int i) {
-                                final nowData, pastData, nextData;
-                                nowData = snap.data!.docs[i].data() as Map;
-                                if (i == 0) {
-                                  nextData = {'senderUID': 'null'};
-                                } else {
-                                  nextData =
-                                      snap.data!.docs[i - 1].data() as Map;
-                                }
-                                if (i == snap.data!.docs.length - 1) {
-                                  pastData = {'senderUID': 'null'};
-                                } else {
-                                  pastData =
-                                      snap.data!.docs[i + 1].data() as Map;
-                                }
-                                // Above, pastData should have been i-1 and nextData i+1.
-                                // But, as the list needs to be in reverse order, we need
-                                // to consider this workaround.
-                                final pastUID =
-                                    pastData.containsKey('senderUID')
-                                        ? pastData['senderUID']
-                                        : 'null';
-                                final nextUID =
-                                    nextData.containsKey('senderUID')
-                                        ? nextData['senderUID']
-                                        : 'null';
-                                return MessageBubble(
-                                  documentData: nowData,
-                                  pastUID: pastUID,
-                                  nextUID: nextUID,
-                                );
+                                return false;
                               },
+                              child: ListView.builder(
+                                reverse: true,
+                                controller: scrollController,
+                                itemCount: snap.data!.docs.length,
+                                itemBuilder: (BuildContext ctx, int i) {
+                                  final nowData, pastData, nextData;
+                                  nowData = snap.data!.docs[i].data() as Map;
+                                  if (i == 0) {
+                                    nextData = {'senderUID': 'null'};
+                                  } else {
+                                    nextData =
+                                        snap.data!.docs[i - 1].data() as Map;
+                                  }
+                                  if (i == snap.data!.docs.length - 1) {
+                                    pastData = {'senderUID': 'null'};
+                                  } else {
+                                    pastData =
+                                        snap.data!.docs[i + 1].data() as Map;
+                                  }
+                                  // Above, pastData should have been i-1 and nextData i+1.
+                                  // But, as the list needs to be in reverse order, we need
+                                  // to consider this workaround.
+                                  final pastUID =
+                                      pastData.containsKey('senderUID')
+                                          ? pastData['senderUID']
+                                          : 'null';
+                                  final nextUID =
+                                      nextData.containsKey('senderUID')
+                                          ? nextData['senderUID']
+                                          : 'null';
+                                  return MessageBubble(
+                                    documentData: nowData,
+                                    pastUID: pastUID,
+                                    nextUID: nextUID,
+                                  );
+                                },
+                              ),
+                            )
+                          : SafeArea(
+                              child: Center(
+                                child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: ProgressRing(),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        MessageInput(chatId),
-                      ])
-                    : SafeArea(
-                        child: Center(
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            child: ProgressRing(),
-                          ),
-                        ),
-                      ),
-              );
-            },
+                    );
+                  },
+                ),
+              ),
+              Expanded(
+                flex: 0,
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: MessageInput(chatId)),
+              )
+            ],
           ),
         ));
   }
