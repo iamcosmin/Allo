@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart';
 
 enum MessageType {
   TEXT_ONLY,
@@ -42,6 +45,21 @@ class ChatsRepository {
           'senderName': senderName,
           'time': DateTime.now(),
         });
+        await post(
+          Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: <String, String>{
+            'Authorization':
+                'key=AAAA9EHEBh8:APA91bEwgamP8cWZQewq7qkVrydw6BduUEhgeufHV9SZ2pBoRYcJy7GynZ-XZWVzuzDrERK7ZDJlwZiPWZJ4oWaKh9rwjlL8GMnLD0znMKZ6CZw6BPRtjU1xBtGUv-Nds0wydptQcuz6',
+            'Content-Type': 'application/json'
+          },
+          body: jsonEncode({
+            'to': '/topics/X1l0WnKiLUi1Z4uOGg12',
+            'notification': {
+              'title': 'Mesaj de la $senderName',
+              'body': '$universalTextCommunication'
+            }
+          }),
+        );
       } else if (messageType == MessageType.IMAGE_WITHOUT_DESCRIPTION) {
         // TO DO: Handle image uploading and Firestore behaviour
       } else if (messageType == MessageType.IMAGE_WITH_DESCRIPTION) {
