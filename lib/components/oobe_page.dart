@@ -38,7 +38,7 @@ class SetupPage extends HookWidget {
           ),
           if (body != []) ...[
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: body,
@@ -46,10 +46,11 @@ class SetupPage extends HookWidget {
             ),
           ],
           Expanded(
+            flex: 0,
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                padding: EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                padding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
                 width: double.infinity,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
