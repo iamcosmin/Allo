@@ -53,7 +53,7 @@ class ChatsRepository {
             'Content-Type': 'application/json'
           },
           body: jsonEncode({
-            'to': '/topics/X1l0WnKiLUi1Z4uOGg12',
+            'to': '/topics/$chatReference',
             'notification': {
               'title': 'Mesaj de la $senderName',
               'body': '$universalTextCommunication'

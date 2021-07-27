@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:allo/components/progress_rings.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/chatnavigationbar.dart';
 import 'package:allo/components/chats/message_input.dart';
@@ -19,7 +21,11 @@ class Chat extends HookWidget {
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
     final documentLoad = useState(15);
-    useEffect(() {}, const []);
+    useEffect(() {
+      if (!kIsWeb) {
+        FirebaseMessaging.instance.subscribeToTopic(chatId);
+      }
+    }, const []);
     return CupertinoPageScaffold(
         navigationBar: ChatNavigationBar(
           middle: Column(
