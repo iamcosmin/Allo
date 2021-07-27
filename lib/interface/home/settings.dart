@@ -14,6 +14,7 @@ class Settings extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final navigation = useProvider(Repositories.navigation);
     final darkMethod = useProvider(darkMode.notifier);
+    final eProfilePic = useProvider(experimentalProfilePicture);
     final name =
         useProvider(sharedPreferencesProvider).getString('displayName') ??
             'Not set';
