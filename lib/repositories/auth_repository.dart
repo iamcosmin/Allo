@@ -1,7 +1,5 @@
 import 'package:allo/interface/home/stack_navigator.dart';
 import 'package:allo/interface/login/signup.dart';
-import 'package:allo/interface/login/signup/choose_username.dart';
-import 'package:allo/interface/login/signup/verify_email.dart';
 import 'package:allo/interface/login/login.dart';
 import 'package:allo/main.dart';
 import 'package:allo/repositories/preferences_repository.dart';
@@ -34,7 +32,7 @@ final authProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthRepository {
-  AuthRepository(this.ref) : super();
+  AuthRepository(this.ref);
   final ProviderReference ref;
 
   Future returnUserDetails() async {
@@ -51,9 +49,8 @@ class AuthRepository {
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
-        await ref
-            .read(Repositories.navigation)
-            .push(context, SignupName(), SharedAxisTransitionType.horizontal);
+        await ref.read(Repositories.navigation).push(
+            context, SetupName(email), SharedAxisTransitionType.horizontal);
       } else if (instance.toString() == '[password]') {
         await ref.read(Repositories.navigation).push(
             context,
@@ -94,65 +91,41 @@ class AuthRepository {
     }
   }
 
-  Future signup(String name, String email, String password1, String password2,
-      BuildContext context) async {
-    if (name != '' && email != '' && password1 != '' && password2 != '') {
-      if (password1 == password2) {
-        var matchedPassword = password2;
-        try {
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: email, password: matchedPassword);
-          await FirebaseAuth.instance.currentUser!.updateDisplayName(name);
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser?.uid)
-              .set({'name': name, 'isVerified': false, 'email': email});
-          await Navigator.pushAndRemoveUntil(
-              context,
-              CupertinoPageRoute(builder: (context) => VerifyEmail()),
-              (route) => false);
-          ref.read(errorProvider.notifier).passError('');
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'email-already-in-use') {
-            ref
-                .read(errorProvider.notifier)
-                .passError(ErrorCodes.emailAlreadyInUse);
-          } else if (e.code == 'invalid-email') {
-            ref.read(errorProvider.notifier).passError(ErrorCodes.invalidEmail);
-          } else if (e.code == 'operation-not-allowed') {
-            ref
-                .read(errorProvider.notifier)
-                .passError(ErrorCodes.operationNotAllowed);
-          } else if (e.code == 'weak-password') {
-            ref.read(errorProvider.notifier).passError(ErrorCodes.weakPassword);
-          } else {
-            ref.read(errorProvider.notifier).passError(ErrorCodes.nullFields);
-          }
-        }
-      } else {
-        return ErrorCodes.passwordMismatch;
+  Future signUp(
+      {required String email,
+      required String password,
+      required String displayName,
+      required String username,
+      required ValueNotifier<String> error,
+      required BuildContext context}) async {
+    try {
+      final user = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await context.read(preferencesProvider).setBool('isAuth', true);
+      await user.user!.updateDisplayName(displayName);
+      final db = FirebaseFirestore.instance;
+      await db.collection('users').doc(username).set({
+        'name': displayName,
+        'email': email,
+        'uid': user.user!.uid,
+        'verified': false,
+      });
+      await db.collection('users').doc('usernames').update({
+        username: user.user!.uid,
+      });
+      await ref
+          .read(navigationProvider)
+          .push(context, StackNavigator(), SharedAxisTransitionType.horizontal);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'operation-not-allowed':
+          error.value = 'Momentan, înregistrările sunt închise.';
       }
-    } else {
-      return ErrorCodes.nullFields;
     }
   }
 
   Future sendEmailVerification() async {
     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
-  }
-
-  Future isVerified(BuildContext context) async {
-    var isVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-    await FirebaseAuth.instance.currentUser?.reload();
-    if (isVerified) {
-      await Navigator.pushAndRemoveUntil(
-          context,
-          CupertinoPageRoute(builder: (context) => ChooseUsername()),
-          (route) => false);
-      ref.read(errorProvider.notifier).passError(ErrorCodes.succes);
-    } else if (!isVerified) {
-      ref.read(errorProvider.notifier).passError(ErrorCodes.stillNotVerified);
-    }
   }
 
   Future configureUsername(String _username, BuildContext context) async {
@@ -259,3 +232,5 @@ class AuthRepository {
     }
   }
 }
+
+class SignUp {}

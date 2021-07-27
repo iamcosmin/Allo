@@ -1,5 +1,3 @@
-import 'package:allo/interface/home/home.dart';
-import 'package:allo/interface/login/welcome.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -65,14 +63,5 @@ class NavigationRepository {
     firebaseUser ??= await auth.authStateChanges().first;
 
     return firebaseUser;
-  }
-
-  Future decideIfAuthenticated() async {
-    dynamic firebaseUser = await _returnFirebaseUser();
-    if (firebaseUser == null) {
-      return Welcome();
-    } else {
-      return Home();
-    }
   }
 }
