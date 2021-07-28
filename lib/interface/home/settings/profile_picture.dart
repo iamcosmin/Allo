@@ -17,44 +17,10 @@ class ProfilePictureSettings extends HookWidget {
   bool loading = false;
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     var loaded = useState(false);
-    var percetange = useState(0.0);
+    var percentage = useState(0.0);
     final auth = useProvider(Repositories.auth);
-
-    void pickAndEditImage(context) async {
-      XFile imageFile;
-      var pickFromGallery =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      var uneditedImageFile = XFile(pickFromGallery!.path);
-      if (kIsWeb) {
-        imageFile = uneditedImageFile;
-        loaded.value = true;
-      } else {
-        var editImageFile = await ImageCropper.cropImage(
-            sourcePath: pickFromGallery.path,
-            aspectRatioPresets: [CropAspectRatioPreset.square]);
-        var convertedEditImageFile = XFile(editImageFile!.path);
-        imageFile = convertedEditImageFile;
-        loaded.value = true;
-      }
-      var user = FirebaseAuth.instance.currentUser;
-      var filePath = 'profilePictures/${user?.uid}.png';
-      var uploadTask = FirebaseStorage.instance.ref(filePath).putData(
-          await imageFile.readAsBytes(),
-          SettableMetadata(contentType: 'image/png'));
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) async {
-        percetange.value =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        if (snapshot.state == TaskState.success) {
-          await user!.updatePhotoURL(await FirebaseStorage.instance
-              .ref()
-              .child(filePath)
-              .getDownloadURL());
-          Navigator.pop(context);
-        }
-      });
-    }
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -78,7 +44,7 @@ class ProfilePictureSettings extends HookWidget {
                           height: 110,
                           width: 110,
                           child: ProgressRing(
-                            value: percetange.value,
+                            value: percentage.value,
                           ),
                         ),
                         PersonPicture.determine(
@@ -95,7 +61,8 @@ class ProfilePictureSettings extends HookWidget {
               header: Text('Gestionează imaginea de profil'),
               children: [
                 GestureDetector(
-                  onTap: () => pickAndEditImage(ctx),
+                  onTap: () async => await auth.updateProfilePicture(
+                      loaded: loaded, percentage: percentage, context: context),
                   child: CupertinoFormRow(
                     prefix: Text('Încarcă imagine'),
                     child: Padding(

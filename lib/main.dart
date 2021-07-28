@@ -1,6 +1,6 @@
+import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,7 +11,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/stack_navigator.dart';
-import 'interface/login/welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,19 +62,11 @@ class MyApp extends HookWidget {
     useEffect(() {}, const []);
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
+    final prefs = useProvider(preferencesProvider);
     return CupertinoApp(
       title: 'Allo',
       theme: theme.getAppThemeData(context, darkState),
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, AsyncSnapshot s) {
-          if (s.hasData) {
-            return StackNavigator();
-          } else {
-            return Welcome();
-          }
-        },
-      ),
+      home: prefs.getBool('isAuth') ? StackNavigator() : Setup(),
     );
   }
 }

@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 0.0.8+46
+version: 0.0.9+60
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
@@ -17,7 +17,7 @@ dependencies:
   firebase_messaging: ^10.0.4
   firebase_storage: ^10.0.1
   flutter_hooks: ^0.17.0
-  flutter_local_notifications: ^6.0.0
+  flutter_local_notifications: ^6.1.0
   hooks_riverpod: ^0.14.0+4
   image_cropper: ^1.4.1
   image_picker: ^0.8.2
@@ -30,3 +30,22 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: VarDisplay
+      fonts: 
+        - asset: fonts/Variable-Display.ttf
+        - asset: fonts/Variable-Display-Bold.ttf
+          weight: 700
+        - asset: fonts/Variable-Display-Light.ttf
+          weight: 300
+        - asset: fonts/Variable-Display-Semibold.ttf
+          weight: 600
+    - family: VarText
+      fonts: 
+        - asset: fonts/Variable-Text.ttf
+        - asset: fonts/Variable-Text-Bold.ttf
+          weight: 700
+        - asset: fonts/Variable-Text-Light.ttf
+          weight: 300
+        - asset: fonts/Variable-Text-Semibold.ttf
+          weight: 600
