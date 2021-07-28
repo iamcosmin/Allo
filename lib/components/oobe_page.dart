@@ -60,7 +60,7 @@ class SetupPage extends HookWidget {
                       onPressed: () async {
                         if (isAsync) {
                           loading.value = true;
-                          onButtonPress();
+                          await onButtonPress();
                           loading.value = false;
                         } else {
                           onButtonPress();
@@ -69,8 +69,8 @@ class SetupPage extends HookWidget {
                       color: CupertinoColors.activeOrange,
                       child: loading.value
                           ? SizedBox(
-                              height: 20,
-                              width: 20,
+                              height: 23,
+                              width: 23,
                               child: ProgressRing(
                                 activeColor: CupertinoColors.white,
                                 strokeWidth: 3,

@@ -8,7 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'login.dart';
 
-class OOBE extends HookWidget {
+class Setup extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final navigation = useProvider(Repositories.navigation);

@@ -1,4 +1,4 @@
-import 'package:allo/interface/login/oobe.dart';
+import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -66,7 +66,7 @@ class MyApp extends HookWidget {
     return CupertinoApp(
       title: 'Allo',
       theme: theme.getAppThemeData(context, darkState),
-      home: prefs.getBool('isAuth') ? StackNavigator() : OOBE(),
+      home: prefs.getBool('isAuth') ? StackNavigator() : Setup(),
     );
   }
 }

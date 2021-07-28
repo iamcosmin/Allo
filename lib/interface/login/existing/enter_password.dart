@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Login extends HookWidget {
+class EnterPassword extends HookWidget {
+  final String email;
+  const EnterPassword({required this.email});
   @override
   Widget build(BuildContext context) {
     final error = useState('');
@@ -14,19 +16,19 @@ class Login extends HookWidget {
     return SetupPage(
       header: [
         Text(
-          'Să ne conectăm...',
-          style: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.left,
+          'Bine ai revenit, ',
+          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          '$email!',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: Text(
-            'Pentru a continua, introdu emailul tău.',
-            style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
-          ),
+          padding: const EdgeInsets.only(top: 10),
+        ),
+        Text(
+          'Pentru a continua, introdu parola contului Allo.',
+          style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
         ),
       ],
       body: [
@@ -36,16 +38,20 @@ class Login extends HookWidget {
               error: error.value == '' ? null : Text(error.value),
               child: CupertinoTextField(
                 decoration: BoxDecoration(color: Colors.transparent),
-                placeholder: 'Email',
+                placeholder: 'Parola',
                 controller: controller,
+                obscureText: true,
               ),
             ),
           ],
         ),
       ],
       onButtonPress: () async {
-        await auth.checkAuthenticationAbility(
-            email: controller.text.trim(), error: error, context: context);
+        await auth.signIn(
+            email: email,
+            password: controller.text,
+            context: context,
+            error: error);
       },
       isAsync: true,
     );

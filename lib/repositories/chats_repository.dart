@@ -27,8 +27,7 @@ class ChatsRepository {
       TextEditingController inputMethodTextController) async {
     var db = FirebaseFirestore.instance;
     var auth = FirebaseAuth.instance;
-    var prefs = await SharedPreferences.getInstance();
-    var senderName = prefs.getString('displayName');
+    var senderName = FirebaseAuth.instance.currentUser!.displayName!;
     try {
       if (messageType == MessageType.TEXT_ONLY) {
         inputMethodTextController.clear();

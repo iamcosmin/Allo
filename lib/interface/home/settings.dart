@@ -2,6 +2,7 @@ import 'package:allo/interface/home/concentrated.dart';
 import 'package:allo/interface/home/settings/profile_picture.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,9 +15,7 @@ class Settings extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final navigation = useProvider(Repositories.navigation);
     final darkMethod = useProvider(darkMode.notifier);
-    final name =
-        useProvider(sharedPreferencesProvider).getString('displayName') ??
-            'Not set';
+    final name = FirebaseAuth.instance.currentUser!.displayName!;
     // DO NOT REMOVE
     final _a = useState(0);
     void _b() {
