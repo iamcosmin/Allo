@@ -1,13 +1,13 @@
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide ThemeData, Colors;
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/stack_navigator.dart';
@@ -16,34 +16,41 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final _kSharedPreferences = await SharedPreferences.getInstance();
-  if (kIsWeb) {
-    // await FirebaseMessaging.instance.requestPermission(
-    //   alert: true,
-    //   announcement: false,
-    //   badge: true,
-    //   carPlay: false,
-    //   criticalAlert: false,
-    //   provisional: false,
-    //   sound: true,
-    // );
-    // await FirebaseMessaging.instance.getToken(
-    //   vapidKey:
-    //       'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
-    // );
-  } else {
-    const channel = AndroidNotificationChannel(
-      'high_importance_channel', // id
-      'Notificări de conversații', // title
-      'Acest canal este folosit pentru notificări din conversații', // description
-      importance: Importance.max,
-    );
-    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+  // await FirebaseMessaging.instance.requestPermission(
+  //   alert: true,
+  //   announcement: false,
+  //   badge: true,
+  //   carPlay: false,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: true,
+  // );
+  // await FirebaseMessaging.instance.getToken(
+  //   vapidKey:
+  //       'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
+  // );
+  if (!kIsWeb) {
+    await AwesomeNotifications().initialize(
+        // set the icon to null if you want to use the default app icon
+        null,
+        [
+          NotificationChannel(
+            channelKey: 'high_importance_channel',
+            channelName: 'Basic notifications',
+            channelDescription: 'Notificări de conversații',
+            defaultColor: CupertinoColors.activeOrange,
+            ledColor: CupertinoColors.activeOrange,
+            playSound: true,
+          )
+        ]);
+    await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        // Insert here your friendly dialog box before call the request method
+        // This is very important to not harm the user experience
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
   }
-
   runApp(
     ProviderScope(
       overrides: [
@@ -59,7 +66,6 @@ class MyApp extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    useEffect(() {}, const []);
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
     final prefs = useProvider(preferencesProvider);

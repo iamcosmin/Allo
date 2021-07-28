@@ -302,10 +302,10 @@ class AuthRepository {
       required ValueNotifier<double> percentage,
       required BuildContext context,
       Widget? route}) async {
-    XFile imageFile;
+    PickedFile imageFile;
     var pickFromGallery =
         await ImagePicker().pickImage(source: ImageSource.gallery);
-    var uneditedImageFile = XFile(pickFromGallery!.path);
+    var uneditedImageFile = PickedFile(pickFromGallery!.path);
     if (kIsWeb) {
       imageFile = uneditedImageFile;
       loaded.value = true;
@@ -313,7 +313,7 @@ class AuthRepository {
       var editImageFile = await ImageCropper.cropImage(
           sourcePath: pickFromGallery.path,
           aspectRatioPresets: [CropAspectRatioPreset.square]);
-      var convertedEditImageFile = XFile(editImageFile!.path);
+      var convertedEditImageFile = PickedFile(editImageFile!.path);
       imageFile = convertedEditImageFile;
       loaded.value = true;
     }

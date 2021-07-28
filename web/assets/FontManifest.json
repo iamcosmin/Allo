@@ -1,0 +1,22 @@
+[
+    {
+        "family": "VarDisplay",
+        "fonts": [
+            {
+                "asset": "fonts/Variable-Display.tff"
+            },
+            {
+                "asset": "fonts/Variable-Display-Bold.tff",
+                "weight": 700
+            },
+            {
+                "asset": "fonts/Variable-Display-Light.tff",
+                "weight": 300
+            },
+            {
+                "asset": "fonts/Variable-Display-Semibold.tff",
+                "weight": 600
+            }
+        ]
+    }
+]
