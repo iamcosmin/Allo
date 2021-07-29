@@ -1,4 +1,6 @@
+import 'package:allo/interface/home/typingbubble.dart';
 import 'package:allo/repositories/preferences_repository.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,8 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class C extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final eProfilePic = useProvider(experimentalProfilePicture);
-    final eProfilePicMethod = useProvider(experimentalProfilePicture.notifier);
+    final navigation = useProvider(Repositories.navigation);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text('Opțiuni experimentale'),
@@ -23,13 +24,21 @@ class C extends HookWidget {
                   header: Text(
                       'Aceste opțiuni sunt experimentale și sunt gândite doar pentru testarea internă. Vă rugăm să nu folosiți aceste setări dacă nu știți ce fac.'),
                   children: [
-                    CupertinoFormRow(
-                        prefix: Text('Încarcă fotografie de profil'),
-                        child: CupertinoSwitch(
-                          value: eProfilePic,
-                          onChanged: (value) =>
-                              eProfilePicMethod.switcher(context),
-                        ))
+                    GestureDetector(
+                      onTap: () => navigation.to(context, ExampleIsTyping()),
+                      child: CupertinoFormRow(
+                        prefix: Text('Fotografie de profil'),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10, bottom: 10, right: 5),
+                          child: Icon(
+                            CupertinoIcons.right_chevron,
+                            color: CupertinoColors.systemGrey,
+                            size: 15,
+                          ),
+                        ),
+                      ),
+                    ),
                   ]),
             ]),
           ))

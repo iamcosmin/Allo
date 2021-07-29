@@ -9,10 +9,14 @@ class MessageBubble extends HookWidget {
   final Map documentData;
   final String pastUID;
   final String nextUID;
+  final String chatId;
+  final String messageId;
   MessageBubble(
       {required this.documentData,
       required this.pastUID,
-      required this.nextUID});
+      required this.nextUID,
+      required this.chatId,
+      required this.messageId});
 
   String get senderUID {
     if (documentData.containsKey('senderUID')) {
@@ -48,6 +52,8 @@ class MessageBubble extends HookWidget {
         senderUID: senderUID,
         pastUID: pastUID,
         nextUID: nextUID,
+        messageId: messageId,
+        chatId: chatId,
       );
     }
   }
@@ -75,7 +81,7 @@ class _ReceiveMessageBubble extends HookWidget {
   bool get isSameSenderAsInFuture => senderUID == nextUID;
 
   double get bottomPadding {
-    if (senderUID == nextUID) {
+    if (senderUID == nextUID || nextUID == 'null') {
       return 5;
     } else {
       return 15;
@@ -164,16 +170,21 @@ class _SentMessageBubble extends HookWidget {
     required this.senderUID,
     required this.pastUID,
     required this.nextUID,
+    required this.chatId,
+    required this.messageId,
   });
   final String messageTextContent;
   final String senderUID;
   final String pastUID;
   final String nextUID;
+  final String chatId;
+  final String messageId;
   bool get isSameSenderAsInPast => senderUID == pastUID;
   bool get isSameSenderAsInFuture => senderUID == nextUID;
 
   @override
   Widget build(BuildContext context) {
+    final chat = useProvider(Repositories.chats);
     return Container(
       padding:
           EdgeInsets.only(bottom: isSameSenderAsInFuture ? 2 : 15, right: 10),
@@ -182,29 +193,55 @@ class _SentMessageBubble extends HookWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Chat bubble
-          Container(
-            decoration: BoxDecoration(
-              color: CupertinoColors.activeOrange,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(isSameSenderAsInPast ? 0 : 20),
-                  bottomRight: Radius.circular(isSameSenderAsInFuture ||
-                          (isSameSenderAsInFuture && isSameSenderAsInPast)
-                      ? 0
-                      : 20),
-                  bottomLeft: Radius.circular(20)),
-            ),
-            padding: EdgeInsets.all(8),
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width / 1.5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 5, right: 5),
-                  child: Text(messageTextContent),
-                ),
-              ],
+          GestureDetector(
+            onLongPress: () {
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) => CupertinoActionSheet(
+                        actions: [
+                          CupertinoActionSheetAction(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await chat.deleteMessage(
+                                  messageId: messageId, chatId: chatId);
+                            },
+                            isDestructiveAction: true,
+                            child: Text('Șterge mesajul'),
+                          ),
+                        ],
+                        cancelButton: CupertinoActionSheetAction(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Anulează'),
+                          isDefaultAction: true,
+                        ),
+                      ));
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: CupertinoColors.activeOrange,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(isSameSenderAsInPast ? 0 : 20),
+                    bottomRight: Radius.circular(isSameSenderAsInFuture ||
+                            (isSameSenderAsInFuture && isSameSenderAsInPast)
+                        ? 0
+                        : 20),
+                    bottomLeft: Radius.circular(20)),
+              ),
+              padding: EdgeInsets.all(8),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5, right: 5),
+                    child: Text(messageTextContent),
+                  ),
+                ],
+              ),
             ),
           )
         ],

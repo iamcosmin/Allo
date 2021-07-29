@@ -40,7 +40,7 @@ class AuthRepository {
   AuthRepository(this.ref);
   final ProviderReference ref;
 
-  Future returnUserDetails() async {
+  Future<User?> returnUserDetails() async {
     return FirebaseAuth.instance.currentUser;
   }
 
@@ -80,7 +80,8 @@ class AuthRepository {
           .signInWithEmailAndPassword(email: email, password: password);
       await context.read(Repositories.navigation).pushPermanent(
           context, StackNavigator(), SharedAxisTransitionType.scaled);
-      await context.read(preferencesProvider).setBool('isAuth', true);
+      var prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('authenticated', true);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'user-disabled':
@@ -122,7 +123,8 @@ class AuthRepository {
             final user = await FirebaseAuth.instance
                 .createUserWithEmailAndPassword(
                     email: email, password: password);
-            await context.read(preferencesProvider).setBool('isAuth', true);
+            var prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('authenticated', true);
             await user.user!.updateDisplayName(displayName);
             final db = FirebaseFirestore.instance;
             await db.collection('users').doc(username).set({
