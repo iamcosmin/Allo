@@ -342,13 +342,19 @@ class AuthRepository {
   }
 
   Future<String> getUsername() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    final db = FirebaseFirestore.instance;
-    final usernames = await db.collection('users').doc('usernames').get();
-    final usernamesData = usernames.data() as Map;
-    final username = usernamesData.keys
-        .firstWhere((element) => usernamesData[element] == uid);
-    return username;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('username') != null) {
+      return prefs.getString('username')!;
+    } else {
+      return await FirebaseFirestore.instance
+          .collection('users')
+          .doc('usernames')
+          .get()
+          .then((value) {
+        return value.data()!.keys.firstWhere((element) =>
+            value.data()![element] == FirebaseAuth.instance.currentUser?.uid);
+      });
+    }
   }
 }
 
