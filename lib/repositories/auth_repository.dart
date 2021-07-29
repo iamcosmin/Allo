@@ -340,6 +340,16 @@ class AuthRepository {
       }
     });
   }
+
+  Future<String> getUsername() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final db = FirebaseFirestore.instance;
+    final usernames = await db.collection('users').doc('usernames').get();
+    final usernamesData = usernames.data() as Map;
+    final username = usernamesData.keys
+        .firstWhere((element) => usernamesData[element] == uid);
+    return username;
+  }
 }
 
 class SignUp {}

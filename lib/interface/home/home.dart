@@ -24,7 +24,7 @@ class Home extends HookWidget {
       var chatIdList = [];
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(await auth.getUsername())
           .get()
           .then((DocumentSnapshot snapshot) {
         var map = snapshot.data() as Map;
