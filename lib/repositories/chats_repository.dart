@@ -69,6 +69,16 @@ class ChatsRepository {
     }
   }
 
+  Future deleteMessage(
+      {required String messageId, required String chatId}) async {
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .delete();
+  }
+
   Future writeMessage(String messageTextContent, String chatReference,
       TextEditingController messageController) async {
     var db = FirebaseFirestore.instance;

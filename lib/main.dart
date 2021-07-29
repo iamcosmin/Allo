@@ -63,16 +63,23 @@ void main() async {
 
 class MyApp extends HookWidget {
   // This widget is the root of your application.
-
   @override
   Widget build(BuildContext context) {
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
-    final prefs = useProvider(preferencesProvider);
+    final auth = useProvider(Repositories.auth);
     return CupertinoApp(
-      title: 'Allo',
-      theme: theme.getAppThemeData(context, darkState),
-      home: prefs.getBool('isAuth') ? StackNavigator() : Setup(),
-    );
+        title: 'Allo',
+        theme: theme.getAppThemeData(context, darkState),
+        home: FutureBuilder(
+          future: auth.returnUserDetails(),
+          builder: (context, snap) {
+            if (snap.hasData) {
+              return StackNavigator();
+            } else {
+              return Setup();
+            }
+          },
+        ));
   }
 }

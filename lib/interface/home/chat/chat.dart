@@ -21,7 +21,7 @@ class Chat extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
-    final documentLoad = useState(15);
+    final documentLoad = useState(20);
     useEffect(() {
       if (!kIsWeb) {
         FirebaseMessaging.instance.subscribeToTopic(chatId);
@@ -34,7 +34,7 @@ class Chat extends HookWidget {
             children: [
               Text(title),
               Padding(
-                padding: const EdgeInsets.only(top: 5),
+                padding: const EdgeInsets.only(top: 0),
                 child: Text(
                   'conversație',
                   style: TextStyle(
@@ -46,7 +46,7 @@ class Chat extends HookWidget {
             ],
           ),
           trailing: PersonPicture.initials(
-            radius: 46,
+            radius: 40,
             initials: 'A',
             gradient: LinearGradient(
               colors: [
@@ -61,49 +61,69 @@ class Chat extends HookWidget {
             children: [
               Expanded(
                   flex: 1,
-                  child: FirestoreAnimatedList(
-                    query: FirebaseFirestore.instance
-                        .collection('chats')
-                        .doc(chatId)
-                        .collection('messages')
-                        .orderBy('time', descending: true)
-                        .limit(documentLoad.value),
-                    reverse: true,
-                    linear: false,
-                    duration: Duration(milliseconds: 150),
-                    itemBuilder: (context, snap, animation, i) {
-                      final nowData, pastData, nextData;
-                      nowData = snap![i]!.data() as Map;
-                      if (i == 0) {
-                        nextData = {'senderUID': 'null'};
-                      } else {
-                        nextData = snap[i - 1]!.data() as Map;
+                  child: NotificationListener(
+                    onNotification: (value) {
+                      if (value is ScrollNotification) {
+                        final before = value.metrics.extentBefore;
+                        final max = value.metrics.maxScrollExtent;
+
+                        if (before == max) {
+                          documentLoad.value = documentLoad.value + 15;
+                        }
                       }
-                      if (i == snap.length - 1) {
-                        pastData = {'senderUID': 'null'};
-                      } else {
-                        pastData = snap[i + 1]!.data() as Map;
-                      }
-                      // Above, pastData should have been i-1 and nextData i+1.
-                      // But, as the list needs to be in reverse order, we need
-                      // to consider this workaround.
-                      final pastUID = pastData.containsKey('senderUID')
-                          ? pastData['senderUID']
-                          : 'null';
-                      final nextUID = nextData.containsKey('senderUID')
-                          ? nextData['senderUID']
-                          : 'null';
-                      return SlideTransition(
-                        position: Tween<Offset>(
-                                begin: Offset(0, 1.0), end: Offset(0, 0))
-                            .animate(animation),
-                        child: MessageBubble(
-                          documentData: nowData,
-                          pastUID: pastUID,
-                          nextUID: nextUID,
-                        ),
-                      );
+                      return false;
                     },
+                    child: FirestoreAnimatedList(
+                      query: FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .orderBy('time', descending: true)
+                          .limit(documentLoad.value),
+                      reverse: true,
+                      linear: true,
+                      duration: Duration(milliseconds: 150),
+                      itemBuilder: (context, snap, animation, i) {
+                        final nowData, pastData, nextData;
+                        nowData = snap![i]!.data() as Map;
+                        if (i == 0) {
+                          nextData = {'senderUID': 'null'};
+                        } else {
+                          nextData = snap[i - 1]!.data() as Map;
+                        }
+                        if (i == snap.length - 1) {
+                          pastData = {'senderUID': 'null'};
+                        } else {
+                          pastData = snap[i + 1]!.data() as Map;
+                        }
+                        // Above, pastData should have been i-1 and nextData i+1.
+                        // But, as the list needs to be in reverse order, we need
+                        // to consider this workaround.
+                        final pastUID = pastData.containsKey('senderUID')
+                            ? pastData['senderUID']
+                            : 'null';
+                        final nextUID = nextData.containsKey('senderUID')
+                            ? nextData['senderUID']
+                            : 'null';
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                                  begin: Offset(0, 0.5), end: Offset(0, 0))
+                              .animate(animation),
+                          child: SizeTransition(
+                            axis: Axis.vertical,
+                            axisAlignment: -0.5,
+                            sizeFactor: animation,
+                            child: MessageBubble(
+                              documentData: nowData,
+                              pastUID: pastUID,
+                              nextUID: nextUID,
+                              chatId: chatId,
+                              messageId: snap[i]!.id,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   )
                   // StreamBuilder(
                   //   stream: stream,
