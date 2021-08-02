@@ -27,6 +27,7 @@ class ChatsRepository {
       PickedFile? multimediaFile,
       MessageType messageType,
       String chatReference,
+      String senderChatName,
       TextEditingController inputMethodTextController) async {
     var db = FirebaseFirestore.instance;
     var auth = FirebaseAuth.instance;
@@ -53,9 +54,9 @@ class ChatsRepository {
           },
           body: jsonEncode({
             'to': '/topics/$chatReference',
-            'notification': {
-              'title': 'Mesaj de la $senderName',
-              'body': '$universalTextCommunication'
+            'data': {
+              'title': '$senderName ($senderChatName)',
+              'body': universalTextCommunication,
             }
           }),
         );

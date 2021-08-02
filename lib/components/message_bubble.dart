@@ -1,9 +1,11 @@
 import 'package:allo/repositories/repositories.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart' hide CupertinoContextMenu;
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class MessageBubble extends HookWidget {
   final Map documentData;
@@ -36,6 +38,16 @@ class MessageBubble extends HookWidget {
     }
   }
 
+  String get time {
+    if (documentData.containsKey('time')) {
+      var time = DateTime.fromMillisecondsSinceEpoch(
+          (documentData['time'] as Timestamp).millisecondsSinceEpoch);
+      return DateFormat.Hm().format(time);
+    } else {
+      return '00:00';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (FirebaseAuth.instance.currentUser?.uid != senderUID) {
@@ -54,6 +66,7 @@ class MessageBubble extends HookWidget {
         nextUID: nextUID,
         messageId: messageId,
         chatId: chatId,
+        time: time,
       );
     }
   }
@@ -172,6 +185,7 @@ class _SentMessageBubble extends HookWidget {
     required this.nextUID,
     required this.chatId,
     required this.messageId,
+    required this.time,
   });
   final String messageTextContent;
   final String senderUID;
@@ -179,6 +193,7 @@ class _SentMessageBubble extends HookWidget {
   final String nextUID;
   final String chatId;
   final String messageId;
+  final String time;
   bool get isSameSenderAsInPast => senderUID == pastUID;
   bool get isSameSenderAsInFuture => senderUID == nextUID;
 
@@ -237,8 +252,32 @@ class _SentMessageBubble extends HookWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 5, right: 5),
-                    child: Text(messageTextContent),
+                    padding: const EdgeInsets.only(left: 5, right: 1),
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.end,
+                      runAlignment: WrapAlignment.end,
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      children: [
+                        Text(messageTextContent),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6),
+                          child: Text(
+                            time,
+                            style: TextStyle(fontSize: 12),
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 3, bottom: 1),
+                          child: Icon(
+                            CupertinoIcons.check_mark,
+                            color: CupertinoColors.white,
+                            size: 14,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               ),

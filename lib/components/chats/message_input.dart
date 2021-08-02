@@ -9,8 +9,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class MessageInput extends HookWidget {
   late String _messageTextContent;
   final String _chatReference;
+  final String senderChatName;
   final TextEditingController _messageController = TextEditingController();
-  MessageInput(this._chatReference);
+  MessageInput(this._chatReference, this.senderChatName);
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +63,13 @@ class MessageInput extends HookWidget {
                 alignment: Alignment.center,
                 iconSize: 27.5,
                 icon: Icon(CupertinoIcons.arrow_up_circle_fill),
-                onPressed: () => chats.sendMessage(_messageTextContent, null,
-                    MessageType.TEXT_ONLY, _chatReference, _messageController),
+                onPressed: () => chats.sendMessage(
+                    _messageTextContent,
+                    null,
+                    MessageType.TEXT_ONLY,
+                    _chatReference,
+                    senderChatName,
+                    _messageController),
               ),
             ],
           ),

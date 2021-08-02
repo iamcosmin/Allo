@@ -93,21 +93,16 @@ class Chat extends HookWidget {
                     final nextUID = nextData.containsKey('senderUID')
                         ? nextData['senderUID']
                         : 'null';
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                              begin: Offset(0, 0.5), end: Offset(0, 0))
-                          .animate(animation),
-                      child: SizeTransition(
-                        axis: Axis.vertical,
-                        axisAlignment: 0,
-                        sizeFactor: animation,
-                        child: MessageBubble(
-                          documentData: nowData,
-                          pastUID: pastUID,
-                          nextUID: nextUID,
-                          chatId: chatId,
-                          messageId: snap[i]!.id,
-                        ),
+                    return SizeTransition(
+                      axis: Axis.vertical,
+                      axisAlignment: -1,
+                      sizeFactor: animation,
+                      child: MessageBubble(
+                        documentData: nowData,
+                        pastUID: pastUID,
+                        nextUID: nextUID,
+                        chatId: chatId,
+                        messageId: snap[i]!.id,
                       ),
                     );
                   },
@@ -188,7 +183,7 @@ class Chat extends HookWidget {
                 flex: 0,
                 child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: MessageInput(chatId)),
+                    child: MessageInput(chatId, title)),
               )
             ],
           ),
