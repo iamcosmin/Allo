@@ -1,3 +1,4 @@
+import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -19,14 +20,19 @@ Future _onBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Notification');
   await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-    id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-    title: message.data['title'],
-    body: message.data['body'],
-    channelKey: 'conversations',
-    notificationLayout: NotificationLayout.Inbox,
-    createdSource: NotificationSource.Firebase,
-  ));
+    content: NotificationContent(
+        id: int.parse(
+            message.data['toChat'].replaceAll(RegExp(r'[a-zA-Z]'), '')),
+        title: '${message.data['senderName']} (${message.data['chatName']})',
+        body: message.data['text'],
+        channelKey: 'conversations',
+        notificationLayout: NotificationLayout.Inbox,
+        createdSource: NotificationSource.Firebase,
+        payload: {
+          'chat': message.data['toChat'],
+          'title': message.data['chatName']
+        }),
+  );
 }
 
 void main() async {
@@ -83,6 +89,7 @@ void main() async {
 
 class MyApp extends HookWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     final theme = useProvider(appThemeProvider);

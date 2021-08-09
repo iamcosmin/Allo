@@ -55,8 +55,10 @@ class ChatsRepository {
           body: jsonEncode({
             'to': '/topics/$chatReference',
             'data': {
-              'title': '$senderName ($senderChatName)',
-              'body': universalTextCommunication,
+              'chatName': senderChatName,
+              'senderName': senderName,
+              'text': universalTextCommunication,
+              'toChat': chatReference
             }
           }),
         );

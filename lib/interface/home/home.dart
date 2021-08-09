@@ -3,6 +3,7 @@ import 'package:allo/components/list/list_tile.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/progress_rings.dart';
 import 'package:animations/animations.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,6 +55,15 @@ class Home extends HookWidget {
     }
 
     useEffect(() {
+      AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
+        await navigation.push(
+            context,
+            Chat(
+              title: event.payload!['title']!,
+              chatId: event.payload!['chat']!,
+            ),
+            SharedAxisTransitionType.scaled);
+      });
       Future.microtask(() async => await getChatsData());
     }, const []);
 
