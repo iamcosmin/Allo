@@ -1,6 +1,5 @@
 import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -54,14 +53,5 @@ class NavigationRepository {
               );
             }),
         (route) => false);
-  }
-
-  Future _returnFirebaseUser() async {
-    var auth = FirebaseAuth.instance;
-    var firebaseUser = auth.currentUser;
-
-    firebaseUser ??= await auth.authStateChanges().first;
-
-    return firebaseUser;
   }
 }

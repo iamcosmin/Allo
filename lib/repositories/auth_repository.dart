@@ -4,7 +4,6 @@ import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/main.dart';
-import 'package:allo/repositories/preferences_repository.dart';
 // import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
@@ -17,20 +16,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// Spec:
-// Use a error provider to provide error input to a function
-
-final errorProvider =
-    StateNotifierProvider<ErrorProvider, String>((ref) => ErrorProvider());
-
-class ErrorProvider extends StateNotifier<String> {
-  ErrorProvider() : super('');
-
-  void passError(String error) {
-    state = error;
-  }
-}
 
 final authProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(ref);
@@ -155,6 +140,21 @@ class AuthRepository {
     }
   }
 
+  Future returnUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('username') == null) {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final db = FirebaseFirestore.instance;
+      final usernames =
+          await db.collection('users').doc('usernames').get().then((value) {
+        return value.data() as Map<String, String>;
+      });
+      final username = usernames.keys.firstWhere((element) => element == uid);
+      await prefs.setString('username', username);
+    }
+    return prefs.getString('username');
+  }
+
   Future checkUsernameInSignUp(
       {required String username,
       required ValueNotifier<String> error,
@@ -188,6 +188,45 @@ class AuthRepository {
       }
     } else {
       error.value = 'Numele de utilizator nu poate fi gol.';
+    }
+  }
+
+  Future changeName(
+      {required String name,
+      required BuildContext context,
+      required ValueNotifier<String> error}) async {
+    FocusScope.of(context).unfocus();
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      final db = FirebaseFirestore.instance
+          .collection('users')
+          .doc(await returnUsername());
+      await db.update({
+        'name': name,
+      });
+      await user?.updateDisplayName(name);
+    } catch (e) {
+      error.value = e.toString();
+    }
+  }
+
+  Future changeUsername(
+      {required String username,
+      required BuildContext context,
+      required ValueNotifier error}) async {
+    FocusScope.of(context).unfocus();
+    try {
+      final db = FirebaseFirestore.instance.collection('users');
+      final prefs = await SharedPreferences.getInstance();
+      final data = await db
+          .doc(await returnUsername())
+          .get()
+          .then((value) => value.data() as Map<String, Object>);
+      await db.doc(await returnUsername()).delete();
+      await db.doc(username).set(data);
+      await prefs.setString('username', username);
+    } catch (e) {
+      error.value = e.toString();
     }
   }
 
