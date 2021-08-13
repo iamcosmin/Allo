@@ -49,7 +49,7 @@ class SetupUsername extends HookWidget {
           ],
         )
       ],
-      onButtonPress: () async => auth.checkUsernameInSignUp(
+      onButtonPress: () async => auth.isUsernameCompliant(
           username: controller.text,
           error: error,
           context: context,

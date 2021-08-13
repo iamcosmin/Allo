@@ -51,8 +51,8 @@ class SetupProfilePicture extends HookWidget {
                     ),
                     PersonPicture.determine(
                         radius: 100,
-                        profilePicture: auth.returnProfilePicture(),
-                        initials: auth.returnAuthenticatedNameInitials()),
+                        profilePicture: auth.user.profilePicture,
+                        initials: auth.user.nameInitials),
                   ],
                 ),
               ),
@@ -63,7 +63,7 @@ class SetupProfilePicture extends HookWidget {
           header: Text('Gestionează imaginea de profil'),
           children: [
             GestureDetector(
-              onTap: () async => await auth.updateProfilePicture(
+              onTap: () async => await auth.user.updateProfilePicture(
                   loaded: loaded,
                   percentage: percentage,
                   context: context,
