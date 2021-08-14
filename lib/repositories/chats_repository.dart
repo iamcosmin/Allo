@@ -28,13 +28,16 @@ class ChatsRepository {
       MessageType messageType,
       String chatReference,
       String senderChatName,
-      TextEditingController inputMethodTextController) async {
+      TextEditingController? inputMethodTextController) async {
     var db = FirebaseFirestore.instance;
     var auth = FirebaseAuth.instance;
     var senderName = FirebaseAuth.instance.currentUser!.displayName!;
     try {
       if (messageType == MessageType.TEXT_ONLY) {
-        inputMethodTextController.clear();
+        if (inputMethodTextController != null) {
+          inputMethodTextController.clear();
+        }
+
         await db
             .collection('chats')
             .doc(chatReference)

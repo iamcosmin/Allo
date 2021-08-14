@@ -1,8 +1,7 @@
-import 'package:allo/interface/home/chat/chat.dart';
+import 'package:allo/components/progress_rings.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
-import 'package:animations/animations.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,8 +17,14 @@ import 'interface/home/stack_navigator.dart';
 
 Future _onBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('Notification');
   await AwesomeNotifications().createNotification(
+    actionButtons: [
+      NotificationActionButton(
+        buttonType: ActionButtonType.InputField,
+        label: 'Răspunde',
+        key: 'reply',
+      )
+    ],
     content: NotificationContent(
         id: int.parse(
             message.data['toChat'].replaceAll(RegExp(r'[a-zA-Z]'), '')),
@@ -40,7 +45,7 @@ void main() async {
   if (!kIsWeb) {
     await AwesomeNotifications().initialize(
         // set the icon to null if you want to use the default app icon
-        'resource://drawable/ic_notification',
+        'resource://drawable/res_notification',
         [
           NotificationChannel(
             channelKey: 'conversations',
@@ -52,13 +57,13 @@ void main() async {
             importance: NotificationImportance.Max,
           )
         ]);
-    await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if (!isAllowed) {
-        // Insert here your friendly dialog box before call the request method
-        // This is very important to not harm the user experience
-        AwesomeNotifications().requestPermissionToSendNotifications();
-      }
-    });
+    // await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    //   if (!isAllowed) {
+    //     // Insert here your friendly dialog box before call the request method
+    //     // This is very important to not harm the user experience
+    //     AwesomeNotifications().requestPermissionToSendNotifications();
+    //   }
+    // });
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
   }
   await Firebase.initializeApp();
@@ -103,7 +108,14 @@ class MyApp extends HookWidget {
             if (snap.hasData) {
               return StackNavigator();
             } else if (snap.connectionState == ConnectionState.waiting) {
-              return Container();
+              return Center(
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  alignment: Alignment.center,
+                  child: ProgressRing(),
+                ),
+              );
             } else {
               return Setup();
             }

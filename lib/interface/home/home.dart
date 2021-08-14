@@ -19,6 +19,7 @@ class Home extends HookWidget {
   Widget build(BuildContext context) {
     final navigation = useProvider(Repositories.navigation);
     final auth = useProvider(Repositories.auth);
+    final chat = useProvider(Repositories.chats);
     final chats = useState([]);
 
     Future getChatsData() async {
@@ -55,16 +56,29 @@ class Home extends HookWidget {
     }
 
     useEffect(() {
-      AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
-        await navigation.push(
-            context,
-            Chat(
-              title: event.payload!['title']!,
-              chatId: event.payload!['chat']!,
-            ),
-            SharedAxisTransitionType.scaled);
+      Future.microtask(() async {
+        AwesomeNotifications()
+            .actionStream
+            .listen((ReceivedAction event) async {
+          if (!StringUtils.isNullOrEmpty(event.buttonKeyInput)) {
+            await chat.sendMessage(
+                event.buttonKeyInput,
+                null,
+                MessageType.TEXT_ONLY,
+                event.payload!['chat']!,
+                event.payload!['title']!,
+                null);
+          }
+          await navigation.push(
+              context,
+              Chat(
+                title: event.payload!['title']!,
+                chatId: event.payload!['chat']!,
+              ),
+              SharedAxisTransitionType.scaled);
+        });
+        await getChatsData();
       });
-      Future.microtask(() async => await getChatsData());
     }, const []);
 
     return CupertinoPageScaffold(
@@ -139,5 +153,16 @@ class Home extends HookWidget {
         ))
       ],
     ));
+  }
+}
+
+class StringUtils {
+  static final RegExp _emptyRegex = RegExp(r'^\s*$');
+  static bool isNullOrEmpty(String? value,
+      {bool considerWhiteSpaceAsEmpty = true}) {
+    if (considerWhiteSpaceAsEmpty) {
+      return value == null || _emptyRegex.hasMatch(value);
+    }
+    return value?.isEmpty ?? true;
   }
 }
