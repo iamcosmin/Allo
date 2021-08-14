@@ -235,6 +235,24 @@ class AuthRepository {
     }
   }
 
+  Future signOut(BuildContext context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+      for (final key in keys) {
+        if (key != 'isDarkModeEnabled') {
+          await prefs.remove(key);
+        }
+      }
+      await FirebaseAuth.instance.signOut();
+      await context
+          .read(Repositories.navigation)
+          .pushPermanent(context, MyApp(), SharedAxisTransitionType.scaled);
+    } catch (e) {
+      throw Exception('Something is wrong...');
+    }
+  }
+
   Future changeUsername(
       {required String username,
       required BuildContext context,
@@ -258,6 +276,30 @@ class AuthRepository {
   /// Sends an email to the provided email address to verify the account.
   Future sendVerification() async {
     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+  }
+
+  String returnNameInitials(String name) {
+    final splitedName = name.split(' ');
+    final arrayOfInitials = [];
+    var initials = '';
+    if (splitedName.isEmpty) {
+      initials = splitedName[0].substring(0, 1);
+    } else {
+      for (var strings in splitedName) {
+        if (strings.isNotEmpty) {
+          arrayOfInitials.add(strings.substring(0, 1));
+        }
+      }
+      initials = arrayOfInitials.join('');
+    }
+    return initials;
+  }
+
+  Future<String> getUserProfilePicture(String uid) async {
+    return await FirebaseStorage.instance
+        .ref()
+        .child('profilePictures/$uid.png')
+        .getDownloadURL();
   }
 }
 
