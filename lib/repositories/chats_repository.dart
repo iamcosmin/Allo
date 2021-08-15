@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:allo/repositories/auth_repository.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,64 +18,29 @@ enum MessageType {
   UNSUPPORTED,
 }
 
+class TextMessage {
+  TextMessage(
+      {required this.text,
+      required this.chatId,
+      required this.context,
+      required this.chatName});
+  final String text;
+  final String chatId;
+  final BuildContext context;
+  final String chatName;
+}
+
+class ImageMessage {}
+
+class MessageTypes {
+  static final String TEXT = 'text';
+  static final String IMAGE = 'image';
+}
+
 final chatsProvider = Provider<ChatsRepository>((ref) => ChatsRepository());
 
 class ChatsRepository {
-  /// The sendMessage() function is experimental and its use is not recommended.
-  /// Please use the writeMessage() function below to send legacy messages
-  /// to the database.
-  Future sendMessage(
-      String universalTextCommunication,
-      PickedFile? multimediaFile,
-      MessageType messageType,
-      String chatReference,
-      String senderChatName,
-      TextEditingController? inputMethodTextController) async {
-    var db = FirebaseFirestore.instance;
-    var auth = FirebaseAuth.instance;
-    var senderName = FirebaseAuth.instance.currentUser!.displayName!;
-    try {
-      if (messageType == MessageType.TEXT_ONLY) {
-        if (inputMethodTextController != null) {
-          inputMethodTextController.clear();
-        }
-
-        await db
-            .collection('chats')
-            .doc(chatReference)
-            .collection('messages')
-            .add({
-          'messageTextContent': universalTextCommunication,
-          'senderUID': auth.currentUser?.uid,
-          'senderName': senderName,
-          'time': DateTime.now(),
-        });
-        await post(
-          Uri.parse('https://fcm.googleapis.com/fcm/send'),
-          headers: <String, String>{
-            'Authorization':
-                'key=AAAA9EHEBh8:APA91bEwgamP8cWZQewq7qkVrydw6BduUEhgeufHV9SZ2pBoRYcJy7GynZ-XZWVzuzDrERK7ZDJlwZiPWZJ4oWaKh9rwjlL8GMnLD0znMKZ6CZw6BPRtjU1xBtGUv-Nds0wydptQcuz6',
-            'Content-Type': 'application/json'
-          },
-          body: jsonEncode({
-            'to': '/topics/$chatReference',
-            'data': {
-              'chatName': senderChatName,
-              'senderName': senderName,
-              'text': universalTextCommunication,
-              'toChat': chatReference
-            }
-          }),
-        );
-      } else if (messageType == MessageType.IMAGE_WITHOUT_DESCRIPTION) {
-        // TO DO: Handle image uploading and Firestore behaviour
-      } else if (messageType == MessageType.IMAGE_WITH_DESCRIPTION) {
-        // TO DO: Handle image uploading and Firestore behaviour
-      }
-    } catch (e) {
-      //TO DO: Avoid empty catch blocks
-    }
-  }
+  final SendMessage send = SendMessage();
 
   Future deleteMessage(
       {required String messageId, required String chatId}) async {
@@ -84,39 +51,58 @@ class ChatsRepository {
         .doc(messageId)
         .delete();
   }
+}
 
-  Future writeMessage(String messageTextContent, String chatReference,
-      TextEditingController messageController) async {
-    var db = FirebaseFirestore.instance;
-    var auth = FirebaseAuth.instance;
-    try {
-      messageController.clear();
-      var senderUsername =
-          await db.collection('users').doc('usernames').get().then((value) {
-        return value.data()?[auth.currentUser?.uid];
-      });
-      await db
-          .collection('chats')
-          .doc(chatReference)
-          .collection('messages')
-          .add({
-        'messageTextContent': messageTextContent,
-        'senderUsername': senderUsername,
-        'time': DateTime.now(),
-        'senderFirebaseUID': auth.currentUser?.uid,
-      });
-    } catch (e) {
-      print(e);
+class SendMessage {
+  Future sendTextMessage(
+      {required String text,
+      required String chatId,
+      required BuildContext context,
+      required String chatName,
+      TextEditingController? controller}) async {
+    final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    final auth = context.read(Repositories.auth);
+    await db.collection('messages').add({
+      'type': MessageTypes.TEXT,
+      'name': auth.user.name,
+      'username': await auth.user.username,
+      'uid': auth.user.uid,
+      'text': text,
+      'time': DateTime.now(),
+    });
+    if (controller != null) {
+      controller.clear();
     }
+    await _sendNotification(
+        chatName: chatName,
+        name: auth.user.name,
+        content: text,
+        chatId: chatId);
   }
 
-  // Future sendPictureMessage() async {
-  //   PickedFile selected = await ImagePicker()
-  //       .getImage(source: ImageSource.camera)
-  //       .then((value) //  TO DO: Add image cropper
-  //           )
-  //       .then(
-  //           (value) // TO DO: Add image uploader and compose Firestore and Storage
-  //           );
-  // }
+  Future sendImageMessage() async {}
+
+  Future _sendNotification(
+      {required String chatName,
+      required String name,
+      required String content,
+      required String chatId}) async {
+    await post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'Authorization':
+            'key=AAAA9EHEBh8:APA91bEwgamP8cWZQewq7qkVrydw6BduUEhgeufHV9SZ2pBoRYcJy7GynZ-XZWVzuzDrERK7ZDJlwZiPWZJ4oWaKh9rwjlL8GMnLD0znMKZ6CZw6BPRtjU1xBtGUv-Nds0wydptQcuz6',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'to': '/topics/$chatId',
+        'data': {
+          'chatName': chatName,
+          'senderName': name,
+          'text': content,
+          'toChat': chatId,
+        }
+      }),
+    );
+  }
 }

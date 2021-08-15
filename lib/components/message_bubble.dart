@@ -1,6 +1,5 @@
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart' hide CupertinoContextMenu;
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -20,21 +19,33 @@ class MessageBubble extends HookWidget {
       required this.chatId,
       required this.messageId});
 
-  String get senderUID {
-    if (documentData.containsKey('senderUID')) {
-      return documentData['senderUID'];
-    } else if (documentData.containsKey('senderUsername')) {
-      return documentData['senderUsername'];
+  String get name {
+    if (documentData.containsKey('name')) {
+      return documentData['name'];
+    } else if (documentData.containsKey('senderName')) {
+      return documentData['senderName'];
     } else {
-      return 'noid';
+      return 'No Name';
     }
   }
 
-  String get messageTextContent {
-    if (documentData.containsKey('messageTextContent')) {
+  String get uid {
+    if (documentData.containsKey('uid')) {
+      return documentData['username'];
+    } else if (documentData.containsKey('senderUID')) {
+      return documentData['senderUID'];
+    } else {
+      return 'No UID';
+    }
+  }
+
+  String get text {
+    if (documentData.containsKey('text')) {
+      return documentData['text'];
+    } else if (documentData.containsKey('messageTextContent')) {
       return documentData['messageTextContent'];
     } else {
-      return 'Acest utilizator nu a scris nimic in mesaj. Acest lucru nu este posibil. Contacteaza administratorul.';
+      return 'No Body';
     }
   }
 
@@ -50,19 +61,20 @@ class MessageBubble extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (FirebaseAuth.instance.currentUser?.uid != senderUID) {
+    final auth = useProvider(Repositories.auth);
+    if (uid != auth.user.uid) {
       return _ReceiveMessageBubble(
-        senderName: documentData['senderName'],
-        senderUID: senderUID,
-        messageTextContent: messageTextContent,
+        name: name,
+        uid: uid,
+        text: text,
         pastUID: pastUID,
         nextUID: nextUID,
         time: time,
       );
     } else {
       return _SentMessageBubble(
-        messageTextContent: messageTextContent,
-        senderUID: senderUID,
+        text: text,
+        uid: uid,
         pastUID: pastUID,
         nextUID: nextUID,
         messageId: messageId,
@@ -80,24 +92,24 @@ class _ReceiveMessageBubble extends HookWidget {
   // If the pastUID == senderUID, we need to eliminate the name and change bubble
   // characteristics
   _ReceiveMessageBubble(
-      {required this.senderName,
-      required this.senderUID,
-      required this.messageTextContent,
+      {required this.name,
+      required this.uid,
+      required this.text,
       required this.pastUID,
       required this.nextUID,
       required this.time});
 
-  final String senderUID;
-  final String senderName;
-  final String messageTextContent;
+  final String uid;
+  final String name;
+  final String text;
   final String pastUID;
   final String nextUID;
   final String time;
-  bool get isSameSenderAsInPast => senderUID == pastUID;
-  bool get isSameSenderAsInFuture => senderUID == nextUID;
+  bool get isSameSenderAsInPast => uid == pastUID;
+  bool get isSameSenderAsInFuture => uid == nextUID;
 
   double get bottomPadding {
-    if (senderUID == nextUID || nextUID == 'null') {
+    if (uid == nextUID || nextUID == 'null') {
       return 5;
     } else {
       return 15;
@@ -110,7 +122,7 @@ class _ReceiveMessageBubble extends HookWidget {
     final colors = useProvider(Repositories.colors);
     final selected = useState(false);
     final regexEmoji = RegExp(
-        r'(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
+        r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$');
     void change() =>
         selected.value == true ? selected.value = false : selected.value = true;
 
@@ -127,7 +139,7 @@ class _ReceiveMessageBubble extends HookWidget {
               // Profile picture
               if (!isSameSenderAsInFuture) ...[
                 FutureBuilder<String>(
-                    future: auth.getUserProfilePicture(senderUID),
+                    future: auth.getUserProfilePicture(uid),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return PersonPicture.profilePicture(
@@ -136,7 +148,7 @@ class _ReceiveMessageBubble extends HookWidget {
                         return PersonPicture.initials(
                             color: CupertinoColors.systemIndigo,
                             radius: 36,
-                            initials: auth.returnNameInitials(senderName));
+                            initials: auth.returnNameInitials(name));
                       }
                     }),
               ] else ...[
@@ -154,7 +166,7 @@ class _ReceiveMessageBubble extends HookWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 15, bottom: 4),
                       child: Text(
-                        senderName,
+                        name,
                         style: TextStyle(
                             fontSize: 11, color: CupertinoColors.inactiveGray),
                       ),
@@ -186,12 +198,10 @@ class _ReceiveMessageBubble extends HookWidget {
                           Padding(
                             padding: const EdgeInsets.only(left: 5, right: 5),
                             child: Text(
-                              messageTextContent,
+                              text,
                               style: TextStyle(
                                   fontSize:
-                                      regexEmoji.hasMatch(messageTextContent)
-                                          ? 30
-                                          : null),
+                                      regexEmoji.hasMatch(text) ? 30 : null),
                             ),
                           ),
                         ],
@@ -234,23 +244,23 @@ class _ReceiveMessageBubble extends HookWidget {
 
 class _SentMessageBubble extends HookWidget {
   _SentMessageBubble({
-    required this.messageTextContent,
-    required this.senderUID,
+    required this.text,
+    required this.uid,
     required this.pastUID,
     required this.nextUID,
     required this.chatId,
     required this.messageId,
     required this.time,
   });
-  final String messageTextContent;
-  final String senderUID;
+  final String text;
+  final String uid;
   final String pastUID;
   final String nextUID;
   final String chatId;
   final String messageId;
   final String time;
-  bool get isSameSenderAsInPast => senderUID == pastUID;
-  bool get isSameSenderAsInFuture => senderUID == nextUID;
+  bool get isSameSenderAsInPast => uid == pastUID;
+  bool get isSameSenderAsInFuture => uid == nextUID;
 
   @override
   Widget build(BuildContext context) {
@@ -259,7 +269,7 @@ class _SentMessageBubble extends HookWidget {
     void change() =>
         selected.value == true ? selected.value = false : selected.value = true;
     final regexEmoji = RegExp(
-        r'(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
+        r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$');
     return Container(
       padding:
           EdgeInsets.only(bottom: isSameSenderAsInFuture ? 2 : 15, right: 10),
@@ -319,11 +329,9 @@ class _SentMessageBubble extends HookWidget {
                       Padding(
                         padding: const EdgeInsets.only(left: 5, right: 1),
                         child: Text(
-                          messageTextContent,
+                          text,
                           style: TextStyle(
-                              fontSize: regexEmoji.hasMatch(messageTextContent)
-                                  ? 30
-                                  : null),
+                              fontSize: regexEmoji.hasMatch(text) ? 30 : null),
                         ),
                       ),
                     ],

@@ -13,11 +13,6 @@ class StackNavigator extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final auth = useProvider(Repositories.auth);
-    useEffect(() {
-      Future.microtask(() async {
-        auth.cache(context);
-      });
-    });
     final colors = useProvider(Repositories.colors);
     return CupertinoPageScaffold(
       child: CupertinoTabScaffold(

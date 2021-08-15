@@ -72,7 +72,7 @@ class Chat extends HookWidget {
                   linear: false,
                   duration: Duration(milliseconds: 200),
                   itemBuilder: (context, snap, animation, i) {
-                    final nowData, pastData, nextData;
+                    final Map nowData, pastData, nextData;
                     nowData = snap![i]!.data() as Map;
                     if (i == 0) {
                       nextData = {'senderUID': 'null'};
@@ -87,12 +87,16 @@ class Chat extends HookWidget {
                     // Above, pastData should have been i-1 and nextData i+1.
                     // But, as the list needs to be in reverse order, we need
                     // to consider this workaround.
-                    final pastUID = pastData.containsKey('senderUID')
-                        ? pastData['senderUID']
-                        : 'null';
-                    final nextUID = nextData.containsKey('senderUID')
-                        ? nextData['senderUID']
-                        : 'null';
+                    final pastUID = pastData.containsKey('uid')
+                        ? pastData['uid']
+                        : pastData.containsKey('senderUID')
+                            ? pastData['senderUID']
+                            : 'null';
+                    final nextUID = nextData.containsKey('uid')
+                        ? nextData['uid']
+                        : nextData.containsKey('senderUID')
+                            ? nextData['senderUID']
+                            : 'null';
                     return SizeTransition(
                       axis: Axis.vertical,
                       axisAlignment: -1,
