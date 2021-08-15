@@ -7,8 +7,6 @@ environment:
   sdk: ">=2.13.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   animations: ^2.0.0
   awesome_notifications: ^0.0.6+10
   cloud_firestore: ^2.4.0
@@ -17,10 +15,13 @@ dependencies:
   firebase_core: ^1.4.0
   firebase_messaging: ^10.0.4
   firebase_storage: ^10.0.1
+  flutter:
+    sdk: flutter
   flutter_hooks: ^0.17.0
   hooks_riverpod: ^0.14.0+4
   image_cropper: ^1.4.1
   image_picker: ^0.8.2
+  in_app_update: ^2.0.0
   shared_preferences: ^2.0.6
 
 dev_dependencies:

@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide ThemeData, Colors;
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/stack_navigator.dart';
 
@@ -57,13 +58,6 @@ void main() async {
             importance: NotificationImportance.Max,
           )
         ]);
-    // await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-    //   if (!isAllowed) {
-    //     // Insert here your friendly dialog box before call the request method
-    //     // This is very important to not harm the user experience
-    //     AwesomeNotifications().requestPermissionToSendNotifications();
-    //   }
-    // });
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
   }
   await Firebase.initializeApp();
@@ -94,9 +88,20 @@ void main() async {
 
 class MyApp extends HookWidget {
   // This widget is the root of your application.
-
   @override
   Widget build(BuildContext context) {
+    useEffect(() {
+      if (!kIsWeb) {
+        Future.microtask(() async {
+          await InAppUpdate.checkForUpdate().then((value) async {
+            if (value.updateAvailability ==
+                UpdateAvailability.updateAvailable) {
+              await InAppUpdate.performImmediateUpdate();
+            }
+          });
+        });
+      }
+    }, const []);
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
     return CupertinoApp(
