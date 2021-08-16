@@ -20,7 +20,6 @@ class Chat extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = useScrollController();
     final documentLoad = useState(20);
     useEffect(() {
       if (!kIsWeb) {
@@ -70,6 +69,13 @@ class Chat extends HookWidget {
                       .limit(documentLoad.value),
                   reverse: true,
                   linear: false,
+                  defaultChild: Center(
+                    child: Container(
+                      height: 60,
+                      width: 60,
+                      child: ProgressRing(),
+                    ),
+                  ),
                   duration: Duration(milliseconds: 200),
                   itemBuilder: (context, snap, animation, i) {
                     final Map nowData, pastData, nextData;

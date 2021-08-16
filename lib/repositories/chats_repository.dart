@@ -1,36 +1,12 @@
 import 'dart:convert';
 
-import 'package:allo/repositories/auth_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
-
-enum MessageType {
-  TEXT_ONLY,
-  IMAGE_WITHOUT_DESCRIPTION,
-  IMAGE_WITH_DESCRIPTION,
-  CHAT_PILL,
-  UNSUPPORTED,
-}
-
-class TextMessage {
-  TextMessage(
-      {required this.text,
-      required this.chatId,
-      required this.context,
-      required this.chatName});
-  final String text;
-  final String chatId;
-  final BuildContext context;
-  final String chatName;
-}
-
-class ImageMessage {}
+import 'package:image_picker/image_picker.dart';
 
 class MessageTypes {
   static final String TEXT = 'text';
@@ -80,7 +56,41 @@ class SendMessage {
         chatId: chatId);
   }
 
-  Future sendImageMessage() async {}
+  Future sendImageMessage(
+      {required String chatName,
+      required String name,
+      required XFile imageFile,
+      String? description,
+      required String chatId,
+      required ValueNotifier<double> progress,
+      required BuildContext context}) async {
+    final auth = context.read(Repositories.auth);
+    final path = 'chats/$chatId/${DateTime.now()}_${await auth.user.username}';
+    final storage = FirebaseStorage.instance;
+    final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+    final task = storage.ref(path).putData(await imageFile.readAsBytes(),
+        SettableMetadata(contentType: 'image/png'));
+    task.snapshotEvents.listen((event) async {
+      progress.value = (event.bytesTransferred / event.totalBytes) * 100;
+      if (event.state == TaskState.success) {
+        await db.collection('messages').add({
+          'type': MessageTypes.IMAGE,
+          'name': auth.user.name,
+          'username': await auth.user.username,
+          'uid': auth.user.uid,
+          'link': await event.ref.getDownloadURL(),
+          'description': description,
+          'time': DateTime.now(),
+        });
+        await _sendNotification(
+            chatName: chatName,
+            name: name,
+            content: 'Imagine' + (description != null ? ' - $description' : ''),
+            chatId: chatId);
+      }
+    });
+  }
 
   Future _sendNotification(
       {required String chatName,
