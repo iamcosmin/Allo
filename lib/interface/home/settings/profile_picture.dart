@@ -22,12 +22,11 @@ class ProfilePictureSettings extends HookWidget {
     var percentage = useState(0.0);
     final auth = useProvider(Repositories.auth);
 
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Fotografie de profil'),
-        previousPageTitle: 'Setări',
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Fotografie de profil'),
       ),
-      child: SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(padding: EdgeInsets.only(top: 30)),

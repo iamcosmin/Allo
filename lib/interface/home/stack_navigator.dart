@@ -1,5 +1,5 @@
 import 'package:allo/repositories/repositories.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,27 +12,32 @@ class StackNavigator extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selected = useState(0);
     final auth = useProvider(Repositories.auth);
     useEffect(() {
       Future.microtask(() async {
         auth.cache(context);
       });
     });
-    final colors = useProvider(Repositories.colors);
-    return CupertinoPageScaffold(
-      child: CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          backgroundColor: colors.tabBarColor,
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.home), label: 'Acasă'),
-            BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.settings), label: 'Setări')
-          ],
-        ),
-        tabBuilder: (context, index) {
-          return pages[index];
-        },
+    return Scaffold(
+      body: PageTransitionSwitcher(
+          transitionBuilder: (child, animation, secondaryAnimation) {
+            return SharedAxisTransition(
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              transitionType: SharedAxisTransitionType.scaled,
+              fillColor: Colors.transparent,
+              child: child,
+            );
+          },
+          child: pages[selected.value]),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Acasă'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setări')
+        ],
+        currentIndex: selected.value,
+        onTap: (index) => selected.value = index,
       ),
     );
   }

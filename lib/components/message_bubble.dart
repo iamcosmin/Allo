@@ -1,8 +1,13 @@
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart' hide CupertinoContextMenu;
 import 'package:allo/components/person_picture.dart';
+import 'package:flutter/cupertino.dart'
+    show
+        showCupertinoModalPopup,
+        CupertinoActionSheet,
+        CupertinoActionSheetAction;
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -134,7 +139,7 @@ class _ReceiveMessageBubble extends HookWidget {
                             radius: 36, profilePicture: snapshot.data);
                       } else {
                         return PersonPicture.initials(
-                            color: CupertinoColors.systemIndigo,
+                            color: Colors.indigo,
                             radius: 36,
                             initials: auth.returnNameInitials(senderName));
                       }
@@ -155,8 +160,7 @@ class _ReceiveMessageBubble extends HookWidget {
                       padding: const EdgeInsets.only(left: 15, bottom: 4),
                       child: Text(
                         senderName,
-                        style: TextStyle(
-                            fontSize: 11, color: CupertinoColors.inactiveGray),
+                        style: TextStyle(fontSize: 13, color: Colors.grey),
                       ),
                     ),
                   ],
@@ -191,7 +195,7 @@ class _ReceiveMessageBubble extends HookWidget {
                                   fontSize:
                                       regexEmoji.hasMatch(messageTextContent)
                                           ? 30
-                                          : null),
+                                          : 17),
                             ),
                           ),
                         ],
@@ -213,7 +217,7 @@ class _ReceiveMessageBubble extends HookWidget {
                     'Primit',
                     style: TextStyle(
                         fontSize: 13,
-                        color: CupertinoColors.inactiveGray,
+                        color: Colors.grey,
                         fontWeight: FontWeight.bold),
                   ),
                   Padding(padding: EdgeInsets.only(left: 5)),
@@ -221,7 +225,7 @@ class _ReceiveMessageBubble extends HookWidget {
                     time,
                     style: TextStyle(
                       fontSize: 13,
-                      color: CupertinoColors.inactiveGray,
+                      color: Colors.grey,
                     ),
                   )
                 ],
@@ -299,7 +303,7 @@ class _SentMessageBubble extends HookWidget {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: CupertinoColors.activeBlue,
+                    color: Colors.blue,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight:
@@ -323,7 +327,7 @@ class _SentMessageBubble extends HookWidget {
                           style: TextStyle(
                               fontSize: regexEmoji.hasMatch(messageTextContent)
                                   ? 30
-                                  : null),
+                                  : 17),
                         ),
                       ),
                     ],
@@ -344,7 +348,7 @@ class _SentMessageBubble extends HookWidget {
                     'Trimis',
                     style: TextStyle(
                         fontSize: 13,
-                        color: CupertinoColors.inactiveGray,
+                        color: Colors.grey,
                         fontWeight: FontWeight.bold),
                   ),
                   Padding(padding: EdgeInsets.only(left: 5)),
@@ -352,7 +356,7 @@ class _SentMessageBubble extends HookWidget {
                     time,
                     style: TextStyle(
                       fontSize: 13,
-                      color: CupertinoColors.inactiveGray,
+                      color: Colors.grey,
                     ),
                   )
                 ],

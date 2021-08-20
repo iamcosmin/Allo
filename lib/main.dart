@@ -1,3 +1,4 @@
+import 'package:allo/components/deferred.dart';
 import 'package:allo/components/progress_rings.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
@@ -104,8 +105,9 @@ class MyApp extends HookWidget {
     }, const []);
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
-    return CupertinoApp(
+    return MaterialApp(
         title: 'Allo',
+        themeMode: darkState == true ? ThemeMode.dark : ThemeMode.light,
         theme: theme.getAppThemeData(context, darkState),
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
@@ -113,14 +115,7 @@ class MyApp extends HookWidget {
             if (snap.hasData) {
               return StackNavigator();
             } else if (snap.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  alignment: Alignment.center,
-                  child: ProgressRing(),
-                ),
-              );
+              return Deferred();
             } else {
               return Setup();
             }

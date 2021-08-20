@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -26,52 +25,53 @@ class MessageInput extends HookWidget {
         child: Container(
           padding: const EdgeInsets.only(bottom: 2, left: 5, right: 5, top: 2),
           color: colors.messageInput,
-          child: Row(
-            children: [
-              IconButton(
-                alignment: Alignment.center,
-                iconSize: 25,
-                color: CupertinoColors.systemGrey,
-                icon: Icon(CupertinoIcons.paperclip),
-                onPressed: () => alerts.noSuchMethodError(context),
-              ),
-              AnimatedContainer(
-                duration: Duration(seconds: 2),
-                curve: Curves.ease,
-                constraints: BoxConstraints(
-                  maxHeight: 150,
-                  minHeight: 20,
-                  minWidth: MediaQuery.of(context).size.width - 110,
-                  maxWidth: MediaQuery.of(context).size.width - 110,
+          child: Container(
+            color: Colors.grey.shade900,
+            child: Row(
+              children: [
+                IconButton(
+                  alignment: Alignment.center,
+                  iconSize: 25,
+                  color: Colors.grey,
+                  icon: Icon(Icons.attach_file),
+                  onPressed: () => alerts.noSuchMethodError(context),
                 ),
-                child: CupertinoTextField(
-                  scrollPadding: MediaQuery.of(context).viewInsets,
-                  expands: true,
-                  maxLines: null,
-                  decoration: BoxDecoration(
-                      color: colors.nonColors,
-                      borderRadius: BorderRadius.circular(20)),
-                  placeholder: 'Mesaj',
-                  prefix: Padding(
-                    padding: EdgeInsets.only(left: 10),
+                AnimatedContainer(
+                  duration: Duration(seconds: 2),
+                  curve: Curves.ease,
+                  constraints: BoxConstraints(
+                    maxHeight: 150,
+                    minHeight: 20,
+                    minWidth: MediaQuery.of(context).size.width - 110,
+                    maxWidth: MediaQuery.of(context).size.width - 110,
                   ),
-                  controller: _messageController,
-                  onChanged: (value) => _messageTextContent = value,
+                  child: TextFormField(
+                    scrollPadding: MediaQuery.of(context).viewInsets,
+                    minLines: 1,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Mesaj',
+                    ),
+                    controller: _messageController,
+                    onChanged: (value) => _messageTextContent = value,
+                  ),
                 ),
-              ),
-              IconButton(
-                alignment: Alignment.center,
-                iconSize: 27.5,
-                icon: Icon(CupertinoIcons.arrow_up_circle_fill),
-                onPressed: () => chats.sendMessage(
-                    _messageTextContent,
-                    null,
-                    MessageType.TEXT_ONLY,
-                    _chatReference,
-                    senderChatName,
-                    _messageController),
-              ),
-            ],
+                IconButton(
+                  alignment: Alignment.center,
+                  iconSize: 27.5,
+                  icon: Icon(Icons.send),
+                  onPressed: () => chats.sendMessage(
+                      _messageTextContent,
+                      null,
+                      MessageType.TEXT_ONLY,
+                      _chatReference,
+                      senderChatName,
+                      _messageController),
+                ),
+              ],
+            ),
           ),
         ),
       ),

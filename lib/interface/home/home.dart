@@ -1,16 +1,11 @@
-import 'package:allo/components/list/list_section.dart';
-import 'package:allo/components/list/list_tile.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/progress_rings.dart';
 import 'package:animations/animations.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:allo/components/refresh.dart';
 import 'package:allo/interface/home/chat/chat.dart';
-import 'package:allo/repositories/repositories.dart' hide Colors;
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -82,90 +77,81 @@ class Home extends HookWidget {
       });
     }, const []);
 
-    return CupertinoPageScaffold(
-        child: CustomScrollView(
-      slivers: [
-        CupertinoSliverNavigationBar(
-          largeTitle: Text(
-            'Conversații',
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, ibs) => [
+          SliverAppBar(
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              title: Text('Conversații'),
+            ),
+            expandedHeight: 100,
+            pinned: true,
+          ),
+        ],
+        body: RefreshIndicator(
+          onRefresh: () async => await getChatsData(),
+          child: ListView(
+            children: [
+              OpenContainer(
+                useRootNavigator: true,
+                closedColor: colors.nonColors,
+                openColor: colors.nonColors,
+                middleColor: Colors.transparent,
+                openBuilder: (context, action) {
+                  return Chat(
+                    title: 'Allo',
+                    chatId: 'DFqPHH2R4E5j0tM55fIm',
+                  );
+                },
+                closedBuilder: (context, func) {
+                  return ListTile(
+                    title: Text('Allo'),
+                    leading: PersonPicture.initials(
+                      radius: 50,
+                      color: CupertinoColors.activeOrange,
+                      initials: auth.returnNameInitials(
+                        'Allo',
+                      ),
+                    ),
+                  );
+                },
+              ),
+              if (chats.value.isNotEmpty) ...[
+                for (var chat in chats.value) ...[
+                  OpenContainer(
+                    closedColor: colors.nonColors,
+                    transitionType: ContainerTransitionType.fadeThrough,
+                    openColor: colors.nonColors,
+                    openBuilder: (context, action) {
+                      return Chat(
+                        title: chat['name'],
+                        chatId: chat['chatId'],
+                      );
+                    },
+                    closedBuilder: (context, func) {
+                      return ListTile(
+                        title: Text(chat['name']),
+                        subtitle: Text(chat['chatId']),
+                        leading: PersonPicture.initials(
+                          radius: 50,
+                          color: CupertinoColors.activeOrange,
+                          initials: auth.returnNameInitials(
+                            chat['name'],
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                ]
+              ] else ...[
+                ListTile(title: Text('Nicio conversație.'))
+              ]
+            ],
           ),
         ),
-        FluentSliverRefreshControl(
-          onRefresh: () async => await getChatsData(),
-          // ignore: unnecessary_null_comparison
-        ),
-        SliverSafeArea(
-            sliver: SliverList(
-          delegate: SliverChildListDelegate([
-            Padding(padding: EdgeInsets.only(top: 20)),
-            CupertinoListSection.insetGrouped(
-              header: Text('Featured'),
-              children: [
-                OpenContainer(
-                  useRootNavigator: true,
-                  closedColor: Colors.transparent,
-                  openColor: Colors.transparent,
-                  middleColor: Colors.transparent,
-                  openBuilder: (context, action) {
-                    return Chat(
-                      title: 'Allo',
-                      chatId: 'DFqPHH2R4E5j0tM55fIm',
-                    );
-                  },
-                  closedBuilder: (context, func) {
-                    return CupertinoListTile(
-                      title: Text('Allo'),
-                      subtitle: Text(''),
-                      leading: PersonPicture.initials(
-                        radius: 30,
-                        color: CupertinoColors.activeOrange,
-                        initials: auth.returnNameInitials(
-                          'Allo',
-                        ),
-                      ),
-                    );
-                  },
-                )
-              ],
-            ),
-            CupertinoListSection.insetGrouped(
-                header: Text('Conversații'),
-                children: [
-                  if (chats.value.isNotEmpty) ...[
-                    for (var chat in chats.value) ...[
-                      OpenContainer(
-                        closedColor: Colors.transparent,
-                        transitionType: ContainerTransitionType.fadeThrough,
-                        openColor: Colors.transparent,
-                        openBuilder: (context, action) {
-                          return Chat(
-                            title: chat['name'],
-                            chatId: chat['chatId'],
-                          );
-                        },
-                        closedBuilder: (context, func) {
-                          return CupertinoListTile(
-                            title: Text(chat['name']),
-                            subtitle: Text(chat['chatId']),
-                            leading: PersonPicture.initials(
-                              radius: 30,
-                              color: CupertinoColors.activeOrange,
-                              initials: auth.returnNameInitials(
-                                chat['name'],
-                              ),
-                            ),
-                          );
-                        },
-                      )
-                    ]
-                  ] else ...[
-                    CupertinoListTile(title: Text('Nicio conversație.'))
-                  ]
-                ])
-          ]),
-        ))
-      ],
-    ));
+      ),
+    );
   }
 }
 
