@@ -299,7 +299,7 @@ class _SentMessageBubble extends HookWidget {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: CupertinoColors.activeOrange,
+                    color: CupertinoColors.activeBlue,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight:

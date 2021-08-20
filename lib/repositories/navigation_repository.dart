@@ -1,4 +1,4 @@
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/repositories/repositories.dart' hide Colors;
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,7 +28,7 @@ class NavigationRepository {
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SharedAxisTransition(
               animation: animation,
-              fillColor: context.read(Repositories.colors).nonColors,
+              fillColor: Colors.transparent,
               secondaryAnimation: secondaryAnimation,
               transitionType: SharedAxisTransitionType.horizontal,
               child: child,

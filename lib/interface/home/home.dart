@@ -10,7 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/refresh.dart';
 import 'package:allo/interface/home/chat/chat.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/repositories/repositories.dart' hide Colors;
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -21,6 +21,7 @@ class Home extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final chat = useProvider(Repositories.chats);
     final chats = useState([]);
+    final colors = useProvider(Repositories.colors);
 
     Future getChatsData() async {
       var chatIdList = [];
@@ -100,25 +101,31 @@ class Home extends HookWidget {
             CupertinoListSection.insetGrouped(
               header: Text('Featured'),
               children: [
-                CupertinoListTile(
-                  title: Text('Allo'),
-                  subtitle: Column(children: [
-                    ProgressBar(),
-                    Padding(padding: EdgeInsets.only(bottom: 10))
-                  ]),
-                  leading: PersonPicture.initials(
-                    radius: 30,
-                    initials: 'A',
-                    color: CupertinoColors.systemPurple,
-                  ),
-                  onTap: () => navigation.push(
-                      context,
-                      Chat(
-                        title: 'Allo',
-                        chatId: 'DFqPHH2R4E5j0tM55fIm',
+                OpenContainer(
+                  useRootNavigator: true,
+                  closedColor: Colors.transparent,
+                  openColor: Colors.transparent,
+                  middleColor: Colors.transparent,
+                  openBuilder: (context, action) {
+                    return Chat(
+                      title: 'Allo',
+                      chatId: 'DFqPHH2R4E5j0tM55fIm',
+                    );
+                  },
+                  closedBuilder: (context, func) {
+                    return CupertinoListTile(
+                      title: Text('Allo'),
+                      subtitle: Text(''),
+                      leading: PersonPicture.initials(
+                        radius: 30,
+                        color: CupertinoColors.activeOrange,
+                        initials: auth.returnNameInitials(
+                          'Allo',
+                        ),
                       ),
-                      SharedAxisTransitionType.scaled),
-                ),
+                    );
+                  },
+                )
               ],
             ),
             CupertinoListSection.insetGrouped(
@@ -126,23 +133,29 @@ class Home extends HookWidget {
                 children: [
                   if (chats.value.isNotEmpty) ...[
                     for (var chat in chats.value) ...[
-                      CupertinoListTile(
-                        title: Text(chat['name']),
-                        subtitle: Text(chat['chatId']),
-                        leading: PersonPicture.initials(
-                          radius: 30,
-                          color: CupertinoColors.activeOrange,
-                          initials: auth.returnNameInitials(
-                            chat['name'],
-                          ),
-                        ),
-                        onTap: () => navigation.push(
-                            context,
-                            Chat(
-                              title: chat['name'],
-                              chatId: chat['chatId'],
+                      OpenContainer(
+                        closedColor: Colors.transparent,
+                        transitionType: ContainerTransitionType.fadeThrough,
+                        openColor: Colors.transparent,
+                        openBuilder: (context, action) {
+                          return Chat(
+                            title: chat['name'],
+                            chatId: chat['chatId'],
+                          );
+                        },
+                        closedBuilder: (context, func) {
+                          return CupertinoListTile(
+                            title: Text(chat['name']),
+                            subtitle: Text(chat['chatId']),
+                            leading: PersonPicture.initials(
+                              radius: 30,
+                              color: CupertinoColors.activeOrange,
+                              initials: auth.returnNameInitials(
+                                chat['name'],
+                              ),
                             ),
-                            SharedAxisTransitionType.scaled),
+                          );
+                        },
                       )
                     ]
                   ] else ...[

@@ -27,7 +27,7 @@ const TextStyle _kDefaultActionTextStyle = TextStyle(
   inherit: false,
   fontFamily: 'VarDisplay',
   fontSize: 17.0,
-  color: CupertinoColors.activeOrange,
+  color: CupertinoColors.white,
   decoration: TextDecoration.none,
 );
 
@@ -106,7 +106,7 @@ class AppTheme {
   static final CupertinoThemeData _kLightTheme = CupertinoThemeData(
     barBackgroundColor: CupertinoColors.systemGroupedBackground,
     brightness: Brightness.light,
-    primaryColor: CupertinoColors.activeOrange,
+    primaryColor: CupertinoColors.activeBlue,
     primaryContrastingColor: CupertinoColors.black,
     scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
     textTheme: _textTheme,
@@ -115,7 +115,7 @@ class AppTheme {
   static final CupertinoThemeData _kDarkTheme = CupertinoThemeData(
       barBackgroundColor: CupertinoColors.black,
       brightness: Brightness.dark,
-      primaryColor: CupertinoColors.activeOrange,
+      primaryColor: CupertinoColors.activeBlue,
       primaryContrastingColor: CupertinoColors.white,
       scaffoldBackgroundColor: CupertinoColors.black,
       textTheme: _textTheme);
@@ -159,4 +159,5 @@ class Colors {
   Color get tabBarColor =>
       returnColor(CupertinoColors.white, CupertinoColors.darkBackgroundGray);
   Color get spinnerColor => returnColor(Color(0xFFD2D2D2), Color(0xFF363636));
+  Color get contrast => returnColor(Color(0xFF000000), Color(0xFFFFFFFF));
 }
