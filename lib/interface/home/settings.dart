@@ -23,7 +23,8 @@ class Settings extends HookWidget {
     void _b() {
       _a.value++;
       if (_a.value == 9) {
-        navigation.to(context, C());
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => C()));
         _a.value = 0;
       }
     }

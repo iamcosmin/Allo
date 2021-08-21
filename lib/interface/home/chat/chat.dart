@@ -27,18 +27,42 @@ class Chat extends HookWidget {
     }, const []);
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
-          centerTitle: true,
-          actions: [
-            Container(
-              padding: EdgeInsets.only(top: 5, bottom: 5),
-              child: PersonPicture.initials(
-                radius: 45,
-                initials: auth.returnNameInitials(title),
-                color: Colors.blue,
-              ),
-            )
-          ],
+          toolbarHeight: 100,
+          leading: Container(
+            padding: EdgeInsets.only(left: 10, top: 0),
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          flexibleSpace: FlexibleSpaceBar(
+            titlePadding: EdgeInsets.only(left: 20, bottom: 10),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  padding: EdgeInsets.only(right: 10),
+                  child: Hero(
+                    tag: 'pfp_image',
+                    child: PersonPicture.initials(
+                      radius: 37,
+                      initials: auth.returnNameInitials(title),
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+          actions: [],
         ),
         body: SafeArea(
           child: Column(

@@ -1,3 +1,5 @@
+import 'package:allo/components/progress_rings.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -55,30 +57,31 @@ class PersonPicture extends HookWidget {
         ),
       );
     } else if (_type == _PersonPictureType.determine) {
-      if (profilePicture != null) {
-        return ClipOval(
-          child: Container(
-            height: radius,
-            width: radius,
-            child: Image.network(profilePicture!),
+      return ClipOval(
+        child: Container(
+          height: radius,
+          width: radius,
+          child: CachedNetworkImage(
+            imageUrl: profilePicture!,
+            progressIndicatorBuilder: (context, string, progress) =>
+                ProgressRing(),
+            errorWidget: (context, str, dn) {
+              return Container(
+                height: radius,
+                width: radius,
+                decoration: BoxDecoration(color: color, gradient: gradient),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    initials!,
+                    style: TextStyle(fontSize: radius / 2),
+                  ),
+                ),
+              );
+            },
           ),
-        );
-      } else {
-        return ClipOval(
-          child: Container(
-            height: radius,
-            width: radius,
-            decoration: BoxDecoration(color: color, gradient: gradient),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                initials!,
-                style: TextStyle(fontSize: radius / 2),
-              ),
-            ),
-          ),
-        );
-      }
+        ),
+      );
     } else {
       throw Exception();
     }

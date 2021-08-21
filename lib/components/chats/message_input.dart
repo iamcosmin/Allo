@@ -20,58 +20,55 @@ class MessageInput extends HookWidget {
 
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Material(
-        color: Color(0xFF000000),
+      child: Container(
+        padding: const EdgeInsets.only(bottom: 2, left: 5, right: 5, top: 2),
         child: Container(
-          padding: const EdgeInsets.only(bottom: 2, left: 5, right: 5, top: 2),
-          color: colors.messageInput,
-          child: Container(
-            color: Colors.grey.shade900,
-            child: Row(
-              children: [
-                IconButton(
-                  alignment: Alignment.center,
-                  iconSize: 25,
-                  color: Colors.grey,
-                  icon: Icon(Icons.attach_file),
-                  onPressed: () => alerts.noSuchMethodError(context),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: colors.messageInput),
+          child: Row(
+            children: [
+              IconButton(
+                alignment: Alignment.center,
+                iconSize: 25,
+                icon: Icon(Icons.attach_file),
+                onPressed: () => alerts.noSuchMethodError(context),
+              ),
+              AnimatedContainer(
+                duration: Duration(seconds: 2),
+                curve: Curves.ease,
+                constraints: BoxConstraints(
+                  maxHeight: 150,
+                  minHeight: 20,
+                  minWidth: MediaQuery.of(context).size.width - 110,
+                  maxWidth: MediaQuery.of(context).size.width - 110,
                 ),
-                AnimatedContainer(
-                  duration: Duration(seconds: 2),
-                  curve: Curves.ease,
-                  constraints: BoxConstraints(
-                    maxHeight: 150,
-                    minHeight: 20,
-                    minWidth: MediaQuery.of(context).size.width - 110,
-                    maxWidth: MediaQuery.of(context).size.width - 110,
+                child: TextFormField(
+                  scrollPadding: MediaQuery.of(context).viewInsets,
+                  minLines: 1,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Mesaj',
                   ),
-                  child: TextFormField(
-                    scrollPadding: MediaQuery.of(context).viewInsets,
-                    minLines: 1,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Mesaj',
-                    ),
-                    controller: _messageController,
-                    onChanged: (value) => _messageTextContent = value,
-                  ),
+                  controller: _messageController,
+                  onChanged: (value) => _messageTextContent = value,
                 ),
-                IconButton(
-                  alignment: Alignment.center,
-                  iconSize: 27.5,
-                  icon: Icon(Icons.send),
-                  onPressed: () => chats.sendMessage(
-                      _messageTextContent,
-                      null,
-                      MessageType.TEXT_ONLY,
-                      _chatReference,
-                      senderChatName,
-                      _messageController),
-                ),
-              ],
-            ),
+              ),
+              IconButton(
+                alignment: Alignment.center,
+                iconSize: 27.5,
+                icon: Icon(Icons.send_outlined),
+                onPressed: () => chats.sendMessage(
+                    _messageTextContent,
+                    null,
+                    MessageType.TEXT_ONLY,
+                    _chatReference,
+                    senderChatName,
+                    _messageController),
+              ),
+            ],
           ),
         ),
       ),

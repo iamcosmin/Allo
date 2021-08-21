@@ -53,6 +53,7 @@ class Home extends HookWidget {
 
     useEffect(() {
       Future.microtask(() async {
+        await getChatsData();
         AwesomeNotifications()
             .actionStream
             .listen((ReceivedAction event) async {
@@ -73,9 +74,8 @@ class Home extends HookWidget {
               ),
               SharedAxisTransitionType.scaled);
         });
-        await getChatsData();
       });
-    }, const []);
+    });
 
     return Scaffold(
       body: NestedScrollView(
@@ -94,7 +94,6 @@ class Home extends HookWidget {
           child: ListView(
             children: [
               OpenContainer(
-                useRootNavigator: true,
                 closedColor: colors.nonColors,
                 openColor: colors.nonColors,
                 middleColor: Colors.transparent,
@@ -107,11 +106,14 @@ class Home extends HookWidget {
                 closedBuilder: (context, func) {
                   return ListTile(
                     title: Text('Allo'),
-                    leading: PersonPicture.initials(
-                      radius: 50,
-                      color: CupertinoColors.activeOrange,
-                      initials: auth.returnNameInitials(
-                        'Allo',
+                    leading: Hero(
+                      tag: 'pfp_image',
+                      child: PersonPicture.initials(
+                        radius: 50,
+                        color: CupertinoColors.activeOrange,
+                        initials: auth.returnNameInitials(
+                          'Allo',
+                        ),
                       ),
                     ),
                   );
@@ -121,8 +123,8 @@ class Home extends HookWidget {
                 for (var chat in chats.value) ...[
                   OpenContainer(
                     closedColor: colors.nonColors,
-                    transitionType: ContainerTransitionType.fadeThrough,
                     openColor: colors.nonColors,
+                    middleColor: Colors.transparent,
                     openBuilder: (context, action) {
                       return Chat(
                         title: chat['name'],
@@ -133,11 +135,14 @@ class Home extends HookWidget {
                       return ListTile(
                         title: Text(chat['name']),
                         subtitle: Text(chat['chatId']),
-                        leading: PersonPicture.initials(
-                          radius: 50,
-                          color: CupertinoColors.activeOrange,
-                          initials: auth.returnNameInitials(
-                            chat['name'],
+                        leading: Hero(
+                          tag: 'pfp_image',
+                          child: PersonPicture.initials(
+                            radius: 50,
+                            color: CupertinoColors.activeOrange,
+                            initials: auth.returnNameInitials(
+                              chat['name'],
+                            ),
                           ),
                         ),
                       );
