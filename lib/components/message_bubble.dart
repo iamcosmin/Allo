@@ -36,7 +36,7 @@ class MessageBubble extends HookWidget {
 
   String get uid {
     if (documentData.containsKey('uid')) {
-      return documentData['username'];
+      return documentData['uid'];
     } else if (documentData.containsKey('senderUID')) {
       return documentData['senderUID'];
     } else {

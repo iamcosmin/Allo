@@ -55,7 +55,7 @@ jobs:
     - name: Download packages
       run: flutter pub get
     - name: Build
-      run: flutter build web
+      run: flutter build web --web-renderer=canvaskit
     - name: Deploy
       uses: FirebaseExtended/action-hosting-deploy@v0
       with:
