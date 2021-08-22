@@ -1,3 +1,4 @@
+import 'package:allo/components/deferred.dart';
 import 'package:allo/components/progress_rings.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
@@ -7,9 +8,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide ThemeData, Colors;
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:in_app_update/in_app_update.dart';
@@ -35,8 +36,8 @@ Future _onBackgroundMessage(RemoteMessage message) async {
         notificationLayout: NotificationLayout.Inbox,
         createdSource: NotificationSource.Firebase,
         payload: {
-          'chat': message.data['toChat'],
-          'title': message.data['chatName']
+          'chatId': message.data['toChat'],
+          'chatName': message.data['chatName']
         }),
   );
 }
@@ -52,8 +53,8 @@ void main() async {
             channelKey: 'conversations',
             channelName: 'Conversații',
             channelDescription: 'Notificări din conversații.',
-            defaultColor: CupertinoColors.activeOrange,
-            ledColor: CupertinoColors.activeOrange,
+            defaultColor: Colors.blue,
+            ledColor: Colors.blue,
             playSound: true,
             importance: NotificationImportance.Max,
           )
@@ -104,8 +105,9 @@ class MyApp extends HookWidget {
     }, const []);
     final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
-    return CupertinoApp(
+    return MaterialApp(
         title: 'Allo',
+        themeMode: darkState == true ? ThemeMode.dark : ThemeMode.light,
         theme: theme.getAppThemeData(context, darkState),
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
@@ -113,14 +115,7 @@ class MyApp extends HookWidget {
             if (snap.hasData) {
               return StackNavigator();
             } else if (snap.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  alignment: Alignment.center,
-                  child: ProgressRing(),
-                ),
-              );
+              return Deferred();
             } else {
               return Setup();
             }

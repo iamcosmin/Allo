@@ -1,7 +1,6 @@
 import 'package:allo/repositories/repositories.dart' hide Colors;
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -9,16 +8,6 @@ final navigationProvider =
     Provider<NavigationRepository>((ref) => NavigationRepository());
 
 class NavigationRepository {
-  Future to(BuildContext context, Widget route) {
-    return Navigator.push(
-        context, CupertinoPageRoute(builder: (context) => route));
-  }
-
-  Future toPermanent(BuildContext context, Widget route) {
-    return Navigator.pushAndRemoveUntil(context,
-        CupertinoPageRoute(builder: (context) => route), (route) => false);
-  }
-
   Future push(BuildContext context, Widget route,
       SharedAxisTransitionType transitionType) {
     return Navigator.push(

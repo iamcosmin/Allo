@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -7,32 +6,32 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 /// Provides input actions for the Chat object.
 // ignore: must_be_immutable
 class MessageInput extends HookWidget {
-  late String _messageTextContent;
-  final String _chatReference;
-  final String senderChatName;
+  final String chatId;
+  final String chatName;
   final TextEditingController _messageController = TextEditingController();
-  MessageInput(this._chatReference, this.senderChatName);
+  MessageInput(this.chatId, this.chatName);
 
   @override
   Widget build(BuildContext context) {
     final alerts = useProvider(Repositories.alerts);
     final chats = useProvider(Repositories.chats);
     final colors = useProvider(Repositories.colors);
+    final text = useState('');
 
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Material(
-        color: Color(0xFF000000),
+      child: Container(
+        padding: const EdgeInsets.only(bottom: 2, left: 5, right: 5, top: 2),
         child: Container(
-          padding: const EdgeInsets.only(bottom: 2, left: 5, right: 5, top: 2),
-          color: colors.messageInput,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: colors.messageInput),
           child: Row(
             children: [
               IconButton(
                 alignment: Alignment.center,
                 iconSize: 25,
-                color: CupertinoColors.systemGrey,
-                icon: Icon(CupertinoIcons.paperclip),
+                icon: Icon(Icons.attach_file),
                 onPressed: () => alerts.noSuchMethodError(context),
               ),
               AnimatedContainer(
@@ -44,32 +43,29 @@ class MessageInput extends HookWidget {
                   minWidth: MediaQuery.of(context).size.width - 110,
                   maxWidth: MediaQuery.of(context).size.width - 110,
                 ),
-                child: CupertinoTextField(
+                child: TextFormField(
                   scrollPadding: MediaQuery.of(context).viewInsets,
-                  expands: true,
+                  minLines: 1,
                   maxLines: null,
-                  decoration: BoxDecoration(
-                      color: colors.nonColors,
-                      borderRadius: BorderRadius.circular(20)),
-                  placeholder: 'Mesaj',
-                  prefix: Padding(
-                    padding: EdgeInsets.only(left: 10),
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Mesaj',
                   ),
                   controller: _messageController,
-                  onChanged: (value) => _messageTextContent = value,
+                  onChanged: (value) => text.value = value,
                 ),
               ),
               IconButton(
                 alignment: Alignment.center,
                 iconSize: 27.5,
-                icon: Icon(CupertinoIcons.arrow_up_circle_fill),
-                onPressed: () => chats.sendMessage(
-                    _messageTextContent,
-                    null,
-                    MessageType.TEXT_ONLY,
-                    _chatReference,
-                    senderChatName,
-                    _messageController),
+                icon: Icon(Icons.send_outlined),
+                onPressed: () => chats.send.sendTextMessage(
+                    text: text.value,
+                    chatId: chatId,
+                    context: context,
+                    chatName: chatName,
+                    controller: _messageController),
               ),
             ],
           ),

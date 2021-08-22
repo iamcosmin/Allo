@@ -4,41 +4,67 @@ import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/main.dart';
-import 'package:allo/repositories/preferences_repository.dart';
 // import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Spec:
-// Use a error provider to provide error input to a function
-
-final errorProvider =
-    StateNotifierProvider<ErrorProvider, String>((ref) => ErrorProvider());
-
-class ErrorProvider extends StateNotifier<String> {
-  ErrorProvider() : super('');
-
-  void passError(String error) {
-    state = error;
-  }
-}
-
 final authProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository(ref);
+  return AuthRepository();
 });
 
+Future<dynamic> _getType(Type type, String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  dynamic condition;
+  switch (type) {
+    case bool:
+      condition = prefs.getBool(key);
+      break;
+    case String:
+      condition = prefs.getString(key);
+      break;
+    case int:
+      condition = prefs.getInt(key);
+      break;
+    case double:
+      condition = prefs.getDouble(key);
+      break;
+    default:
+      condition = null;
+  }
+  return condition;
+}
+
+/// Returns a key from storage if exists, otherwise fetches the data using the fetch function.
+/// Please remember that you need to return a value of the same type as the type parameter,
+/// otherwise the function will fail.
+Future _cache(
+    {required String key, required Function fetch, required Type type}) async {
+  final prefs = await SharedPreferences.getInstance();
+  if (await _getType(type, key) == null) {
+    type == bool
+        ? await prefs.setBool(key, await fetch())
+        : type == String
+            ? await prefs.setString(key, await fetch())
+            : type == int
+                ? await prefs.setInt(key, await fetch())
+                : type == double
+                    ? await prefs.setDouble(key, await fetch())
+                    : null;
+  }
+  return await _getType(type, key);
+}
+
 class AuthRepository {
-  AuthRepository(this.ref);
-  final ProviderReference ref;
+  final CurrentUser user = CurrentUser();
 
   Future<User?> returnUserDetails() async {
     return FirebaseAuth.instance.currentUser;
@@ -51,13 +77,14 @@ class AuthRepository {
       required BuildContext context}) async {
     try {
       FocusScope.of(context).unfocus();
+      error.value = '';
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
-        await ref.read(Repositories.navigation).push(
+        await context.read(Repositories.navigation).push(
             context, SetupName(email), SharedAxisTransitionType.horizontal);
       } else if (instance.toString() == '[password]') {
-        await ref.read(Repositories.navigation).push(
+        await context.read(Repositories.navigation).push(
             context,
             EnterPassword(
               email: email,
@@ -69,6 +96,8 @@ class AuthRepository {
     }
   }
 
+  //? [Login]
+  /// Signs in an Allo user by email and password.
   Future signIn(
       {required String email,
       required String password,
@@ -97,6 +126,8 @@ class AuthRepository {
     }
   }
 
+  //? Signup
+  /// Signs up the user by email and password.
   Future signUp(
       {required String email,
       required String password,
@@ -136,7 +167,7 @@ class AuthRepository {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            await ref.read(navigationProvider).push(context,
+            await context.read(navigationProvider).push(context,
                 SetupVerification(), SharedAxisTransitionType.horizontal);
           } else {
             error.value = 'Parola ta nu respectă cerințele.';
@@ -155,7 +186,9 @@ class AuthRepository {
     }
   }
 
-  Future checkUsernameInSignUp(
+  /// Checks if the provided username is available and is compliant with
+  /// the guidelines.
+  Future isUsernameCompliant(
       {required String username,
       required ValueNotifier<String> error,
       required BuildContext context,
@@ -191,29 +224,22 @@ class AuthRepository {
     }
   }
 
-  Future sendEmailVerification() async {
-    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
-  }
-
-  Future configureUsername(String _username, BuildContext context) async {
-    var usernames = await FirebaseFirestore.instance
-        .collection('users')
-        .doc('usernames')
-        .get();
-    if (usernames.data()![_username] != null) {
-      return '$_username nu este disponibil!';
-    } else {
-      await FirebaseFirestore.instance
+  Future changeName(
+      {required String name,
+      required BuildContext context,
+      required ValueNotifier<String> error}) async {
+    FocusScope.of(context).unfocus();
+    try {
+      final auth = FirebaseAuth.instance.currentUser;
+      final db = FirebaseFirestore.instance
           .collection('users')
-          .doc('usernames')
-          .update({
-        FirebaseAuth.instance.currentUser!.uid: _username,
+          .doc(await user.username);
+      await db.update({
+        'name': name,
       });
-      await Navigator.pushAndRemoveUntil(
-          context,
-          CupertinoPageRoute(builder: (context) => StackNavigator()),
-          (route) => false);
-      return '';
+      await auth?.updateDisplayName(name);
+    } catch (e) {
+      error.value = e.toString();
     }
   }
 
@@ -235,27 +261,29 @@ class AuthRepository {
     }
   }
 
-  String? returnProfilePicture() {
-    return FirebaseAuth.instance.currentUser?.photoURL;
+  Future changeUsername(
+      {required String username,
+      required BuildContext context,
+      required ValueNotifier error}) async {
+    FocusScope.of(context).unfocus();
+    try {
+      final db = FirebaseFirestore.instance.collection('users');
+      final prefs = await SharedPreferences.getInstance();
+      final data = await db
+          .doc(await user.username)
+          .get()
+          .then((value) => value.data() as Map<String, Object>);
+      await db.doc(await user.username).delete();
+      await db.doc(username).set(data);
+      await prefs.setString('username', username);
+    } catch (e) {
+      error.value = e.toString();
+    }
   }
 
-  String returnAuthenticatedNameInitials() {
-    final auth = FirebaseAuth.instance.currentUser;
-    var name = auth?.displayName ?? '';
-    final splitedName = name.split(' ');
-    final arrayOfInitials = [];
-    var initials = '';
-    if (splitedName.isEmpty) {
-      initials = splitedName[0].substring(0, 1);
-    } else {
-      for (var strings in splitedName) {
-        if (strings.isNotEmpty) {
-          arrayOfInitials.add(strings.substring(0, 1));
-        }
-      }
-      initials = arrayOfInitials.join('');
-    }
-    return initials;
+  /// Sends an email to the provided email address to verify the account.
+  Future sendVerification() async {
+    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
   }
 
   String returnNameInitials(String name) {
@@ -281,24 +309,61 @@ class AuthRepository {
         .child('profilePictures/$uid.png')
         .getDownloadURL();
   }
+}
 
-  String returnName() {
+class CurrentUser {
+  /// The username of the authenticated account.
+  Future<String> get username async {
+    return await _cache(
+      key: 'username',
+      fetch: () async {
+        final db = FirebaseFirestore.instance;
+        final usernames = await db.collection('users').doc('usernames').get();
+        final usernamesMap = usernames.data();
+        final username = usernamesMap?.keys
+            .firstWhere((element) => usernamesMap[element] == uid);
+        return username;
+      },
+      type: String,
+    );
+  }
+
+  /// Gets a link of the current profile picture of the account. Returns
+  /// null if one does not exist.
+  String? get profilePicture {
+    return FirebaseAuth.instance.currentUser?.photoURL;
+  }
+
+  /// Returns the name of the authenticated account.
+  String get name {
     return FirebaseAuth.instance.currentUser!.displayName!;
   }
 
-  void cache(BuildContext context) async {
-    final prefs = context.read(sharedPreferencesProvider);
-    if (prefs.getString('displayName') == null) {
-      final userDocument = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .get();
-      final userDataMap = userDocument.data() as Map;
-      final name = userDataMap['name'];
-      await prefs.setString('displayName', name);
+  /// Returns the initials of the name of the authenticated account.
+  String get nameInitials {
+    final auth = FirebaseAuth.instance.currentUser;
+    var name = auth?.displayName ?? '';
+    final splitedName = name.split(' ');
+    final arrayOfInitials = [];
+    var initials = '';
+    if (splitedName.isEmpty) {
+      initials = splitedName[0].substring(0, 1);
+    } else {
+      for (var strings in splitedName) {
+        if (strings.isNotEmpty) {
+          arrayOfInitials.add(strings.substring(0, 1));
+        }
+      }
+      initials = arrayOfInitials.join('');
     }
+    return initials;
   }
 
+  String get uid {
+    return FirebaseAuth.instance.currentUser!.uid;
+  }
+
+  /// Updates the profile picture of the signed in account.
   Future updateProfilePicture(
       {required ValueNotifier<bool> loaded,
       required ValueNotifier<double> percentage,
@@ -342,22 +407,4 @@ class AuthRepository {
       }
     });
   }
-
-  Future<String> getUsername() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString('username') != null) {
-      return prefs.getString('username')!;
-    } else {
-      return await FirebaseFirestore.instance
-          .collection('users')
-          .doc('usernames')
-          .get()
-          .then((value) {
-        return value.data()!.keys.firstWhere((element) =>
-            value.data()![element] == FirebaseAuth.instance.currentUser?.uid);
-      });
-    }
-  }
 }
-
-class SignUp {}
