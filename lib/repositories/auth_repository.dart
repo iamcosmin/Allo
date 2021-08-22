@@ -10,7 +10,7 @@ import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -77,6 +77,7 @@ class AuthRepository {
       required BuildContext context}) async {
     try {
       FocusScope.of(context).unfocus();
+      error.value = '';
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
@@ -319,8 +320,8 @@ class CurrentUser {
         final db = FirebaseFirestore.instance;
         final usernames = await db.collection('users').doc('usernames').get();
         final usernamesMap = usernames.data();
-        final username =
-            usernamesMap?.values.firstWhere((element) => element == uid);
+        final username = usernamesMap?.keys
+            .firstWhere((element) => usernamesMap[element] == uid);
         return username;
       },
       type: String,

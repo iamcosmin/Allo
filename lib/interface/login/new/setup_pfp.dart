@@ -1,10 +1,10 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/progress_rings.dart';
+import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/login/new/setup_personalize.dart';
-import 'package:allo/repositories/repositories.dart' hide Colors;
+import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,15 +28,16 @@ class SetupProfilePicture extends HookWidget {
         ),
         Text(
           'Personalizează contul. Poți sări acest pas dacă dorești.',
-          style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
+          style: TextStyle(fontSize: 18, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
       body: [
-        CupertinoFormSection.insetGrouped(
-          children: [
-            CupertinoFormRow(
-              child: Container(
+        Padding(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          child: Column(
+            children: [
+              Container(
                 alignment: Alignment.center,
                 padding: EdgeInsets.only(top: 10, bottom: 10),
                 child: Stack(
@@ -56,32 +57,19 @@ class SetupProfilePicture extends HookWidget {
                   ],
                 ),
               ),
-            )
-          ],
-        ),
-        CupertinoFormSection.insetGrouped(
-          header: Text('Gestionează imaginea de profil'),
-          children: [
-            GestureDetector(
-              onTap: () async => await auth.user.updateProfilePicture(
-                  loaded: loaded,
-                  percentage: percentage,
-                  context: context,
-                  route: SetupPersonalize()),
-              child: CupertinoFormRow(
-                prefix: Text('Încarcă imagine'),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 10, right: 5),
-                  child: Icon(
-                    CupertinoIcons.right_chevron,
-                    color: CupertinoColors.systemGrey,
-                    size: 15,
-                  ),
-                ),
+              SettingsListHeader('Gestionează imaginea de profil'),
+              SettingsListTile(
+                title: 'Încarcă imagine',
+                type: RadiusType.BOTH,
+                onTap: () async => await auth.user.updateProfilePicture(
+                    loaded: loaded,
+                    percentage: percentage,
+                    context: context,
+                    route: SetupPersonalize()),
               ),
-            ),
-          ],
-        )
+            ],
+          ),
+        ),
       ],
       onButtonPress: () async {
         await navigation.push(

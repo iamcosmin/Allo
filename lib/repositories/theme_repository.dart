@@ -1,6 +1,5 @@
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:animations/animations.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,8 +85,9 @@ class ColorsBuilt {
   Color get nonColors => returnColor(Color(0xFFFFFFFF), Color(0xFF000000));
   Color get messageInput =>
       returnColor(Colors.grey.shade300, Colors.grey.shade900);
-  Color get tabBarColor =>
-      returnColor(CupertinoColors.white, CupertinoColors.darkBackgroundGray);
+  Color get tabBarColor => returnColor(Colors.white, Colors.grey);
   Color get spinnerColor => returnColor(Color(0xFFD2D2D2), Color(0xFF363636));
   Color get contrast => returnColor(Color(0xFF000000), Color(0xFFFFFFFF));
+  Color get tileColor =>
+      returnColor(Colors.grey.shade200, Colors.grey.shade900);
 }

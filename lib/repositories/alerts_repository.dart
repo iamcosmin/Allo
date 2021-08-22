@@ -1,24 +1,21 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final alertsProvider = Provider<AlertsRepository>((ref) => AlertsRepository());
 
 class AlertsRepository {
   void noSuchMethodError(BuildContext context) {
-    showCupertinoDialog(
-        context: context,
-        builder: (context) => Center(
-                child: CupertinoActionSheet(
-              title: Text('Eroare'),
-              message: Text(
-                  'Momentan aceasta metoda nu este implementata. Incercati mai tarziu!'),
-              actions: [
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('OK'),
-                )
-              ],
-            )));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          'Momentan această funcție nu e implementată.',
+        ),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+        ),
+      ),
+    );
   }
 }

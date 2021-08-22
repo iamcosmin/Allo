@@ -1,4 +1,5 @@
 import 'package:allo/components/firestore_animated_list/animated_firestore_list.dart';
+import 'package:allo/components/progress_rings.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

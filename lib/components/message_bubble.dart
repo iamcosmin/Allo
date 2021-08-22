@@ -1,6 +1,5 @@
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart' hide CupertinoContextMenu;
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter/cupertino.dart'
     show
@@ -173,8 +172,7 @@ class _ReceiveMessageBubble extends HookWidget {
                       padding: const EdgeInsets.only(left: 15, bottom: 4),
                       child: Text(
                         name,
-                        style: TextStyle(
-                            fontSize: 11, color: CupertinoColors.inactiveGray),
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
                       ),
                     ),
                   ],

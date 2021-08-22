@@ -62,7 +62,7 @@ class PersonPicture extends HookWidget {
           height: radius,
           width: radius,
           child: CachedNetworkImage(
-            imageUrl: profilePicture!,
+            imageUrl: profilePicture ?? '',
             progressIndicatorBuilder: (context, string, progress) =>
                 ProgressRing(),
             errorWidget: (context, str, dn) {

@@ -1,6 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
-import 'package:allo/repositories/repositories.dart' hide Colors;
-import 'package:flutter/cupertino.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,22 +27,23 @@ class EnterPassword extends HookWidget {
         ),
         Text(
           'Pentru a continua, introdu parola contului Allo.',
-          style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
+          style: TextStyle(fontSize: 18, color: Colors.grey),
         ),
       ],
       body: [
-        CupertinoFormSection.insetGrouped(
-          children: [
-            CupertinoFormRow(
-              error: error.value == '' ? null : Text(error.value),
-              child: CupertinoTextField(
-                decoration: BoxDecoration(color: Colors.transparent),
-                placeholder: 'Parola',
-                controller: controller,
-                obscureText: true,
-              ),
+        Padding(
+          padding: EdgeInsets.all(20),
+          child: TextFormField(
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(10),
+              errorText: error.value == '' ? null : error.value,
+              errorStyle: TextStyle(fontSize: 14),
+              labelText: 'Parola',
+              border: OutlineInputBorder(),
             ),
-          ],
+            controller: controller,
+            obscureText: true,
+          ),
         ),
       ],
       onButtonPress: () async {

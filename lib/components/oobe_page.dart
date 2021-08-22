@@ -1,6 +1,6 @@
 import 'package:allo/components/progress_rings.dart';
+import 'package:allo/components/settings_list.dart';
 import 'package:allo/repositories/repositories.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -62,27 +62,35 @@ class SetupPage extends HookWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CupertinoButton(
-                      onPressed: () async {
-                        if (isAsync) {
-                          loading.value = true;
-                          await onButtonPress();
-                          loading.value = false;
-                        } else {
-                          onButtonPress();
-                        }
-                      },
-                      color: CupertinoColors.activeOrange,
-                      child: loading.value
-                          ? SizedBox(
-                              height: 23,
-                              width: 23,
-                              child: ProgressRing(
-                                activeColor: CupertinoColors.white,
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : Text('Continuare'),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SettingsListTile(
+                          title: 'Continuare',
+                          color: Colors.blue,
+                          type: RadiusType.BOTH,
+                          center: true,
+                          trailing: loading.value
+                              ? SizedBox(
+                                  height: 23,
+                                  width: 23,
+                                  child: ProgressRing(
+                                    activeColor: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                              : null,
+                          onTap: () async {
+                            if (isAsync) {
+                              loading.value = true;
+                              await onButtonPress();
+                              loading.value = false;
+                            } else {
+                              onButtonPress();
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

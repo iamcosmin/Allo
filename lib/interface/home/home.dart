@@ -2,7 +2,6 @@ import 'package:allo/components/person_picture.dart';
 import 'package:animations/animations.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -82,6 +81,7 @@ class Home extends HookWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
               title: Text('Conversații'),
+              titlePadding: EdgeInsets.only(left: 20, bottom: 15),
             ),
             expandedHeight: 100,
             pinned: true,
@@ -108,7 +108,7 @@ class Home extends HookWidget {
                       tag: 'pfp_image',
                       child: PersonPicture.initials(
                         radius: 50,
-                        color: CupertinoColors.activeOrange,
+                        color: Colors.blue,
                         initials: auth.returnNameInitials(
                           'Allo',
                         ),
@@ -137,7 +137,7 @@ class Home extends HookWidget {
                           tag: 'pfp_image',
                           child: PersonPicture.initials(
                             radius: 50,
-                            color: CupertinoColors.activeOrange,
+                            color: Colors.blue,
                             initials: auth.returnNameInitials(
                               chat['name'],
                             ),

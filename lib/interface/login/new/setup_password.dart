@@ -1,6 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
-import 'package:allo/repositories/repositories.dart' hide Colors;
-import 'package:flutter/cupertino.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -23,7 +22,7 @@ class SetupPassword extends HookWidget {
       header: [
         Text(
           'Securitatea este importantă.',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
@@ -31,70 +30,75 @@ class SetupPassword extends HookWidget {
         ),
         Text(
           'Pentru a crea contul, introdu parola pe care o vrei asociată acestui cont.',
-          style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
+          style: TextStyle(fontSize: 18, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
       body: [
-        CupertinoFormSection.insetGrouped(
-          footer: Text(
-              'Parola ta trebuie să conțină: minim 8 caractere, cel puțin o literă mare și una mică, cel puțin o cifră, cel puțin un simbol (!@#\$%^&*(),.?":{}|<>)'),
-          children: [
-            CupertinoFormRow(
-              error: error.value == '' ? null : Text(error.value),
-              child: CupertinoTextField(
-                decoration: BoxDecoration(color: Colors.transparent),
-                placeholder: 'Parolă',
+        Padding(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(10),
+                  errorText: error.value == '' ? null : error.value,
+                  errorStyle: TextStyle(fontSize: 14),
+                  labelText: 'Parolă',
+                  border: OutlineInputBorder(),
+                  suffix: GestureDetector(
+                    onTap: () {
+                      if (obscure.value) {
+                        obscure.value = false;
+                      } else {
+                        obscure.value = true;
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: Icon(
+                        obscure.value ? Icons.visibility_off : Icons.visibility,
+                      ),
+                    ),
+                  ),
+                ),
                 controller: passController,
                 obscureText: obscure.value,
-                suffix: GestureDetector(
-                  onTap: () {
-                    if (obscure.value) {
-                      obscure.value = false;
-                    } else {
-                      obscure.value = true;
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: Icon(
-                      obscure.value
-                          ? CupertinoIcons.eye_slash
-                          : CupertinoIcons.eye_fill,
-                      color: CupertinoColors.systemBackground,
+              ),
+              Padding(padding: EdgeInsets.only(bottom: 10)),
+              TextFormField(
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(10),
+                  errorStyle: TextStyle(fontSize: 14),
+                  labelText: 'Confirmă parola',
+                  border: OutlineInputBorder(),
+                  suffix: GestureDetector(
+                    onTap: () {
+                      if (obscure.value) {
+                        obscure.value = false;
+                      } else {
+                        obscure.value = true;
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: Icon(
+                        obscure.value ? Icons.visibility_off : Icons.visibility,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            CupertinoFormRow(
-              child: CupertinoTextField(
-                decoration: BoxDecoration(color: Colors.transparent),
-                placeholder: 'Confirmă parola',
                 controller: confirmPassController,
                 obscureText: obscure.value,
-                suffix: GestureDetector(
-                  onTap: () {
-                    if (obscure.value) {
-                      obscure.value = false;
-                    } else {
-                      obscure.value = true;
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: Icon(
-                      obscure.value
-                          ? CupertinoIcons.eye_slash
-                          : CupertinoIcons.eye_fill,
-                      color: CupertinoColors.systemBackground,
-                    ),
-                  ),
-                ),
               ),
-            ),
-          ],
-        )
+              Padding(padding: EdgeInsets.only(bottom: 10)),
+              Text(
+                'Parola ta trebuie să conțină minim 8 caractere, litere mari și mici, cifre, simboluri.',
+                style: TextStyle(color: Colors.grey),
+              )
+            ],
+          ),
+        ),
       ],
       onButtonPress: () async {
         await auth.signUp(
