@@ -6,17 +6,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 /// Provides input actions for the Chat object.
 // ignore: must_be_immutable
 class MessageInput extends HookWidget {
-  late String _messageTextContent;
-  final String _chatReference;
-  final String senderChatName;
+  final String chatId;
+  final String chatName;
   final TextEditingController _messageController = TextEditingController();
-  MessageInput(this._chatReference, this.senderChatName);
+  MessageInput(this.chatId, this.chatName);
 
   @override
   Widget build(BuildContext context) {
     final alerts = useProvider(Repositories.alerts);
     final chats = useProvider(Repositories.chats);
     final colors = useProvider(Repositories.colors);
+    final text = useState('');
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -53,20 +53,19 @@ class MessageInput extends HookWidget {
                     hintText: 'Mesaj',
                   ),
                   controller: _messageController,
-                  onChanged: (value) => _messageTextContent = value,
+                  onChanged: (value) => text.value = value,
                 ),
               ),
               IconButton(
                 alignment: Alignment.center,
                 iconSize: 27.5,
                 icon: Icon(Icons.send_outlined),
-                onPressed: () => chats.sendMessage(
-                    _messageTextContent,
-                    null,
-                    MessageType.TEXT_ONLY,
-                    _chatReference,
-                    senderChatName,
-                    _messageController),
+                onPressed: () => chats.send.sendTextMessage(
+                    text: text.value,
+                    chatId: chatId,
+                    context: context,
+                    chatName: chatName,
+                    controller: _messageController),
               ),
             ],
           ),

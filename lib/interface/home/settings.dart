@@ -54,8 +54,8 @@ class Settings extends HookWidget {
                         padding: EdgeInsets.only(top: 10, bottom: 10),
                         child: PersonPicture.determine(
                             radius: 100,
-                            profilePicture: auth.returnProfilePicture(),
-                            initials: auth.returnAuthenticatedNameInitials()),
+                            profilePicture: auth.user.profilePicture,
+                            initials: auth.user.nameInitials),
                       ),
                       Text(name),
                       Padding(padding: EdgeInsets.only(bottom: 10))

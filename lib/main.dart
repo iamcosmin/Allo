@@ -36,8 +36,8 @@ Future _onBackgroundMessage(RemoteMessage message) async {
         notificationLayout: NotificationLayout.Inbox,
         createdSource: NotificationSource.Firebase,
         payload: {
-          'chat': message.data['toChat'],
-          'title': message.data['chatName']
+          'chatId': message.data['toChat'],
+          'chatName': message.data['chatName']
         }),
   );
 }

@@ -22,7 +22,7 @@ class Home extends HookWidget {
       var chatIdList = [];
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(await auth.getUsername())
+          .doc(await auth.user.username)
           .get()
           .then((DocumentSnapshot snapshot) {
         var map = snapshot.data() as Map;
@@ -58,19 +58,17 @@ class Home extends HookWidget {
             .actionStream
             .listen((ReceivedAction event) async {
           if (!StringUtils.isNullOrEmpty(event.buttonKeyInput)) {
-            await chat.sendMessage(
-                event.buttonKeyInput,
-                null,
-                MessageType.TEXT_ONLY,
-                event.payload!['chat']!,
-                event.payload!['title']!,
-                null);
+            await chat.send.sendTextMessage(
+                text: event.buttonKeyInput,
+                chatId: event.payload!['chatId']!,
+                context: context,
+                chatName: event.payload!['chatName']!);
           }
           await navigation.push(
               context,
               Chat(
-                title: event.payload!['title']!,
-                chatId: event.payload!['chat']!,
+                title: event.payload!['chatName']!,
+                chatId: event.payload!['chatId']!,
               ),
               SharedAxisTransitionType.scaled);
         });
