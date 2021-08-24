@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'appbar.dart';
+
 class SetupPage extends HookWidget {
   const SetupPage(
       {required this.header,
@@ -21,7 +23,7 @@ class SetupPage extends HookWidget {
     final loading = useState(false);
     final colors = useProvider(Repositories.colors);
     return Scaffold(
-      appBar: AppBar(
+      appBar: NavBar(
         backgroundColor: colors.nonColors,
       ),
       body: Column(

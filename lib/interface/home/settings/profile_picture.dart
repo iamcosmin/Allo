@@ -1,3 +1,4 @@
+import 'package:allo/components/appbar.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -18,7 +19,7 @@ class ProfilePictureSettings extends HookWidget {
     final auth = useProvider(Repositories.auth);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: NavBar(
         title: Text('Fotografie de profil'),
       ),
       body: ListView(

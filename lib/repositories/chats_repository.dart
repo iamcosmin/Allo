@@ -27,6 +27,18 @@ class ChatsRepository {
         .doc(messageId)
         .delete();
   }
+
+  Future markAsRead({required String chatId, required String messageId}) async {
+    // This will mark the message as read.
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+      'read': true,
+    });
+  }
 }
 
 class SendMessage {
@@ -36,6 +48,9 @@ class SendMessage {
       required BuildContext context,
       required String chatName,
       TextEditingController? controller}) async {
+    if (controller != null) {
+      controller.clear();
+    }
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
     final auth = context.read(Repositories.auth);
     await db.collection('messages').add({
@@ -44,16 +59,14 @@ class SendMessage {
       'username': await auth.user.username,
       'uid': auth.user.uid,
       'text': text,
-      'time': DateTime.now(),
+      'time': Timestamp.now(),
     });
-    if (controller != null) {
-      controller.clear();
-    }
     await _sendNotification(
         chatName: chatName,
         name: auth.user.name,
         content: text,
-        chatId: chatId);
+        chatId: chatId,
+        uid: auth.user.uid);
   }
 
   Future sendImageMessage(
@@ -74,6 +87,7 @@ class SendMessage {
     task.snapshotEvents.listen((event) async {
       progress.value = (event.bytesTransferred / event.totalBytes) * 100;
       if (event.state == TaskState.success) {
+        progress.value = 101;
         await db.collection('messages').add({
           'type': MessageTypes.IMAGE,
           'name': auth.user.name,
@@ -87,7 +101,8 @@ class SendMessage {
             chatName: chatName,
             name: name,
             content: 'Imagine' + (description != null ? ' - $description' : ''),
-            chatId: chatId);
+            chatId: chatId,
+            uid: auth.user.uid);
       }
     });
   }
@@ -96,7 +111,8 @@ class SendMessage {
       {required String chatName,
       required String name,
       required String content,
-      required String chatId}) async {
+      required String chatId,
+      required String uid}) async {
     await post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
@@ -111,6 +127,7 @@ class SendMessage {
           'senderName': name,
           'text': content,
           'toChat': chatId,
+          'uid': uid
         }
       }),
     );

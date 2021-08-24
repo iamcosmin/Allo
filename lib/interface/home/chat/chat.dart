@@ -1,8 +1,10 @@
+import 'package:allo/components/appbar.dart';
 import 'package:allo/components/firestore_animated_list/animated_firestore_list.dart';
 import 'package:allo/components/progress_rings.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/chats/message_input.dart';
@@ -27,13 +29,13 @@ class Chat extends HookWidget {
       }
     }, const []);
     return Scaffold(
-        appBar: AppBar(
+        appBar: NavBar(
           toolbarHeight: 100,
           leading: Container(
             padding: EdgeInsets.only(left: 10, top: 0),
             alignment: Alignment.topLeft,
             child: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: Icon(FluentIcons.arrow_left_16_regular),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -63,7 +65,6 @@ class Chat extends HookWidget {
               ],
             ),
           ),
-          actions: [],
         ),
         body: SafeArea(
           child: Column(

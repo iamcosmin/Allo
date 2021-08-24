@@ -17,12 +17,13 @@ class MessageBubble extends HookWidget {
   final String nextUID;
   final String chatId;
   final String messageId;
-  MessageBubble(
-      {required this.documentData,
-      required this.pastUID,
-      required this.nextUID,
-      required this.chatId,
-      required this.messageId});
+  MessageBubble({
+    required this.documentData,
+    required this.pastUID,
+    required this.nextUID,
+    required this.chatId,
+    required this.messageId,
+  });
 
   String get name {
     if (documentData.containsKey('name')) {
@@ -64,6 +65,18 @@ class MessageBubble extends HookWidget {
     }
   }
 
+  bool get isRead {
+    if (documentData.containsKey('read')) {
+      if (documentData['read'] == true) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = useProvider(Repositories.auth);
@@ -75,9 +88,13 @@ class MessageBubble extends HookWidget {
         pastUID: pastUID,
         nextUID: nextUID,
         time: time,
+        messageId: messageId,
+        chatId: chatId,
+        isRead: isRead,
       );
     } else {
       return _SentMessageBubble(
+        isRead: isRead,
         text: text,
         uid: uid,
         pastUID: pastUID,
@@ -102,7 +119,10 @@ class _ReceiveMessageBubble extends HookWidget {
       required this.text,
       required this.pastUID,
       required this.nextUID,
-      required this.time});
+      required this.time,
+      required this.isRead,
+      required this.chatId,
+      required this.messageId});
 
   final String uid;
   final String name;
@@ -110,6 +130,9 @@ class _ReceiveMessageBubble extends HookWidget {
   final String pastUID;
   final String nextUID;
   final String time;
+  final bool isRead;
+  final String chatId;
+  final String messageId;
   bool get isSameSenderAsInPast => uid == pastUID;
   bool get isSameSenderAsInFuture => uid == nextUID;
 
@@ -126,10 +149,16 @@ class _ReceiveMessageBubble extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final colors = useProvider(Repositories.colors);
     final selected = useState(false);
+    final chats = useProvider(Repositories.chats);
     final regexEmoji = RegExp(
         r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$');
     void change() =>
         selected.value == true ? selected.value = false : selected.value = true;
+    useEffect(() {
+      if (!isRead) {
+        chats.markAsRead(chatId: chatId, messageId: messageId);
+      }
+    });
 
     return Container(
       padding:
@@ -205,7 +234,7 @@ class _ReceiveMessageBubble extends HookWidget {
                               text,
                               style: TextStyle(
                                   fontSize:
-                                      regexEmoji.hasMatch(text) ? 30 : 17),
+                                      regexEmoji.hasMatch(text) ? 30 : 16),
                             ),
                           ),
                         ],
@@ -226,15 +255,15 @@ class _ReceiveMessageBubble extends HookWidget {
                   Text(
                     'Primit',
                     style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: Colors.grey,
                         fontWeight: FontWeight.bold),
                   ),
-                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Padding(padding: EdgeInsets.only(left: 3)),
                   Text(
                     time,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       color: Colors.grey,
                     ),
                   )
@@ -247,15 +276,15 @@ class _ReceiveMessageBubble extends HookWidget {
 }
 
 class _SentMessageBubble extends HookWidget {
-  _SentMessageBubble({
-    required this.text,
-    required this.uid,
-    required this.pastUID,
-    required this.nextUID,
-    required this.chatId,
-    required this.messageId,
-    required this.time,
-  });
+  _SentMessageBubble(
+      {required this.text,
+      required this.uid,
+      required this.pastUID,
+      required this.nextUID,
+      required this.chatId,
+      required this.messageId,
+      required this.time,
+      required this.isRead});
   final String text;
   final String uid;
   final String pastUID;
@@ -263,6 +292,7 @@ class _SentMessageBubble extends HookWidget {
   final String chatId;
   final String messageId;
   final String time;
+  final bool isRead;
   bool get isSameSenderAsInPast => uid == pastUID;
   bool get isSameSenderAsInFuture => uid == nextUID;
 
@@ -335,7 +365,7 @@ class _SentMessageBubble extends HookWidget {
                         child: Text(
                           text,
                           style: TextStyle(
-                              fontSize: regexEmoji.hasMatch(text) ? 30 : 17),
+                              fontSize: regexEmoji.hasMatch(text) ? 30 : 16),
                         ),
                       ),
                     ],
@@ -353,17 +383,17 @@ class _SentMessageBubble extends HookWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Trimis',
+                    isRead == true ? 'Citit' : 'Trimis',
                     style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: Colors.grey,
                         fontWeight: FontWeight.bold),
                   ),
-                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Padding(padding: EdgeInsets.only(left: 3)),
                   Text(
                     time,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       color: Colors.grey,
                     ),
                   )
