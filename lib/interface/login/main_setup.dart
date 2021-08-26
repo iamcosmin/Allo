@@ -29,8 +29,7 @@ class Setup extends HookWidget {
         ],
         body: [],
         onButtonPress: () {
-          navigation.push(
-              context, Login(), SharedAxisTransitionType.horizontal);
+          navigation.push(context, Login());
         },
         isAsync: false);
   }

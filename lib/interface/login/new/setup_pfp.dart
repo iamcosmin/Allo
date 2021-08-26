@@ -72,8 +72,7 @@ class SetupProfilePicture extends HookWidget {
         ),
       ],
       onButtonPress: () async {
-        await navigation.push(
-            context, SetupPersonalize(), SharedAxisTransitionType.horizontal);
+        await navigation.push(context, SetupPersonalize());
       },
       isAsync: true,
     );

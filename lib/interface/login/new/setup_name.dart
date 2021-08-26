@@ -76,25 +76,25 @@ class SetupName extends HookWidget {
             if (secondNameController.text != '') {
               if (nameReg.hasMatch(secondNameController.text)) {
                 navigation.push(
-                    context,
-                    SetupUsername(
-                      displayName: firstNameController.text +
-                          ' ' +
-                          secondNameController.text,
-                      email: email,
-                    ),
-                    SharedAxisTransitionType.horizontal);
+                  context,
+                  SetupUsername(
+                    displayName: firstNameController.text +
+                        ' ' +
+                        secondNameController.text,
+                    email: email,
+                  ),
+                );
               } else {
                 secondFieldError.value = 'Numele poate conține doar litere.';
               }
             } else {
               navigation.push(
-                  context,
-                  SetupUsername(
-                    displayName: firstNameController.text,
-                    email: email,
-                  ),
-                  SharedAxisTransitionType.horizontal);
+                context,
+                SetupUsername(
+                  displayName: firstNameController.text,
+                  email: email,
+                ),
+              );
             }
           } else {
             firstFieldError.value = 'Numele poate conține doar litere.';

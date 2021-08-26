@@ -44,8 +44,7 @@ class SetupPersonalize extends HookWidget {
           ),
         )
       ],
-      onButtonPress: () async => navigation.push(
-          context, SetupDone(), SharedAxisTransitionType.horizontal),
+      onButtonPress: () async => navigation.push(context, SetupDone()),
       isAsync: true,
     );
   }

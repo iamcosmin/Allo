@@ -1,6 +1,4 @@
 import 'package:allo/components/appbar.dart';
-import 'package:allo/components/firestore_animated_list/animated_firestore_list.dart';
-import 'package:allo/components/progress_rings.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,16 +16,45 @@ class Chat extends HookWidget {
   String title;
   String chatId;
   Chat({required this.title, required this.chatId});
-
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context) {
     final documentLoad = useState(20);
+    final documentList = useState([]);
     final auth = useProvider(Repositories.auth);
     useEffect(() {
       if (!kIsWeb) {
         FirebaseMessaging.instance.subscribeToTopic(chatId);
       }
-    }, const []);
+      FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .orderBy('time', descending: true)
+          .limit(documentLoad.value)
+          .snapshots()
+          .listen((event) {
+        for (var doc in event.docChanges) {
+          if (doc.type == DocumentChangeType.added) {
+            documentList.value.insert(doc.newIndex, doc.doc);
+            if (listKey.currentState != null) {
+              listKey.currentState!.insertItem(doc.newIndex);
+            }
+          } else if (doc.type == DocumentChangeType.removed) {
+            documentList.value.removeAt(doc.oldIndex);
+            if (listKey.currentState != null) {
+              listKey.currentState!.removeItem(
+                  doc.oldIndex,
+                  (context, animation) => SizeTransition(
+                        sizeFactor: animation,
+                        axis: Axis.vertical,
+                        axisAlignment: -1.0,
+                      ));
+            }
+          }
+        }
+      });
+    }, []);
     return Scaffold(
         appBar: NavBar(
           toolbarHeight: 100,
@@ -50,7 +77,7 @@ class Chat extends HookWidget {
                   alignment: Alignment.bottomLeft,
                   padding: EdgeInsets.only(right: 10),
                   child: Hero(
-                    tag: 'pfp_image',
+                    tag: chatId,
                     child: PersonPicture.initials(
                       radius: 37,
                       initials: auth.returnNameInitials(title),
@@ -71,35 +98,21 @@ class Chat extends HookWidget {
             children: [
               Expanded(
                 flex: 1,
-                child: FirestoreAnimatedList(
-                  query: FirebaseFirestore.instance
-                      .collection('chats')
-                      .doc(chatId)
-                      .collection('messages')
-                      .orderBy('time', descending: true)
-                      .limit(documentLoad.value),
+                child: AnimatedList(
+                  key: listKey,
                   reverse: true,
-                  linear: false,
-                  defaultChild: Center(
-                    child: Container(
-                      height: 60,
-                      width: 60,
-                      child: ProgressRing(),
-                    ),
-                  ),
-                  duration: Duration(milliseconds: 200),
-                  itemBuilder: (context, snap, animation, i) {
+                  itemBuilder: (context, i, animation) {
                     final Map nowData, pastData, nextData;
-                    nowData = snap![i]!.data() as Map;
+                    nowData = documentList.value[i]!.data() as Map;
                     if (i == 0) {
                       nextData = {'senderUID': 'null'};
                     } else {
-                      nextData = snap[i - 1]!.data() as Map;
+                      nextData = documentList.value[i - 1].data() as Map;
                     }
-                    if (i == snap.length - 1) {
+                    if (i == documentList.value.length - 1) {
                       pastData = {'senderUID': 'null'};
                     } else {
-                      pastData = snap[i + 1]!.data() as Map;
+                      pastData = documentList.value[i + 1].data() as Map;
                     }
                     // Above, pastData should have been i-1 and nextData i+1.
                     // But, as the list needs to be in reverse order, we need
@@ -115,15 +128,19 @@ class Chat extends HookWidget {
                             ? nextData['senderUID']
                             : 'null';
                     return SizeTransition(
-                      axis: Axis.vertical,
-                      axisAlignment: -1,
+                      axisAlignment: -0.5,
                       sizeFactor: animation,
-                      child: MessageBubble(
-                        documentData: nowData,
-                        pastUID: pastUID,
-                        nextUID: nextUID,
-                        chatId: chatId,
-                        messageId: snap[i]!.id,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                                begin: Offset(0, 0.1), end: Offset(0, 0))
+                            .animate(animation),
+                        child: MessageBubble(
+                          documentData: nowData,
+                          pastUID: pastUID,
+                          nextUID: nextUID,
+                          chatId: chatId,
+                          messageId: documentList.value[i].id,
+                        ),
                       ),
                     );
                   },

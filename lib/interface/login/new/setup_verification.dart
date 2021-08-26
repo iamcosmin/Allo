@@ -46,8 +46,10 @@ class SetupVerification extends HookWidget {
           await FirebaseAuth.instance.currentUser?.reload();
           final verified = FirebaseAuth.instance.currentUser!.emailVerified;
           if (verified) {
-            await navigation.push(context, SetupProfilePicture(),
-                SharedAxisTransitionType.horizontal);
+            await navigation.push(
+              context,
+              SetupProfilePicture(),
+            );
           } else {
             error.value = 'Se pare că nu ai accesat linkul. Încearcă din nou.';
           }

@@ -82,14 +82,16 @@ class AuthRepository {
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
         await context.read(Repositories.navigation).push(
-            context, SetupName(email), SharedAxisTransitionType.horizontal);
+              context,
+              SetupName(email),
+            );
       } else if (instance.toString() == '[password]') {
         await context.read(Repositories.navigation).push(
-            context,
-            EnterPassword(
-              email: email,
-            ),
-            SharedAxisTransitionType.horizontal);
+              context,
+              EnterPassword(
+                email: email,
+              ),
+            );
       }
     } catch (e) {
       error.value = 'Acest email este invalid.';
@@ -167,8 +169,10 @@ class AuthRepository {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            await context.read(navigationProvider).push(context,
-                SetupVerification(), SharedAxisTransitionType.horizontal);
+            await context.read(navigationProvider).push(
+                  context,
+                  SetupVerification(),
+                );
           } else {
             error.value = 'Parola ta nu respectă cerințele.';
           }
@@ -206,13 +210,13 @@ class AuthRepository {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
           await navigation.push(
-              context,
-              SetupPassword(
-                displayName: displayName,
-                username: username,
-                email: email,
-              ),
-              SharedAxisTransitionType.horizontal);
+            context,
+            SetupPassword(
+              displayName: displayName,
+              username: username,
+              email: email,
+            ),
+          );
         } else {
           error.value = 'Acest nume de utilizator este deja luat.';
         }
@@ -400,9 +404,10 @@ class CurrentUser {
         if (route == null) {
           Navigator.pop(context);
         } else {
-          await context
-              .read(navigationProvider)
-              .push(context, route, SharedAxisTransitionType.horizontal);
+          await context.read(navigationProvider).push(
+                context,
+                route,
+              );
         }
       }
     });

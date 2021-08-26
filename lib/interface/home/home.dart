@@ -14,63 +14,13 @@ class Home extends HookWidget {
     final navigation = useProvider(Repositories.navigation);
     final auth = useProvider(Repositories.auth);
     final chat = useProvider(Repositories.chats);
-    final chats = useState([]);
+    final chats = useProvider(loadChats);
+    final chatsMethod = useProvider(loadChats.notifier);
     final colors = useProvider(Repositories.colors);
-
-    Future getChatsData() async {
-      var chatIdList = [];
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(await auth.user.username)
-          .get()
-          .then((DocumentSnapshot snapshot) {
-        var map = snapshot.data() as Map;
-        if (map.containsKey('chats')) {
-          chatIdList = map['chats'] as List;
-        }
-      });
-
-      var listOfMapChatInfo = <Map>[];
-      if (chatIdList.isNotEmpty) {
-        for (var chat in chatIdList) {
-          var chatSnapshot = await FirebaseFirestore.instance
-              .collection('chats')
-              .doc(chat)
-              .get();
-          var chatInfoMap = chatSnapshot.data() as Map;
-          if (chatInfoMap.containsKey('title')) {
-            var chatInfo = {
-              'name': chatInfoMap['title'],
-              'chatId': chatSnapshot.id,
-            };
-            listOfMapChatInfo.add(chatInfo);
-          }
-        }
-      }
-      chats.value = listOfMapChatInfo;
-    }
 
     useEffect(() {
       Future.microtask(() async {
-        await getChatsData();
-        AwesomeNotifications()
-            .actionStream
-            .listen((ReceivedAction event) async {
-          if (!StringUtils.isNullOrEmpty(event.buttonKeyInput)) {
-            await chat.send.sendTextMessage(
-                text: event.buttonKeyInput,
-                chatId: event.payload!['chatId']!,
-                context: context,
-                chatName: event.payload!['chatName']!);
-          }
-          await navigation.push(
-              context,
-              Chat(
-                title: event.payload!['chatName']!,
-                chatId: event.payload!['chatId']!,
-              ),
-              SharedAxisTransitionType.scaled);
-        });
+        await chatsMethod.getChatsData(context);
       });
     });
 
@@ -88,83 +38,61 @@ class Home extends HookWidget {
           ),
         ],
         body: RefreshIndicator(
-          onRefresh: () async => await getChatsData(),
-          child: ListView(
-            children: [
-              OpenContainer(
-                closedColor: colors.nonColors,
-                openColor: colors.nonColors,
-                middleColor: Colors.transparent,
-                openBuilder: (context, action) {
-                  return Chat(
-                    title: 'Allo',
-                    chatId: 'DFqPHH2R4E5j0tM55fIm',
-                  );
-                },
-                closedBuilder: (context, func) {
-                  return ListTile(
-                    title: Text('Allo'),
-                    leading: Hero(
-                      tag: 'pfp_image',
-                      child: PersonPicture.initials(
-                        radius: 50,
-                        color: Colors.blue,
-                        initials: auth.returnNameInitials(
-                          'Allo',
-                        ),
+          onRefresh: () async => await chatsMethod.getChatsData(context),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              children: [
+                ListTile(
+                  title: Text('Allo'),
+                  leading: Hero(
+                    tag: 'DFqPHH2R4E5j0tM55fImy',
+                    child: PersonPicture.initials(
+                      radius: 50,
+                      color: Colors.blue,
+                      initials: auth.returnNameInitials(
+                        'Allo',
                       ),
                     ),
-                  );
-                },
-              ),
-              if (chats.value.isNotEmpty) ...[
-                for (var chat in chats.value) ...[
-                  OpenContainer(
-                    closedColor: colors.nonColors,
-                    openColor: colors.nonColors,
-                    middleColor: Colors.transparent,
-                    openBuilder: (context, action) {
-                      return Chat(
-                        title: chat['name'],
-                        chatId: chat['chatId'],
-                      );
-                    },
-                    closedBuilder: (context, func) {
-                      return ListTile(
-                        title: Text(chat['name']),
-                        subtitle: Text(chat['chatId']),
-                        leading: Hero(
-                          tag: 'pfp_image',
-                          child: PersonPicture.initials(
-                            radius: 50,
-                            color: Colors.blue,
-                            initials: auth.returnNameInitials(
-                              chat['name'],
-                            ),
+                  ),
+                  onTap: () => navigation.push(
+                      context,
+                      Chat(
+                        title: 'Allo',
+                        chatId: 'DFqPHH2R4E5j0tM55fIm',
+                      )),
+                ),
+                if (chats.isNotEmpty) ...[
+                  for (var chat in chats) ...[
+                    ListTile(
+                      title: Text(chat['name']),
+                      subtitle: Text(chat['chatId']),
+                      leading: Hero(
+                        tag: chat['chatId'],
+                        child: PersonPicture.initials(
+                          radius: 50,
+                          color: Colors.blue,
+                          initials: auth.returnNameInitials(
+                            chat['name'],
                           ),
                         ),
-                      );
-                    },
-                  )
+                      ),
+                      onTap: () => navigation.push(
+                          context,
+                          Chat(
+                            title: chat['name'],
+                            chatId: chat['chatId'],
+                          )),
+                    ),
+                  ]
+                ] else ...[
+                  ListTile(title: Text('Nicio conversație.'))
                 ]
-              ] else ...[
-                ListTile(title: Text('Nicio conversație.'))
-              ]
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-}
-
-class StringUtils {
-  static final RegExp _emptyRegex = RegExp(r'^\s*$');
-  static bool isNullOrEmpty(String? value,
-      {bool considerWhiteSpaceAsEmpty = true}) {
-    if (considerWhiteSpaceAsEmpty) {
-      return value == null || _emptyRegex.hasMatch(value);
-    }
-    return value?.isEmpty ?? true;
   }
 }

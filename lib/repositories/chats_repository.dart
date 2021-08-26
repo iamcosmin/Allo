@@ -133,3 +133,41 @@ class SendMessage {
     );
   }
 }
+
+final loadChats = StateNotifierProvider<LoadChats, List>((ref) => LoadChats());
+
+class LoadChats extends StateNotifier<List> {
+  LoadChats() : super([]);
+  Future getChatsData(BuildContext context) async {
+    var chatIdList = [];
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(await context.read(authProvider).user.username)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      var map = snapshot.data() as Map;
+      if (map.containsKey('chats')) {
+        chatIdList = map['chats'] as List;
+      }
+    });
+
+    var listOfMapChatInfo = <Map>[];
+    if (chatIdList.isNotEmpty) {
+      for (var chat in chatIdList) {
+        var chatSnapshot = await FirebaseFirestore.instance
+            .collection('chats')
+            .doc(chat)
+            .get();
+        var chatInfoMap = chatSnapshot.data() as Map;
+        if (chatInfoMap.containsKey('title')) {
+          var chatInfo = {
+            'name': chatInfoMap['title'],
+            'chatId': chatSnapshot.id,
+          };
+          listOfMapChatInfo.add(chatInfo);
+        }
+      }
+    }
+    state = listOfMapChatInfo;
+  }
+}

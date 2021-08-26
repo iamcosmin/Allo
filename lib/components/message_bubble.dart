@@ -1,6 +1,7 @@
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:allo/components/person_picture.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart'
     show
         showCupertinoModalPopup,
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class MessageBubble extends HookWidget {
   final Map documentData;
@@ -318,28 +320,73 @@ class _SentMessageBubble extends HookWidget {
               GestureDetector(
                 onTap: () => change(),
                 onLongPress: () {
-                  showCupertinoModalPopup(
+                  showModalBottomSheet(
                       context: context,
-                      builder: (context) => CupertinoActionSheet(
-                            actions: [
-                              CupertinoActionSheetAction(
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  await chat.deleteMessage(
-                                      messageId: messageId, chatId: chatId);
-                                },
-                                isDestructiveAction: true,
-                                child: Text('Șterge mesajul'),
+                      builder: (context) {
+                        return Material(
+                          child: Container(
+                            height: 200,
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.of(context).pop(),
+                                    child: Container(
+                                      alignment: Alignment.topRight,
+                                      child: Icon(
+                                        FluentIcons.dismiss_circle_20_filled,
+                                        color: Colors.grey,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.of(context).pop();
+                                              Future.delayed(
+                                                  Duration(seconds: 1),
+                                                  () => chat.deleteMessage(
+                                                      messageId: messageId,
+                                                      chatId: chatId));
+                                            },
+                                            child: ClipOval(
+                                              child: Container(
+                                                height: 60,
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                color: Colors.red,
+                                                child: Icon(
+                                                  FluentIcons.delete_16_regular,
+                                                  color: Colors.white,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                              padding: EdgeInsets.only(top: 10),
+                                              child: Text(
+                                                'Șterge mesajul',
+                                                style: TextStyle(fontSize: 16),
+                                              )),
+                                        ],
+                                      )
+                                    ],
+                                  )
+                                ],
                               ),
-                            ],
-                            cancelButton: CupertinoActionSheetAction(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              isDefaultAction: true,
-                              child: Text('Anulează'),
                             ),
-                          ));
+                          ),
+                        );
+                      });
                 },
                 child: Container(
                   decoration: BoxDecoration(
