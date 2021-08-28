@@ -38,7 +38,7 @@ jobs:
         packageName: com.relays.messenger
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
         track: beta
-        whatsNewDirectory: distribution/whatsnew
+        whatsNewDirectory: distribution
     - name: Web - Build
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
