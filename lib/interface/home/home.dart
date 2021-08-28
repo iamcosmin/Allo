@@ -1,7 +1,4 @@
 import 'package:allo/components/person_picture.dart';
-import 'package:animations/animations.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -13,10 +10,8 @@ class Home extends HookWidget {
   Widget build(BuildContext context) {
     final navigation = useProvider(Repositories.navigation);
     final auth = useProvider(Repositories.auth);
-    final chat = useProvider(Repositories.chats);
     final chats = useProvider(loadChats);
     final chatsMethod = useProvider(loadChats.notifier);
-    final colors = useProvider(Repositories.colors);
 
     useEffect(() {
       Future.microtask(() async {

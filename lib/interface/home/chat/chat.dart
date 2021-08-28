@@ -10,6 +10,7 @@ import 'package:allo/components/message_bubble.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class Chat extends HookWidget {
@@ -20,8 +21,14 @@ class Chat extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final documentLoad = useState(20);
-    final documentList = useState([]);
+    final documentList = useState(<DocumentSnapshot>[]);
     final auth = useProvider(Repositories.auth);
+
+    int _indexForKey(String key) {
+      assert(key.isNotEmpty);
+      return documentList.value.indexWhere((item) => item.id == key);
+    }
+
     useEffect(() {
       if (!kIsWeb) {
         FirebaseMessaging.instance.subscribeToTopic(chatId);
@@ -51,6 +58,9 @@ class Chat extends HookWidget {
                         axisAlignment: -1.0,
                       ));
             }
+          } else if (doc.type == DocumentChangeType.modified) {
+            documentList.value[doc.oldIndex] = doc.doc;
+            print(documentList.value[doc.newIndex].data() as Map);
           }
         }
       });
@@ -98,52 +108,82 @@ class Chat extends HookWidget {
             children: [
               Expanded(
                 flex: 1,
-                child: AnimatedList(
-                  key: listKey,
-                  reverse: true,
-                  itemBuilder: (context, i, animation) {
-                    final Map nowData, pastData, nextData;
-                    nowData = documentList.value[i]!.data() as Map;
-                    if (i == 0) {
-                      nextData = {'senderUID': 'null'};
-                    } else {
-                      nextData = documentList.value[i - 1].data() as Map;
+                child: NotificationListener(
+                  onNotification: (value) {
+                    if (value is ScrollNotification) {
+                      final before = value.metrics.extentBefore;
+                      final max = value.metrics.maxScrollExtent;
+
+                      if (before == max) {}
                     }
-                    if (i == documentList.value.length - 1) {
-                      pastData = {'senderUID': 'null'};
-                    } else {
-                      pastData = documentList.value[i + 1].data() as Map;
-                    }
-                    // Above, pastData should have been i-1 and nextData i+1.
-                    // But, as the list needs to be in reverse order, we need
-                    // to consider this workaround.
-                    final pastUID = pastData.containsKey('uid')
-                        ? pastData['uid']
-                        : pastData.containsKey('senderUID')
-                            ? pastData['senderUID']
-                            : 'null';
-                    final nextUID = nextData.containsKey('uid')
-                        ? nextData['uid']
-                        : nextData.containsKey('senderUID')
-                            ? nextData['senderUID']
-                            : 'null';
-                    return SizeTransition(
-                      axisAlignment: -0.5,
-                      sizeFactor: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                                begin: Offset(0, 0.1), end: Offset(0, 0))
-                            .animate(animation),
-                        child: MessageBubble(
-                          documentData: nowData,
-                          pastUID: pastUID,
-                          nextUID: nextUID,
-                          chatId: chatId,
-                          messageId: documentList.value[i].id,
-                        ),
-                      ),
-                    );
+                    return false;
                   },
+                  child: AnimatedList(
+                    physics: BouncingScrollPhysics(),
+                    key: listKey,
+                    reverse: true,
+                    itemBuilder: (context, i, animation) {
+                      final Map pastData, nextData;
+                      if (i == 0) {
+                        nextData = {'senderUID': 'null'};
+                      } else {
+                        nextData = documentList.value[i - 1].data() as Map;
+                      }
+                      if (i == documentList.value.length - 1) {
+                        pastData = {'senderUID': 'null'};
+                      } else {
+                        pastData = documentList.value[i + 1].data() as Map;
+                      }
+                      // Above, pastData should have been i-1 and nextData i+1.
+                      // But, as the list needs to be in reverse order, we need
+                      // to consider this workaround.
+                      final pastUID = pastData.containsKey('uid')
+                          ? pastData['uid']
+                          : pastData.containsKey('senderUID')
+                              ? pastData['senderUID']
+                              : 'null';
+                      final nextUID = nextData.containsKey('uid')
+                          ? nextData['uid']
+                          : nextData.containsKey('senderUID')
+                              ? nextData['senderUID']
+                              : 'null';
+                      final documentData = documentList.value[i].data() as Map;
+                      var name = documentData['name'] ??
+                          documentData['senderName'] ??
+                          'No name';
+                      var uid = documentData['uid'] ??
+                          documentData['senderUID'] ??
+                          'No UID';
+                      String text = documentData['text'] ??
+                          documentData['messageTextContent'] ??
+                          'No text';
+                      var msSE = DateTime.fromMillisecondsSinceEpoch(
+                          (documentData['time'] as Timestamp)
+                              .millisecondsSinceEpoch);
+                      bool isRead = documentData['read'] ?? false;
+                      var time = DateFormat.Hm().format(msSE);
+                      return SizeTransition(
+                        axisAlignment: -1.0,
+                        sizeFactor: animation,
+                        child: FadeTransition(
+                          opacity: CurvedAnimation(
+                              curve: Curves.easeIn, parent: animation),
+                          child: MessageBubble(
+                            key: UniqueKey(),
+                            isRead: isRead,
+                            name: name,
+                            text: text,
+                            time: time,
+                            uid: uid,
+                            pastUID: pastUID,
+                            nextUID: nextUID,
+                            chatId: chatId,
+                            messageId: documentList.value[i].id,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
               Expanded(

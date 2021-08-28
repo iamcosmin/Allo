@@ -2,88 +2,40 @@ import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
-import 'package:flutter/cupertino.dart'
-    show
-        showCupertinoModalPopup,
-        CupertinoActionSheet,
-        CupertinoActionSheetAction;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class MessageBubble extends HookWidget {
-  final Map documentData;
+  final String name;
+  final String uid;
+  final bool isRead;
+  final String text;
+  final String time;
   final String pastUID;
   final String nextUID;
   final String chatId;
   final String messageId;
   MessageBubble({
-    required this.documentData,
+    required Key key,
+    required this.name,
+    required this.uid,
+    required this.isRead,
+    required this.text,
+    required this.time,
     required this.pastUID,
     required this.nextUID,
     required this.chatId,
     required this.messageId,
-  });
-
-  String get name {
-    if (documentData.containsKey('name')) {
-      return documentData['name'];
-    } else if (documentData.containsKey('senderName')) {
-      return documentData['senderName'];
-    } else {
-      return 'No Name';
-    }
-  }
-
-  String get uid {
-    if (documentData.containsKey('uid')) {
-      return documentData['uid'];
-    } else if (documentData.containsKey('senderUID')) {
-      return documentData['senderUID'];
-    } else {
-      return 'No UID';
-    }
-  }
-
-  String get text {
-    if (documentData.containsKey('text')) {
-      return documentData['text'];
-    } else if (documentData.containsKey('messageTextContent')) {
-      return documentData['messageTextContent'];
-    } else {
-      return 'No Body';
-    }
-  }
-
-  String get time {
-    if (documentData.containsKey('time')) {
-      var time = DateTime.fromMillisecondsSinceEpoch(
-          (documentData['time'] as Timestamp).millisecondsSinceEpoch);
-      return DateFormat.Hm().format(time);
-    } else {
-      return '00:00';
-    }
-  }
-
-  bool get isRead {
-    if (documentData.containsKey('read')) {
-      if (documentData['read'] == true) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final auth = useProvider(Repositories.auth);
     if (uid != auth.user.uid) {
       return _ReceiveMessageBubble(
+        key: UniqueKey(),
         name: name,
         uid: uid,
         text: text,
@@ -96,6 +48,7 @@ class MessageBubble extends HookWidget {
       );
     } else {
       return _SentMessageBubble(
+        key: UniqueKey(),
         isRead: isRead,
         text: text,
         uid: uid,
@@ -116,7 +69,8 @@ class _ReceiveMessageBubble extends HookWidget {
   // If the pastUID == senderUID, we need to eliminate the name and change bubble
   // characteristics
   _ReceiveMessageBubble(
-      {required this.name,
+      {required Key key,
+      required this.name,
       required this.uid,
       required this.text,
       required this.pastUID,
@@ -124,7 +78,8 @@ class _ReceiveMessageBubble extends HookWidget {
       required this.time,
       required this.isRead,
       required this.chatId,
-      required this.messageId});
+      required this.messageId})
+      : super(key: key);
 
   final String uid;
   final String name;
@@ -200,7 +155,7 @@ class _ReceiveMessageBubble extends HookWidget {
                 children: [
                   if (!isSameSenderAsInPast) ...[
                     Padding(
-                      padding: const EdgeInsets.only(left: 15, bottom: 4),
+                      padding: EdgeInsets.only(left: 15, bottom: 4),
                       child: Text(
                         name,
                         style: TextStyle(fontSize: 11, color: Colors.grey),
@@ -231,7 +186,7 @@ class _ReceiveMessageBubble extends HookWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 5, right: 5),
+                            padding: EdgeInsets.only(left: 5, right: 5),
                             child: Text(
                               text,
                               style: TextStyle(
@@ -250,7 +205,7 @@ class _ReceiveMessageBubble extends HookWidget {
           AnimatedContainer(
               duration: Duration(milliseconds: 200),
               curve: Curves.ease,
-              padding: const EdgeInsets.only(left: 60),
+              padding: EdgeInsets.only(left: 60),
               height: selected.value || nextUID == 'null' ? 20 : 0,
               child: Row(
                 children: [
@@ -279,14 +234,16 @@ class _ReceiveMessageBubble extends HookWidget {
 
 class _SentMessageBubble extends HookWidget {
   _SentMessageBubble(
-      {required this.text,
+      {required Key key,
+      required this.text,
       required this.uid,
       required this.pastUID,
       required this.nextUID,
       required this.chatId,
       required this.messageId,
       required this.time,
-      required this.isRead});
+      required this.isRead})
+      : super(key: key);
   final String text;
   final String uid;
   final String pastUID;
@@ -408,7 +365,7 @@ class _SentMessageBubble extends HookWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 1),
+                        padding: EdgeInsets.only(left: 5, right: 1),
                         child: Text(
                           text,
                           style: TextStyle(
@@ -424,8 +381,10 @@ class _SentMessageBubble extends HookWidget {
           AnimatedContainer(
               duration: Duration(milliseconds: 200),
               curve: Curves.ease,
-              padding: const EdgeInsets.only(right: 5),
-              height: selected.value || nextUID == 'null' ? 20 : 0,
+              padding: EdgeInsets.only(right: 5),
+              height: selected.value || (isRead == true && nextUID == 'null')
+                  ? 20
+                  : 0,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

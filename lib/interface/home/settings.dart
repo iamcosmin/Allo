@@ -14,8 +14,6 @@ class Settings extends HookWidget {
   Widget build(BuildContext context) {
     final dark = useProvider(darkMode);
     final auth = useProvider(Repositories.auth);
-    final colors = useProvider(Repositories.colors);
-    final navigation = useProvider(Repositories.navigation);
     final darkMethod = useProvider(darkMode.notifier);
     final name = FirebaseAuth.instance.currentUser!.displayName!;
     // DO NOT REMOVE
