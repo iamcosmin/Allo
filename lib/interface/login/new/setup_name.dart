@@ -1,8 +1,7 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/interface/login/new/setup_username.dart';
-import 'package:allo/repositories/repositories.dart' hide Colors;
+import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,65 +28,73 @@ class SetupName extends HookWidget {
           padding: const EdgeInsets.only(top: 10),
         ),
         Text(
-          'Pentru a continua, introdu numele tău. \nContinuând, ești de acord să creezi un cont nou.',
-          style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
+          'Pentru a continua, introdu numele tău.',
+          style: TextStyle(fontSize: 18, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
       body: [
-        CupertinoFormSection.insetGrouped(
-          children: [
-            CupertinoFormRow(
-              error: firstFieldError.value == ''
-                  ? null
-                  : Text(firstFieldError.value),
-              child: CupertinoTextField(
-                decoration: BoxDecoration(color: Colors.transparent),
-                placeholder: 'Prenume',
+        Padding(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(10),
+                  errorText: firstFieldError.value == ''
+                      ? null
+                      : firstFieldError.value,
+                  errorStyle: TextStyle(fontSize: 14),
+                  labelText: 'Prenume',
+                  border: OutlineInputBorder(),
+                ),
                 controller: firstNameController,
-                obscureText: false,
               ),
-            ),
-            CupertinoFormRow(
-              error: secondFieldError.value == ''
-                  ? null
-                  : Text(secondFieldError.value),
-              child: CupertinoTextField(
-                decoration: BoxDecoration(color: Colors.transparent),
-                placeholder: 'Nume (opțional)',
+              Padding(padding: EdgeInsets.only(bottom: 10)),
+              TextFormField(
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(10),
+                  errorText: secondFieldError.value == ''
+                      ? null
+                      : secondFieldError.value,
+                  errorStyle: TextStyle(fontSize: 14),
+                  labelText: 'Nume (opțional)',
+                  border: OutlineInputBorder(),
+                ),
                 controller: secondNameController,
-                obscureText: false,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
       onButtonPress: () {
         FocusScope.of(context).unfocus();
+        firstFieldError.value = '';
+        secondFieldError.value = '';
         if (firstNameController.text != '') {
           if (nameReg.hasMatch(firstNameController.text)) {
             if (secondNameController.text != '') {
               if (nameReg.hasMatch(secondNameController.text)) {
                 navigation.push(
-                    context,
-                    SetupUsername(
-                      displayName: firstNameController.text +
-                          ' ' +
-                          secondNameController.text,
-                      email: email,
-                    ),
-                    SharedAxisTransitionType.horizontal);
+                  context,
+                  SetupUsername(
+                    displayName: firstNameController.text +
+                        ' ' +
+                        secondNameController.text,
+                    email: email,
+                  ),
+                );
               } else {
                 secondFieldError.value = 'Numele poate conține doar litere.';
               }
             } else {
               navigation.push(
-                  context,
-                  SetupUsername(
-                    displayName: firstNameController.text,
-                    email: email,
-                  ),
-                  SharedAxisTransitionType.horizontal);
+                context,
+                SetupUsername(
+                  displayName: firstNameController.text,
+                  email: email,
+                ),
+              );
             }
           } else {
             firstFieldError.value = 'Numele poate conține doar litere.';

@@ -49,6 +49,7 @@ class ProgressBar extends StatefulWidget {
   final Color? backgroundColor;
 
   /// The active color of the progress bar. If null,
+  // ignore: deprecated_member_use
   /// [ThemeData.accentColor] is used
   final Color? activeColor;
 
@@ -285,6 +286,7 @@ class ProgressRing extends StatefulWidget {
   final Color? backgroundColor;
 
   /// The active color of the progress ring. If null,
+  // ignore: deprecated_member_use
   /// [ThemeData.accentColor] is used
   final Color? activeColor;
 

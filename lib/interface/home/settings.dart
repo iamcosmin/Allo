@@ -1,10 +1,11 @@
+import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/home/concentrated.dart';
 import 'package:allo/interface/home/settings/profile_picture.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:allo/components/person_picture.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -13,7 +14,6 @@ class Settings extends HookWidget {
   Widget build(BuildContext context) {
     final dark = useProvider(darkMode);
     final auth = useProvider(Repositories.auth);
-    final navigation = useProvider(Repositories.navigation);
     final darkMethod = useProvider(darkMode.notifier);
     final name = FirebaseAuth.instance.currentUser!.displayName!;
     // DO NOT REMOVE
@@ -21,113 +21,72 @@ class Settings extends HookWidget {
     void _b() {
       _a.value++;
       if (_a.value == 9) {
-        navigation.to(context, C());
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => C()));
         _a.value = 0;
       }
     }
 
-    return CupertinoPageScaffold(
-      child: CustomScrollView(
-        slivers: [
-          CupertinoSliverNavigationBar(
-            largeTitle: GestureDetector(
-              onTap: () => _b(),
-              child: Text('Setări'),
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, i) => [
+          SliverAppBar(
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              title: GestureDetector(onTap: () => _b(), child: Text('Setări')),
+              titlePadding: EdgeInsets.only(left: 20, bottom: 15),
             ),
+            expandedHeight: 100,
+            pinned: true,
           ),
-          SliverSafeArea(
-            minimum: EdgeInsets.only(top: 20),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                CupertinoFormSection.insetGrouped(
-                  children: [
-                    CupertinoFormRow(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.only(top: 10, bottom: 10),
-                            child: PersonPicture.determine(
-                                radius: 100,
-                                profilePicture: auth.user.profilePicture,
-                                initials: auth.user.nameInitials),
-                          ),
-                          Text(name),
-                          Padding(padding: EdgeInsets.only(bottom: 10))
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                CupertinoFormSection.insetGrouped(
-                  header: Text('Cont'),
-                  children: [
-                    //     CupertinoFormRow(
-                    //       prefix: Text('Nume'),
-                    //       child: Padding(
-                    //         padding: const EdgeInsets.only(
-                    //             top: 10, bottom: 10, right: 5),
-                    //         child: Icon(
-                    //           CupertinoIcons.right_chevron,
-                    //           color: CupertinoColors.systemGrey,
-                    //           size: 15,
-                    //         ),
-                    //       ),
-                    //     ),             TODO: NON FUNCTIONAL
-                    GestureDetector(
-                      onTap: () =>
-                          navigation.to(context, ProfilePictureSettings()),
-                      child: CupertinoFormRow(
-                        prefix: Text('Fotografie de profil'),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, bottom: 10, right: 5),
-                          child: Icon(
-                            CupertinoIcons.right_chevron,
-                            color: CupertinoColors.systemGrey,
-                            size: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                CupertinoFormSection.insetGrouped(
-                  header: Text('Personalizare'),
-                  children: [
-                    CupertinoFormRow(
-                      prefix: Text('Mod întunecat'),
-                      child: CupertinoSwitch(
-                          value: dark,
-                          onChanged: (value) => darkMethod.switcher(context)),
-                    ),
-                  ],
-                ),
-                CupertinoFormSection.insetGrouped(
-                  header: Text('Gestionare sesiune'),
-                  children: [
-                    GestureDetector(
-                      onTap: () async => await auth.signOut(context),
-                      child: CupertinoFormRow(
-                        prefix: Text('Deconectare'),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, bottom: 10, right: 5),
-                          child: Icon(
-                            CupertinoIcons.right_chevron,
-                            color: CupertinoColors.systemGrey,
-                            size: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ]),
-            ),
-          )
         ],
+        body: ListView(
+          padding: EdgeInsets.all(20),
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  child: PersonPicture.determine(
+                      radius: 100,
+                      profilePicture: auth.user.profilePicture,
+                      initials: auth.user.nameInitials),
+                ),
+                Text(name),
+                Padding(padding: EdgeInsets.only(bottom: 10))
+              ],
+            ),
+            SettingsListHeader('Cont'),
+            SettingsListTile(
+              title: 'Fotografie de profil',
+              type: RadiusType.BOTH,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ProfilePictureSettings(),
+                ),
+              ),
+            ),
+            SettingsListHeader('Personalizare'),
+            SettingsListTile(
+              title: 'Mod întunecat',
+              type: RadiusType.BOTH,
+              onTap: () => darkMethod.switcher(context),
+              trailing: Switch(
+                value: dark,
+                activeColor: Colors.blue,
+                onChanged: (value) => darkMethod.switcher(context),
+              ),
+            ),
+            SettingsListHeader('Gestionare sesiune'),
+            SettingsListTile(
+              title: 'Deconectare',
+              type: RadiusType.BOTH,
+              onTap: () async => await auth.signOut(context),
+            ),
+          ],
+        ),
       ),
     );
   }

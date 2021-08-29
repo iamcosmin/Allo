@@ -1,133 +1,62 @@
 import 'package:allo/repositories/preferences_repository.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:animations/animations.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final appThemeProvider = Provider<AppTheme>((ref) => AppTheme());
-
-// Please update _TextThemeDefaultsBuilder accordingly after changing the default
-// color here, as their implementation depends on the default value of the color
-// field.
-//
-// Values derived from https://developer.apple.com/design/resources/.
-const TextStyle _kDefaultTextStyle = TextStyle(
-  inherit: false,
-  fontFamily: 'VarDisplay',
-  fontSize: 17.0,
-  color: CupertinoColors.label,
-  decoration: TextDecoration.none,
-);
-
-// Please update _TextThemeDefaultsBuilder accordingly after changing the default
-// color here, as their implementation depends on the default value of the color
-// field.
-//
-// Values derived from https://developer.apple.com/design/resources/.
-const TextStyle _kDefaultActionTextStyle = TextStyle(
-  inherit: false,
-  fontFamily: 'VarDisplay',
-  fontSize: 17.0,
-  color: CupertinoColors.activeOrange,
-  decoration: TextDecoration.none,
-);
-
-// Please update _TextThemeDefaultsBuilder accordingly after changing the default
-// color here, as their implementation depends on the default value of the color
-// field.
-//
-// Values derived from https://developer.apple.com/design/resources/.
-const TextStyle _kDefaultTabLabelTextStyle = TextStyle(
-  inherit: false,
-  fontFamily: 'VarDisplay',
-  fontSize: 11.0,
-  color: CupertinoColors.inactiveGray,
-);
-
-const TextStyle _kDefaultMiddleTitleTextStyle = TextStyle(
-  inherit: false,
-  fontFamily: 'VarDisplay',
-  fontSize: 17.0,
-  fontWeight: FontWeight.w600,
-  color: CupertinoColors.label,
-);
-
-const TextStyle _kDefaultLargeTitleTextStyle = TextStyle(
-  inherit: false,
-  fontFamily: 'VarDisplay',
-  fontSize: 34.0,
-  fontWeight: FontWeight.w700,
-  color: CupertinoColors.label,
-);
-
-// Please update _TextThemeDefaultsBuilder accordingly after changing the default
-// color here, as their implementation depends on the default value of the color
-// field.
-//
-// Inspected on iOS 13 simulator with "Debug View Hierarchy".
-// Value extracted from off-center labels. Centered labels have a font size of 25pt.
-//
-// The letterSpacing sourced from iOS 14 simulator screenshots for comparison.
-// See also:
-//
-// * https://github.com/flutter/flutter/pull/65501#discussion_r486557093
-const TextStyle _kDefaultPickerTextStyle = TextStyle(
-  inherit: false,
-  fontFamily: 'VarDisplay',
-  fontSize: 21.0,
-  fontWeight: FontWeight.w400,
-  color: CupertinoColors.label,
-);
-
-// Please update _TextThemeDefaultsBuilder accordingly after changing the default
-// color here, as their implementation depends on the default value of the color
-// field.
-//
-// Inspected on iOS 13 simulator with "Debug View Hierarchy".
-// Value extracted from off-center labels. Centered labels have a font size of 25pt.
-const TextStyle _kDefaultDateTimePickerTextStyle = TextStyle(
-  inherit: false,
-  fontFamily: 'VarDisplay',
-  fontSize: 21,
-  fontWeight: FontWeight.normal,
-  color: CupertinoColors.label,
-);
+final appThemeProvider = Provider<AppTheme>((ref) => AppTheme(ref));
 
 class AppTheme {
-  static final _textTheme = CupertinoTextThemeData(
-    actionTextStyle: _kDefaultActionTextStyle,
-    dateTimePickerTextStyle: _kDefaultDateTimePickerTextStyle,
-    navActionTextStyle: _kDefaultActionTextStyle,
-    navLargeTitleTextStyle: _kDefaultLargeTitleTextStyle,
-    navTitleTextStyle: _kDefaultMiddleTitleTextStyle,
-    pickerTextStyle: _kDefaultPickerTextStyle,
-    tabLabelTextStyle: _kDefaultTabLabelTextStyle,
-    textStyle: _kDefaultTextStyle,
-  );
-  static final CupertinoThemeData _kLightTheme = CupertinoThemeData(
-    barBackgroundColor: CupertinoColors.systemGroupedBackground,
-    brightness: Brightness.light,
-    primaryColor: CupertinoColors.activeOrange,
-    primaryContrastingColor: CupertinoColors.black,
-    scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
-    textTheme: _textTheme,
-  );
+  AppTheme(this.ref);
+  final ProviderReference ref;
+  Color get non {
+    return ref.read(colorsProvider).nonColors;
+  }
 
-  static final CupertinoThemeData _kDarkTheme = CupertinoThemeData(
-      barBackgroundColor: CupertinoColors.black,
-      brightness: Brightness.dark,
-      primaryColor: CupertinoColors.activeOrange,
-      primaryContrastingColor: CupertinoColors.white,
-      scaffoldBackgroundColor: CupertinoColors.black,
-      textTheme: _textTheme);
+  Map<TargetPlatform, PageTransitionsBuilder> get builders {
+    return {
+      TargetPlatform.android: SharedAxisPageTransitionsBuilder(
+          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
+      TargetPlatform.fuchsia: SharedAxisPageTransitionsBuilder(
+          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
+      TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(
+          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
+      TargetPlatform.linux: SharedAxisPageTransitionsBuilder(
+          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
+      TargetPlatform.macOS: SharedAxisPageTransitionsBuilder(
+          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
+      TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
+          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
+    };
+  }
 
-  CupertinoThemeData getAppThemeData(
-      BuildContext context, bool isDarkModeEnabled) {
+  ThemeData get kLightTheme {
+    return ThemeData(
+        accentColor: Colors.blue,
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: Colors.white,
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: builders,
+        ),
+        fontFamily: 'VarDisplay');
+  }
+
+  ThemeData get _kDarkTheme {
+    return ThemeData(
+        accentColor: Colors.blue,
+        brightness: Brightness.dark,
+        pageTransitionsTheme: PageTransitionsTheme(builders: builders),
+        fontFamily: 'VarDisplay',
+        scaffoldBackgroundColor: Colors.black);
+  }
+
+  ThemeData getAppThemeData(BuildContext context, bool isDarkModeEnabled) {
     if (isDarkModeEnabled) {
       return _kDarkTheme;
     } else if (!isDarkModeEnabled) {
-      return _kLightTheme;
+      return kLightTheme;
     } else {
-      return _kLightTheme;
+      return kLightTheme;
     }
   }
 }
@@ -135,13 +64,13 @@ class AppTheme {
 final sharedPreferencesProvider =
     Provider<SharedPreferences>((ref) => throw UnimplementedError());
 
-final colorsProvider = Provider<Colors>((ref) {
+final colorsProvider = Provider<ColorsBuilt>((ref) {
   final dark = ref.watch(darkMode);
-  return Colors(dark);
+  return ColorsBuilt(dark);
 });
 
-class Colors {
-  Colors(this.darkMode);
+class ColorsBuilt {
+  ColorsBuilt(this.darkMode);
   bool darkMode;
 
   Color returnColor(Color light, Color dark) {
@@ -155,8 +84,10 @@ class Colors {
   Color get messageBubble => returnColor(Color(0xFFdbdbdb), Color(0xFF292929));
   Color get nonColors => returnColor(Color(0xFFFFFFFF), Color(0xFF000000));
   Color get messageInput =>
-      returnColor(Color(0xFFFFFFFF), CupertinoColors.darkBackgroundGray);
-  Color get tabBarColor =>
-      returnColor(CupertinoColors.white, CupertinoColors.darkBackgroundGray);
+      returnColor(Colors.grey.shade300, Colors.grey.shade900);
+  Color get tabBarColor => returnColor(Colors.white, Colors.grey);
   Color get spinnerColor => returnColor(Color(0xFFD2D2D2), Color(0xFF363636));
+  Color get contrast => returnColor(Color(0xFF000000), Color(0xFFFFFFFF));
+  Color get tileColor =>
+      returnColor(Colors.grey.shade200, Colors.grey.shade900);
 }

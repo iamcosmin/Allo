@@ -1,199 +1,195 @@
-import 'package:allo/components/firestore_animated_list/animated_firestore_list.dart';
+import 'package:allo/components/appbar.dart';
+import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:allo/components/progress_rings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:allo/components/chats/chatnavigationbar.dart';
 import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/message_bubble.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class Chat extends HookWidget {
-  String title;
-  String chatId;
-  Chat({required this.title, required this.chatId});
-
+  final String chatType;
+  final String title;
+  final String chatId;
+  Chat({required this.title, required this.chatId, required this.chatType});
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context) {
     final documentLoad = useState(20);
+    final documentList = useState(<DocumentSnapshot>[]);
+    final auth = useProvider(Repositories.auth);
+
     useEffect(() {
       if (!kIsWeb) {
         FirebaseMessaging.instance.subscribeToTopic(chatId);
       }
-    }, const []);
-    return CupertinoPageScaffold(
-        navigationBar: ChatNavigationBar(
-          middle: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(title),
-              Padding(
-                padding: const EdgeInsets.only(top: 0),
-                child: Text(
-                  'conversație',
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: CupertinoColors.systemGrey2,
-                      fontWeight: FontWeight.normal),
-                ),
-              )
-            ],
+      FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .orderBy('time', descending: true)
+          .limit(documentLoad.value)
+          .snapshots()
+          .listen((event) {
+        for (var doc in event.docChanges) {
+          if (doc.type == DocumentChangeType.added) {
+            documentList.value.insert(doc.newIndex, doc.doc);
+            if (listKey.currentState != null) {
+              listKey.currentState!.insertItem(doc.newIndex);
+            }
+          } else if (doc.type == DocumentChangeType.removed) {
+            documentList.value.removeAt(doc.oldIndex);
+            if (listKey.currentState != null) {
+              listKey.currentState!.removeItem(
+                  doc.oldIndex,
+                  (context, animation) => SizeTransition(
+                        sizeFactor: animation,
+                        axis: Axis.vertical,
+                        axisAlignment: -1.0,
+                      ));
+            }
+          } else if (doc.type == DocumentChangeType.modified) {
+            documentList.value[doc.oldIndex] = doc.doc;
+            print(documentList.value[doc.newIndex].data() as Map);
+          }
+        }
+      });
+    }, []);
+    return Scaffold(
+        appBar: NavBar(
+          toolbarHeight: 100,
+          leading: Container(
+            padding: EdgeInsets.only(left: 10, top: 0),
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: Icon(FluentIcons.arrow_left_16_regular),
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
-          trailing: PersonPicture.initials(
-            radius: 40,
-            initials: 'A',
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFcc2b5e),
-                Color(0xFF753a88),
+          flexibleSpace: FlexibleSpaceBar(
+            titlePadding: EdgeInsets.only(left: 20, bottom: 10),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  padding: EdgeInsets.only(right: 10),
+                  child: Hero(
+                    tag: chatId,
+                    child: Material(
+                      child: PersonPicture.initials(
+                        radius: 37,
+                        initials: auth.returnNameInitials(title),
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                ),
               ],
             ),
           ),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Column(
             children: [
               Expanded(
                 flex: 1,
-                child: FirestoreAnimatedList(
-                  query: FirebaseFirestore.instance
-                      .collection('chats')
-                      .doc(chatId)
-                      .collection('messages')
-                      .orderBy('time', descending: true)
-                      .limit(documentLoad.value),
-                  reverse: true,
-                  linear: false,
-                  defaultChild: Center(
-                    child: Container(
-                      height: 60,
-                      width: 60,
-                      child: ProgressRing(),
-                    ),
-                  ),
-                  duration: Duration(milliseconds: 200),
-                  itemBuilder: (context, snap, animation, i) {
-                    final Map nowData, pastData, nextData;
-                    nowData = snap![i]!.data() as Map;
-                    if (i == 0) {
-                      nextData = {'senderUID': 'null'};
-                    } else {
-                      nextData = snap[i - 1]!.data() as Map;
-                    }
-                    if (i == snap.length - 1) {
-                      pastData = {'senderUID': 'null'};
-                    } else {
-                      pastData = snap[i + 1]!.data() as Map;
-                    }
-                    // Above, pastData should have been i-1 and nextData i+1.
-                    // But, as the list needs to be in reverse order, we need
-                    // to consider this workaround.
-                    final pastUID = pastData.containsKey('uid')
-                        ? pastData['uid']
-                        : pastData.containsKey('senderUID')
-                            ? pastData['senderUID']
-                            : 'null';
-                    final nextUID = nextData.containsKey('uid')
-                        ? nextData['uid']
-                        : nextData.containsKey('senderUID')
-                            ? nextData['senderUID']
-                            : 'null';
-                    return SizeTransition(
-                      axis: Axis.vertical,
-                      axisAlignment: -1,
-                      sizeFactor: animation,
-                      child: MessageBubble(
-                        documentData: nowData,
-                        pastUID: pastUID,
-                        nextUID: nextUID,
-                        chatId: chatId,
-                        messageId: snap[i]!.id,
-                      ),
-                    );
-                  },
-                ),
-                // StreamBuilder(
-                //   stream: stream,
-                //   builder: (ctx, AsyncSnapshot<QuerySnapshot> snap) {
-                //     return AnimatedSwitcher(
-                //       duration: Duration(milliseconds: 500),
-                //       switchInCurve: Curves.easeInCubic,
-                //       switchOutCurve: Curves.easeOutCubic,
-                //       child: snap.hasData
-                //           ? NotificationListener(
-                //               onNotification: (value) {
-                //                 if (value is ScrollNotification) {
-                //                   final before = value.metrics.extentBefore;
-                //                   final max = value.metrics.maxScrollExtent;
+                child: NotificationListener(
+                  onNotification: (value) {
+                    if (value is ScrollNotification) {
+                      final before = value.metrics.extentBefore;
+                      final max = value.metrics.maxScrollExtent;
 
-                //                   if (before == max) {
-                //                     documentLoad.value =
-                //                         documentLoad.value + 15;
-                //                   }
-                //                 }
-                //                 return false;
-                //               },
-                //               child: ListView.builder(
-                //                 reverse: true,
-                //                 controller: scrollController,
-                //                 itemCount: snap.data!.docs.length,
-                //                 itemBuilder: (BuildContext ctx, int i) {
-                //                   final nowData, pastData, nextData;
-                //                   nowData = snap.data!.docs[i].data() as Map;
-                //                   if (i == 0) {
-                //                     nextData = {'senderUID': 'null'};
-                //                   } else {
-                //                     nextData =
-                //                         snap.data!.docs[i - 1].data() as Map;
-                //                   }
-                //                   if (i == snap.data!.docs.length - 1) {
-                //                     pastData = {'senderUID': 'null'};
-                //                   } else {
-                //                     pastData =
-                //                         snap.data!.docs[i + 1].data() as Map;
-                //                   }
-                //                   // Above, pastData should have been i-1 and nextData i+1.
-                //                   // But, as the list needs to be in reverse order, we need
-                //                   // to consider this workaround.
-                //                   final pastUID =
-                //                       pastData.containsKey('senderUID')
-                //                           ? pastData['senderUID']
-                //                           : 'null';
-                //                   final nextUID =
-                //                       nextData.containsKey('senderUID')
-                //                           ? nextData['senderUID']
-                //                           : 'null';
-                //                   return MessageBubble(
-                //                     documentData: nowData,
-                //                     pastUID: pastUID,
-                //                     nextUID: nextUID,
-                //                   );
-                //                 },
-                //               ),
-                //             )
-                //           : SafeArea(
-                //               child: Center(
-                //                 child: Container(
-                //                   height: 50,
-                //                   width: 50,
-                //                   child: ProgressRing(),
-                //                 ),
-                //               ),
-                //             ),
-                //     );
-                //   },
-                // ),
+                      if (before == max) {}
+                    }
+                    return false;
+                  },
+                  child: AnimatedList(
+                    physics: BouncingScrollPhysics(),
+                    key: listKey,
+                    reverse: true,
+                    itemBuilder: (context, i, animation) {
+                      final Map pastData, nextData;
+                      if (i == 0) {
+                        nextData = {'senderUID': 'null'};
+                      } else {
+                        nextData = documentList.value[i - 1].data() as Map;
+                      }
+                      if (i == documentList.value.length - 1) {
+                        pastData = {'senderUID': 'null'};
+                      } else {
+                        pastData = documentList.value[i + 1].data() as Map;
+                      }
+                      // Above, pastData should have been i-1 and nextData i+1.
+                      // But, as the list needs to be in reverse order, we need
+                      // to consider this workaround.
+                      final pastUID = pastData.containsKey('uid')
+                          ? pastData['uid']
+                          : pastData.containsKey('senderUID')
+                              ? pastData['senderUID']
+                              : 'null';
+                      final nextUID = nextData.containsKey('uid')
+                          ? nextData['uid']
+                          : nextData.containsKey('senderUID')
+                              ? nextData['senderUID']
+                              : 'null';
+                      final documentData = documentList.value[i].data() as Map;
+                      var name = documentData['name'] ??
+                          documentData['senderName'] ??
+                          'No name';
+                      var uid = documentData['uid'] ??
+                          documentData['senderUID'] ??
+                          'No UID';
+                      String text = documentData['text'] ??
+                          documentData['messageTextContent'] ??
+                          'No text';
+                      var msSE = DateTime.fromMillisecondsSinceEpoch(
+                          (documentData['time'] as Timestamp)
+                              .millisecondsSinceEpoch);
+                      bool isRead = documentData['read'] ?? false;
+                      var time = DateFormat.Hm().format(msSE);
+                      return SizeTransition(
+                        axisAlignment: -1.0,
+                        sizeFactor: animation,
+                        child: FadeTransition(
+                          opacity: CurvedAnimation(
+                              curve: Curves.easeIn, parent: animation),
+                          child: MessageBubble(
+                            chatType: chatType,
+                            key: UniqueKey(),
+                            isRead: isRead,
+                            name: name,
+                            text: text,
+                            time: time,
+                            uid: uid,
+                            pastUID: pastUID,
+                            nextUID: nextUID,
+                            chatId: chatId,
+                            messageId: documentList.value[i].id,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
               Expanded(
                 flex: 0,
                 child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: MessageInput(chatId, title)),
+                    child: MessageInput(chatId, title, chatType)),
               )
             ],
           ),

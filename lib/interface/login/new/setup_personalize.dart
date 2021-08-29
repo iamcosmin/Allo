@@ -1,9 +1,10 @@
 import 'package:allo/components/oobe_page.dart';
+import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/login/new/setup_done.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -25,24 +26,25 @@ class SetupPersonalize extends HookWidget {
         ),
         Text(
           'Asta este ultima etapă. Alege opțiunile de personalizare dorite.',
-          style: TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
+          style: TextStyle(fontSize: 18, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
       body: [
-        CupertinoFormSection.insetGrouped(
-          children: [
-            CupertinoFormRow(
-              prefix: Text('Mod întunecat'),
-              child: CupertinoSwitch(
-                  value: dark,
-                  onChanged: (value) => darkMethod.switcher(context)),
+        Padding(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          child: SettingsListTile(
+            title: 'Mod întunecat',
+            type: RadiusType.BOTH,
+            onTap: () => darkMethod.switcher(context),
+            trailing: Switch(
+              value: dark,
+              onChanged: (value) => darkMethod.switcher(context),
             ),
-          ],
+          ),
         )
       ],
-      onButtonPress: () async => navigation.push(
-          context, SetupDone(), SharedAxisTransitionType.horizontal),
+      onButtonPress: () async => navigation.push(context, SetupDone()),
       isAsync: true,
     );
   }

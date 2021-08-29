@@ -10,7 +10,7 @@ import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -77,18 +77,21 @@ class AuthRepository {
       required BuildContext context}) async {
     try {
       FocusScope.of(context).unfocus();
+      error.value = '';
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
         await context.read(Repositories.navigation).push(
-            context, SetupName(email), SharedAxisTransitionType.horizontal);
+              context,
+              SetupName(email),
+            );
       } else if (instance.toString() == '[password]') {
         await context.read(Repositories.navigation).push(
-            context,
-            EnterPassword(
-              email: email,
-            ),
-            SharedAxisTransitionType.horizontal);
+              context,
+              EnterPassword(
+                email: email,
+              ),
+            );
       }
     } catch (e) {
       error.value = 'Acest email este invalid.';
@@ -166,8 +169,10 @@ class AuthRepository {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            await context.read(navigationProvider).push(context,
-                SetupVerification(), SharedAxisTransitionType.horizontal);
+            await context.read(navigationProvider).push(
+                  context,
+                  SetupVerification(),
+                );
           } else {
             error.value = 'Parola ta nu respectă cerințele.';
           }
@@ -205,13 +210,13 @@ class AuthRepository {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
           await navigation.push(
-              context,
-              SetupPassword(
-                displayName: displayName,
-                username: username,
-                email: email,
-              ),
-              SharedAxisTransitionType.horizontal);
+            context,
+            SetupPassword(
+              displayName: displayName,
+              username: username,
+              email: email,
+            ),
+          );
         } else {
           error.value = 'Acest nume de utilizator este deja luat.';
         }
@@ -319,8 +324,8 @@ class CurrentUser {
         final db = FirebaseFirestore.instance;
         final usernames = await db.collection('users').doc('usernames').get();
         final usernamesMap = usernames.data();
-        final username =
-            usernamesMap?.values.firstWhere((element) => element == uid);
+        final username = usernamesMap?.keys
+            .firstWhere((element) => usernamesMap[element] == uid);
         return username;
       },
       type: String,
@@ -399,9 +404,10 @@ class CurrentUser {
         if (route == null) {
           Navigator.pop(context);
         } else {
-          await context
-              .read(navigationProvider)
-              .push(context, route, SharedAxisTransitionType.horizontal);
+          await context.read(navigationProvider).push(
+                context,
+                route,
+              );
         }
       }
     });

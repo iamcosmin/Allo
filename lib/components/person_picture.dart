@@ -1,4 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:allo/components/progress_rings.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 enum _PersonPictureType { profilePicture, initials, determine }
@@ -32,44 +34,19 @@ class PersonPicture extends HookWidget {
   @override
   Widget build(BuildContext context) {
     if (_type == _PersonPictureType.profilePicture) {
-      return Container(
-        height: radius,
-        width: radius,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(100000000000),
+      return ClipOval(
+        child: Container(
+          height: radius,
+          width: radius,
           child: Image.network(profilePicture!),
         ),
       );
     } else if (_type == _PersonPictureType.initials) {
-      return Container(
-        height: radius,
-        width: radius,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle, color: color, gradient: gradient),
-        child: Align(
-          alignment: Alignment.center,
-          child: Text(
-            initials!,
-            style: TextStyle(fontSize: radius / 2),
-          ),
-        ),
-      );
-    } else if (_type == _PersonPictureType.determine) {
-      if (profilePicture != null) {
-        return Container(
+      return ClipOval(
+        child: Container(
           height: radius,
           width: radius,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(100000000000),
-            child: Image.network(profilePicture!),
-          ),
-        );
-      } else {
-        return Container(
-          height: radius,
-          width: radius,
-          decoration: BoxDecoration(
-              shape: BoxShape.circle, color: color, gradient: gradient),
+          decoration: BoxDecoration(color: color, gradient: gradient),
           child: Align(
             alignment: Alignment.center,
             child: Text(
@@ -77,8 +54,54 @@ class PersonPicture extends HookWidget {
               style: TextStyle(fontSize: radius / 2),
             ),
           ),
-        );
-      }
+        ),
+      );
+    } else if (_type == _PersonPictureType.determine) {
+      return ClipOval(
+        child: Container(
+          height: radius,
+          width: radius,
+          child: Builder(
+            builder: (context) {
+              if (profilePicture == null) {
+                return Container(
+                  height: radius,
+                  width: radius,
+                  decoration: BoxDecoration(color: color, gradient: gradient),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      initials!,
+                      style: TextStyle(fontSize: radius / 2),
+                    ),
+                  ),
+                );
+              } else {
+                return CachedNetworkImage(
+                  imageUrl: profilePicture!,
+                  progressIndicatorBuilder: (context, string, progress) =>
+                      ProgressRing(),
+                  errorWidget: (context, str, dn) {
+                    return Container(
+                      height: radius,
+                      width: radius,
+                      decoration:
+                          BoxDecoration(color: color, gradient: gradient),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          initials!,
+                          style: TextStyle(fontSize: radius / 2),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+            },
+          ),
+        ),
+      );
     } else {
       throw Exception();
     }

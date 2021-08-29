@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,6 +27,18 @@ class ChatsRepository {
         .doc(messageId)
         .delete();
   }
+
+  Future markAsRead({required String chatId, required String messageId}) async {
+    // This will mark the message as read.
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+      'read': true,
+    });
+  }
 }
 
 class SendMessage {
@@ -35,7 +47,11 @@ class SendMessage {
       required String chatId,
       required BuildContext context,
       required String chatName,
-      TextEditingController? controller}) async {
+      TextEditingController? controller,
+      required String chatType}) async {
+    if (controller != null) {
+      controller.clear();
+    }
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
     final auth = context.read(Repositories.auth);
     await db.collection('messages').add({
@@ -44,16 +60,15 @@ class SendMessage {
       'username': await auth.user.username,
       'uid': auth.user.uid,
       'text': text,
-      'time': DateTime.now(),
+      'time': Timestamp.now(),
     });
-    if (controller != null) {
-      controller.clear();
-    }
     await _sendNotification(
         chatName: chatName,
         name: auth.user.name,
         content: text,
-        chatId: chatId);
+        chatId: chatId,
+        uid: auth.user.uid,
+        chatType: chatType);
   }
 
   Future sendImageMessage(
@@ -63,7 +78,8 @@ class SendMessage {
       String? description,
       required String chatId,
       required ValueNotifier<double> progress,
-      required BuildContext context}) async {
+      required BuildContext context,
+      required String chatType}) async {
     final auth = context.read(Repositories.auth);
     final path = 'chats/$chatId/${DateTime.now()}_${await auth.user.username}';
     final storage = FirebaseStorage.instance;
@@ -74,6 +90,7 @@ class SendMessage {
     task.snapshotEvents.listen((event) async {
       progress.value = (event.bytesTransferred / event.totalBytes) * 100;
       if (event.state == TaskState.success) {
+        progress.value = 101;
         await db.collection('messages').add({
           'type': MessageTypes.IMAGE,
           'name': auth.user.name,
@@ -87,7 +104,9 @@ class SendMessage {
             chatName: chatName,
             name: name,
             content: 'Imagine' + (description != null ? ' - $description' : ''),
-            chatId: chatId);
+            chatId: chatId,
+            uid: auth.user.uid,
+            chatType: chatType);
       }
     });
   }
@@ -96,7 +115,9 @@ class SendMessage {
       {required String chatName,
       required String name,
       required String content,
-      required String chatId}) async {
+      required String chatId,
+      required String uid,
+      required String chatType}) async {
     await post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
@@ -111,8 +132,72 @@ class SendMessage {
           'senderName': name,
           'text': content,
           'toChat': chatId,
+          'uid': uid,
+          'type': chatType
         }
       }),
     );
+  }
+}
+
+class ChatType {
+  static const String private = 'private';
+  static const String group = 'group';
+}
+
+final loadChats = StateNotifierProvider<LoadChats, List>((ref) => LoadChats());
+
+class LoadChats extends StateNotifier<List> {
+  LoadChats() : super([]);
+  Future getChatsData(BuildContext context) async {
+    var chatIdList = [];
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(await context.read(authProvider).user.username)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      var map = snapshot.data() as Map;
+      if (map.containsKey('chats')) {
+        chatIdList = map['chats'] as List;
+      }
+    });
+
+    var listOfMapChatInfo = <Map>[];
+    if (chatIdList.isNotEmpty) {
+      for (var chat in chatIdList) {
+        var chatSnapshot = await FirebaseFirestore.instance
+            .collection('chats')
+            .doc(chat)
+            .get();
+        var chatInfoMap = chatSnapshot.data() as Map;
+        var name, profilepic, chatid;
+        // Check if it is group or private
+        if (chatInfoMap['type'] == ChatType.private) {
+          chatid = chatSnapshot.id;
+          for (Map member in chatInfoMap['members']) {
+            if (member['uid'] != context.read(Repositories.auth).user.uid) {
+              name = member['name'];
+              profilepic = member['profilepicture'];
+            }
+          }
+          listOfMapChatInfo.add({
+            'type': ChatType.private,
+            'name': name,
+            'profilepic': profilepic,
+            'chatId': chatid
+          });
+        } else if (chatInfoMap['type'] == ChatType.group) {
+          if (chatInfoMap.containsKey('title')) {
+            var chatInfo = {
+              'type': ChatType.group,
+              'name': chatInfoMap['title'],
+              'chatId': chatSnapshot.id,
+            };
+            listOfMapChatInfo.add(chatInfo);
+          }
+        }
+      }
+    }
+    state = listOfMapChatInfo;
   }
 }

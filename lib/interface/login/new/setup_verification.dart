@@ -2,7 +2,7 @@ import 'package:allo/interface/login/new/setup_pfp.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:allo/components/oobe_page.dart';
@@ -28,8 +28,7 @@ class SetupVerification extends HookWidget {
             padding: const EdgeInsets.only(right: 10, top: 10),
             child: Text(
               'Ți-am trimis un email cu un link pe care trebuie să îl accesezi pentru a verifica contul tău.',
-              style:
-                  TextStyle(fontSize: 18, color: CupertinoColors.inactiveGray),
+              style: TextStyle(fontSize: 18, color: Colors.grey),
               textAlign: TextAlign.left,
             ),
           ),
@@ -37,7 +36,7 @@ class SetupVerification extends HookWidget {
             padding: const EdgeInsets.only(right: 10, top: 10),
             child: Text(
               error.value,
-              style: TextStyle(fontSize: 18, color: CupertinoColors.systemRed),
+              style: TextStyle(fontSize: 18, color: Colors.red),
               textAlign: TextAlign.left,
             ),
           )
@@ -47,8 +46,10 @@ class SetupVerification extends HookWidget {
           await FirebaseAuth.instance.currentUser?.reload();
           final verified = FirebaseAuth.instance.currentUser!.emailVerified;
           if (verified) {
-            await navigation.push(context, SetupProfilePicture(),
-                SharedAxisTransitionType.horizontal);
+            await navigation.push(
+              context,
+              SetupProfilePicture(),
+            );
           } else {
             error.value = 'Se pare că nu ai accesat linkul. Încearcă din nou.';
           }
