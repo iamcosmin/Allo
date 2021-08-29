@@ -9,7 +9,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class MessageInput extends HookWidget {
   final String chatId;
   final String chatName;
-  MessageInput(this.chatId, this.chatName);
+  final String chatType;
+  MessageInput(this.chatId, this.chatName, this.chatType);
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +67,7 @@ class MessageInput extends HookWidget {
                     : () {
                         empty.value = true;
                         chats.send.sendTextMessage(
+                            chatType: chatType,
                             text: _messageController.text,
                             chatId: chatId,
                             context: context,

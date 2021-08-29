@@ -16,21 +16,14 @@ class StackNavigator extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selected = useState(0);
-    final chat = useProvider(Repositories.chats);
     final navigation = useProvider(Repositories.navigation);
 
     useEffect(() {
       AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
-        if (!StringUtils.isNullOrEmpty(event.buttonKeyInput)) {
-          await chat.send.sendTextMessage(
-              text: event.buttonKeyInput,
-              chatId: event.payload!['chatId']!,
-              context: context,
-              chatName: event.payload!['chatName']!);
-        }
         await navigation.push(
           context,
           Chat(
+            chatType: event.payload!['chatType']!,
             title: event.payload!['chatName']!,
             chatId: event.payload!['chatId']!,
           ),

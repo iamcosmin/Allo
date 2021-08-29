@@ -1,3 +1,4 @@
+import 'package:allo/repositories/chats_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:allo/components/person_picture.dart';
@@ -8,33 +9,36 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class MessageBubble extends HookWidget {
-  final String name;
-  final String uid;
-  final bool isRead;
-  final String text;
-  final String time;
-  final String pastUID;
-  final String nextUID;
-  final String chatId;
-  final String messageId;
-  MessageBubble({
-    required Key key,
-    required this.name,
-    required this.uid,
-    required this.isRead,
-    required this.text,
-    required this.time,
-    required this.pastUID,
-    required this.nextUID,
-    required this.chatId,
-    required this.messageId,
-  }) : super(key: key);
+  String name;
+  String uid;
+  bool isRead;
+  String text;
+  String time;
+  String pastUID;
+  String nextUID;
+  String chatId;
+  String messageId;
+  String chatType;
+  MessageBubble(
+      {required Key key,
+      required this.name,
+      required this.uid,
+      required this.isRead,
+      required this.text,
+      required this.time,
+      required this.pastUID,
+      required this.nextUID,
+      required this.chatId,
+      required this.messageId,
+      required this.chatType})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final auth = useProvider(Repositories.auth);
     if (uid != auth.user.uid) {
       return _ReceiveMessageBubble(
+        chatType: chatType,
         key: UniqueKey(),
         name: name,
         uid: uid,
@@ -78,18 +82,20 @@ class _ReceiveMessageBubble extends HookWidget {
       required this.time,
       required this.isRead,
       required this.chatId,
-      required this.messageId})
+      required this.messageId,
+      required this.chatType})
       : super(key: key);
 
-  final String uid;
-  final String name;
-  final String text;
-  final String pastUID;
-  final String nextUID;
-  final String time;
-  final bool isRead;
-  final String chatId;
-  final String messageId;
+  String uid;
+  String name;
+  String text;
+  String pastUID;
+  String nextUID;
+  String time;
+  bool isRead;
+  String chatId;
+  String messageId;
+  String chatType;
   bool get isSameSenderAsInPast => uid == pastUID;
   bool get isSameSenderAsInFuture => uid == nextUID;
 
@@ -128,32 +134,35 @@ class _ReceiveMessageBubble extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Profile picture
-              if (!isSameSenderAsInFuture) ...[
-                FutureBuilder<String>(
-                    future: auth.getUserProfilePicture(uid),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return PersonPicture.profilePicture(
-                            radius: 36, profilePicture: snapshot.data);
-                      } else {
-                        return PersonPicture.initials(
-                            color: Colors.indigo,
-                            radius: 36,
-                            initials: auth.returnNameInitials(name));
-                      }
-                    }),
-              ] else ...[
-                Padding(
-                  padding: EdgeInsets.only(left: 36),
-                )
-              ],
+              if (chatType == ChatType.group) ...[
+                if (!isSameSenderAsInFuture) ...[
+                  FutureBuilder<String>(
+                      future: auth.getUserProfilePicture(uid),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return PersonPicture.profilePicture(
+                              radius: 36, profilePicture: snapshot.data);
+                        } else {
+                          return PersonPicture.initials(
+                              color: Colors.indigo,
+                              radius: 36,
+                              initials: auth.returnNameInitials(name));
+                        }
+                      }),
+                ] else ...[
+                  Padding(
+                    padding: EdgeInsets.only(left: 36),
+                  )
+                ],
+              ] else
+                ...[],
 
               Padding(padding: EdgeInsets.only(left: 9)),
               // Chat bubble
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!isSameSenderAsInPast) ...[
+                  if (!isSameSenderAsInPast && chatType == ChatType.group) ...[
                     Padding(
                       padding: EdgeInsets.only(left: 15, bottom: 4),
                       child: Text(
@@ -244,14 +253,14 @@ class _SentMessageBubble extends HookWidget {
       required this.time,
       required this.isRead})
       : super(key: key);
-  final String text;
-  final String uid;
-  final String pastUID;
-  final String nextUID;
-  final String chatId;
-  final String messageId;
-  final String time;
-  final bool isRead;
+  String text;
+  String uid;
+  String pastUID;
+  String nextUID;
+  String chatId;
+  String messageId;
+  String time;
+  bool isRead;
   bool get isSameSenderAsInPast => uid == pastUID;
   bool get isSameSenderAsInFuture => uid == nextUID;
 

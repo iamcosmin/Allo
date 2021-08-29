@@ -47,7 +47,8 @@ class SendMessage {
       required String chatId,
       required BuildContext context,
       required String chatName,
-      TextEditingController? controller}) async {
+      TextEditingController? controller,
+      required String chatType}) async {
     if (controller != null) {
       controller.clear();
     }
@@ -66,7 +67,8 @@ class SendMessage {
         name: auth.user.name,
         content: text,
         chatId: chatId,
-        uid: auth.user.uid);
+        uid: auth.user.uid,
+        chatType: chatType);
   }
 
   Future sendImageMessage(
@@ -76,7 +78,8 @@ class SendMessage {
       String? description,
       required String chatId,
       required ValueNotifier<double> progress,
-      required BuildContext context}) async {
+      required BuildContext context,
+      required String chatType}) async {
     final auth = context.read(Repositories.auth);
     final path = 'chats/$chatId/${DateTime.now()}_${await auth.user.username}';
     final storage = FirebaseStorage.instance;
@@ -102,7 +105,8 @@ class SendMessage {
             name: name,
             content: 'Imagine' + (description != null ? ' - $description' : ''),
             chatId: chatId,
-            uid: auth.user.uid);
+            uid: auth.user.uid,
+            chatType: chatType);
       }
     });
   }
@@ -112,7 +116,8 @@ class SendMessage {
       required String name,
       required String content,
       required String chatId,
-      required String uid}) async {
+      required String uid,
+      required String chatType}) async {
     await post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
@@ -127,11 +132,17 @@ class SendMessage {
           'senderName': name,
           'text': content,
           'toChat': chatId,
-          'uid': uid
+          'uid': uid,
+          'type': chatType
         }
       }),
     );
   }
+}
+
+class ChatType {
+  static const String private = 'private';
+  static const String group = 'group';
 }
 
 final loadChats = StateNotifierProvider<LoadChats, List>((ref) => LoadChats());
@@ -159,12 +170,31 @@ class LoadChats extends StateNotifier<List> {
             .doc(chat)
             .get();
         var chatInfoMap = chatSnapshot.data() as Map;
-        if (chatInfoMap.containsKey('title')) {
-          var chatInfo = {
-            'name': chatInfoMap['title'],
-            'chatId': chatSnapshot.id,
-          };
-          listOfMapChatInfo.add(chatInfo);
+        var name, profilepic, chatid;
+        // Check if it is group or private
+        if (chatInfoMap['type'] == ChatType.private) {
+          chatid = chatSnapshot.id;
+          for (Map member in chatInfoMap['members']) {
+            if (member['uid'] != context.read(Repositories.auth).user.uid) {
+              name = member['name'];
+              profilepic = member['profilepicture'];
+            }
+          }
+          listOfMapChatInfo.add({
+            'type': ChatType.private,
+            'name': name,
+            'profilepic': profilepic,
+            'chatId': chatid
+          });
+        } else if (chatInfoMap['type'] == ChatType.group) {
+          if (chatInfoMap.containsKey('title')) {
+            var chatInfo = {
+              'type': ChatType.group,
+              'name': chatInfoMap['title'],
+              'chatId': chatSnapshot.id,
+            };
+            listOfMapChatInfo.add(chatInfo);
+          }
         }
       }
     }

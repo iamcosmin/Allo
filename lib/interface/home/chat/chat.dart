@@ -14,20 +14,16 @@ import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class Chat extends HookWidget {
-  String title;
-  String chatId;
-  Chat({required this.title, required this.chatId});
+  final String chatType;
+  final String title;
+  final String chatId;
+  Chat({required this.title, required this.chatId, required this.chatType});
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context) {
     final documentLoad = useState(20);
     final documentList = useState(<DocumentSnapshot>[]);
     final auth = useProvider(Repositories.auth);
-
-    int _indexForKey(String key) {
-      assert(key.isNotEmpty);
-      return documentList.value.indexWhere((item) => item.id == key);
-    }
 
     useEffect(() {
       if (!kIsWeb) {
@@ -88,10 +84,12 @@ class Chat extends HookWidget {
                   padding: EdgeInsets.only(right: 10),
                   child: Hero(
                     tag: chatId,
-                    child: PersonPicture.initials(
-                      radius: 37,
-                      initials: auth.returnNameInitials(title),
-                      color: Colors.blue,
+                    child: Material(
+                      child: PersonPicture.initials(
+                        radius: 37,
+                        initials: auth.returnNameInitials(title),
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
                 ),
@@ -169,6 +167,7 @@ class Chat extends HookWidget {
                           opacity: CurvedAnimation(
                               curve: Curves.easeIn, parent: animation),
                           child: MessageBubble(
+                            chatType: chatType,
                             key: UniqueKey(),
                             isRead: isRead,
                             name: name,
@@ -190,7 +189,7 @@ class Chat extends HookWidget {
                 flex: 0,
                 child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: MessageInput(chatId, title)),
+                    child: MessageInput(chatId, title, chatType)),
               )
             ],
           ),

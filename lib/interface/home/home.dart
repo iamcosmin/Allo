@@ -1,4 +1,5 @@
 import 'package:allo/components/person_picture.dart';
+import 'package:allo/repositories/chats_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -53,32 +54,61 @@ class Home extends HookWidget {
                   onTap: () => navigation.push(
                       context,
                       Chat(
+                        chatType: ChatType.group,
                         title: 'Allo',
                         chatId: 'DFqPHH2R4E5j0tM55fIm',
                       )),
                 ),
                 if (chats.isNotEmpty) ...[
                   for (var chat in chats) ...[
-                    ListTile(
-                      title: Text(chat['name']),
-                      subtitle: Text(chat['chatId']),
-                      leading: Hero(
-                        tag: chat['chatId'],
-                        child: PersonPicture.initials(
-                          radius: 50,
-                          color: Colors.blue,
-                          initials: auth.returnNameInitials(
-                            chat['name'],
+                    if (chat['type'] == ChatType.private) ...[
+                      ListTile(
+                        title: Text(chat['name']),
+                        subtitle: Text(chat['chatId']),
+                        leading: Hero(
+                          tag: chat['chatId'],
+                          child: PersonPicture.determine(
+                            profilePicture: chat['profilepic'],
+                            radius: 50,
+                            color: Colors.blue,
+                            initials: auth.returnNameInitials(
+                              chat['name'],
+                            ),
                           ),
                         ),
+                        onTap: () => navigation.push(
+                            context,
+                            Chat(
+                              chatType: chat['type'],
+                              title: chat['name'],
+                              chatId: chat['chatId'],
+                            )),
                       ),
-                      onTap: () => navigation.push(
-                          context,
-                          Chat(
-                            title: chat['name'],
-                            chatId: chat['chatId'],
-                          )),
-                    ),
+                    ] else if (chat['type'] == ChatType.group) ...[
+                      ListTile(
+                        title: Text(chat['name']),
+                        subtitle: Text(chat['chatId']),
+                        leading: Hero(
+                          tag: chat['chatId'],
+                          child: Material(
+                            child: PersonPicture.initials(
+                              radius: 50,
+                              color: Colors.blue,
+                              initials: auth.returnNameInitials(
+                                chat['name'],
+                              ),
+                            ),
+                          ),
+                        ),
+                        onTap: () => navigation.push(
+                            context,
+                            Chat(
+                              chatType: chat['type'],
+                              title: chat['name'],
+                              chatId: chat['chatId'],
+                            )),
+                      ),
+                    ],
                   ]
                 ] else ...[
                   ListTile(title: Text('Nicio conversație.'))

@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.1.0+109
+version: 1.1.0+110
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
@@ -11,7 +11,6 @@ dependencies:
   awesome_notifications: ^0.0.6+10
   cached_network_image: ^3.1.0
   cloud_firestore: ^2.4.0
-  cupertino_icons: ^1.0.2
   firebase_auth: ^3.0.1
   firebase_core: ^1.4.0
   firebase_messaging: ^10.0.4

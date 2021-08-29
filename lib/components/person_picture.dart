@@ -61,23 +61,43 @@ class PersonPicture extends HookWidget {
         child: Container(
           height: radius,
           width: radius,
-          child: CachedNetworkImage(
-            imageUrl: profilePicture ?? '',
-            progressIndicatorBuilder: (context, string, progress) =>
-                ProgressRing(),
-            errorWidget: (context, str, dn) {
-              return Container(
-                height: radius,
-                width: radius,
-                decoration: BoxDecoration(color: color, gradient: gradient),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    initials!,
-                    style: TextStyle(fontSize: radius / 2),
+          child: Builder(
+            builder: (context) {
+              if (profilePicture == null) {
+                return Container(
+                  height: radius,
+                  width: radius,
+                  decoration: BoxDecoration(color: color, gradient: gradient),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      initials!,
+                      style: TextStyle(fontSize: radius / 2),
+                    ),
                   ),
-                ),
-              );
+                );
+              } else {
+                return CachedNetworkImage(
+                  imageUrl: profilePicture!,
+                  progressIndicatorBuilder: (context, string, progress) =>
+                      ProgressRing(),
+                  errorWidget: (context, str, dn) {
+                    return Container(
+                      height: radius,
+                      width: radius,
+                      decoration:
+                          BoxDecoration(color: color, gradient: gradient),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          initials!,
+                          style: TextStyle(fontSize: radius / 2),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
             },
           ),
         ),
