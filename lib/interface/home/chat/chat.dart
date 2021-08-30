@@ -6,7 +6,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/chats/message_input.dart';
-import 'package:allo/components/message_bubble.dart';
+import 'package:allo/components/chats/bubbles/message_bubble.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -56,7 +56,6 @@ class Chat extends HookWidget {
             }
           } else if (doc.type == DocumentChangeType.modified) {
             documentList.value[doc.oldIndex] = doc.doc;
-            print(documentList.value[doc.newIndex].data() as Map);
           }
         }
       });
@@ -83,8 +82,9 @@ class Chat extends HookWidget {
                   alignment: Alignment.bottomLeft,
                   padding: EdgeInsets.only(right: 10),
                   child: Hero(
-                    tag: chatId,
+                    tag: chatId + '_pic',
                     child: Material(
+                      color: Colors.transparent,
                       child: PersonPicture.initials(
                         radius: 37,
                         initials: auth.returnNameInitials(title),
@@ -111,7 +111,11 @@ class Chat extends HookWidget {
                     if (value is ScrollNotification) {
                       final before = value.metrics.extentBefore;
                       final max = value.metrics.maxScrollExtent;
+                      final min = value.metrics.minScrollExtent;
 
+                      if (before == min) {
+                        FocusScope.of(context).unfocus();
+                      }
                       if (before == max) {}
                     }
                     return false;
@@ -145,21 +149,6 @@ class Chat extends HookWidget {
                           : nextData.containsKey('senderUID')
                               ? nextData['senderUID']
                               : 'null';
-                      final documentData = documentList.value[i].data() as Map;
-                      var name = documentData['name'] ??
-                          documentData['senderName'] ??
-                          'No name';
-                      var uid = documentData['uid'] ??
-                          documentData['senderUID'] ??
-                          'No UID';
-                      String text = documentData['text'] ??
-                          documentData['messageTextContent'] ??
-                          'No text';
-                      var msSE = DateTime.fromMillisecondsSinceEpoch(
-                          (documentData['time'] as Timestamp)
-                              .millisecondsSinceEpoch);
-                      bool isRead = documentData['read'] ?? false;
-                      var time = DateFormat.Hm().format(msSE);
                       return SizeTransition(
                         axisAlignment: -1.0,
                         sizeFactor: animation,
@@ -168,16 +157,11 @@ class Chat extends HookWidget {
                               curve: Curves.easeIn, parent: animation),
                           child: MessageBubble(
                             chatType: chatType,
-                            key: UniqueKey(),
-                            isRead: isRead,
-                            name: name,
-                            text: text,
-                            time: time,
-                            uid: uid,
                             pastUID: pastUID,
-                            nextUID: nextUID,
                             chatId: chatId,
-                            messageId: documentList.value[i].id,
+                            nextUID: nextUID,
+                            data: documentList.value[i],
+                            key: UniqueKey(),
                           ),
                         ),
                       );

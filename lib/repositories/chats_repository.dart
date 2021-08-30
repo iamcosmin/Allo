@@ -73,7 +73,6 @@ class SendMessage {
 
   Future sendImageMessage(
       {required String chatName,
-      required String name,
       required XFile imageFile,
       String? description,
       required String chatId,
@@ -102,11 +101,12 @@ class SendMessage {
         });
         await _sendNotification(
             chatName: chatName,
-            name: name,
+            name: auth.user.name,
             content: 'Imagine' + (description != null ? ' - $description' : ''),
             chatId: chatId,
             uid: auth.user.uid,
             chatType: chatType);
+        Navigator.of(context).pop();
       }
     });
   }
