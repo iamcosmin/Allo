@@ -22,7 +22,9 @@ Future _onBackgroundMessage(RemoteMessage message) async {
       content: NotificationContent(
           id: int.parse(
               message.data['toChat'].replaceAll(RegExp(r'[a-zA-Z]'), '')),
-          title: message.data['chatName'],
+          title: (message.data['chatType'] ?? 'group') == ChatType.group
+              ? message.data['chatName']
+              : message.data['senderName'],
           body: (message.data['chatType'] ?? 'private') == ChatType.private
               ? message.data['text']
               : '${message.data['senderName']}: ${message.data['text']}',
