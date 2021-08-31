@@ -51,10 +51,10 @@ class ReceiveMessageBubble extends HookWidget {
     final selected = useState(false);
     final chats = useProvider(Repositories.chats);
     final bubbleRadius = BorderRadius.only(
-      topLeft: Radius.circular(isSameSenderAsInPast ? 0 : 20),
+      topLeft: Radius.circular(isSameSenderAsInPast ? 5 : 20),
       bottomLeft: Radius.circular(isSameSenderAsInFuture ||
               (isSameSenderAsInFuture && isSameSenderAsInPast)
-          ? 0
+          ? 5
           : 20),
       topRight: Radius.circular(20),
       bottomRight: Radius.circular(20),
@@ -72,7 +72,7 @@ class ReceiveMessageBubble extends HookWidget {
 
     return Container(
       padding:
-          EdgeInsets.only(bottom: isSameSenderAsInFuture ? 2 : 15, left: 10),
+          EdgeInsets.only(bottom: isSameSenderAsInFuture ? 1 : 15, left: 10),
       child: Column(
         children: [
           Row(

@@ -78,13 +78,6 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
       });
 }
 
-String generateRandomString(int len) {
-  var r = Random();
-  var randomString =
-      String.fromCharCodes(List.generate(len, (index) => r.nextInt(33) + 89));
-  return randomString;
-}
-
 class SentMessageBubble extends HookWidget {
   SentMessageBubble(
       {required Key key,
@@ -101,6 +94,7 @@ class SentMessageBubble extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final documentData = data.data() as Map;
+
     var name = documentData['name'] ?? documentData['senderName'] ?? 'No name';
     var uid = documentData['uid'] ?? documentData['senderUID'] ?? 'No UID';
     String text =
@@ -114,6 +108,7 @@ class SentMessageBubble extends HookWidget {
 
     var isSameSenderAsInPast = uid == pastUID;
     var isSameSenderAsInFuture = uid == nextUID;
+
     final selected = useState(false);
     final navigation = useProvider(Repositories.navigation);
     void change() =>
