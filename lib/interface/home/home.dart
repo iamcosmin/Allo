@@ -42,12 +42,15 @@ class Home extends HookWidget {
                 ListTile(
                   title: Text('Allo'),
                   leading: Hero(
-                    tag: 'DFqPHH2R4E5j0tM55fImy',
-                    child: PersonPicture.initials(
-                      radius: 50,
-                      color: Colors.blue,
-                      initials: auth.returnNameInitials(
-                        'Allo',
+                    tag: 'DFqPHH2R4E5j0tM55fIm_pic',
+                    child: Material(
+                      color: Colors.transparent,
+                      child: PersonPicture.initials(
+                        radius: 50,
+                        color: Colors.blue,
+                        initials: auth.returnNameInitials(
+                          'Allo',
+                        ),
                       ),
                     ),
                   ),
@@ -64,15 +67,17 @@ class Home extends HookWidget {
                     if (chat['type'] == ChatType.private) ...[
                       ListTile(
                         title: Text(chat['name']),
-                        subtitle: Text(chat['chatId']),
                         leading: Hero(
-                          tag: chat['chatId'],
-                          child: PersonPicture.determine(
-                            profilePicture: chat['profilepic'],
-                            radius: 50,
-                            color: Colors.blue,
-                            initials: auth.returnNameInitials(
-                              chat['name'],
+                          tag: chat['chatId'] + '_pic',
+                          child: Material(
+                            color: Colors.transparent,
+                            child: PersonPicture.determine(
+                              profilePicture: chat['profilepic'],
+                              radius: 50,
+                              color: Colors.blue,
+                              initials: auth.returnNameInitials(
+                                chat['name'],
+                              ),
                             ),
                           ),
                         ),
