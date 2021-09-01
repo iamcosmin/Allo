@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -9,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // ignore: must_be_immutable
 class ProfilePictureSettings extends HookWidget {
+  ProfilePictureSettings({Key? key}) : super(key: key);
   bool loaded = false;
   bool loading = false;
 
@@ -19,19 +19,19 @@ class ProfilePictureSettings extends HookWidget {
     final auth = useProvider(Repositories.auth);
 
     return Scaffold(
-      appBar: NavBar(
-        title: Text('Fotografie de profil'),
+      appBar: AppBar(
+        title: const Text('Fotografie de profil'),
       ),
       body: ListView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         children: [
           Container(
             alignment: Alignment.center,
-            padding: EdgeInsets.only(top: 10, bottom: 10),
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Container(
+                SizedBox(
                   height: 110,
                   width: 110,
                   child: ProgressRing(
@@ -45,15 +45,16 @@ class ProfilePictureSettings extends HookWidget {
               ],
             ),
           ),
-          SettingsListHeader('Gestionează imaginea de profil'),
+          const SettingsListHeader('Gestionează imaginea de profil'),
           SettingsListTile(
             title: 'Încarcă imagine',
             type: RadiusType.TOP,
             onTap: () => auth.user.updateProfilePicture(
                 loaded: loaded, percentage: percentage, context: context),
           ),
-          Padding(padding: EdgeInsets.only(bottom: 2)),
-          SettingsListTile(title: 'Șterge imaginea', type: RadiusType.BOTTOM),
+          const Padding(padding: EdgeInsets.only(bottom: 2)),
+          const SettingsListTile(
+              title: 'Șterge imaginea', type: RadiusType.BOTTOM),
         ],
       ),
     );

@@ -9,8 +9,10 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MessageTypes {
-  static final String TEXT = 'text';
-  static final String IMAGE = 'image';
+  // ignore: constant_identifier_names
+  static const String TEXT = 'text';
+  // ignore: constant_identifier_names
+  static const String IMAGE = 'image';
 }
 
 final chatsProvider = Provider<ChatsRepository>((ref) => ChatsRepository());
@@ -170,6 +172,7 @@ class LoadChats extends StateNotifier<List> {
             .doc(chat)
             .get();
         var chatInfoMap = chatSnapshot.data() as Map;
+        // ignore: prefer_typing_uninitialized_variables
         var name, profilepic, chatid;
         // Check if it is group or private
         if (chatInfoMap['type'] == ChatType.private) {

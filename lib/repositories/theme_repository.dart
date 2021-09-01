@@ -81,13 +81,17 @@ class ColorsBuilt {
     }
   }
 
-  Color get messageBubble => returnColor(Color(0xFFdbdbdb), Color(0xFF292929));
-  Color get nonColors => returnColor(Color(0xFFFFFFFF), Color(0xFF000000));
+  Color get messageBubble =>
+      returnColor(const Color(0xFFdbdbdb), const Color(0xFF292929));
+  Color get nonColors =>
+      returnColor(const Color(0xFFFFFFFF), const Color(0xFF000000));
   Color get messageInput =>
       returnColor(Colors.grey.shade300, Colors.grey.shade900);
   Color get tabBarColor => returnColor(Colors.white, Colors.grey);
-  Color get spinnerColor => returnColor(Color(0xFFD2D2D2), Color(0xFF363636));
-  Color get contrast => returnColor(Color(0xFF000000), Color(0xFFFFFFFF));
+  Color get spinnerColor =>
+      returnColor(const Color(0xFFD2D2D2), const Color(0xFF363636));
+  Color get contrast =>
+      returnColor(const Color(0xFF000000), const Color(0xFFFFFFFF));
   Color get tileColor =>
       returnColor(Colors.grey.shade200, Colors.grey.shade900);
 }

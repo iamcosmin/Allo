@@ -6,21 +6,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 //? <Preferences>
 
 final darkMode = StateNotifierProvider<PreferenceManager, bool>((ref) {
-  final parameter = 'isDarkModeEnabled';
+  const parameter = 'isDarkModeEnabled';
   final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });
 
 final experimentalMessageOptions =
     StateNotifierProvider<PreferenceManager, bool>((ref) {
-  final parameter = 'experimentalMessageOptions';
+  const parameter = 'experimentalMessageOptions';
   final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });
 
 final experimentalProfilePicture =
     StateNotifierProvider<PreferenceManager, bool>((ref) {
-  final parameter = 'experimentalProfilePicture';
+  const parameter = 'experimentalProfilePicture';
   final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });

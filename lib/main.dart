@@ -22,7 +22,7 @@ Future _onBackgroundMessage(RemoteMessage message) async {
       content: NotificationContent(
           id: int.parse(
               message.data['toChat'].replaceAll(RegExp(r'[a-zA-Z]'), '')),
-          title: (message.data['chatType'] ?? 'group') == ChatType.group
+          title: (message.data['type'] ?? 'group') == ChatType.group
               ? message.data['chatName']
               : message.data['senderName'],
           body: (message.data['chatType'] ?? 'private') == ChatType.private
@@ -34,7 +34,7 @@ Future _onBackgroundMessage(RemoteMessage message) async {
           payload: {
             'chatId': message.data['toChat'],
             'chatName': message.data['chatName'],
-            'chatType': message.data['chatType'] ?? ChatType.group,
+            'chatType': message.data['type'] ?? ChatType.group,
           }),
     );
   }
@@ -80,12 +80,13 @@ void main() async {
       overrides: [
         Repositories.sharedPreferences.overrideWithValue(_kSharedPreferences),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends HookWidget {
+  const MyApp({Key? key}) : super(key: key);
   // This widget is the root of your application.
   Future<void> performUpdate(context) async {
     await InAppUpdate.checkForUpdate().then((value) async {
@@ -93,9 +94,9 @@ class MyApp extends HookWidget {
         await InAppUpdate.startFlexibleUpdate().then(
           (value) => ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              duration: Duration(hours: 5),
+              duration: const Duration(hours: 5),
               behavior: SnackBarBehavior.floating,
-              content: Text('Actualizarea este pregătită.'),
+              content: const Text('Actualizarea este pregătită.'),
               action: SnackBarAction(
                 label: 'Instalează',
                 onPressed: () async {
@@ -128,9 +129,9 @@ class MyApp extends HookWidget {
             if (snap.hasData) {
               return StackNavigator();
             } else if (snap.connectionState == ConnectionState.waiting) {
-              return Deferred();
+              return const Deferred();
             } else {
-              return Setup();
+              return const Setup();
             }
           },
         ));

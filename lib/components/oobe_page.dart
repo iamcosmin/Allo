@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'appbar.dart';
-
 class SetupPage extends HookWidget {
   const SetupPage(
       {required this.header,
       required this.body,
       required this.onButtonPress,
-      required this.isAsync});
+      required this.isAsync,
+      Key? key})
+      : super(key: key);
   final List<Widget> header;
   final List<Widget> body;
   final Function onButtonPress;
@@ -23,7 +23,7 @@ class SetupPage extends HookWidget {
     final loading = useState(false);
     final colors = useProvider(Repositories.colors);
     return Scaffold(
-      appBar: NavBar(
+      appBar: AppBar(
         backgroundColor: colors.nonColors,
       ),
       body: Column(
@@ -36,7 +36,7 @@ class SetupPage extends HookWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: header),
@@ -58,7 +58,7 @@ class SetupPage extends HookWidget {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                padding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+                padding: const EdgeInsets.only(left: 30, right: 30, bottom: 20),
                 width: double.infinity,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -73,7 +73,7 @@ class SetupPage extends HookWidget {
                           type: RadiusType.BOTH,
                           center: true,
                           trailing: loading.value
-                              ? SizedBox(
+                              ? const SizedBox(
                                   height: 23,
                                   width: 23,
                                   child: ProgressRing(

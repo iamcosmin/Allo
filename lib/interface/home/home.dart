@@ -7,6 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Home extends HookWidget {
+  const Home({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final navigation = useProvider(Repositories.navigation);
@@ -23,7 +24,7 @@ class Home extends HookWidget {
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, ibs) => [
-          SliverAppBar(
+          const SliverAppBar(
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
               title: Text('Conversații'),
@@ -40,7 +41,7 @@ class Home extends HookWidget {
             child: ListView(
               children: [
                 ListTile(
-                  title: Text('Allo'),
+                  title: const Text('Allo'),
                   leading: Hero(
                     tag: 'DFqPHH2R4E5j0tM55fIm_pic',
                     child: Material(
@@ -116,7 +117,7 @@ class Home extends HookWidget {
                     ],
                   ]
                 ] else ...[
-                  ListTile(title: Text('Nicio conversație.'))
+                  const ListTile(title: Text('Nicio conversație.'))
                 ]
               ],
             ),

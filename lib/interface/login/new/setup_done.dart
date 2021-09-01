@@ -7,18 +7,19 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupDone extends HookWidget {
+  const SetupDone({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final navigation = useProvider(Repositories.navigation);
     return SetupPage(
-        header: [
+        header: const [
           Text(
             'Ai terminat!',
             style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             textAlign: TextAlign.left,
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 10, top: 10),
+            padding: EdgeInsets.only(right: 10, top: 10),
             child: Text(
               'Bucură-te de Allo!',
               style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -26,7 +27,7 @@ class SetupDone extends HookWidget {
             ),
           )
         ],
-        body: [],
+        body: const [],
         onButtonPress: () {
           navigation.pushPermanent(
               context, StackNavigator(), SharedAxisTransitionType.horizontal);

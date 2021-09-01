@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,14 +9,18 @@ import 'package:allo/components/chats/bubbles/message_bubble.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class Chat extends HookWidget {
   final String chatType;
   final String title;
   final String chatId;
-  Chat({required this.title, required this.chatId, required this.chatType});
+  Chat(
+      {required this.title,
+      required this.chatId,
+      required this.chatType,
+      Key? key})
+      : super(key: key);
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context) {
@@ -61,18 +64,18 @@ class Chat extends HookWidget {
       });
     }, []);
     return Scaffold(
-        appBar: NavBar(
+        appBar: AppBar(
           toolbarHeight: 100,
           leading: Container(
-            padding: EdgeInsets.only(left: 10, top: 0),
+            padding: const EdgeInsets.only(left: 10, top: 0),
             alignment: Alignment.topLeft,
             child: IconButton(
-              icon: Icon(FluentIcons.arrow_left_16_regular),
+              icon: const Icon(FluentIcons.arrow_left_16_regular),
               onPressed: () => Navigator.pop(context),
             ),
           ),
           flexibleSpace: FlexibleSpaceBar(
-            titlePadding: EdgeInsets.only(left: 20, bottom: 10),
+            titlePadding: const EdgeInsets.only(left: 20, bottom: 10),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -80,7 +83,7 @@ class Chat extends HookWidget {
               children: [
                 Container(
                   alignment: Alignment.bottomLeft,
-                  padding: EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.only(right: 10),
                   child: Hero(
                     tag: chatId + '_pic',
                     child: Material(
@@ -95,7 +98,8 @@ class Chat extends HookWidget {
                 ),
                 Text(
                   title,
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 30, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -121,7 +125,7 @@ class Chat extends HookWidget {
                     return false;
                   },
                   child: AnimatedList(
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     key: listKey,
                     reverse: true,
                     itemBuilder: (context, i, animation) {

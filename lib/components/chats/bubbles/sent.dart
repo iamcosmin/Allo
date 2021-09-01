@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:allo/repositories/repositories.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,17 +13,17 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
       context: context,
       builder: (context) {
         return Material(
-          child: Container(
+          child: SizedBox(
             height: 200,
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
                       alignment: Alignment.topRight,
-                      child: Icon(
+                      child: const Icon(
                         FluentIcons.dismiss_circle_20_filled,
                         color: Colors.grey,
                         size: 30,
@@ -42,7 +40,7 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
                             onTap: () {
                               Navigator.of(context).pop();
                               Future.delayed(
-                                  Duration(seconds: 1),
+                                  const Duration(seconds: 1),
                                   () => chat.deleteMessage(
                                       messageId: messageId, chatId: chatId));
                             },
@@ -52,7 +50,7 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
                                 width: 60,
                                 alignment: Alignment.center,
                                 color: Colors.red,
-                                child: Icon(
+                                child: const Icon(
                                   FluentIcons.delete_16_regular,
                                   color: Colors.white,
                                   size: 30,
@@ -60,7 +58,7 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
                               ),
                             ),
                           ),
-                          Padding(
+                          const Padding(
                               padding: EdgeInsets.only(top: 10),
                               child: Text(
                                 'Șterge mesajul',
@@ -79,23 +77,22 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
 }
 
 class SentMessageBubble extends HookWidget {
-  SentMessageBubble(
+  const SentMessageBubble(
       {required Key key,
       required this.pastUID,
       required this.nextUID,
       required this.chatId,
       required this.data})
       : super(key: key);
-  String pastUID;
-  String nextUID;
-  String chatId;
-  DocumentSnapshot data;
+  final String pastUID;
+  final String nextUID;
+  final String chatId;
+  final DocumentSnapshot data;
 
   @override
   Widget build(BuildContext context) {
     final documentData = data.data() as Map;
 
-    var name = documentData['name'] ?? documentData['senderName'] ?? 'No name';
     var uid = documentData['uid'] ?? documentData['senderUID'] ?? 'No UID';
     String text =
         documentData['text'] ?? documentData['messageTextContent'] ?? 'No text';
@@ -116,13 +113,13 @@ class SentMessageBubble extends HookWidget {
     final regexEmoji = RegExp(
         r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$');
     final bubbleRadius = BorderRadius.only(
-      topLeft: Radius.circular(20),
+      topLeft: const Radius.circular(20),
       topRight: Radius.circular(isSameSenderAsInPast ? 5 : 20),
       bottomRight: Radius.circular(isSameSenderAsInFuture ||
               (isSameSenderAsInFuture && isSameSenderAsInPast)
           ? 5
           : 20),
-      bottomLeft: Radius.circular(20),
+      bottomLeft: const Radius.circular(20),
     );
     return Padding(
       padding:
@@ -141,11 +138,11 @@ class SentMessageBubble extends HookWidget {
                   child: Container(
                     decoration: BoxDecoration(
                         color: Colors.blue, borderRadius: bubbleRadius),
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width / 1.4),
                     child: Padding(
-                      padding: EdgeInsets.only(left: 5, right: 2),
+                      padding: const EdgeInsets.only(left: 5, right: 2),
                       child: Text(
                         text,
                         style: TextStyle(
@@ -182,9 +179,9 @@ class SentMessageBubble extends HookWidget {
             ],
           ),
           AnimatedContainer(
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             curve: Curves.ease,
-            padding: EdgeInsets.only(right: 5),
+            padding: const EdgeInsets.only(right: 5),
             height: selected.value || (isRead == true && nextUID == 'null')
                 ? 20
                 : 0,
@@ -193,15 +190,15 @@ class SentMessageBubble extends HookWidget {
               children: [
                 Text(
                   isRead ? 'Citit' : 'Trimis',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 12,
                       color: Colors.grey,
                       fontWeight: FontWeight.bold),
                 ),
-                Padding(padding: EdgeInsets.only(left: 3)),
+                const Padding(padding: EdgeInsets.only(left: 3)),
                 Text(
                   time,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
                   ),
@@ -216,8 +213,8 @@ class SentMessageBubble extends HookWidget {
 }
 
 class ImageView extends HookWidget {
-  final imageUrl;
-  ImageView(this.imageUrl);
+  final String imageUrl;
+  const ImageView(this.imageUrl, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(

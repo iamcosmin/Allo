@@ -171,7 +171,7 @@ class AuthRepository {
             });
             await context.read(navigationProvider).push(
                   context,
-                  SetupVerification(),
+                  const SetupVerification(),
                 );
           } else {
             error.value = 'Parola ta nu respectă cerințele.';
@@ -257,9 +257,8 @@ class AuthRepository {
         }
       }
       await FirebaseAuth.instance.signOut();
-      await context
-          .read(Repositories.navigation)
-          .pushPermanent(context, MyApp(), SharedAxisTransitionType.scaled);
+      await context.read(Repositories.navigation).pushPermanent(
+          context, const MyApp(), SharedAxisTransitionType.scaled);
     } catch (e) {
       throw Exception('Something is wrong...');
     }

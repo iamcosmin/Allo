@@ -10,6 +10,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Settings extends HookWidget {
+  const Settings({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final dark = useProvider(darkMode);
@@ -22,7 +23,7 @@ class Settings extends HookWidget {
       _a.value++;
       if (_a.value == 9) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => C()));
+            .push(MaterialPageRoute(builder: (context) => const C()));
         _a.value = 0;
       }
     }
@@ -33,32 +34,33 @@ class Settings extends HookWidget {
           SliverAppBar(
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              title: GestureDetector(onTap: () => _b(), child: Text('Setări')),
-              titlePadding: EdgeInsets.only(left: 20, bottom: 15),
+              title: GestureDetector(
+                  onTap: () => _b(), child: const Text('Setări')),
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 15),
             ),
             expandedHeight: 100,
             pinned: true,
           ),
         ],
         body: ListView(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   alignment: Alignment.center,
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
                   child: PersonPicture.determine(
                       radius: 100,
                       profilePicture: auth.user.profilePicture,
                       initials: auth.user.nameInitials),
                 ),
                 Text(name),
-                Padding(padding: EdgeInsets.only(bottom: 10))
+                const Padding(padding: EdgeInsets.only(bottom: 10))
               ],
             ),
-            SettingsListHeader('Cont'),
+            const SettingsListHeader('Cont'),
             SettingsListTile(
               title: 'Fotografie de profil',
               type: RadiusType.BOTH,
@@ -68,7 +70,7 @@ class Settings extends HookWidget {
                 ),
               ),
             ),
-            SettingsListHeader('Personalizare'),
+            const SettingsListHeader('Personalizare'),
             SettingsListTile(
               title: 'Mod întunecat',
               type: RadiusType.BOTH,
@@ -79,7 +81,7 @@ class Settings extends HookWidget {
                 onChanged: (value) => darkMethod.switcher(context),
               ),
             ),
-            SettingsListHeader('Gestionare sesiune'),
+            const SettingsListHeader('Gestionare sesiune'),
             SettingsListTile(
               title: 'Deconectare',
               type: RadiusType.BOTH,

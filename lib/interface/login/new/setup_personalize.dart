@@ -3,26 +3,26 @@ import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/login/new/setup_done.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupPersonalize extends HookWidget {
+  const SetupPersonalize({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final dark = useProvider(darkMode);
     final darkMethod = useProvider(darkMode.notifier);
     final navigation = useProvider(Repositories.navigation);
     return SetupPage(
-      header: [
+      header: const [
         Text(
           'Personalizează-ți experiența.',
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: EdgeInsets.only(top: 10),
         ),
         Text(
           'Asta este ultima etapă. Alege opțiunile de personalizare dorite.',
@@ -32,7 +32,7 @@ class SetupPersonalize extends HookWidget {
       ],
       body: [
         Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
           child: SettingsListTile(
             title: 'Mod întunecat',
             type: RadiusType.BOTH,
@@ -44,7 +44,7 @@ class SetupPersonalize extends HookWidget {
           ),
         )
       ],
-      onButtonPress: () async => navigation.push(context, SetupDone()),
+      onButtonPress: () async => navigation.push(context, const SetupDone()),
       isAsync: true,
     );
   }

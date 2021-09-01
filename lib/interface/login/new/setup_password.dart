@@ -6,7 +6,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupPassword extends HookWidget {
   const SetupPassword(
-      {required this.displayName, required this.username, required this.email});
+      {required this.displayName,
+      required this.username,
+      required this.email,
+      Key? key})
+      : super(key: key);
   final String displayName;
   final String username;
   final String email;
@@ -19,14 +23,14 @@ class SetupPassword extends HookWidget {
     final auth = useProvider(Repositories.auth);
 
     return SetupPage(
-      header: [
+      header: const [
         Text(
           'Securitatea este importantă.',
           style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: EdgeInsets.only(top: 10),
         ),
         Text(
           'Pentru a crea contul, introdu parola pe care o vrei asociată acestui cont.',
@@ -36,16 +40,16 @@ class SetupPassword extends HookWidget {
       ],
       body: [
         Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
           child: Column(
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(10),
+                  contentPadding: const EdgeInsets.all(10),
                   errorText: error.value == '' ? null : error.value,
-                  errorStyle: TextStyle(fontSize: 14),
+                  errorStyle: const TextStyle(fontSize: 14),
                   labelText: 'Parolă',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   suffix: GestureDetector(
                     onTap: () {
                       if (obscure.value) {
@@ -65,13 +69,13 @@ class SetupPassword extends HookWidget {
                 controller: passController,
                 obscureText: obscure.value,
               ),
-              Padding(padding: EdgeInsets.only(bottom: 10)),
+              const Padding(padding: EdgeInsets.only(bottom: 10)),
               TextFormField(
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(10),
-                  errorStyle: TextStyle(fontSize: 14),
+                  contentPadding: const EdgeInsets.all(10),
+                  errorStyle: const TextStyle(fontSize: 14),
                   labelText: 'Confirmă parola',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   suffix: GestureDetector(
                     onTap: () {
                       if (obscure.value) {
@@ -91,8 +95,8 @@ class SetupPassword extends HookWidget {
                 controller: confirmPassController,
                 obscureText: obscure.value,
               ),
-              Padding(padding: EdgeInsets.only(bottom: 10)),
-              Text(
+              const Padding(padding: EdgeInsets.only(bottom: 10)),
+              const Text(
                 'Parola ta trebuie să conțină minim 8 caractere, litere mari și mici, cifre, simboluri.',
                 style: TextStyle(color: Colors.grey),
               )

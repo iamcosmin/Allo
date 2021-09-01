@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class EnterPassword extends HookWidget {
   final String email;
-  const EnterPassword({required this.email});
+  const EnterPassword({required this.email, Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final error = useState('');
@@ -14,32 +14,32 @@ class EnterPassword extends HookWidget {
     final auth = useProvider(Repositories.auth);
     return SetupPage(
       header: [
-        Text(
+        const Text(
           'Bine ai revenit, ',
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
         ),
         Text(
           '$email!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
+        const Padding(
+          padding: EdgeInsets.only(top: 10),
         ),
-        Text(
+        const Text(
           'Pentru a continua, introdu parola contului Allo.',
           style: TextStyle(fontSize: 18, color: Colors.grey),
         ),
       ],
       body: [
         Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: TextFormField(
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(10),
+              contentPadding: const EdgeInsets.all(10),
               errorText: error.value == '' ? null : error.value,
-              errorStyle: TextStyle(fontSize: 14),
+              errorStyle: const TextStyle(fontSize: 14),
               labelText: 'Parola',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             controller: controller,
             obscureText: true,

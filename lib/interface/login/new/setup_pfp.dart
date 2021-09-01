@@ -4,12 +4,12 @@ import 'package:allo/components/progress_rings.dart';
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/login/new/setup_personalize.dart';
 import 'package:allo/repositories/repositories.dart';
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupProfilePicture extends HookWidget {
+  const SetupProfilePicture({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final percentage = useState(0.0);
@@ -17,14 +17,14 @@ class SetupProfilePicture extends HookWidget {
     final navigation = useProvider(Repositories.navigation);
     final auth = useProvider(Repositories.auth);
     return SetupPage(
-      header: [
+      header: const [
         Text(
           'Alege o fotografie de profil.',
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: EdgeInsets.only(top: 10),
         ),
         Text(
           'Personalizează contul. Poți sări acest pas dacă dorești.',
@@ -34,16 +34,16 @@ class SetupProfilePicture extends HookWidget {
       ],
       body: [
         Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
           child: Column(
             children: [
               Container(
                 alignment: Alignment.center,
-                padding: EdgeInsets.only(top: 10, bottom: 10),
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Container(
+                    SizedBox(
                       height: 110,
                       width: 110,
                       child: ProgressRing(
@@ -57,7 +57,7 @@ class SetupProfilePicture extends HookWidget {
                   ],
                 ),
               ),
-              SettingsListHeader('Gestionează imaginea de profil'),
+              const SettingsListHeader('Gestionează imaginea de profil'),
               SettingsListTile(
                 title: 'Încarcă imagine',
                 type: RadiusType.BOTH,
@@ -65,14 +65,14 @@ class SetupProfilePicture extends HookWidget {
                     loaded: loaded,
                     percentage: percentage,
                     context: context,
-                    route: SetupPersonalize()),
+                    route: const SetupPersonalize()),
               ),
             ],
           ),
         ),
       ],
       onButtonPress: () async {
-        await navigation.push(context, SetupPersonalize());
+        await navigation.push(context, const SetupPersonalize());
       },
       isAsync: true,
     );

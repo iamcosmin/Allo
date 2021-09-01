@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Login extends HookWidget {
+  const Login({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final error = useState('');
@@ -12,7 +13,7 @@ class Login extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final colors = useProvider(Repositories.colors);
     return SetupPage(
-      header: [
+      header: const [
         Text(
           'Să ne conectăm...',
           style: TextStyle(
@@ -22,7 +23,7 @@ class Login extends HookWidget {
           textAlign: TextAlign.left,
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 5),
+          padding: EdgeInsets.only(top: 5),
           child: Text(
             'Pentru a continua, introdu emailul tău.',
             style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -31,14 +32,14 @@ class Login extends HookWidget {
       ],
       body: [
         Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: TextFormField(
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(10),
+              contentPadding: const EdgeInsets.all(10),
               errorText: error.value == '' ? null : error.value,
-              errorStyle: TextStyle(fontSize: 14),
+              errorStyle: const TextStyle(fontSize: 14),
               labelText: 'Email',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               fillColor: colors.tileColor,
             ),
             controller: controller,

@@ -22,8 +22,8 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: _backgroundColor,
-      navigationBar: CupertinoNavigationBar(
-        middle: const Text('Typing Indicator'),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Typing Indicator'),
       ),
       child: Column(
         children: [

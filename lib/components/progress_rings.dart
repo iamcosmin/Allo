@@ -101,7 +101,7 @@ class _ProgressBarState extends State<ProgressBar>
   Widget build(BuildContext context) {
     return Container(
       height: widget.strokeWidth,
-      constraints: BoxConstraints(minWidth: _kMinProgressBarWidth),
+      constraints: const BoxConstraints(minWidth: _kMinProgressBarWidth),
       child: Semantics(
         label: widget.semanticLabel,
         value: widget.value?.toStringAsFixed(2),
@@ -112,8 +112,9 @@ class _ProgressBarState extends State<ProgressBar>
             painter: _ProgressBarPainter(
               value: widget.value == null ? null : widget.value! / 100,
               strokeWidth: widget.strokeWidth,
-              activeColor: widget.activeColor ?? Color(0xFF0793FF),
-              backgroundColor: widget.backgroundColor ?? Color(0x00FFFFFF),
+              activeColor: widget.activeColor ?? const Color(0xFF0793FF),
+              backgroundColor:
+                  widget.backgroundColor ?? const Color(0x00FFFFFF),
               p1: p1,
               p2: p2,
               idleFrames: idleFrames,
@@ -336,7 +337,7 @@ class _ProgressRingState extends State<ProgressRing>
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(
+      constraints: const BoxConstraints(
         minWidth: _kMinProgressRingIndicatorSize,
         minHeight: _kMinProgressRingIndicatorSize,
       ),
@@ -351,9 +352,9 @@ class _ProgressRingState extends State<ProgressRing>
                 return CustomPaint(
                   painter: _RingPainter(
                     backgroundColor:
-                        widget.backgroundColor ?? Color(0x00FFFFFF),
+                        widget.backgroundColor ?? const Color(0x00FFFFFF),
                     value: widget.value,
-                    color: widget.activeColor ?? Color(0xFF0793FF),
+                    color: widget.activeColor ?? const Color(0xFF0793FF),
                     strokeWidth: widget.strokeWidth,
                     d1: d1,
                     d2: d2,
@@ -372,9 +373,9 @@ class _ProgressRingState extends State<ProgressRing>
           }
           return CustomPaint(
             painter: _RingPainter(
-              backgroundColor: Color(0x00FFFFFF),
+              backgroundColor: const Color(0x00FFFFFF),
               value: widget.value,
-              color: Color(0xFF0793FF),
+              color: const Color(0xFF0793FF),
               strokeWidth: widget.strokeWidth,
               d1: d1,
               d2: d2,

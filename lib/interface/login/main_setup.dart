@@ -7,18 +7,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'login.dart';
 
 class Setup extends HookWidget {
+  const Setup({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final navigation = useProvider(Repositories.navigation);
     return SetupPage(
-        header: [
+        header: const [
           Text(
             'Bine ai venit la Allo!',
             style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             textAlign: TextAlign.left,
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 10, top: 10),
+            padding: EdgeInsets.only(right: 10, top: 10),
             child: Text(
               'Comunică simplu și ușor cu persoanele dragi ție în siguranță și confort.',
               style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -26,9 +27,9 @@ class Setup extends HookWidget {
             ),
           )
         ],
-        body: [],
+        body: const [],
         onButtonPress: () {
-          navigation.push(context, Login());
+          navigation.push(context, const Login());
         },
         isAsync: false);
   }

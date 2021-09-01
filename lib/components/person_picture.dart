@@ -14,28 +14,35 @@ class PersonPicture extends HookWidget {
   String? profilePicture;
   String? initials;
 
-  PersonPicture.profilePicture({
-    required this.radius,
-    required this.profilePicture,
-  }) : _type = _PersonPictureType.profilePicture;
+  PersonPicture.profilePicture(
+      {required this.radius, required this.profilePicture, Key? key})
+      : _type = _PersonPictureType.profilePicture,
+        super(key: key);
 
   PersonPicture.initials(
-      {required this.radius, required this.initials, this.color, this.gradient})
-      : _type = _PersonPictureType.initials;
+      {Key? key,
+      required this.radius,
+      required this.initials,
+      this.color,
+      this.gradient})
+      : _type = _PersonPictureType.initials,
+        super(key: key);
 
   PersonPicture.determine(
-      {required this.radius,
+      {Key? key,
+      required this.radius,
       required this.profilePicture,
       required this.initials,
       this.color,
       this.gradient})
-      : _type = _PersonPictureType.determine;
+      : _type = _PersonPictureType.determine,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (_type == _PersonPictureType.profilePicture) {
       return ClipOval(
-        child: Container(
+        child: SizedBox(
           height: radius,
           width: radius,
           child: Image.network(profilePicture!),
@@ -58,7 +65,7 @@ class PersonPicture extends HookWidget {
       );
     } else if (_type == _PersonPictureType.determine) {
       return ClipOval(
-        child: Container(
+        child: SizedBox(
           height: radius,
           width: radius,
           child: Builder(
@@ -80,7 +87,7 @@ class PersonPicture extends HookWidget {
                 return CachedNetworkImage(
                   imageUrl: profilePicture!,
                   progressIndicatorBuilder: (context, string, progress) =>
-                      ProgressRing(),
+                      const ProgressRing(),
                   errorWidget: (context, str, dn) {
                     return Container(
                       height: radius,

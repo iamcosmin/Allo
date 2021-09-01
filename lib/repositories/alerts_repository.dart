@@ -8,7 +8,7 @@ class AlertsRepository {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        content: Text(
+        content: const Text(
           'Momentan această funcție nu e implementată.',
         ),
         action: SnackBarAction(

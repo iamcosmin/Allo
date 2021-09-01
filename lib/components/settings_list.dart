@@ -4,31 +4,34 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SettingsListHeader extends HookWidget {
-  SettingsListHeader(this.text);
+  const SettingsListHeader(this.text, {Key? key}) : super(key: key);
   final String text;
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 7, left: 10, top: 7),
+      padding: const EdgeInsets.only(bottom: 7, left: 10, top: 7),
       child: Text(
         text,
-        style: TextStyle(color: Colors.grey),
+        style: const TextStyle(color: Colors.grey),
       ),
     );
   }
 }
 
+// ignore: constant_identifier_names
 enum RadiusType { TOP, BOTTOM, BOTH }
 
 class SettingsListTile extends HookWidget {
-  SettingsListTile(
+  const SettingsListTile(
       {required this.title,
       this.onTap,
       required this.type,
       this.leading,
       this.trailing,
       this.color,
-      this.center});
+      this.center,
+      Key? key})
+      : super(key: key);
   final String title;
   final Function? onTap;
   final RadiusType type;
@@ -51,16 +54,16 @@ class SettingsListTile extends HookWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: (type == RadiusType.TOP || type == RadiusType.BOTH)
-              ? Radius.circular(20)
+              ? const Radius.circular(20)
               : Radius.zero,
           topRight: (type == RadiusType.TOP || type == RadiusType.BOTH)
-              ? Radius.circular(20)
+              ? const Radius.circular(20)
               : Radius.zero,
           bottomLeft: (type == RadiusType.BOTTOM || type == RadiusType.BOTH)
-              ? Radius.circular(20)
+              ? const Radius.circular(20)
               : Radius.zero,
           bottomRight: (type == RadiusType.BOTTOM || type == RadiusType.BOTH)
-              ? Radius.circular(20)
+              ? const Radius.circular(20)
               : Radius.zero,
         ),
       ),

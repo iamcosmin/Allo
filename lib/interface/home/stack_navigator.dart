@@ -11,7 +11,8 @@ import 'home.dart';
 import 'settings.dart';
 
 class StackNavigator extends HookWidget {
-  final List<Widget> pages = [Home(), Settings()];
+  StackNavigator({Key? key}) : super(key: key);
+  final List<Widget> pages = [const Home(), const Settings()];
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class StackNavigator extends HookWidget {
           },
           child: pages[selected.value]),
       bottomNavigationBar: BottomNavigationBar(
-        items: [
+        items: const [
           BottomNavigationBarItem(
               icon: Icon(FluentIcons.home_16_filled), label: 'Acasă'),
           BottomNavigationBarItem(

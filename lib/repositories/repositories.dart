@@ -20,7 +20,7 @@ class Repositories {
   static final Provider<AlertsRepository> alerts = alertsProvider;
   static final Provider<AuthRepository> auth = authProvider;
   static final Provider<ChatsRepository> chats = chatsProvider;
-  static final errorCodes = ErrorCodes;
+  static const errorCodes = ErrorCodes;
   static final Provider<NavigationRepository> navigation = navigationProvider;
   static final Provider<AppTheme> theme = appThemeProvider;
   static final Provider<SharedPreferences> sharedPreferences =

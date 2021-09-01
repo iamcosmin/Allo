@@ -16,7 +16,7 @@ class ReceiveMessageBubble extends HookWidget {
   // on the last message.
   // If the pastUID == senderUID, we need to eliminate the name and change bubble
   // characteristics
-  ReceiveMessageBubble(
+  const ReceiveMessageBubble(
       {required Key key,
       required this.pastUID,
       required this.nextUID,
@@ -24,11 +24,11 @@ class ReceiveMessageBubble extends HookWidget {
       required this.chatType,
       required this.data})
       : super(key: key);
-  String pastUID;
-  String nextUID;
-  String chatId;
-  String chatType;
-  DocumentSnapshot data;
+  final String pastUID;
+  final String nextUID;
+  final String chatId;
+  final String chatType;
+  final DocumentSnapshot data;
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +56,8 @@ class ReceiveMessageBubble extends HookWidget {
               (isSameSenderAsInFuture && isSameSenderAsInPast)
           ? 5
           : 20),
-      topRight: Radius.circular(20),
-      bottomRight: Radius.circular(20),
+      topRight: const Radius.circular(20),
+      bottomRight: const Radius.circular(20),
     );
     final navigation = useProvider(Repositories.navigation);
     final regexEmoji = RegExp(
@@ -96,24 +96,25 @@ class ReceiveMessageBubble extends HookWidget {
                         }
                       }),
                 ] else ...[
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(left: 36),
                   )
                 ],
               ] else
                 ...[],
 
-              Padding(padding: EdgeInsets.only(left: 9)),
+              const Padding(padding: EdgeInsets.only(left: 9)),
               // Chat bubble
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!isSameSenderAsInPast && chatType == ChatType.group) ...[
                     Padding(
-                      padding: EdgeInsets.only(left: 15, bottom: 4),
+                      padding: const EdgeInsets.only(left: 15, bottom: 4),
                       child: Text(
                         name,
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 11, color: Colors.grey),
                       ),
                     ),
                   ],
@@ -132,18 +133,18 @@ class ReceiveMessageBubble extends HookWidget {
                                             isSameSenderAsInPast)
                                     ? 0
                                     : 20),
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
+                            topRight: const Radius.circular(20),
+                            bottomRight: const Radius.circular(20),
                           ),
                         ),
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         constraints: BoxConstraints(
                             maxWidth: MediaQuery.of(context).size.width / 1.5),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(left: 5, right: 5),
+                              padding: const EdgeInsets.only(left: 5, right: 5),
                               child: Text(
                                 text,
                                 style: TextStyle(
@@ -191,24 +192,24 @@ class ReceiveMessageBubble extends HookWidget {
             ],
           ),
           AnimatedContainer(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.ease,
               padding:
                   EdgeInsets.only(left: chatType == ChatType.private ? 20 : 60),
               height: selected.value || nextUID == 'null' ? 20 : 0,
               child: Row(
                 children: [
-                  Text(
+                  const Text(
                     'Primit',
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
                         fontWeight: FontWeight.bold),
                   ),
-                  Padding(padding: EdgeInsets.only(left: 3)),
+                  const Padding(padding: EdgeInsets.only(left: 3)),
                   Text(
                     time,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: Colors.grey,
                     ),

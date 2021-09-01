@@ -5,7 +5,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupUsername extends HookWidget {
-  const SetupUsername({required this.displayName, required this.email});
+  const SetupUsername(
+      {required this.displayName, required this.email, Key? key})
+      : super(key: key);
   final String displayName;
   final String email;
 
@@ -15,14 +17,14 @@ class SetupUsername extends HookWidget {
     final error = useState('');
     final auth = useProvider(Repositories.auth);
     return SetupPage(
-      header: [
+      header: const [
         Text(
           'Ce nume de utilizator vrei?',
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: EdgeInsets.only(top: 10),
         ),
         Text(
           'Pentru a continua, introdu un numele de utilizator pe care îl dorești.',
@@ -32,22 +34,22 @@ class SetupUsername extends HookWidget {
       ],
       body: [
         Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
           child: Column(
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(10),
-                  prefix: Text('@'),
+                  contentPadding: const EdgeInsets.all(10),
+                  prefix: const Text('@'),
                   errorText: error.value == '' ? null : error.value,
-                  errorStyle: TextStyle(fontSize: 14),
+                  errorStyle: const TextStyle(fontSize: 14),
                   labelText: 'Nume de utilizator',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 controller: controller,
               ),
-              Padding(padding: EdgeInsets.only(bottom: 10)),
-              Text(
+              const Padding(padding: EdgeInsets.only(bottom: 10)),
+              const Text(
                 'Numele de utilizator este numele unic de identificare \nAcesta trebuie să fie format dintr-o combinație de litere mici, împreună cu underline-uri și puncte sau cifre. Acesta nu trebuie să conțină spații sau diacritice.',
                 style: TextStyle(color: Colors.grey),
               )
