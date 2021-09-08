@@ -1,5 +1,6 @@
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/repositories/chats_repository.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -14,7 +15,6 @@ class Home extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final chats = useProvider(loadChats);
     final chatsMethod = useProvider(loadChats.notifier);
-
     useEffect(() {
       Future.microtask(() async {
         await chatsMethod.getChatsData(context);
@@ -22,6 +22,19 @@ class Home extends HookWidget {
     });
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Not yet...'),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () =>
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar(),
+            ),
+          ),
+        ),
+        child: const Icon(Icons.add),
+      ),
       body: NestedScrollView(
         headerSliverBuilder: (context, ibs) => [
           const SliverAppBar(

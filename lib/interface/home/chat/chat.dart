@@ -1,3 +1,5 @@
+import 'package:allo/components/animated_list/animated_firestore_list.dart';
+import 'package:allo/interface/home/typingbubble.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -24,9 +26,9 @@ class Chat extends HookWidget {
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context) {
-    final documentLoad = useState(20);
-    final documentList = useState(<DocumentSnapshot>[]);
     final auth = useProvider(Repositories.auth);
+    final typing = useState(false);
+    final colors = useProvider(Repositories.colors);
 
     useEffect(() {
       if (!kIsWeb) {
@@ -35,32 +37,9 @@ class Chat extends HookWidget {
       FirebaseFirestore.instance
           .collection('chats')
           .doc(chatId)
-          .collection('messages')
-          .orderBy('time', descending: true)
-          .limit(documentLoad.value)
           .snapshots()
           .listen((event) {
-        for (var doc in event.docChanges) {
-          if (doc.type == DocumentChangeType.added) {
-            documentList.value.insert(doc.newIndex, doc.doc);
-            if (listKey.currentState != null) {
-              listKey.currentState!.insertItem(doc.newIndex);
-            }
-          } else if (doc.type == DocumentChangeType.removed) {
-            documentList.value.removeAt(doc.oldIndex);
-            if (listKey.currentState != null) {
-              listKey.currentState!.removeItem(
-                  doc.oldIndex,
-                  (context, animation) => SizeTransition(
-                        sizeFactor: animation,
-                        axis: Axis.vertical,
-                        axisAlignment: -1.0,
-                      ));
-            }
-          } else if (doc.type == DocumentChangeType.modified) {
-            documentList.value[doc.oldIndex] = doc.doc;
-          }
-        }
+        typing.value = event.data()!['typing'] ?? false;
       });
     }, []);
     return Scaffold(
@@ -124,52 +103,78 @@ class Chat extends HookWidget {
                     }
                     return false;
                   },
-                  child: AnimatedList(
-                    physics: const BouncingScrollPhysics(),
-                    key: listKey,
-                    reverse: true,
-                    itemBuilder: (context, i, animation) {
-                      final Map pastData, nextData;
-                      if (i == 0) {
-                        nextData = {'senderUID': 'null'};
-                      } else {
-                        nextData = documentList.value[i - 1].data() as Map;
-                      }
-                      if (i == documentList.value.length - 1) {
-                        pastData = {'senderUID': 'null'};
-                      } else {
-                        pastData = documentList.value[i + 1].data() as Map;
-                      }
-                      // Above, pastData should have been i-1 and nextData i+1.
-                      // But, as the list needs to be in reverse order, we need
-                      // to consider this workaround.
-                      final pastUID = pastData.containsKey('uid')
-                          ? pastData['uid']
-                          : pastData.containsKey('senderUID')
-                              ? pastData['senderUID']
-                              : 'null';
-                      final nextUID = nextData.containsKey('uid')
-                          ? nextData['uid']
-                          : nextData.containsKey('senderUID')
-                              ? nextData['senderUID']
-                              : 'null';
-                      return SizeTransition(
-                        axisAlignment: -1.0,
-                        sizeFactor: animation,
-                        child: FadeTransition(
-                          opacity: CurvedAnimation(
-                              curve: Curves.easeIn, parent: animation),
-                          child: MessageBubble(
-                            chatType: chatType,
-                            pastUID: pastUID,
-                            chatId: chatId,
-                            nextUID: nextUID,
-                            data: documentList.value[i],
-                            key: UniqueKey(),
-                          ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 10,
+                        child: FirestoreAnimatedList(
+                          query: FirebaseFirestore.instance
+                              .collection('chats')
+                              .doc(chatId)
+                              .collection('messages')
+                              .orderBy('time', descending: true)
+                              .limit(20),
+                          physics: const BouncingScrollPhysics(),
+                          key: listKey,
+                          linear: false,
+                          duration: const Duration(milliseconds: 200),
+                          reverse: true,
+                          itemBuilder: (context, documentList, animation, i) {
+                            final Map pastData, nextData;
+                            if (i == 0) {
+                              nextData = {'senderUID': 'null'};
+                            } else {
+                              nextData = documentList![i - 1]!.data() as Map;
+                            }
+                            if (i == documentList!.length - 1) {
+                              pastData = {'senderUID': 'null'};
+                            } else {
+                              pastData = documentList[i + 1]!.data() as Map;
+                            }
+                            // Above, pastData should have been i-1 and nextData i+1.
+                            // But, as the list needs to be in reverse order, we need
+                            // to consider this workaround.
+                            final pastUID = pastData.containsKey('uid')
+                                ? pastData['uid']
+                                : pastData.containsKey('senderUID')
+                                    ? pastData['senderUID']
+                                    : 'null';
+                            final nextUID = nextData.containsKey('uid')
+                                ? nextData['uid']
+                                : nextData.containsKey('senderUID')
+                                    ? nextData['senderUID']
+                                    : 'null';
+                            return SizeTransition(
+                              axisAlignment: -1.0,
+                              sizeFactor: animation,
+                              child: FadeTransition(
+                                opacity: CurvedAnimation(
+                                    curve: Curves.easeIn, parent: animation),
+                                child: MessageBubble(
+                                  chatType: chatType,
+                                  pastUID: pastUID,
+                                  chatId: chatId,
+                                  nextUID: nextUID,
+                                  data: documentList[i]!,
+                                  key: UniqueKey(),
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: TypingIndicator(
+                          bubbleColor: colors.messageBubble,
+                          flashingCircleBrightColor:
+                              colors.flashingCircleBrightColor,
+                          flashingCircleDarkColor:
+                              colors.flashingCircleDarkColor,
+                          showIndicator: false,
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),

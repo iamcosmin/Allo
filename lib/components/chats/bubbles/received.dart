@@ -71,8 +71,9 @@ class ReceiveMessageBubble extends HookWidget {
     });
 
     return Container(
-      padding:
-          EdgeInsets.only(bottom: isSameSenderAsInFuture ? 1 : 15, left: 10),
+      padding: EdgeInsets.only(
+          bottom: (isSameSenderAsInFuture || nextUID == 'null') ? 1 : 15,
+          left: 10),
       child: Column(
         children: [
           Row(
@@ -196,7 +197,7 @@ class ReceiveMessageBubble extends HookWidget {
               curve: Curves.ease,
               padding:
                   EdgeInsets.only(left: chatType == ChatType.private ? 20 : 60),
-              height: selected.value || nextUID == 'null' ? 20 : 0,
+              height: selected.value ? 20 : 0,
               child: Row(
                 children: [
                   const Text(

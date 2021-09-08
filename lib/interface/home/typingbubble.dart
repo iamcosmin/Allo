@@ -33,6 +33,7 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
           Align(
             alignment: Alignment.bottomLeft,
             child: TypingIndicator(
+              bubbleColor: Colors.grey.shade500,
               showIndicator: _isSomeoneTyping,
             ),
           ),
@@ -176,14 +177,14 @@ class _TypingIndicatorState extends State<TypingIndicator>
 
   void _showIndicator() {
     _appearanceController
-      ..duration = const Duration(milliseconds: 300)
+      ..duration = const Duration(milliseconds: 400)
       ..forward();
     _repeatingController.repeat();
   }
 
   void _hideIndicator() {
     _appearanceController
-      ..duration = const Duration(milliseconds: 300)
+      ..duration = const Duration(milliseconds: 200)
       ..reverse();
     _repeatingController.stop();
   }
@@ -202,8 +203,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
         children: [
           _buildAnimatedBubble(
             animation: _smallBubbleAnimation,
-            left: 8,
-            bottom: 8,
+            left: 2,
+            bottom: 5,
             bubble: _buildCircleBubble(8),
           ),
           _buildAnimatedBubble(
@@ -259,8 +260,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
 
   Widget _buildStatusBubble() {
     return Container(
-      width: 70,
-      height: 40,
+      width: 60,
+      height: 35,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(27),
@@ -286,8 +287,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
         final circleColorPercent = sin(pi * circleFlashPercent);
 
         return Container(
-          width: 12,
-          height: 12,
+          width: 10,
+          height: 10,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color.lerp(widget.flashingCircleDarkColor,

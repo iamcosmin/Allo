@@ -32,7 +32,7 @@ class AppTheme {
 
   ThemeData get kLightTheme {
     return ThemeData(
-        accentColor: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch(),
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
         pageTransitionsTheme: PageTransitionsTheme(
@@ -43,7 +43,7 @@ class AppTheme {
 
   ThemeData get _kDarkTheme {
     return ThemeData(
-        accentColor: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch(),
         brightness: Brightness.dark,
         pageTransitionsTheme: PageTransitionsTheme(builders: builders),
         fontFamily: 'VarDisplay',
@@ -94,4 +94,8 @@ class ColorsBuilt {
       returnColor(const Color(0xFF000000), const Color(0xFFFFFFFF));
   Color get tileColor =>
       returnColor(Colors.grey.shade200, Colors.grey.shade900);
+  Color get flashingCircleBrightColor =>
+      returnColor(Colors.grey.shade100, Colors.grey.shade500);
+  Color get flashingCircleDarkColor =>
+      returnColor(Colors.grey.shade500, Colors.grey.shade700);
 }

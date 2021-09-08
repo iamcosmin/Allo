@@ -54,6 +54,10 @@ class SendMessage {
     if (controller != null) {
       controller.clear();
     }
+    FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .update({'typing': false});
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
     final auth = context.read(Repositories.auth);
     await db.collection('messages').add({
@@ -89,9 +93,9 @@ class SendMessage {
     final task = storage.ref(path).putData(await imageFile.readAsBytes(),
         SettableMetadata(contentType: 'image/png'));
     task.snapshotEvents.listen((event) async {
-      progress.value = (event.bytesTransferred / event.totalBytes) * 100;
+      progress.value = event.bytesTransferred / event.totalBytes;
       if (event.state == TaskState.success) {
-        progress.value = 101;
+        progress.value = 1.1;
         await db.collection('messages').add({
           'type': MessageTypes.IMAGE,
           'name': auth.user.name,
