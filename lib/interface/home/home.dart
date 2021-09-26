@@ -1,4 +1,5 @@
 import 'package:allo/components/person_picture.dart';
+import 'package:allo/interface/home/create_chat.dart';
 import 'package:allo/repositories/chats_repository.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
@@ -23,16 +24,8 @@ class Home extends HookWidget {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Not yet...'),
-            action: SnackBarAction(
-              label: 'OK',
-              onPressed: () =>
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar(),
-            ),
-          ),
-        ),
+        onPressed: () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => CreateChat())),
         child: const Icon(Icons.add),
       ),
       body: NestedScrollView(
@@ -48,6 +41,7 @@ class Home extends HookWidget {
           ),
         ],
         body: RefreshIndicator(
+          triggerMode: RefreshIndicatorTriggerMode.onEdge,
           onRefresh: () async => await chatsMethod.getChatsData(context),
           child: Padding(
             padding: const EdgeInsets.all(8.0),

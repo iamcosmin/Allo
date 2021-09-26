@@ -38,7 +38,7 @@ class MessageInput extends HookWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+        padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5, top: 10),
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),

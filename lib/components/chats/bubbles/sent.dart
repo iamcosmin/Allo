@@ -122,8 +122,9 @@ class SentMessageBubble extends HookWidget {
       bottomLeft: const Radius.circular(20),
     );
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: isSameSenderAsInFuture ? 1 : 15, right: 10),
+      padding: EdgeInsets.only(
+          bottom: (isSameSenderAsInFuture || nextUID == 'null') ? 1 : 15,
+          right: 10),
       child: Column(
         children: [
           Row(

@@ -9,30 +9,34 @@ final appThemeProvider = Provider<AppTheme>((ref) => AppTheme(ref));
 class AppTheme {
   AppTheme(this.ref);
   final ProviderReference ref;
-  Color get non {
-    return ref.read(colorsProvider).nonColors;
-  }
 
-  Map<TargetPlatform, PageTransitionsBuilder> get builders {
-    return {
-      TargetPlatform.android: SharedAxisPageTransitionsBuilder(
-          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
-      TargetPlatform.fuchsia: SharedAxisPageTransitionsBuilder(
-          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
-      TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(
-          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
-      TargetPlatform.linux: SharedAxisPageTransitionsBuilder(
-          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
-      TargetPlatform.macOS: SharedAxisPageTransitionsBuilder(
-          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
-      TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
-          transitionType: SharedAxisTransitionType.scaled, fillColor: non),
-    };
-  }
+  Map<TargetPlatform, PageTransitionsBuilder> builders = const {
+    TargetPlatform.android: SharedAxisPageTransitionsBuilder(
+        transitionType: SharedAxisTransitionType.scaled,
+        fillColor: Colors.transparent),
+    TargetPlatform.fuchsia: SharedAxisPageTransitionsBuilder(
+        transitionType: SharedAxisTransitionType.scaled,
+        fillColor: Colors.transparent),
+    TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(
+        transitionType: SharedAxisTransitionType.scaled,
+        fillColor: Colors.transparent),
+    TargetPlatform.linux: SharedAxisPageTransitionsBuilder(
+        transitionType: SharedAxisTransitionType.scaled,
+        fillColor: Colors.transparent),
+    TargetPlatform.macOS: SharedAxisPageTransitionsBuilder(
+        transitionType: SharedAxisTransitionType.scaled,
+        fillColor: Colors.transparent),
+    TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
+        transitionType: SharedAxisTransitionType.scaled,
+        fillColor: Colors.transparent),
+  };
 
   ThemeData get kLightTheme {
     return ThemeData(
-        colorScheme: ColorScheme.fromSwatch(),
+        colorScheme: ColorScheme.fromSwatch(
+            brightness: Brightness.light,
+            primarySwatch: Colors.blue,
+            accentColor: Colors.blue),
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
         pageTransitionsTheme: PageTransitionsTheme(
@@ -43,7 +47,10 @@ class AppTheme {
 
   ThemeData get _kDarkTheme {
     return ThemeData(
-        colorScheme: ColorScheme.fromSwatch(),
+        colorScheme: ColorScheme.fromSwatch(
+            brightness: Brightness.dark,
+            primarySwatch: Colors.blue,
+            accentColor: Colors.blue),
         brightness: Brightness.dark,
         pageTransitionsTheme: PageTransitionsTheme(builders: builders),
         fontFamily: 'VarDisplay',

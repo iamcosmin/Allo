@@ -44,6 +44,7 @@ class StackNavigator extends HookWidget {
           },
           child: pages[selected.value]),
       bottomNavigationBar: BottomNavigationBar(
+        showUnselectedLabels: false,
         items: const [
           BottomNavigationBarItem(
               icon: Icon(FluentIcons.home_16_filled), label: 'Acasă'),

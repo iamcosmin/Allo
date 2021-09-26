@@ -5,6 +5,7 @@ import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:allo/components/person_picture.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -63,6 +64,7 @@ class Settings extends HookWidget {
             const SettingsListHeader('Cont'),
             SettingsListTile(
               title: 'Fotografie de profil',
+              leading: Icon(FluentIcons.screen_person_20_filled),
               type: RadiusType.BOTH,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -73,6 +75,7 @@ class Settings extends HookWidget {
             const SettingsListHeader('Personalizare'),
             SettingsListTile(
               title: 'Mod întunecat',
+              leading: Icon(FluentIcons.dark_theme_24_filled),
               type: RadiusType.BOTH,
               onTap: () => darkMethod.switcher(context),
               trailing: Switch(
@@ -83,6 +86,7 @@ class Settings extends HookWidget {
             ),
             const SettingsListHeader('Gestionare sesiune'),
             SettingsListTile(
+              leading: Icon(FluentIcons.sign_out_20_filled),
               title: 'Deconectare',
               type: RadiusType.BOTH,
               onTap: () async => await auth.signOut(context),

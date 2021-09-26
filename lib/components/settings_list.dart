@@ -51,20 +51,12 @@ class SettingsListTile extends HookWidget {
       tileColor: color ?? colors.tileColor,
       leading: leading,
       trailing: trailing,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: (type == RadiusType.TOP || type == RadiusType.BOTH)
-              ? const Radius.circular(20)
-              : Radius.zero,
-          topRight: (type == RadiusType.TOP || type == RadiusType.BOTH)
-              ? const Radius.circular(20)
-              : Radius.zero,
-          bottomLeft: (type == RadiusType.BOTTOM || type == RadiusType.BOTH)
-              ? const Radius.circular(20)
-              : Radius.zero,
-          bottomRight: (type == RadiusType.BOTTOM || type == RadiusType.BOTH)
-              ? const Radius.circular(20)
-              : Radius.zero,
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+          bottomLeft: Radius.circular(10),
+          bottomRight: Radius.circular(10),
         ),
       ),
       onTap: () async => onTap != null ? onTap!() : null,
