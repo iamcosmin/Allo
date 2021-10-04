@@ -34,9 +34,7 @@ class AppTheme {
   ThemeData get kLightTheme {
     return ThemeData(
         colorScheme: ColorScheme.fromSwatch(
-            brightness: Brightness.light,
-            primarySwatch: Colors.blue,
-            accentColor: Colors.blue),
+            brightness: Brightness.light, accentColor: const Color(0xFF1A76C6)),
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
         pageTransitionsTheme: PageTransitionsTheme(
@@ -48,9 +46,7 @@ class AppTheme {
   ThemeData get _kDarkTheme {
     return ThemeData(
         colorScheme: ColorScheme.fromSwatch(
-            brightness: Brightness.dark,
-            primarySwatch: Colors.blue,
-            accentColor: Colors.blue),
+            brightness: Brightness.dark, accentColor: const Color(0xFF49B3EA)),
         brightness: Brightness.dark,
         pageTransitionsTheme: PageTransitionsTheme(builders: builders),
         fontFamily: 'VarDisplay',

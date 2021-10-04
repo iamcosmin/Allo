@@ -43,16 +43,23 @@ class StackNavigator extends HookWidget {
             );
           },
           child: pages[selected.value]),
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(FluentIcons.home_16_filled), label: 'Acasă'),
-          BottomNavigationBarItem(
-              icon: Icon(FluentIcons.settings_20_filled), label: 'Setări')
+      bottomNavigationBar: NavigationBar(
+        height: 70,
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(FluentIcons.home_16_regular),
+            label: 'Acasă',
+            selectedIcon: Icon(FluentIcons.home_16_filled),
+          ),
+          NavigationDestination(
+            icon: Icon(FluentIcons.settings_20_regular),
+            label: 'Setări',
+            selectedIcon: Icon(FluentIcons.settings_20_filled),
+          )
         ],
-        currentIndex: selected.value,
-        onTap: (index) => selected.value = index,
+        selectedIndex: selected.value,
+        onDestinationSelected: (index) => selected.value = index,
       ),
     );
   }

@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.2.1+126
+version: 1.2.1+134
 
 environment:
   sdk: ">=2.13.0 <3.0.0"

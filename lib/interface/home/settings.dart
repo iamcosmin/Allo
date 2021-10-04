@@ -74,6 +74,22 @@ class Settings extends HookWidget {
             ),
             const SettingsListHeader('Personalizare'),
             SettingsListTile(
+              title: 'Culoare de accent',
+              type: RadiusType.BOTH,
+              leading: const Icon(FluentIcons.paint_bucket_16_filled),
+              trailing: DropdownButton(
+                value: 'red',
+                items: const [
+                  DropdownMenuItem(
+                    child: Text('Blue'),
+                    value: 'blue',
+                  ),
+                  DropdownMenuItem(child: Text('Red'), value: 'red')
+                ],
+              ),
+            ),
+            Padding(padding: EdgeInsets.only(top: 5)),
+            SettingsListTile(
               title: 'Mod întunecat',
               leading: Icon(FluentIcons.dark_theme_24_filled),
               type: RadiusType.BOTH,

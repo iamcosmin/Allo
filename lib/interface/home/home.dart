@@ -1,4 +1,5 @@
 import 'package:allo/components/person_picture.dart';
+import 'package:allo/components/progress_rings.dart';
 import 'package:allo/interface/home/create_chat.dart';
 import 'package:allo/repositories/chats_repository.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -16,6 +17,7 @@ class Home extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final chats = useProvider(loadChats);
     final chatsMethod = useProvider(loadChats.notifier);
+    final value = useState<double>(0);
     useEffect(() {
       Future.microtask(() async {
         await chatsMethod.getChatsData(context);
@@ -125,7 +127,7 @@ class Home extends HookWidget {
                   ]
                 ] else ...[
                   const ListTile(title: Text('Nicio conversație.'))
-                ]
+                ],
               ],
             ),
           ),

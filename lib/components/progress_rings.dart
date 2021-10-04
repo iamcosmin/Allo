@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 const double _kMinProgressRingIndicatorSize = 36.0;
 const double _kMinProgressBarWidth = 130.0;
@@ -303,16 +304,23 @@ class ProgressRing extends StatefulWidget {
 }
 
 class _ProgressRingState extends State<ProgressRing>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
-
+  late Tween<double> valueTween;
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+    if (widget.value != null) {
+      valueTween = Tween(
+        begin: 0,
+        end: widget.value,
+      );
+    }
+
     if (widget.value == null) _controller.repeat();
   }
 
@@ -321,8 +329,22 @@ class _ProgressRingState extends State<ProgressRing>
     super.didUpdateWidget(oldWidget);
     if (widget.value == null && !_controller.isAnimating) {
       _controller.repeat();
-    } else if (widget.value != null && _controller.isAnimating) {
-      _controller.stop();
+    } else if (widget.value != null) {
+      if (widget.value != oldWidget.value) {
+        // Try to start with the previous tween's end value. This ensures that we
+        // have a smooth transition from where the previous animation reached.
+        var beginValue = valueTween.evaluate(_controller);
+
+        // Update the value tween.
+        valueTween = Tween<double>(
+          begin: beginValue,
+          end: widget.value ?? 100,
+        );
+
+        _controller
+          ..value = 0
+          ..forward();
+      }
     }
   }
 
@@ -374,13 +396,13 @@ class _ProgressRingState extends State<ProgressRing>
           return CustomPaint(
             painter: _RingPainter(
               backgroundColor: const Color(0x00FFFFFF),
-              value: widget.value,
+              value: valueTween.evaluate(_controller),
               color: const Color(0xFF0793FF),
               strokeWidth: widget.strokeWidth,
               d1: d1,
               d2: d2,
-              lowSpeed: lowSpeed,
-              highSpeed: highSpeed,
+              lowSpeed: 200,
+              highSpeed: 200,
               onUpdate: (v) {},
             ),
           );
