@@ -44,7 +44,6 @@ class StackNavigator extends HookWidget {
           },
           child: pages[selected.value]),
       bottomNavigationBar: NavigationBar(
-        height: 70,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: const [
           NavigationDestination(

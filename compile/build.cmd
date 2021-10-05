@@ -9,7 +9,8 @@ cls
 echo =======================================
 echo = Building for Android (flavor: prod) =
 echo =======================================
-flutter build appbundle --flavor prod && ping 127.0.0.1 -n 6 > nul
+pwsh.exe -Command flutter doctor
+ping 127.0.0.1 -n 6 > nul
 cls
 echo =====================================
 echo = Building for Web (renderer: html) =

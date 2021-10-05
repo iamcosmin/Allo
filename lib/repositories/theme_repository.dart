@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Theming
+/// Theming should be clear and concise. StateNotifier with a List of 2 arguments (dark mode boolean and accent color.)
+///
+/// Pass to theme manager the arguments of the theme ([true, Colors.red]), then let the manager update the state
+/// so the colors and the dark mode value changes in real time.
+// TODO
+
 final appThemeProvider = Provider<AppTheme>((ref) => AppTheme(ref));
 
 class AppTheme {

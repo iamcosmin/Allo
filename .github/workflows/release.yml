@@ -27,18 +27,6 @@ jobs:
            gpg -d --passphrase "${{ secrets.PASS_PHRASE }}" --batch release.jks.asc > app/release.jks
            echo "${{ secrets.KEYSTORE_PASS }}" > key.properties
            cd ..
-    - name: Play Store - Build
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: | 
-          flutter build appbundle --flavor prod
-    - name: Play Store - Release
-      uses: r0adkll/upload-google-play@v1.0.16
-      with: 
-        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
-        packageName: com.relays.messenger
-        releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
-        track: beta
-        whatsNewDirectory: distribution
     - name: Web - Build
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
@@ -52,3 +40,16 @@ jobs:
         channelId: live
       env:
         FIREBASE_CLI_PREVIEWS: hostingchannels
+    - name: Play Store - Build
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: | 
+          flutter build appbundle --flavor prod
+    - name: Play Store - Release
+      uses: r0adkll/upload-google-play@v1.0.15
+      with: 
+        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
+        packageName: com.relays.messenger
+        releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
+        track: beta
+        whatsNewDirectory: distribution
+   
