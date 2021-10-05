@@ -117,12 +117,42 @@ class MyApp extends HookWidget {
         performUpdate(context);
       }
     }, []);
-    final theme = useProvider(appThemeProvider);
     final darkState = useProvider(darkMode);
     return MaterialApp(
         title: 'Allo',
+        scrollBehavior: const MaterialScrollBehavior(
+            /* androidOverscrollIndicator: AndroidOverscrollIndicator.stretch*/),
         themeMode: darkState == true ? ThemeMode.dark : ThemeMode.light,
-        theme: theme.getAppThemeData(context, darkState),
+        theme: ThemeData(
+            colorScheme: ColorScheme.fromSwatch(
+                brightness: Brightness.light,
+                accentColor: const Color(0xFF1A76C6)),
+            brightness: Brightness.light,
+            appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.white, foregroundColor: Colors.black),
+            scaffoldBackgroundColor: Colors.white,
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                backgroundColor: Colors.grey.shade300,
+                selectedItemColor: const Color(0xFF1A76C6)),
+            // navigationBarTheme: NavigationBarThemeData(
+            //     indicatorColor: const Color(0xFF1A76C6),
+            //     backgroundColor: Colors.grey.shade300),
+            fontFamily: 'VarDisplay'),
+        darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSwatch(
+                brightness: Brightness.dark,
+                accentColor: const Color(0xFF49B3EA)),
+            brightness: Brightness.dark,
+            appBarTheme: AppBarTheme(backgroundColor: Colors.grey.shade900),
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                backgroundColor: Colors.grey.shade800,
+                unselectedItemColor: Colors.white,
+                selectedItemColor: const Color(0xFF49B3EA)),
+            // navigationBarTheme: NavigationBarThemeData(
+            //     indicatorColor: const Color(0xFF49B3EA),
+            //     backgroundColor: Colors.grey.shade800),
+            fontFamily: 'VarDisplay',
+            scaffoldBackgroundColor: Colors.black),
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snap) {

@@ -43,23 +43,64 @@ class StackNavigator extends HookWidget {
             );
           },
           child: pages[selected.value]),
-      bottomNavigationBar: NavigationBar(
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(FluentIcons.home_16_regular),
+      bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(
+              FluentIcons.home_16_regular,
+            ),
             label: 'Acasă',
-            selectedIcon: Icon(FluentIcons.home_16_filled),
+            activeIcon: Icon(
+              FluentIcons.home_16_filled,
+            ),
           ),
-          NavigationDestination(
+          BottomNavigationBarItem(
             icon: Icon(FluentIcons.settings_20_regular),
             label: 'Setări',
-            selectedIcon: Icon(FluentIcons.settings_20_filled),
+            activeIcon: Icon(
+              FluentIcons.settings_20_filled,
+            ),
           )
         ],
-        selectedIndex: selected.value,
-        onDestinationSelected: (index) => selected.value = index,
+        currentIndex: selected.value,
+        onTap: (index) => selected.value = index,
       ),
+
+      // New Navigation Bar Migration
+      // NavigationBar(
+      //   height: 56,
+      //   labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+      //   destinations: [
+      //     NavigationDestination(
+      //       icon: const Icon(
+      //         FluentIcons.home_16_regular,
+      //       ),
+      //       label: 'Acasă',
+      //       selectedIcon: Icon(
+      //         FluentIcons.home_16_filled,
+      //         color: Theme.of(context).brightness == Brightness.dark
+      //             ? Colors.black
+      //             : Colors.white,
+      //       ),
+      //     ),
+      //     NavigationDestination(
+      //       icon: const Icon(FluentIcons.settings_20_regular),
+      //       label: 'Setări',
+      //       selectedIcon: Icon(
+      //         FluentIcons.settings_20_filled,
+      //         color: Theme.of(context).brightness == Brightness.dark
+      //             ? Colors.black
+      //             : Colors.white,
+      //       ),
+      //     )
+      //   ],
+      //   selectedIndex: selected.value,
+      //   onDestinationSelected: (index) => selected.value = index,
+      // ),
+      //
+      //
     );
   }
 }

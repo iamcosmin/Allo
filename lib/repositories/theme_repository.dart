@@ -37,38 +37,6 @@ class AppTheme {
         transitionType: SharedAxisTransitionType.scaled,
         fillColor: Colors.transparent),
   };
-
-  ThemeData get kLightTheme {
-    return ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-            brightness: Brightness.light, accentColor: const Color(0xFF1A76C6)),
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: Colors.white,
-        pageTransitionsTheme: PageTransitionsTheme(
-          builders: builders,
-        ),
-        fontFamily: 'VarDisplay');
-  }
-
-  ThemeData get _kDarkTheme {
-    return ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-            brightness: Brightness.dark, accentColor: const Color(0xFF49B3EA)),
-        brightness: Brightness.dark,
-        pageTransitionsTheme: PageTransitionsTheme(builders: builders),
-        fontFamily: 'VarDisplay',
-        scaffoldBackgroundColor: Colors.black);
-  }
-
-  ThemeData getAppThemeData(BuildContext context, bool isDarkModeEnabled) {
-    if (isDarkModeEnabled) {
-      return _kDarkTheme;
-    } else if (!isDarkModeEnabled) {
-      return kLightTheme;
-    } else {
-      return kLightTheme;
-    }
-  }
 }
 
 final sharedPreferencesProvider =

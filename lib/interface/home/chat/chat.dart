@@ -70,7 +70,7 @@ class Chat extends HookWidget {
                       child: PersonPicture.initials(
                         radius: 37,
                         initials: auth.returnNameInitials(title),
-                        color: Colors.blue,
+                        color: Colors.green,
                       ),
                     ),
                   ),
@@ -114,7 +114,6 @@ class Chat extends HookWidget {
                               .collection('messages')
                               .orderBy('time', descending: true)
                               .limit(20),
-                          physics: const BouncingScrollPhysics(),
                           key: listKey,
                           linear: false,
                           duration: const Duration(milliseconds: 200),

@@ -26,17 +26,25 @@ class Home extends HookWidget {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => CreateChat())),
+        backgroundColor: Colors.grey.shade700,
+        onPressed: null,
         child: const Icon(Icons.add),
       ),
       body: NestedScrollView(
         headerSliverBuilder: (context, ibs) => [
-          const SliverAppBar(
+          SliverAppBar(
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              title: Text('Conversații'),
+              title: Text(
+                'Conversații',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).appBarTheme.foregroundColor),
+              ),
               titlePadding: EdgeInsets.only(left: 20, bottom: 15),
+              background: Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
             ),
             expandedHeight: 100,
             pinned: true,
@@ -45,91 +53,90 @@ class Home extends HookWidget {
         body: RefreshIndicator(
           triggerMode: RefreshIndicatorTriggerMode.onEdge,
           onRefresh: () async => await chatsMethod.getChatsData(context),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView(
-              children: [
-                ListTile(
-                  title: const Text('Allo'),
-                  leading: Hero(
-                    tag: 'DFqPHH2R4E5j0tM55fIm_pic',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: PersonPicture.initials(
-                        radius: 50,
-                        color: Colors.blue,
-                        initials: auth.returnNameInitials(
-                          'Allo',
-                        ),
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(top: 20),
+            children: [
+              ListTile(
+                title: const Text('Allo'),
+                leading: Hero(
+                  tag: 'DFqPHH2R4E5j0tM55fIm_pic',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: PersonPicture.initials(
+                      radius: 50,
+                      color: Colors.green,
+                      initials: auth.returnNameInitials(
+                        'Allo',
                       ),
                     ),
                   ),
-                  onTap: () => navigation.push(
-                      context,
-                      Chat(
-                        chatType: ChatType.group,
-                        title: 'Allo',
-                        chatId: 'DFqPHH2R4E5j0tM55fIm',
-                      )),
                 ),
-                if (chats.isNotEmpty) ...[
-                  for (var chat in chats) ...[
-                    if (chat['type'] == ChatType.private) ...[
-                      ListTile(
-                        title: Text(chat['name']),
-                        leading: Hero(
-                          tag: chat['chatId'] + '_pic',
-                          child: Material(
-                            color: Colors.transparent,
-                            child: PersonPicture.determine(
-                              profilePicture: chat['profilepic'],
-                              radius: 50,
-                              color: Colors.blue,
-                              initials: auth.returnNameInitials(
-                                chat['name'],
-                              ),
+                onTap: () => navigation.push(
+                    context,
+                    Chat(
+                      chatType: ChatType.group,
+                      title: 'Allo',
+                      chatId: 'DFqPHH2R4E5j0tM55fIm',
+                    )),
+              ),
+              if (chats.isNotEmpty) ...[
+                for (var chat in chats) ...[
+                  if (chat['type'] == ChatType.private) ...[
+                    ListTile(
+                      title: Text(chat['name']),
+                      leading: Hero(
+                        tag: chat['chatId'] + '_pic',
+                        child: Material(
+                          color: Colors.transparent,
+                          child: PersonPicture.determine(
+                            profilePicture: chat['profilepic'],
+                            radius: 50,
+                            color: Colors.green,
+                            initials: auth.returnNameInitials(
+                              chat['name'],
                             ),
                           ),
                         ),
-                        onTap: () => navigation.push(
-                            context,
-                            Chat(
-                              chatType: chat['type'],
-                              title: chat['name'],
-                              chatId: chat['chatId'],
-                            )),
                       ),
-                    ] else if (chat['type'] == ChatType.group) ...[
-                      ListTile(
-                        title: Text(chat['name']),
-                        subtitle: Text(chat['chatId']),
-                        leading: Hero(
-                          tag: chat['chatId'],
-                          child: Material(
-                            child: PersonPicture.initials(
-                              radius: 50,
-                              color: Colors.blue,
-                              initials: auth.returnNameInitials(
-                                chat['name'],
-                              ),
+                      onTap: () => navigation.push(
+                          context,
+                          Chat(
+                            chatType: chat['type'],
+                            title: chat['name'],
+                            chatId: chat['chatId'],
+                          )),
+                    ),
+                  ] else if (chat['type'] == ChatType.group) ...[
+                    ListTile(
+                      title: Text(chat['name']),
+                      subtitle: Text(chat['chatId']),
+                      leading: Hero(
+                        tag: chat['chatId'],
+                        child: Material(
+                          child: PersonPicture.initials(
+                            radius: 50,
+                            color: Colors.blue,
+                            initials: auth.returnNameInitials(
+                              chat['name'],
                             ),
                           ),
                         ),
-                        onTap: () => navigation.push(
-                            context,
-                            Chat(
-                              chatType: chat['type'],
-                              title: chat['name'],
-                              chatId: chat['chatId'],
-                            )),
                       ),
-                    ],
-                  ]
-                ] else ...[
-                  const ListTile(title: Text('Nicio conversație.'))
-                ],
+                      onTap: () => navigation.push(
+                          context,
+                          Chat(
+                            chatType: chat['type'],
+                            title: chat['name'],
+                            chatId: chat['chatId'],
+                          )),
+                    ),
+                  ],
+                ]
+              ] else ...[
+                const ListTile(title: Text('Nicio conversație.'))
               ],
-            ),
+            ],
           ),
         ),
       ),

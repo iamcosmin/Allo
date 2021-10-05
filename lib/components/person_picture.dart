@@ -54,11 +54,12 @@ class PersonPicture extends HookWidget {
           height: radius,
           width: radius,
           decoration: BoxDecoration(color: color, gradient: gradient),
-          child: Align(
-            alignment: Alignment.center,
+          child: Center(
             child: Text(
               initials!,
-              style: TextStyle(fontSize: radius / 2),
+              style: TextStyle(
+                fontSize: radius / 2,
+              ),
             ),
           ),
         ),

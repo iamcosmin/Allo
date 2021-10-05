@@ -34,9 +34,18 @@ class Settings extends HookWidget {
         headerSliverBuilder: (context, i) => [
           SliverAppBar(
             flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
               centerTitle: false,
               title: GestureDetector(
-                  onTap: () => _b(), child: const Text('Setări')),
+                  onTap: () => _b(),
+                  child: Text(
+                    'Setări',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).appBarTheme.foregroundColor),
+                  )),
               titlePadding: const EdgeInsets.only(left: 20, bottom: 15),
             ),
             expandedHeight: 100,
