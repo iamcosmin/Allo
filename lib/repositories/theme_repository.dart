@@ -16,27 +16,6 @@ final appThemeProvider = Provider<AppTheme>((ref) => AppTheme(ref));
 class AppTheme {
   AppTheme(this.ref);
   final ProviderReference ref;
-
-  Map<TargetPlatform, PageTransitionsBuilder> builders = const {
-    TargetPlatform.android: SharedAxisPageTransitionsBuilder(
-        transitionType: SharedAxisTransitionType.scaled,
-        fillColor: Colors.transparent),
-    TargetPlatform.fuchsia: SharedAxisPageTransitionsBuilder(
-        transitionType: SharedAxisTransitionType.scaled,
-        fillColor: Colors.transparent),
-    TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(
-        transitionType: SharedAxisTransitionType.scaled,
-        fillColor: Colors.transparent),
-    TargetPlatform.linux: SharedAxisPageTransitionsBuilder(
-        transitionType: SharedAxisTransitionType.scaled,
-        fillColor: Colors.transparent),
-    TargetPlatform.macOS: SharedAxisPageTransitionsBuilder(
-        transitionType: SharedAxisTransitionType.scaled,
-        fillColor: Colors.transparent),
-    TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
-        transitionType: SharedAxisTransitionType.scaled,
-        fillColor: Colors.transparent),
-  };
 }
 
 final sharedPreferencesProvider =

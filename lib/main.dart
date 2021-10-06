@@ -13,6 +13,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'components/scale_page_transition.dart';
 import 'interface/home/stack_navigator.dart';
 
 Future _onBackgroundMessage(RemoteMessage message) async {
@@ -124,26 +125,43 @@ class MyApp extends HookWidget {
             /* androidOverscrollIndicator: AndroidOverscrollIndicator.stretch*/),
         themeMode: darkState == true ? ThemeMode.dark : ThemeMode.light,
         theme: ThemeData(
-            colorScheme: ColorScheme.fromSwatch(
-                brightness: Brightness.light,
-                accentColor: const Color(0xFF1A76C6)),
-            brightness: Brightness.light,
-            appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.white, foregroundColor: Colors.black),
-            scaffoldBackgroundColor: Colors.white,
-            bottomNavigationBarTheme: BottomNavigationBarThemeData(
-                backgroundColor: Colors.grey.shade300,
-                selectedItemColor: const Color(0xFF1A76C6)),
-            // navigationBarTheme: NavigationBarThemeData(
-            //     indicatorColor: const Color(0xFF1A76C6),
-            //     backgroundColor: Colors.grey.shade300),
-            fontFamily: 'VarDisplay'),
+          colorScheme: ColorScheme.fromSwatch(
+              brightness: Brightness.light,
+              accentColor: const Color(0xFF1A76C6)),
+          brightness: Brightness.light,
+          appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.white, foregroundColor: Colors.black),
+          scaffoldBackgroundColor: Colors.white,
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+              backgroundColor: Colors.grey.shade300,
+              selectedItemColor: const Color(0xFF1A76C6)),
+          // navigationBarTheme: NavigationBarThemeData(
+          //     indicatorColor: const Color(0xFF1A76C6),
+          //     backgroundColor: Colors.grey.shade300),
+          fontFamily: 'VarDisplay',
+          pageTransitionsTheme: const PageTransitionsTheme(builders: {
+            TargetPlatform.android: ScalePageTransitionBuilder(),
+            TargetPlatform.fuchsia: ScalePageTransitionBuilder(),
+            TargetPlatform.iOS: ScalePageTransitionBuilder(),
+            TargetPlatform.linux: ScalePageTransitionBuilder(),
+            TargetPlatform.macOS: ScalePageTransitionBuilder(),
+            TargetPlatform.windows: ScalePageTransitionBuilder(),
+          }),
+        ),
         darkTheme: ThemeData(
             colorScheme: ColorScheme.fromSwatch(
                 brightness: Brightness.dark,
                 accentColor: const Color(0xFF49B3EA)),
             brightness: Brightness.dark,
             appBarTheme: AppBarTheme(backgroundColor: Colors.grey.shade900),
+            pageTransitionsTheme: const PageTransitionsTheme(builders: {
+              TargetPlatform.android: ScalePageTransitionBuilder(),
+              TargetPlatform.fuchsia: ScalePageTransitionBuilder(),
+              TargetPlatform.iOS: ScalePageTransitionBuilder(),
+              TargetPlatform.linux: ScalePageTransitionBuilder(),
+              TargetPlatform.macOS: ScalePageTransitionBuilder(),
+              TargetPlatform.windows: ScalePageTransitionBuilder(),
+            }),
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
                 backgroundColor: Colors.grey.shade800,
                 unselectedItemColor: Colors.white,
