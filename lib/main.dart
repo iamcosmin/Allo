@@ -139,14 +139,16 @@ class MyApp extends HookWidget {
           //     indicatorColor: const Color(0xFF1A76C6),
           //     backgroundColor: Colors.grey.shade300),
           fontFamily: 'VarDisplay',
-          pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: ScalePageTransitionBuilder(),
-            TargetPlatform.fuchsia: ScalePageTransitionBuilder(),
-            TargetPlatform.iOS: ScalePageTransitionBuilder(),
-            TargetPlatform.linux: ScalePageTransitionBuilder(),
-            TargetPlatform.macOS: ScalePageTransitionBuilder(),
-            TargetPlatform.windows: ScalePageTransitionBuilder(),
-          }),
+          pageTransitionsTheme: const PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: ScalePageTransitionBuilder(),
+              TargetPlatform.fuchsia: ScalePageTransitionBuilder(),
+              TargetPlatform.iOS: ScalePageTransitionBuilder(),
+              TargetPlatform.linux: ScalePageTransitionBuilder(),
+              TargetPlatform.macOS: ScalePageTransitionBuilder(),
+              TargetPlatform.windows: ScalePageTransitionBuilder(),
+            },
+          ),
         ),
         darkTheme: ThemeData(
             colorScheme: ColorScheme.fromSwatch(
