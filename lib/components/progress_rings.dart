@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
 const double _kMinProgressRingIndicatorSize = 36.0;
 const double _kMinProgressBarWidth = 130.0;

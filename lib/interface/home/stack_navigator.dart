@@ -1,5 +1,4 @@
 import 'package:allo/repositories/repositories.dart';
-import 'package:animations/animations.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
@@ -40,68 +39,40 @@ class StackNavigator extends HookWidget {
           selected.value = index;
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
+      bottomNavigationBar: NavigationBar(
+        height: 56,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(
               FluentIcons.home_16_regular,
             ),
             label: 'Acasă',
-            activeIcon: Icon(
+            selectedIcon: Icon(
               FluentIcons.home_16_filled,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.black
+                  : Colors.white,
             ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(FluentIcons.settings_20_regular),
+          NavigationDestination(
+            icon: const Icon(FluentIcons.settings_20_regular),
             label: 'Setări',
-            activeIcon: Icon(
+            selectedIcon: Icon(
               FluentIcons.settings_20_filled,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.black
+                  : Colors.white,
             ),
           )
         ],
-        currentIndex: selected.value,
-        onTap: (index) {
+        selectedIndex: selected.value,
+        onDestinationSelected: (index) {
           selected.value = index;
           pageController.animateToPage(index,
-              duration: const Duration(milliseconds: 500), curve: Curves.ease);
+              duration: const Duration(milliseconds: 200), curve: Curves.ease);
         },
       ),
-
-      // New Navigation Bar Migration
-      // NavigationBar(
-      //   height: 56,
-      //   labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-      //   destinations: [
-      //     NavigationDestination(
-      //       icon: const Icon(
-      //         FluentIcons.home_16_regular,
-      //       ),
-      //       label: 'Acasă',
-      //       selectedIcon: Icon(
-      //         FluentIcons.home_16_filled,
-      //         color: Theme.of(context).brightness == Brightness.dark
-      //             ? Colors.black
-      //             : Colors.white,
-      //       ),
-      //     ),
-      //     NavigationDestination(
-      //       icon: const Icon(FluentIcons.settings_20_regular),
-      //       label: 'Setări',
-      //       selectedIcon: Icon(
-      //         FluentIcons.settings_20_filled,
-      //         color: Theme.of(context).brightness == Brightness.dark
-      //             ? Colors.black
-      //             : Colors.white,
-      //       ),
-      //     )
-      //   ],
-      //   selectedIndex: selected.value,
-      //   onDestinationSelected: (index) => selected.value = index,
-      // ),
-      //
-      //
     );
   }
 }

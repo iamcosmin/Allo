@@ -109,8 +109,11 @@ class AuthRepository {
       FocusScope.of(context).unfocus();
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      await context.read(Repositories.navigation).pushPermanent(
-          context, StackNavigator(), SharedAxisTransitionType.scaled);
+      await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => StackNavigator(),
+          ),
+          (route) => false);
       var prefs = await SharedPreferences.getInstance();
       await prefs.setBool('authenticated', true);
     } on FirebaseAuthException catch (e) {
@@ -257,8 +260,9 @@ class AuthRepository {
         }
       }
       await FirebaseAuth.instance.signOut();
-      await context.read(Repositories.navigation).pushPermanent(
-          context, const MyApp(), SharedAxisTransitionType.scaled);
+      await context
+          .read(Repositories.navigation)
+          .pushPermanent(context, MyApp(), SharedAxisTransitionType.scaled);
     } catch (e) {
       throw Exception('Something is wrong...');
     }

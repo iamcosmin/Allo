@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.2.1+138
+version: 1.3.1+140
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
@@ -9,6 +9,7 @@ environment:
 dependencies:
   animations: ^2.0.0
   awesome_notifications: ^0.0.6+10
+  beamer: ^1.0.0-pre.15.0
   cached_network_image: ^3.1.0
   cloud_firestore: ^2.4.0
   firebase_auth: ^3.0.1
@@ -35,12 +36,19 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: VarDisplay
+    - family: GS-Text
       fonts:
-        - asset: fonts/Variable-Display.ttf
-        - asset: fonts/Variable-Display-Bold.ttf
+        - asset: fonts/GS-Text-Regular.ttf
+        - asset: fonts/GS-Text-Bold.ttf
           weight: 700
-        - asset: fonts/Variable-Display-Light.ttf
-          weight: 300
-        - asset: fonts/Variable-Display-Semibold.ttf
-          weight: 600
+        - asset: fonts/GS-Text-Bold-Italic.ttf
+          weight: 700
+          style: italic
+        - asset: fonts/GS-Text-Medium.ttf
+          weight: 500
+        - asset: fonts/GS-Text-Medium-Italic.ttf
+          weight: 500
+          style: italic
+        - asset: fonts/GS-Text-Italic.ttf
+          style: italic 
+    

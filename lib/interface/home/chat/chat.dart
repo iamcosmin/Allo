@@ -1,4 +1,5 @@
 import 'package:allo/components/animated_list/animated_firestore_list.dart';
+import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/typingbubble.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,6 +29,7 @@ class Chat extends HookWidget {
   Widget build(BuildContext context) {
     final auth = useProvider(Repositories.auth);
     final typing = useState(false);
+    final theme = useState(Colors.blue);
     final colors = useProvider(Repositories.colors);
 
     useEffect(() {
@@ -38,9 +40,14 @@ class Chat extends HookWidget {
           .collection('chats')
           .doc(chatId)
           .snapshots()
-          .listen((event) {
-        typing.value = event.data()!['typing'] ?? false;
-      });
+          .listen(
+        (event) {
+          typing.value = event.data()!['typing'] ?? false;
+          var dbThemeId = event.data()!['theme'] ?? 'blue';
+          var themeIndex = themesId.indexOf(dbThemeId);
+          theme.value = themes[themeIndex]['color'];
+        },
+      );
     }, []);
     return Scaffold(
         appBar: AppBar(
@@ -55,32 +62,30 @@ class Chat extends HookWidget {
           ),
           flexibleSpace: FlexibleSpaceBar(
             titlePadding: const EdgeInsets.only(left: 20, bottom: 10),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  alignment: Alignment.bottomLeft,
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Hero(
-                    tag: chatId + '_pic',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: PersonPicture.initials(
-                        radius: 37,
-                        initials: auth.returnNameInitials(title),
-                        color: Colors.green,
-                      ),
+            title: GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ChatDetails(name: title, id: chatId))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    alignment: Alignment.bottomLeft,
+                    padding: const EdgeInsets.only(right: 10),
+                    child: PersonPicture.initials(
+                      radius: 37,
+                      initials: auth.returnNameInitials(title),
+                      color: Colors.green,
                     ),
                   ),
-                ),
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontSize: 30, fontWeight: FontWeight.w600),
-                ),
-              ],
+                  Text(
+                    title,
+                    style: const TextStyle(
+                        fontSize: 30, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -154,6 +159,7 @@ class Chat extends HookWidget {
                                   pastUID: pastUID,
                                   chatId: chatId,
                                   nextUID: nextUID,
+                                  color: theme.value,
                                   data: documentList[i]!,
                                   key: UniqueKey(),
                                 ),

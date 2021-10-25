@@ -1,8 +1,5 @@
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/progress_rings.dart';
-import 'package:allo/interface/home/create_chat.dart';
 import 'package:allo/repositories/chats_repository.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/repositories/repositories.dart';
@@ -17,12 +14,9 @@ class Home extends HookWidget {
     final auth = useProvider(Repositories.auth);
     final chats = useProvider(loadChats);
     final chatsMethod = useProvider(loadChats.notifier);
-    final value = useState<double>(0);
     useEffect(() {
-      Future.microtask(() async {
-        await chatsMethod.getChatsData(context);
-      });
-    });
+      chatsMethod.getChatsData(context);
+    }, const []);
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -59,17 +53,11 @@ class Home extends HookWidget {
             children: [
               ListTile(
                 title: const Text('Allo'),
-                leading: Hero(
-                  tag: 'DFqPHH2R4E5j0tM55fIm_pic',
-                  child: Material(
-                    color: Colors.transparent,
-                    child: PersonPicture.initials(
-                      radius: 50,
-                      color: Colors.green,
-                      initials: auth.returnNameInitials(
-                        'Allo',
-                      ),
-                    ),
+                leading: PersonPicture.initials(
+                  radius: 50,
+                  color: Colors.green,
+                  initials: auth.returnNameInitials(
+                    'Allo',
                   ),
                 ),
                 onTap: () => navigation.push(
@@ -85,18 +73,12 @@ class Home extends HookWidget {
                   if (chat['type'] == ChatType.private) ...[
                     ListTile(
                       title: Text(chat['name']),
-                      leading: Hero(
-                        tag: chat['chatId'] + '_pic',
-                        child: Material(
-                          color: Colors.transparent,
-                          child: PersonPicture.determine(
-                            profilePicture: chat['profilepic'],
-                            radius: 50,
-                            color: Colors.green,
-                            initials: auth.returnNameInitials(
-                              chat['name'],
-                            ),
-                          ),
+                      leading: PersonPicture.determine(
+                        profilePicture: chat['profilepic'],
+                        radius: 50,
+                        color: Colors.green,
+                        initials: auth.returnNameInitials(
+                          chat['name'],
                         ),
                       ),
                       onTap: () => navigation.push(

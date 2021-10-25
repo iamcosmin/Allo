@@ -18,7 +18,7 @@ jobs:
     - name: Flutter Setup
       uses: subosito/flutter-action@v1
       with:
-        channel: 'stable'
+        channel: 'beta'
     - name: Expand keystore
       if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |

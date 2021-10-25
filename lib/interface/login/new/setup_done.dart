@@ -29,8 +29,11 @@ class SetupDone extends HookWidget {
         ],
         body: const [],
         onButtonPress: () {
-          navigation.pushPermanent(
-              context, StackNavigator(), SharedAxisTransitionType.horizontal);
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => StackNavigator(),
+              ),
+              (route) => false);
         },
         isAsync: false);
   }

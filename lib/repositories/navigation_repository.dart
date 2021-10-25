@@ -1,3 +1,4 @@
+import 'package:allo/components/scale_page_transition.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class NavigationRepository {
             builder: (context) => route, maintainState: maintainState ?? true));
   }
 
+  @Deprecated('message')
   Future pushPermanent(BuildContext context, Widget route,
       SharedAxisTransitionType transitionType) {
     return Navigator.pushAndRemoveUntil(
@@ -23,11 +25,9 @@ class NavigationRepository {
             pageBuilder: (context, animation, secondaryAnimation) => route,
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              return SharedAxisTransition(
+              return ScalePageTransition(
                 animation: animation,
                 secondaryAnimation: secondaryAnimation,
-                transitionType: transitionType,
-                fillColor: context.read(colorsProvider).nonColors,
                 child: child,
               );
             }),

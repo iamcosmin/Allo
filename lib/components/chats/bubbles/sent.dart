@@ -82,12 +82,14 @@ class SentMessageBubble extends HookWidget {
       required this.pastUID,
       required this.nextUID,
       required this.chatId,
+      required this.color,
       required this.data})
       : super(key: key);
   final String pastUID;
   final String nextUID;
   final String chatId;
   final DocumentSnapshot data;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -137,8 +139,8 @@ class SentMessageBubble extends HookWidget {
                   onTap: () => change(),
                   onLongPress: () => bubbleMenu(context, messageId, chatId),
                   child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.blue, borderRadius: bubbleRadius),
+                    decoration:
+                        BoxDecoration(color: color, borderRadius: bubbleRadius),
                     padding: const EdgeInsets.all(8),
                     constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width / 1.4),
@@ -147,7 +149,8 @@ class SentMessageBubble extends HookWidget {
                       child: Text(
                         text,
                         style: TextStyle(
-                            fontSize: regexEmoji.hasMatch(text) ? 30 : 16),
+                            fontSize: regexEmoji.hasMatch(text) ? 30 : 16,
+                            color: Colors.white),
                       ),
                     ),
                   ),

@@ -223,6 +223,7 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
   void _onDocumentRemoved(
       int index, List<DocumentSnapshot<Object?>?> snapshot) {
     // The child should have already been removed from the model by now
+    // ignore: iterable_contains_unrelated_type
     assert(!_model!.contains(snapshot));
     if (mounted) {
       try {

@@ -73,7 +73,7 @@ class Settings extends HookWidget {
             const SettingsListHeader('Cont'),
             SettingsListTile(
               title: 'Fotografie de profil',
-              leading: Icon(FluentIcons.screen_person_20_filled),
+              leading: const Icon(FluentIcons.screen_person_20_filled),
               type: RadiusType.BOTH,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -88,6 +88,7 @@ class Settings extends HookWidget {
               leading: const Icon(FluentIcons.paint_bucket_16_filled),
               trailing: DropdownButton(
                 value: 'red',
+                onChanged: (s) => null,
                 items: const [
                   DropdownMenuItem(
                     child: Text('Blue'),
@@ -97,10 +98,10 @@ class Settings extends HookWidget {
                 ],
               ),
             ),
-            Padding(padding: EdgeInsets.only(top: 5)),
+            const Padding(padding: EdgeInsets.only(top: 5)),
             SettingsListTile(
               title: 'Mod întunecat',
-              leading: Icon(FluentIcons.dark_theme_24_filled),
+              leading: const Icon(FluentIcons.dark_theme_24_filled),
               type: RadiusType.BOTH,
               onTap: () => darkMethod.switcher(context),
               trailing: Switch(
@@ -111,7 +112,7 @@ class Settings extends HookWidget {
             ),
             const SettingsListHeader('Gestionare sesiune'),
             SettingsListTile(
-              leading: Icon(FluentIcons.sign_out_20_filled),
+              leading: const Icon(FluentIcons.sign_out_20_filled),
               title: 'Deconectare',
               type: RadiusType.BOTH,
               onTap: () async => await auth.signOut(context),

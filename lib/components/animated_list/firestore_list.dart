@@ -45,6 +45,7 @@ class FirestoreList extends ListBase<DocumentSnapshot?>
   /// which might help if your query doesn't care about order changes
   final bool linear;
 
+  // ignore: constant_identifier_names
   static const String TAG = 'FIRESTORE_LIST';
 
   /// Called before any operation with a DocumentSnapshot;
@@ -98,6 +99,7 @@ class FirestoreList extends ListBase<DocumentSnapshot?>
   }
 
   void log(String message) {
+    // ignore: avoid_print
     if (debug) print('[$TAG] $message');
   }
 

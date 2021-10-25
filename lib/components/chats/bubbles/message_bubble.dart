@@ -12,12 +12,14 @@ class MessageBubble extends HookWidget {
   final String nextUID;
   final String chatType;
   final String chatId;
+  final Color color;
   const MessageBubble({
     required Key key,
     required this.data,
     required this.chatId,
     required this.pastUID,
     required this.nextUID,
+    required this.color,
     required this.chatType,
   }) : super(key: key);
 
@@ -42,6 +44,7 @@ class MessageBubble extends HookWidget {
         nextUID: nextUID,
         chatId: chatId,
         data: data,
+        color: color,
       );
     }
   }
