@@ -1,10 +1,9 @@
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/settings_list.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/components/progress_rings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // ignore: must_be_immutable
 class ProfilePictureSettings extends HookWidget {
@@ -16,7 +15,6 @@ class ProfilePictureSettings extends HookWidget {
   Widget build(BuildContext context) {
     var loaded = useState(false);
     var percentage = useState(0.0);
-    final auth = useProvider(Repositories.auth);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,8 +38,8 @@ class ProfilePictureSettings extends HookWidget {
                 ),
                 PersonPicture.determine(
                     radius: 100,
-                    profilePicture: auth.user.profilePicture,
-                    initials: auth.user.nameInitials),
+                    profilePicture: Core.auth.user.profilePicture,
+                    initials: Core.auth.user.nameInitials),
               ],
             ),
           ),
@@ -49,7 +47,7 @@ class ProfilePictureSettings extends HookWidget {
           SettingsListTile(
             title: 'Încarcă imagine',
             type: RadiusType.TOP,
-            onTap: () => auth.user.updateProfilePicture(
+            onTap: () => Core.auth.user.updateProfilePicture(
                 loaded: loaded, percentage: percentage, context: context),
           ),
           const Padding(padding: EdgeInsets.only(bottom: 2)),

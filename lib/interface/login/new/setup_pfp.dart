@@ -3,10 +3,9 @@ import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/progress_rings.dart';
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/login/new/setup_personalize.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupProfilePicture extends HookWidget {
   const SetupProfilePicture({Key? key}) : super(key: key);
@@ -14,8 +13,6 @@ class SetupProfilePicture extends HookWidget {
   Widget build(BuildContext context) {
     final percentage = useState(0.0);
     final loaded = useState(false);
-    final navigation = useProvider(Repositories.navigation);
-    final auth = useProvider(Repositories.auth);
     return SetupPage(
       header: const [
         Text(
@@ -52,8 +49,8 @@ class SetupProfilePicture extends HookWidget {
                     ),
                     PersonPicture.determine(
                         radius: 100,
-                        profilePicture: auth.user.profilePicture,
-                        initials: auth.user.nameInitials),
+                        profilePicture: Core.auth.user.profilePicture,
+                        initials: Core.auth.user.nameInitials),
                   ],
                 ),
               ),
@@ -61,7 +58,7 @@ class SetupProfilePicture extends HookWidget {
               SettingsListTile(
                 title: 'Încarcă imagine',
                 type: RadiusType.BOTH,
-                onTap: () async => await auth.user.updateProfilePicture(
+                onTap: () async => await Core.auth.user.updateProfilePicture(
                     loaded: loaded,
                     percentage: percentage,
                     context: context,
@@ -72,7 +69,8 @@ class SetupProfilePicture extends HookWidget {
         ),
       ],
       onButtonPress: () async {
-        await navigation.push(context, const SetupPersonalize());
+        await Core.navigation
+            .push(context: context, route: const SetupPersonalize());
       },
       isAsync: true,
     );

@@ -269,9 +269,9 @@ class _EnterTransition extends StatelessWidget {
   final Widget? child;
   final bool reverse;
 
-  static final Animatable<double> _fadeInTransition = CurveTween(
-    curve: Curves.linear,
-  ).chain(CurveTween(curve: const Interval(0.4, 0.8)));
+  // static final Animatable<double> _fadeInTransition = CurveTween(
+  //   curve: Curves.linear,
+  // ).chain(CurveTween(curve: const Interval(0.4, 0.8)));
 
   static final Animatable<double> _scaleDownTransition = Tween<double>(
     begin: 1.10,

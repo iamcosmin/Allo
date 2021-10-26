@@ -1,5 +1,5 @@
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/repositories/auth_repository.dart';
+import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +16,13 @@ final themes = <Map>[
 final themesId = ['blue', 'purple', 'red', 'cyan', 'pink'];
 
 class ChatDetails extends HookWidget {
-  const ChatDetails({
-    Key? key,
-    required this.name,
-    required this.id,
-  }) : super(key: key);
+  const ChatDetails(
+      {Key? key, required this.name, required this.id, this.profilepic})
+      : super(key: key);
   final String name;
   final String id;
+  final String? profilepic;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,10 +32,11 @@ class ChatDetails extends HookWidget {
           Container(
             padding: const EdgeInsets.only(top: 50),
             alignment: Alignment.topCenter,
-            child: PersonPicture.initials(
+            child: PersonPicture.determine(
+              profilePicture: profilepic,
               radius: 100,
               color: Colors.green,
-              initials: AuthRepository().returnNameInitials(name),
+              initials: Core.auth.returnNameInitials(name),
             ),
           ),
           Container(

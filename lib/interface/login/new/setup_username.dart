@@ -1,8 +1,7 @@
 import 'package:allo/components/oobe_page.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupUsername extends HookWidget {
   const SetupUsername(
@@ -15,7 +14,6 @@ class SetupUsername extends HookWidget {
   Widget build(BuildContext context) {
     final controller = useTextEditingController();
     final error = useState('');
-    final auth = useProvider(Repositories.auth);
     return SetupPage(
       header: const [
         Text(
@@ -57,7 +55,7 @@ class SetupUsername extends HookWidget {
           ),
         )
       ],
-      onButtonPress: () async => auth.isUsernameCompliant(
+      onButtonPress: () async => Core.auth.isUsernameCompliant(
           username: controller.text,
           error: error,
           context: context,

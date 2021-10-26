@@ -1,13 +1,9 @@
 import 'package:allo/components/deferred.dart';
-import 'package:allo/interface/login/existing/enter_password.dart';
-import 'package:allo/interface/login/login.dart';
 import 'package:allo/interface/login/main_setup.dart';
-import 'package:allo/repositories/chats_repository.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:allo/repositories/themes.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:beamer/beamer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,9 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:in_app_update/in_app_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'components/scale_page_transition.dart';
 import 'interface/home/stack_navigator.dart';
 
 Future _onBackgroundMessage(RemoteMessage message) async {
@@ -92,35 +86,35 @@ void main() async {
       overrides: [
         Repositories.sharedPreferences.overrideWithValue(_kSharedPreferences),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends HookWidget {
-  MyApp({Key? key}) : super(key: key);
-  // This widget is the root of your application.
-  Future<void> performUpdate(context) async {
-    // await InAppUpdate.checkForUpdate().then((value) async {
-    //   if (value.updateAvailability == UpdateAvailability.updateAvailable) {
-    //     await InAppUpdate.startFlexibleUpdate().then(
-    //       (value) => ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           duration: const Duration(hours: 5),
-    //           behavior: SnackBarBehavior.floating,
-    //           content: const Text('Actualizarea este pregătită.'),
-    //           action: SnackBarAction(
-    //             label: 'Instalează',
-    //             onPressed: () async {
-    //               await InAppUpdate.completeFlexibleUpdate();
-    //             },
-    //           ),
-    //         ),
-    //       ),
-    //     );
-    //   }
-    // });
-  }
+  const MyApp({Key? key}) : super(key: key);
+
+  // Future<void> performUpdate(context) async {
+  //   await InAppUpdate.checkForUpdate().then((value) async {
+  //     if (value.updateAvailability == UpdateAvailability.updateAvailable) {
+  //       await InAppUpdate.startFlexibleUpdate().then(
+  //         (value) => ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(
+  //             duration: const Duration(hours: 5),
+  //             behavior: SnackBarBehavior.floating,
+  //             content: const Text('Actualizarea este pregătită.'),
+  //             action: SnackBarAction(
+  //               label: 'Instalează',
+  //               onPressed: () async {
+  //                 await InAppUpdate.completeFlexibleUpdate();
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +123,6 @@ class MyApp extends HookWidget {
         // performUpdate(context);
       }
     }, []);
-    final prefs = useProvider(sharedPreferencesProvider);
 
     final darkState = useProvider(darkMode);
     return MaterialApp(

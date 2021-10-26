@@ -1,8 +1,7 @@
 import 'package:allo/components/oobe_page.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupPassword extends HookWidget {
   const SetupPassword(
@@ -20,7 +19,6 @@ class SetupPassword extends HookWidget {
     final obscure = useState(true);
     final passController = useTextEditingController();
     final confirmPassController = useTextEditingController();
-    final auth = useProvider(Repositories.auth);
 
     return SetupPage(
       header: const [
@@ -105,7 +103,7 @@ class SetupPassword extends HookWidget {
         ),
       ],
       onButtonPress: () async {
-        await auth.signUp(
+        await Core.auth.signUp(
             email: email,
             password: passController.text,
             confirmPassword: confirmPassController.text,

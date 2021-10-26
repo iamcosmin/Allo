@@ -3,23 +3,18 @@ import 'package:allo/interface/login/existing/enter_password.dart';
 import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
-import 'package:allo/main.dart';
-// import 'package:allo/repositories/preferences_repository.dart';
-import 'package:allo/repositories/repositories.dart';
-import 'package:animations/animations.dart';
+import 'package:allo/logic/core.dart';
+import 'package:allo/repositories/error_codes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final authProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository();
-});
+import '../main.dart';
 
 Future<dynamic> _getType(Type type, String key) async {
   final prefs = await SharedPreferences.getInstance();
@@ -63,7 +58,7 @@ Future _cache(
   return await _getType(type, key);
 }
 
-class AuthRepository {
+class Authentication {
   final CurrentUser user = CurrentUser();
 
   Future<User?> returnUserDetails() async {
@@ -81,17 +76,10 @@ class AuthRepository {
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
-        await context.read(Repositories.navigation).push(
-              context,
-              SetupName(email),
-            );
+        Core.navigation.push(context: context, route: SetupName(email));
       } else if (instance.toString() == '[password]') {
-        await context.read(Repositories.navigation).push(
-              context,
-              EnterPassword(
-                email: email,
-              ),
-            );
+        Core.navigation
+            .push(context: context, route: EnterPassword(email: email));
       }
     } catch (e) {
       error.value = 'Acest email este invalid.';
@@ -172,10 +160,10 @@ class AuthRepository {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            await context.read(navigationProvider).push(
-                  context,
-                  const SetupVerification(),
-                );
+            Core.navigation.push(
+              context: context,
+              route: const SetupVerification(),
+            );
           } else {
             error.value = 'Parola ta nu respectă cerințele.';
           }
@@ -202,7 +190,7 @@ class AuthRepository {
       required String displayName,
       required String email}) async {
     final usernameReg = RegExp(r'^[a-zA-Z0-9_\.]+$');
-    final navigation = context.read(Repositories.navigation);
+    final navigation = Core.navigation;
     final usernamesDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc('usernames')
@@ -213,8 +201,8 @@ class AuthRepository {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
           await navigation.push(
-            context,
-            SetupPassword(
+            context: context,
+            route: SetupPassword(
               displayName: displayName,
               username: username,
               email: email,
@@ -260,9 +248,7 @@ class AuthRepository {
         }
       }
       await FirebaseAuth.instance.signOut();
-      await context
-          .read(Repositories.navigation)
-          .pushPermanent(context, MyApp(), SharedAxisTransitionType.scaled);
+      Core.navigation.pushPermanent(context: context, route: const MyApp());
     } catch (e) {
       throw Exception('Something is wrong...');
     }
@@ -407,10 +393,7 @@ class CurrentUser {
         if (route == null) {
           Navigator.pop(context);
         } else {
-          await context.read(navigationProvider).push(
-                context,
-                route,
-              );
+          Core.navigation.push(context: context, route: route);
         }
       }
     });

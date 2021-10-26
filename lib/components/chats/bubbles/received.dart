@@ -1,5 +1,6 @@
 import 'package:allo/components/chats/bubbles/sent.dart';
-import 'package:allo/repositories/chats_repository.dart';
+import 'package:allo/logic/chat/chat.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,10 +47,8 @@ class ReceiveMessageBubble extends HookWidget {
 
     var isSameSenderAsInPast = uid == pastUID;
     var isSameSenderAsInFuture = uid == nextUID;
-    final auth = useProvider(Repositories.auth);
     final colors = useProvider(Repositories.colors);
     final selected = useState(false);
-    final chats = useProvider(Repositories.chats);
     final bubbleRadius = BorderRadius.only(
       topLeft: Radius.circular(isSameSenderAsInPast ? 5 : 20),
       bottomLeft: Radius.circular(isSameSenderAsInFuture ||
@@ -59,14 +58,13 @@ class ReceiveMessageBubble extends HookWidget {
       topRight: const Radius.circular(20),
       bottomRight: const Radius.circular(20),
     );
-    final navigation = useProvider(Repositories.navigation);
     final regexEmoji = RegExp(
         r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$');
     void change() =>
         selected.value == true ? selected.value = false : selected.value = true;
     useEffect(() {
       if (!isRead) {
-        chats.markAsRead(chatId: chatId, messageId: messageId);
+        Core.chat(chatId).messages.markAsRead(messageId: messageId);
       }
     });
 
@@ -84,7 +82,7 @@ class ReceiveMessageBubble extends HookWidget {
               if (chatType == ChatType.group) ...[
                 if (!isSameSenderAsInFuture) ...[
                   FutureBuilder<String>(
-                      future: auth.getUserProfilePicture(uid),
+                      future: Core.auth.getUserProfilePicture(uid),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return PersonPicture.profilePicture(
@@ -93,7 +91,7 @@ class ReceiveMessageBubble extends HookWidget {
                           return PersonPicture.initials(
                               color: Colors.indigo,
                               radius: 36,
-                              initials: auth.returnNameInitials(name));
+                              initials: Core.auth.returnNameInitials(name));
                         }
                       }),
                 ] else ...[
@@ -159,9 +157,9 @@ class ReceiveMessageBubble extends HookWidget {
                     ),
                   ] else if (type == MessageTypes.IMAGE) ...[
                     GestureDetector(
-                      onTap: () => navigation.push(
-                        context,
-                        ImageView(
+                      onTap: () => Core.navigation.push(
+                        context: context,
+                        route: ImageView(
                           documentData['link'],
                         ),
                       ),

@@ -1,9 +1,8 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/interface/login/new/setup_username.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupName extends HookWidget {
   const SetupName(this.email, {Key? key}) : super(key: key);
@@ -15,7 +14,6 @@ class SetupName extends HookWidget {
     final firstNameController = useTextEditingController();
     final secondNameController = useTextEditingController();
     final nameReg = RegExp(r'^[a-zA-Z]+$');
-    final navigation = useProvider(Repositories.navigation);
     return SetupPage(
       header: const [
         Text(
@@ -74,9 +72,9 @@ class SetupName extends HookWidget {
           if (nameReg.hasMatch(firstNameController.text)) {
             if (secondNameController.text != '') {
               if (nameReg.hasMatch(secondNameController.text)) {
-                navigation.push(
-                  context,
-                  SetupUsername(
+                Core.navigation.push(
+                  context: context,
+                  route: SetupUsername(
                     displayName: firstNameController.text +
                         ' ' +
                         secondNameController.text,
@@ -87,9 +85,9 @@ class SetupName extends HookWidget {
                 secondFieldError.value = 'Numele poate conține doar litere.';
               }
             } else {
-              navigation.push(
-                context,
-                SetupUsername(
+              Core.navigation.push(
+                context: context,
+                route: SetupUsername(
                   displayName: firstNameController.text,
                   email: email,
                 ),

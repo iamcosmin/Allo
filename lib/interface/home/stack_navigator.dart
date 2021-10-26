@@ -1,9 +1,8 @@
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/core.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'chat/chat.dart';
 import 'home.dart';
@@ -16,14 +15,13 @@ class StackNavigator extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selected = useState(0);
-    final navigation = useProvider(Repositories.navigation);
     final pageController = usePageController(initialPage: 0, keepPage: true);
 
     useEffect(() {
       AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
-        await navigation.push(
-          context,
-          Chat(
+        await Core.navigation.push(
+          context: context,
+          route: Chat(
             chatType: event.payload!['chatType']!,
             title: event.payload!['chatName']!,
             chatId: event.payload!['chatId']!,

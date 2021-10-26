@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:allo/logic/core.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -31,7 +32,6 @@ class MessageInput extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chats = useProvider(Repositories.chats);
     final colors = useProvider(Repositories.colors);
     final empty = useState(true);
     final _messageController = useTextEditingController();
@@ -81,10 +81,9 @@ class MessageInput extends HookWidget {
                     ? null
                     : () {
                         empty.value = true;
-                        chats.send.sendTextMessage(
+                        Core.chat(chatId).messages.sendTextMessage(
                             chatType: chatType,
                             text: _messageController.text,
-                            chatId: chatId,
                             context: context,
                             chatName: chatName,
                             controller: _messageController);
@@ -117,7 +116,6 @@ class AttachWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final file = useState<XFile?>(null);
-    final navigation = useProvider(Repositories.navigation);
     return Padding(
       padding: const EdgeInsets.all(15),
       child: ClipRRect(
@@ -151,9 +149,9 @@ class AttachWidget extends HookWidget {
                             file.value = await ImagePicker()
                                 .pickImage(source: ImageSource.gallery);
                             Navigator.of(context).pop();
-                            await navigation.push(
-                              context,
-                              UploadImage(
+                            await Core.navigation.push(
+                              context: context,
+                              route: UploadImage(
                                 file.value,
                                 await file.value!.readAsBytes(),
                                 chatId: chatId,
@@ -255,7 +253,6 @@ class UploadImage extends HookWidget {
   final String chatType;
   @override
   Widget build(BuildContext context) {
-    final chats = useProvider(Repositories.chats);
     final progress = useState<double>(0);
     final selected = useState(false);
     return Scaffold(
@@ -263,10 +260,9 @@ class UploadImage extends HookWidget {
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
             selected.value = true;
-            await chats.send.sendImageMessage(
+            await Core.chat(chatId).messages.sendImageMessage(
                 chatName: chatName,
                 imageFile: imageFile!,
-                chatId: chatId,
                 description: 'Imagine',
                 progress: progress,
                 context: context,

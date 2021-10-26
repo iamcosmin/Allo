@@ -1,8 +1,8 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/login/new/setup_done.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/repositories/preferences_repository.dart';
-import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -13,7 +13,6 @@ class SetupPersonalize extends HookWidget {
   Widget build(BuildContext context) {
     final dark = useProvider(darkMode);
     final darkMethod = useProvider(darkMode.notifier);
-    final navigation = useProvider(Repositories.navigation);
     return SetupPage(
       header: const [
         Text(
@@ -44,7 +43,8 @@ class SetupPersonalize extends HookWidget {
           ),
         )
       ],
-      onButtonPress: () async => navigation.push(context, const SetupDone()),
+      onButtonPress: () async =>
+          Core.navigation.push(context: context, route: const SetupDone()),
       isAsync: true,
     );
   }

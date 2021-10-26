@@ -1,16 +1,14 @@
 import 'package:allo/interface/login/new/setup_pfp.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:allo/components/oobe_page.dart';
 
 class SetupVerification extends HookWidget {
   const SetupVerification({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final navigation = useProvider(Repositories.navigation);
     final error = useState('');
 
     useEffect(() {
@@ -46,9 +44,9 @@ class SetupVerification extends HookWidget {
           await FirebaseAuth.instance.currentUser?.reload();
           final verified = FirebaseAuth.instance.currentUser!.emailVerified;
           if (verified) {
-            await navigation.push(
-              context,
-              const SetupProfilePicture(),
+            await Core.navigation.push(
+              context: context,
+              route: const SetupProfilePicture(),
             );
           } else {
             error.value = 'Se pare că nu ai accesat linkul. Încearcă din nou.';

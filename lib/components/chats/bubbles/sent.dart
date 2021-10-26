@@ -1,14 +1,13 @@
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/chat/chat.dart';
+import 'package:allo/logic/core.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 void bubbleMenu(BuildContext context, String messageId, String chatId) {
-  final chat = context.read(Repositories.chats);
   showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -40,9 +39,11 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
                             onTap: () {
                               Navigator.of(context).pop();
                               Future.delayed(
-                                  const Duration(seconds: 1),
-                                  () => chat.deleteMessage(
-                                      messageId: messageId, chatId: chatId));
+                                const Duration(seconds: 1),
+                                () => Core.chat(chatId)
+                                    .messages
+                                    .deleteMessage(messageId: messageId),
+                              );
                             },
                             child: ClipOval(
                               child: Container(
@@ -109,7 +110,6 @@ class SentMessageBubble extends HookWidget {
     var isSameSenderAsInFuture = uid == nextUID;
 
     final selected = useState(false);
-    final navigation = useProvider(Repositories.navigation);
     void change() =>
         selected.value == true ? selected.value = false : selected.value = true;
     final regexEmoji = RegExp(
@@ -157,9 +157,9 @@ class SentMessageBubble extends HookWidget {
                 )
               ] else if (type == MessageTypes.IMAGE) ...[
                 GestureDetector(
-                  onTap: () => navigation.push(
-                    context,
-                    ImageView(
+                  onTap: () => Core.navigation.push(
+                    context: context,
+                    route: ImageView(
                       documentData['link'],
                     ),
                   ),

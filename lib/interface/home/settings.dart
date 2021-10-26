@@ -1,8 +1,8 @@
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/home/concentrated.dart';
 import 'package:allo/interface/home/settings/profile_picture.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/repositories/preferences_repository.dart';
-import 'package:allo/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -15,7 +15,6 @@ class Settings extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final dark = useProvider(darkMode);
-    final auth = useProvider(Repositories.auth);
     final darkMethod = useProvider(darkMode.notifier);
     final name = FirebaseAuth.instance.currentUser!.displayName!;
     // DO NOT REMOVE
@@ -63,8 +62,8 @@ class Settings extends HookWidget {
                   padding: const EdgeInsets.only(top: 10, bottom: 10),
                   child: PersonPicture.determine(
                       radius: 100,
-                      profilePicture: auth.user.profilePicture,
-                      initials: auth.user.nameInitials),
+                      profilePicture: Core.auth.user.profilePicture,
+                      initials: Core.auth.user.nameInitials),
                 ),
                 Text(name),
                 const Padding(padding: EdgeInsets.only(bottom: 10))
@@ -88,7 +87,6 @@ class Settings extends HookWidget {
               leading: const Icon(FluentIcons.paint_bucket_16_filled),
               trailing: DropdownButton(
                 value: 'red',
-                onChanged: (s) => null,
                 items: const [
                   DropdownMenuItem(
                     child: Text('Blue'),
@@ -115,7 +113,7 @@ class Settings extends HookWidget {
               leading: const Icon(FluentIcons.sign_out_20_filled),
               title: 'Deconectare',
               type: RadiusType.BOTH,
-              onTap: () async => await auth.signOut(context),
+              onTap: () async => await Core.auth.signOut(context),
             ),
           ],
         ),

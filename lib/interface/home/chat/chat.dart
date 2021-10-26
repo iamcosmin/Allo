@@ -1,6 +1,7 @@
 import 'package:allo/components/animated_list/animated_firestore_list.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/typingbubble.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,16 +19,17 @@ class Chat extends HookWidget {
   final String chatType;
   final String title;
   final String chatId;
+  String? profilepic;
   Chat(
       {required this.title,
       required this.chatId,
       required this.chatType,
+      this.profilepic,
       Key? key})
       : super(key: key);
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context) {
-    final auth = useProvider(Repositories.auth);
     final typing = useState(false);
     final theme = useState(Colors.blue);
     final colors = useProvider(Repositories.colors);
@@ -63,8 +65,13 @@ class Chat extends HookWidget {
           flexibleSpace: FlexibleSpaceBar(
             titlePadding: const EdgeInsets.only(left: 20, bottom: 10),
             title: GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ChatDetails(name: title, id: chatId))),
+              onTap: () => Core.navigation.push(
+                  context: context,
+                  route: ChatDetails(
+                    name: title,
+                    id: chatId,
+                    profilepic: profilepic,
+                  )),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -73,9 +80,10 @@ class Chat extends HookWidget {
                   Container(
                     alignment: Alignment.bottomLeft,
                     padding: const EdgeInsets.only(right: 10),
-                    child: PersonPicture.initials(
+                    child: PersonPicture.determine(
+                      profilePicture: profilepic,
                       radius: 37,
-                      initials: auth.returnNameInitials(title),
+                      initials: Core.auth.returnNameInitials(title),
                       color: Colors.green,
                     ),
                   ),
