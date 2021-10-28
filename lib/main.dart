@@ -16,24 +16,51 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/stack_navigator.dart';
 
 Future _onBackgroundMessage(RemoteMessage message) async {
+  String title(
+      {required String? type,
+      required String chatName,
+      required String senderName}) {
+    if ((type ?? 'group') == ChatType.private) {
+      return senderName;
+    } else {
+      return chatName;
+    }
+  }
+
+  String body(
+      {required String? type,
+      required String senderName,
+      required String text}) {
+    if ((type ?? 'group') == ChatType.private) {
+      return message.data['text'];
+    } else {
+      return message.data['senderName'] + ': ' + message.data['text'];
+    }
+  }
+
   await Firebase.initializeApp();
   if (message.data['uid'] != FirebaseAuth.instance.currentUser!.uid) {
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
           id: int.parse(
               message.data['toChat'].replaceAll(RegExp(r'[a-zA-Z]'), '')),
-          title: (message.data['type'] ?? 'group') == ChatType.group
-              ? message.data['chatName']
-              : message.data['senderName'],
-          body: (message.data['chatType'] ?? 'private') == ChatType.private
-              ? message.data['text']
-              : '${message.data['senderName']}: ${message.data['text']}',
+          title: title(
+              type: message.data['type'],
+              chatName: message.data['chatName'],
+              senderName: message.data['senderName']),
+          body: body(
+              type: message.data['type'],
+              senderName: message.data['senderName'],
+              text: message.data['text']),
           channelKey: 'conversations',
           notificationLayout: NotificationLayout.Messaging,
           createdSource: NotificationSource.Firebase,
           payload: {
             'chatId': message.data['toChat'],
-            'chatName': message.data['chatName'],
+            'chatName': title(
+                type: message.data['type'],
+                chatName: message.data['chatName'],
+                senderName: message.data['senderName']),
             'chatType': message.data['type'] ?? ChatType.group,
           }),
     );

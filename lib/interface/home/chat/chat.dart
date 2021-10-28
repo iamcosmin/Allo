@@ -1,4 +1,3 @@
-import 'package:allo/components/animated_list/animated_firestore_list.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/typingbubble.dart';
 import 'package:allo/logic/core.dart';
@@ -33,6 +32,9 @@ class Chat extends HookWidget {
     final typing = useState(false);
     final theme = useState(Colors.blue);
     final colors = useProvider(Repositories.colors);
+    final messages = useState(<DocumentSnapshot>[]);
+    final controller = useScrollController();
+    final isLoadingPrevMessages = useState(false);
 
     useEffect(() {
       if (!kIsWeb) {
@@ -50,7 +52,52 @@ class Chat extends HookWidget {
           theme.value = themes[themeIndex]['color'];
         },
       );
-    }, []);
+
+      FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .orderBy('time', descending: true)
+          .limit(20)
+          .snapshots()
+          .listen(
+        (event) {
+          for (var docChanges in event.docChanges) {
+            switch (docChanges.type) {
+              case DocumentChangeType.added:
+                if (event.docChanges.length == 20) {
+                  listKey.currentState?.insertItem(docChanges.newIndex,
+                      duration: const Duration(seconds: 0));
+                } else {
+                  listKey.currentState?.insertItem(docChanges.newIndex);
+                }
+
+                messages.value.insert(docChanges.newIndex, docChanges.doc);
+                break;
+              case DocumentChangeType.modified:
+                listKey.currentState?.setState(() {
+                  messages.value[docChanges.newIndex] = docChanges.doc;
+                });
+                break;
+              case DocumentChangeType.removed:
+                listKey.currentState?.removeItem(
+                  docChanges.oldIndex,
+                  (context, animation) => SizeTransition(
+                    axisAlignment: -1.0,
+                    sizeFactor: animation,
+                    child: FadeTransition(
+                      opacity: CurvedAnimation(
+                          curve: Curves.easeIn, parent: animation),
+                    ),
+                  ),
+                );
+                messages.value.removeAt(docChanges.oldIndex);
+                break;
+            }
+          }
+        },
+      );
+    }, const []);
     return Scaffold(
         appBar: AppBar(
           toolbarHeight: 100,
@@ -102,60 +149,101 @@ class Chat extends HookWidget {
             children: [
               Expanded(
                 flex: 1,
-                child: NotificationListener(
-                  onNotification: (value) {
-                    if (value is ScrollNotification) {
-                      final before = value.metrics.extentBefore;
-                      final max = value.metrics.maxScrollExtent;
-                      final min = value.metrics.minScrollExtent;
-
-                      if (before == min) {
-                        FocusScope.of(context).unfocus();
-                      }
-                      if (before == max) {}
-                    }
-                    return false;
-                  },
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 10,
-                        child: FirestoreAnimatedList(
-                          query: FirebaseFirestore.instance
-                              .collection('chats')
-                              .doc(chatId)
-                              .collection('messages')
-                              .orderBy('time', descending: true)
-                              .limit(20),
-                          key: listKey,
-                          linear: false,
-                          duration: const Duration(milliseconds: 200),
-                          reverse: true,
-                          itemBuilder: (context, documentList, animation, i) {
-                            final Map pastData, nextData;
-                            if (i == 0) {
-                              nextData = {'senderUID': 'null'};
-                            } else {
-                              nextData = documentList![i - 1]!.data() as Map;
-                            }
-                            if (i == documentList!.length - 1) {
-                              pastData = {'senderUID': 'null'};
-                            } else {
-                              pastData = documentList[i + 1]!.data() as Map;
-                            }
-                            // Above, pastData should have been i-1 and nextData i+1.
-                            // But, as the list needs to be in reverse order, we need
-                            // to consider this workaround.
-                            final pastUID = pastData.containsKey('uid')
-                                ? pastData['uid']
-                                : pastData.containsKey('senderUID')
-                                    ? pastData['senderUID']
-                                    : 'null';
-                            final nextUID = nextData.containsKey('uid')
-                                ? nextData['uid']
-                                : nextData.containsKey('senderUID')
-                                    ? nextData['senderUID']
-                                    : 'null';
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 10,
+                      child: AnimatedList(
+                        padding: const EdgeInsets.only(top: 10),
+                        key: listKey,
+                        reverse: true,
+                        controller: controller,
+                        itemBuilder: (context, i, animation) {
+                          final Map pastData, nextData;
+                          if (i == 0) {
+                            nextData = {'senderUID': 'null'};
+                          } else {
+                            nextData = messages.value[i - 1].data() as Map;
+                          }
+                          if (i == messages.value.length - 1) {
+                            pastData = {'senderUID': 'null'};
+                          } else {
+                            pastData = messages.value[i + 1].data() as Map;
+                          }
+                          // Above, pastData should have been i-1 and nextData i+1.
+                          // But, as the list needs to be in reverse order, we need
+                          // to consider this workaround.
+                          final pastUID = pastData.containsKey('uid')
+                              ? pastData['uid']
+                              : pastData.containsKey('senderUID')
+                                  ? pastData['senderUID']
+                                  : 'null';
+                          final nextUID = nextData.containsKey('uid')
+                              ? nextData['uid']
+                              : nextData.containsKey('senderUID')
+                                  ? nextData['senderUID']
+                                  : 'null';
+                          if (i == messages.value.length - 1) {
+                            return Column(
+                              children: [
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              isLoadingPrevMessages.value ==
+                                                      false
+                                                  ? Colors.blue
+                                                  : Colors.black)),
+                                  onPressed: () {
+                                    isLoadingPrevMessages.value = true;
+                                    FirebaseFirestore.instance
+                                        .collection('chats')
+                                        .doc(chatId)
+                                        .collection('messages')
+                                        .orderBy('time', descending: true)
+                                        .startAfterDocument(messages
+                                            .value[messages.value.length - 1])
+                                        .limit(20)
+                                        .get()
+                                        .then((value) {
+                                      for (var doc in value.docs) {
+                                        messages.value.add(doc);
+                                        listKey.currentState?.insertItem(
+                                            messages.value.length - 1,
+                                            duration:
+                                                const Duration(seconds: 0));
+                                      }
+                                    });
+                                    isLoadingPrevMessages.value = false;
+                                  },
+                                  child: isLoadingPrevMessages.value == false
+                                      ? const Text(
+                                          'Afișează mesajele anterioare')
+                                      : const CircularProgressIndicator(),
+                                ),
+                                const Padding(
+                                    padding: EdgeInsets.only(top: 20)),
+                                SizeTransition(
+                                  axisAlignment: -1.0,
+                                  sizeFactor: animation,
+                                  child: FadeTransition(
+                                    opacity: CurvedAnimation(
+                                        curve: Curves.easeIn,
+                                        parent: animation),
+                                    child: MessageBubble(
+                                      chatType: chatType,
+                                      pastUID: pastUID,
+                                      chatId: chatId,
+                                      nextUID: nextUID,
+                                      color: theme.value,
+                                      data: messages.value[i],
+                                      key: UniqueKey(),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
                             return SizeTransition(
                               axisAlignment: -1.0,
                               sizeFactor: animation,
@@ -168,27 +256,26 @@ class Chat extends HookWidget {
                                   chatId: chatId,
                                   nextUID: nextUID,
                                   color: theme.value,
-                                  data: documentList[i]!,
+                                  data: messages.value[i],
                                   key: UniqueKey(),
                                 ),
                               ),
                             );
-                          },
-                        ),
+                          }
+                        },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: TypingIndicator(
-                          bubbleColor: colors.messageBubble,
-                          flashingCircleBrightColor:
-                              colors.flashingCircleBrightColor,
-                          flashingCircleDarkColor:
-                              colors.flashingCircleDarkColor,
-                          showIndicator: false,
-                        ),
-                      )
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: TypingIndicator(
+                        bubbleColor: colors.messageBubble,
+                        flashingCircleBrightColor:
+                            colors.flashingCircleBrightColor,
+                        flashingCircleDarkColor: colors.flashingCircleDarkColor,
+                        showIndicator: false,
+                      ),
+                    )
+                  ],
                 ),
               ),
               Expanded(
