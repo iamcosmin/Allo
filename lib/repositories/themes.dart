@@ -52,5 +52,5 @@ final darkTheme = ThemeData(
       indicatorColor: const Color(0xFF49B3EA),
       backgroundColor: Colors.grey.shade800),
   fontFamily: 'GS-Text',
-  scaffoldBackgroundColor: Colors.black,
+  scaffoldBackgroundColor: const Color(0xFF1c1c1c),
 );

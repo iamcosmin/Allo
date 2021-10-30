@@ -203,7 +203,7 @@ class ScalePageTransition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = fillColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final color = Theme.of(context).scaffoldBackgroundColor;
     return DualTransitionBuilder(
       animation: animation,
       forwardBuilder: (
@@ -308,7 +308,7 @@ class _ExitTransition extends StatelessWidget {
 
   static final Animatable<double> _fadeOutTransition = _FlippedCurveTween(
     curve: accelerateEasing,
-  ).chain(CurveTween(curve: const Interval(0.1, 0.4)));
+  ).chain(CurveTween(curve: const Interval(0.0, 0.2)));
 
   static final Animatable<double> _scaleUpTransition = Tween<double>(
     begin: 1.00,
@@ -318,7 +318,7 @@ class _ExitTransition extends StatelessWidget {
   static final Animatable<double> _scaleDownTransition = Tween<double>(
     begin: 1.00,
     end: 0.80,
-  ).chain(CurveTween(curve: Curves.easeOutQuint));
+  ).chain(CurveTween(curve: Curves.easeInQuint));
 
   @override
   Widget build(BuildContext context) {

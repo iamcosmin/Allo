@@ -1,6 +1,5 @@
-import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/home/concentrated.dart';
-import 'package:allo/interface/home/settings/profile_picture.dart';
+import 'package:allo/interface/home/settings/account.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/repositories/preferences_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,65 +41,63 @@ class Settings extends HookWidget {
                   child: Text(
                     'Setări',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).appBarTheme.foregroundColor),
+                        color: Theme.of(context).appBarTheme.foregroundColor,
+                        fontSize: 24),
                   )),
               titlePadding: const EdgeInsets.only(left: 20, bottom: 15),
             ),
-            expandedHeight: 100,
+            expandedHeight: 170,
             pinned: true,
           ),
         ],
         body: ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(10),
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.only(top: 10, bottom: 10),
-                  child: PersonPicture.determine(
-                      radius: 100,
-                      profilePicture: Core.auth.user.profilePicture,
-                      initials: Core.auth.user.nameInitials),
-                ),
-                Text(name),
-                const Padding(padding: EdgeInsets.only(bottom: 10))
-              ],
-            ),
-            const SettingsListHeader('Cont'),
-            SettingsListTile(
-              title: 'Fotografie de profil',
-              leading: const Icon(FluentIcons.screen_person_20_filled),
-              type: RadiusType.BOTH,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ProfilePictureSettings(),
-                ),
-              ),
-            ),
-            const SettingsListHeader('Personalizare'),
-            SettingsListTile(
-              title: 'Culoare de accent',
-              type: RadiusType.BOTH,
-              leading: const Icon(FluentIcons.paint_bucket_16_filled),
-              trailing: DropdownButton(
-                value: 'red',
-                items: const [
-                  DropdownMenuItem(
-                    child: Text('Blue'),
-                    value: 'blue',
+            InkWell(
+              onTap: () {
+                Core.navigation
+                    .push(context: context, route: const AccountSettings());
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(top: 10, bottom: 10, left: 10),
+                    child: PersonPicture.determine(
+                        radius: 60,
+                        profilePicture: Core.auth.user.profilePicture,
+                        initials: Core.auth.user.nameInitials),
                   ),
-                  DropdownMenuItem(child: Text('Red'), value: 'red')
+                  const Padding(padding: EdgeInsets.only(left: 15)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 5)),
+                      const Text(
+                        'Personalizează-ți contul tău.',
+                        style: TextStyle(color: Colors.grey),
+                      )
+                    ],
+                  ),
+                  const Padding(padding: EdgeInsets.only(bottom: 10))
                 ],
               ),
             ),
-            const Padding(padding: EdgeInsets.only(top: 5)),
-            SettingsListTile(
-              title: 'Mod întunecat',
-              leading: const Icon(FluentIcons.dark_theme_24_filled),
-              type: RadiusType.BOTH,
+            const Padding(padding: EdgeInsets.only(top: 20)),
+            ListTile(
+              title:
+                  const Text('Mod întunecat', style: TextStyle(fontSize: 18)),
+              leading: const Icon(FluentIcons.dark_theme_24_regular, size: 27),
+              minLeadingWidth: 35,
               onTap: () => darkMethod.switcher(context),
               trailing: Switch(
                 value: dark,
@@ -108,11 +105,10 @@ class Settings extends HookWidget {
                 onChanged: (value) => darkMethod.switcher(context),
               ),
             ),
-            const SettingsListHeader('Gestionare sesiune'),
-            SettingsListTile(
-              leading: const Icon(FluentIcons.sign_out_20_filled),
-              title: 'Deconectare',
-              type: RadiusType.BOTH,
+            ListTile(
+              leading: const Icon(FluentIcons.sign_out_20_regular, size: 27),
+              minLeadingWidth: 35,
+              title: const Text('Deconectare', style: TextStyle(fontSize: 18)),
               onTap: () async => await Core.auth.signOut(context),
             ),
           ],

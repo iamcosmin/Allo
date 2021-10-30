@@ -40,15 +40,15 @@ class Home extends HookWidget {
               title: Text(
                 'Conversații',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).appBarTheme.foregroundColor),
+                    color: Theme.of(context).appBarTheme.foregroundColor,
+                    fontSize: 24),
               ),
               titlePadding: const EdgeInsets.only(left: 20, bottom: 15),
               background: Container(
                 color: Theme.of(context).scaffoldBackgroundColor,
               ),
             ),
-            expandedHeight: 100,
+            expandedHeight: 170,
             pinned: true,
           ),
         ],
@@ -57,7 +57,7 @@ class Home extends HookWidget {
           onRefresh: () async => await chatsMethod.getChatsData(context),
           child: ListView(
             shrinkWrap: true,
-            padding: const EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 10),
             children: [
               if (chats.isNotEmpty) ...[
                 for (var chat in chats) ...[

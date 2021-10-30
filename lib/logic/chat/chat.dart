@@ -19,6 +19,56 @@ class Chat {
   final String chatId;
 
   Messages get messages => Messages(chatId: chatId);
+
+  void streamChatMessages(
+      {required ValueNotifier<List<DocumentSnapshot>> messages,
+      required GlobalKey<AnimatedListState> listKey,
+      int? limit}) {
+    FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('time', descending: true)
+        .limit(limit ?? 20)
+        .snapshots()
+        .listen(
+      (event) {
+        for (var docChanges in event.docChanges) {
+          switch (docChanges.type) {
+            case DocumentChangeType.added:
+              if (event.docChanges.length == 20) {
+                listKey.currentState?.insertItem(docChanges.newIndex,
+                    duration: const Duration(seconds: 0));
+              } else {
+                listKey.currentState?.insertItem(docChanges.newIndex);
+              }
+
+              messages.value.insert(docChanges.newIndex, docChanges.doc);
+              break;
+            case DocumentChangeType.modified:
+              listKey.currentState?.setState(() {
+                messages.value[docChanges.newIndex] = docChanges.doc;
+              });
+              break;
+            case DocumentChangeType.removed:
+              listKey.currentState?.removeItem(
+                docChanges.oldIndex,
+                (context, animation) => SizeTransition(
+                  axisAlignment: -1.0,
+                  sizeFactor: animation,
+                  child: FadeTransition(
+                    opacity: CurvedAnimation(
+                        curve: Curves.easeIn, parent: animation),
+                  ),
+                ),
+              );
+              messages.value.removeAt(docChanges.oldIndex);
+              break;
+          }
+        }
+      },
+    );
+  }
 }
 
 class Messages {
