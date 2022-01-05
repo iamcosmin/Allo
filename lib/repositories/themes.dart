@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 const pageTransitionsTheme = PageTransitionsTheme(
   builders: {
-    TargetPlatform.android: ScalePageTransitionBuilder(),
-    TargetPlatform.fuchsia: ScalePageTransitionBuilder(),
-    TargetPlatform.iOS: ScalePageTransitionBuilder(),
-    TargetPlatform.linux: ScalePageTransitionBuilder(),
-    TargetPlatform.macOS: ScalePageTransitionBuilder(),
-    TargetPlatform.windows: ScalePageTransitionBuilder(),
+    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.fuchsia: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
   },
 );
 
