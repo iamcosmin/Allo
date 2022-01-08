@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:allo/components/deferred.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/repositories/preferences_repository.dart';
@@ -14,6 +16,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/stack_navigator.dart';
+
+int createUniqueID(int maxValue) {
+  var random = Random();
+  return random.nextInt(maxValue);
+}
 
 Future _onBackgroundMessage(RemoteMessage message) async {
   String title(
@@ -42,19 +49,18 @@ Future _onBackgroundMessage(RemoteMessage message) async {
   if (message.data['uid'] != FirebaseAuth.instance.currentUser!.uid) {
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-          id: int.parse(
-              message.data['toChat'].replaceAll(RegExp(r'[a-zA-Z]'), '')),
-          title: title(
-              type: message.data['type'],
-              chatName: message.data['chatName'],
-              senderName: message.data['senderName']),
-          body: body(
-              type: message.data['type'],
-              senderName: message.data['senderName'],
-              text: message.data['text']),
+          id: createUniqueID(AwesomeNotifications.maxID),
+          title: message.data['type'] == ChatType.group
+              ? message.data['senderName']
+              : null,
+          body: message.data['text'],
           channelKey: 'conversations',
           notificationLayout: NotificationLayout.Messaging,
-          createdSource: NotificationSource.Firebase,
+          category: NotificationCategory.Message,
+          groupKey: message.data['toChat'],
+          summary: message.data['type'] == ChatType.group
+              ? message.data['chatName']
+              : message.data['senderName'],
           payload: {
             'chatId': message.data['toChat'],
             'chatName': title(
