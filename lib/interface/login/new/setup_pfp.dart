@@ -1,6 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/progress_rings.dart';
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/interface/login/new/setup_personalize.dart';
 import 'package:allo/logic/core.dart';
@@ -43,7 +42,7 @@ class SetupProfilePicture extends HookWidget {
                     SizedBox(
                       height: 110,
                       width: 110,
-                      child: ProgressRing(
+                      child: CircularProgressIndicator(
                         value: percentage.value,
                       ),
                     ),

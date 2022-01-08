@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'package:allo/components/progress_rings.dart';
-
 class Deferred extends HookWidget {
   const Deferred({Key? key}) : super(key: key);
   @override
@@ -17,7 +15,7 @@ class Deferred extends HookWidget {
               SizedBox(
                 height: 60,
                 width: 60,
-                child: ProgressRing(),
+                child: CircularProgressIndicator(),
               ),
               Padding(padding: EdgeInsets.only(top: 20)),
               Text(

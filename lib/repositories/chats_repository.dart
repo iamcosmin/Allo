@@ -11,7 +11,7 @@ class ChatType {
 final loadChats = StateNotifierProvider<LoadChats, List>((ref) => LoadChats());
 
 class LoadChats extends StateNotifier<List> {
-  LoadChats() : super([]);
+  LoadChats() : super(['Loading']);
   Future getChatsData(BuildContext context) async {
     var chatIdList = [];
     await FirebaseFirestore.instance

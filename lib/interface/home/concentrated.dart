@@ -7,22 +7,31 @@ class C extends HookWidget {
   const C({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final reactions = useState(false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Opțiuni experimentale'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(10),
         children: [
           const SettingsListHeader(
               'Aceste opțiuni sunt experimentale și sunt gândite doar pentru testarea internă. Vă rugăm să nu folosiți aceste setări dacă nu știți ce fac.'),
-          SettingsListTile(
-            title: 'Typing bubble',
-            type: RadiusType.BOTH,
+          ListTile(
+            title: const Text('Typing bubble'),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const ExampleIsTyping(),
               ),
+            ),
+          ),
+          ListTile(
+            title: const Text('Reactions'),
+            trailing: Switch(
+              value: reactions.value,
+              onChanged: (value) {
+                reactions.value = value;
+              },
             ),
           ),
         ],

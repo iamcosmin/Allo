@@ -1,4 +1,3 @@
-import 'package:allo/components/progress_rings.dart';
 import 'package:allo/components/settings_list.dart';
 import 'package:allo/repositories/repositories.dart';
 import 'package:flutter/material.dart';
@@ -76,8 +75,8 @@ class SetupPage extends HookWidget {
                               ? const SizedBox(
                                   height: 23,
                                   width: 23,
-                                  child: ProgressRing(
-                                    activeColor: Colors.white,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
                                     strokeWidth: 3,
                                   ),
                                 )

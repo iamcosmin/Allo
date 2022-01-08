@@ -59,7 +59,7 @@ class Home extends HookWidget {
             shrinkWrap: true,
             padding: const EdgeInsets.only(top: 10),
             children: [
-              if (chats.isNotEmpty) ...[
+              if (chats[0] != 'Loading') ...[
                 for (var chat in chats) ...[
                   ListTile(
                     title: Text(chat['name']),
@@ -83,6 +83,13 @@ class Home extends HookWidget {
                     ),
                   ),
                 ],
+              ] else if (chats[0] == 'Loading') ...[
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 50),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
               ] else ...[
                 const ListTile(title: Text('Nicio conversație.'))
               ],

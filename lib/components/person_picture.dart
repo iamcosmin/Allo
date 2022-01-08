@@ -1,4 +1,3 @@
-import 'package:allo/components/progress_rings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -88,7 +87,7 @@ class PersonPicture extends HookWidget {
                 return CachedNetworkImage(
                   imageUrl: profilePicture!,
                   progressIndicatorBuilder: (context, string, progress) =>
-                      const ProgressRing(),
+                      const CircularProgressIndicator(),
                   errorWidget: (context, str, dn) {
                     return Container(
                       height: radius,

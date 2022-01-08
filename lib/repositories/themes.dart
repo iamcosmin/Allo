@@ -1,14 +1,13 @@
-import 'package:allo/components/scale_page_transition.dart';
 import 'package:flutter/material.dart';
 
 const pageTransitionsTheme = PageTransitionsTheme(
   builders: {
-    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.fuchsia: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.android: ZoomPageTransitionsBuilder(),
+    TargetPlatform.fuchsia: ZoomPageTransitionsBuilder(),
+    TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+    TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+    TargetPlatform.macOS: ZoomPageTransitionsBuilder(),
+    TargetPlatform.windows: ZoomPageTransitionsBuilder(),
   },
 );
 
