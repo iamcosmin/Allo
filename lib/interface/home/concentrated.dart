@@ -1,4 +1,5 @@
 import 'package:allo/components/settings_list.dart';
+import 'package:allo/interface/home/accountinfo.dart';
 import 'package:allo/interface/home/typingbubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -22,6 +23,14 @@ class C extends HookWidget {
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const ExampleIsTyping(),
+              ),
+            ),
+          ),
+          ListTile(
+            title: const Text('Account info'),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const AccountInfo(),
               ),
             ),
           ),

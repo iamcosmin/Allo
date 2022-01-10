@@ -13,7 +13,7 @@ class Home extends HookWidget {
     final chats = useProvider(loadChats);
     final chatsMethod = useProvider(loadChats.notifier);
     useEffect(() {
-      chatsMethod.getChatsData(context);
+      chatsMethod.newGetChatsData(context);
     }, const []);
 
     String type(type) {
@@ -54,7 +54,7 @@ class Home extends HookWidget {
         ],
         body: RefreshIndicator(
           triggerMode: RefreshIndicatorTriggerMode.onEdge,
-          onRefresh: () async => await chatsMethod.getChatsData(context),
+          onRefresh: () async => await chatsMethod.newGetChatsData(context),
           child: ListView(
             shrinkWrap: true,
             padding: const EdgeInsets.only(top: 10),
@@ -83,7 +83,7 @@ class Home extends HookWidget {
                     ),
                   ),
                 ],
-              ] else if (chats[0] == 'Loading') ...[
+              ] else if (chats == ['Loading']) ...[
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.only(top: 50),

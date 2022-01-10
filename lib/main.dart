@@ -34,16 +34,16 @@ Future _onBackgroundMessage(RemoteMessage message) async {
     }
   }
 
-  String body(
-      {required String? type,
-      required String senderName,
-      required String text}) {
-    if ((type ?? 'group') == ChatType.private) {
-      return message.data['text'];
-    } else {
-      return message.data['senderName'] + ': ' + message.data['text'];
-    }
-  }
+  // String body(
+  //     {required String? type,
+  //     required String senderName,
+  //     required String text}) {
+  //   if ((type ?? 'group') == ChatType.private) {
+  //     return message.data['text'];
+  //   } else {
+  //     return message.data['senderName'] + ': ' + message.data['text'];
+  //   }
+  // }
 
   await Firebase.initializeApp();
   if (message.data['uid'] != FirebaseAuth.instance.currentUser!.uid) {
