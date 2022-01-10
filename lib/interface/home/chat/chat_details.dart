@@ -6,14 +6,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 final themes = <Map>[
-  {'name': 'Albastru', 'color': Colors.blue, 'id': 'blue'},
-  {'name': 'Mov', 'color': Colors.purple, 'id': 'purple'},
-  {'name': 'Rosu', 'color': Colors.red, 'id': 'red'},
-  {'name': 'Turcoaz', 'color': Colors.cyan, 'id': 'cyan'},
-  {'name': 'Roz', 'color': Colors.pink, 'id': 'pink'},
+  {
+    'name': 'Albastru',
+    'color': Colors.blue,
+    'id': 'blue',
+  },
+  {
+    'name': 'Mov',
+    'color': Colors.purple,
+    'id': 'purple',
+  },
+  {
+    'name': 'Rosu',
+    'color': Colors.red,
+    'id': 'red',
+  },
+  {
+    'name': 'Turcoaz',
+    'color': Colors.cyan,
+    'id': 'cyan',
+  },
+  {
+    'name': 'Roz',
+    'color': Colors.pink,
+    'id': 'pink',
+  },
+  {
+    'name': 'Verde smarald',
+    'color': const Color(0xFF1a521f),
+    'id': 'smarald_green'
+  },
+  {
+    'name': 'Vișiniu',
+    'color': const Color(0xFF571047),
+    'id': 'burgundy',
+  },
+  {
+    'name': 'Special: Gina',
+    'color': const Color(0xFF4f5a8f),
+    'id': 'special_gina'
+  }
 ];
 
-final themesId = ['blue', 'purple', 'red', 'cyan', 'pink'];
+List themesId() {
+  var list = [];
+  for (var theme in themes) {
+    list.add(theme['id']);
+  }
+  print(list);
+  return list;
+}
 
 class ChatDetails extends HookWidget {
   const ChatDetails(

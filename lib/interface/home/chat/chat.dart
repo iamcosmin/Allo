@@ -30,7 +30,7 @@ class Chat extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final typing = useState(false);
-    final theme = useState(Colors.blue);
+    final theme = useState<Color>(Colors.blue);
     final colors = useProvider(Repositories.colors);
     final messages = useState(<DocumentSnapshot>[]);
     final controller = useScrollController();
@@ -48,7 +48,7 @@ class Chat extends HookWidget {
         (event) {
           typing.value = event.data()!['typing'] ?? false;
           var dbThemeId = event.data()!['theme'] ?? 'blue';
-          var themeIndex = themesId.indexOf(dbThemeId);
+          var themeIndex = themesId().indexOf(dbThemeId);
           theme.value = themes[themeIndex]['color'];
         },
       );

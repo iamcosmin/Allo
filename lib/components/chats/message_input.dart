@@ -187,9 +187,21 @@ class AttachWidget extends HookWidget {
                       children: [
                         InkWell(
                           onTap: () async {
-                            file.value = await ImagePicker()
-                                .pickImage(source: ImageSource.camera)
-                                .catchError((e) {
+                            try {
+                              file.value = await ImagePicker()
+                                  .pickImage(source: ImageSource.camera);
+                              Navigator.of(context).pop();
+                              await Core.navigation.push(
+                                context: context,
+                                route: UploadImage(
+                                  file.value,
+                                  await file.value!.readAsBytes(),
+                                  chatId: chatId,
+                                  chatName: chatName,
+                                  chatType: chatType,
+                                ),
+                              );
+                            } catch (e) {
                               Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -204,7 +216,7 @@ class AttachWidget extends HookWidget {
                                       }),
                                 ),
                               );
-                            });
+                            }
                           },
                           child: ClipOval(
                             child: Container(
