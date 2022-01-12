@@ -1,5 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
-import 'package:allo/interface/home/stack_navigator.dart';
+import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -27,7 +27,7 @@ class SetupDone extends HookWidget {
         onButtonPress: () {
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
-                builder: (context) => StackNavigator(),
+                builder: (context) => TabbedNavigator(),
               ),
               (route) => false);
         },

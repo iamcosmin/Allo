@@ -1,4 +1,4 @@
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +14,13 @@ final darkMode = StateNotifierProvider<PreferenceManager, bool>((ref) {
 final experimentalMessageOptions =
     StateNotifierProvider<PreferenceManager, bool>((ref) {
   const parameter = 'experimentalMessageOptions';
+  final returnValue = ref.read(preferencesProvider).getBool(parameter);
+  return PreferenceManager(returnValue, parameter);
+});
+
+final privateConversations =
+    StateNotifierProvider<PreferenceManager, bool>((ref) {
+  const parameter = 'privateConversations';
   final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });
@@ -53,18 +60,18 @@ class PreferenceManager extends StateNotifier<bool> {
   PreferenceManager(this.setter, this.parameter) : super(setter);
   final bool setter;
   final String parameter;
-  void _readAndUpdateState(BuildContext context, bool boolean) {
-    context
+  void _readAndUpdateState(WidgetRef ref, bool boolean) {
+    ref
         .read(preferencesProvider)
         .setBool(parameter, boolean)
         .whenComplete(() => {state = boolean});
   }
 
-  void switcher(BuildContext context) {
+  void switcher(WidgetRef ref, BuildContext context) {
     if (state) {
-      _readAndUpdateState(context, false);
+      _readAndUpdateState(ref, false);
     } else {
-      _readAndUpdateState(context, true);
+      _readAndUpdateState(ref, true);
     }
   }
 }

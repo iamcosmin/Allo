@@ -1,7 +1,7 @@
 import 'package:allo/interface/home/chat/chat_details.dart';
-import 'package:allo/interface/home/typingbubble.dart';
+import 'package:allo/interface/home/settings/debug/typingbubble.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -14,7 +14,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // ignore: must_be_immutable
-class Chat extends HookWidget {
+class Chat extends HookConsumerWidget {
   final String chatType;
   final String title;
   final String chatId;
@@ -28,10 +28,10 @@ class Chat extends HookWidget {
       : super(key: key);
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final typing = useState(false);
     final theme = useState<Color>(Colors.blue);
-    final colors = useProvider(Repositories.colors);
+    final colors = ref.watch(colorsProvider);
     final messages = useState(<DocumentSnapshot>[]);
     final controller = useScrollController();
     final isLoadingPrevMessages = useState(false);

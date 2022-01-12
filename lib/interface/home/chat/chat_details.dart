@@ -53,7 +53,6 @@ List themesId() {
   for (var theme in themes) {
     list.add(theme['id']);
   }
-  print(list);
   return list;
 }
 
@@ -150,10 +149,11 @@ class ChatDetails extends HookWidget {
     );
   }
 
-  Future<dynamic> showBottomSheet(
-      {required BuildContext context,
-      required String title,
-      required List<Widget> children}) {
+  Future<dynamic> showBottomSheet({
+    required BuildContext context,
+    required String title,
+    required List<Widget> children,
+  }) {
     return showModalBottomSheet(
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(

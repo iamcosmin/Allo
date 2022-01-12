@@ -1,4 +1,4 @@
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,7 +21,7 @@ class SettingsListHeader extends HookWidget {
 // ignore: constant_identifier_names
 enum RadiusType { TOP, BOTTOM, BOTH }
 
-class SettingsListTile extends HookWidget {
+class SettingsListTile extends HookConsumerWidget {
   const SettingsListTile(
       {required this.title,
       this.onTap,
@@ -40,8 +40,8 @@ class SettingsListTile extends HookWidget {
   final Color? color;
   final bool? center;
   @override
-  Widget build(BuildContext context) {
-    final colors = useProvider(Repositories.colors);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = ref.watch(colorsProvider);
     return ListTile(
       title: center != null
           ? center!

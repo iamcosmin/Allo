@@ -1,7 +1,7 @@
 import 'package:allo/components/chats/bubbles/sent.dart';
-import 'package:allo/logic/chat/chat.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/repositories/repositories.dart';
+import 'package:allo/logic/theme.dart';
+import 'package:allo/logic/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 
 import '../../person_picture.dart';
 
-class ReceiveMessageBubble extends HookWidget {
+class ReceiveMessageBubble extends HookConsumerWidget {
   // If the nextUID == senderUID, we need to keep the name and to reduce
   // the bottom padding, also eliminate the profile picture as we will put it
   // on the last message.
@@ -32,7 +32,7 @@ class ReceiveMessageBubble extends HookWidget {
   final DocumentSnapshot data;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final documentData = data.data() as Map;
     var name = documentData['name'] ?? documentData['senderName'] ?? 'No name';
     var uid = documentData['uid'] ?? documentData['senderUID'] ?? 'No UID';
@@ -47,7 +47,7 @@ class ReceiveMessageBubble extends HookWidget {
 
     var isSameSenderAsInPast = uid == pastUID;
     var isSameSenderAsInFuture = uid == nextUID;
-    final colors = useProvider(Repositories.colors);
+    final colors = ref.watch(colorsProvider);
     final selected = useState(false);
     final bubbleRadius = BorderRadius.only(
       topLeft: Radius.circular(isSameSenderAsInPast ? 5 : 20),
@@ -117,7 +117,7 @@ class ReceiveMessageBubble extends HookWidget {
                       ),
                     ),
                   ],
-                  if (type == MessageTypes.TEXT) ...[
+                  if (type == MessageTypes.text) ...[
                     GestureDetector(
                       onTap: () => change(),
                       child: Container(
@@ -155,7 +155,7 @@ class ReceiveMessageBubble extends HookWidget {
                         ),
                       ),
                     ),
-                  ] else if (type == MessageTypes.IMAGE) ...[
+                  ] else if (type == MessageTypes.image) ...[
                     GestureDetector(
                       onTap: () => Core.navigation.push(
                         context: context,

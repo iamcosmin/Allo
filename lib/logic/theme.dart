@@ -1,4 +1,4 @@
-import 'package:allo/repositories/preferences_repository.dart';
+import 'package:allo/logic/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +14,7 @@ final appThemeProvider = Provider<AppTheme>((ref) => AppTheme(ref));
 
 class AppTheme {
   AppTheme(this.ref);
-  final ProviderReference ref;
+  final Ref ref;
 }
 
 final sharedPreferencesProvider =

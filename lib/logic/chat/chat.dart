@@ -2,16 +2,61 @@ import 'dart:convert';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 
-class MessageTypes {
-  // ignore: constant_identifier_names
-  static const String TEXT = 'text';
-  // ignore: constant_identifier_names
-  static const String IMAGE = 'image';
+import '../types.dart';
+
+final chatLoader = StateNotifierProvider<LoadChats, List>((ref) => LoadChats());
+
+class LoadChats extends StateNotifier<List> {
+  LoadChats() : super(['Loading']);
+  Future getChatsData(BuildContext context) async {
+    final username = Core.auth.user.uid;
+    QuerySnapshot documents = await FirebaseFirestore.instance
+        .collection("chats")
+        .where("participants", arrayContains: username)
+        .get();
+    var listOfMapChatInfo = <Map>[];
+    if (documents.docs.isNotEmpty) {
+      for (var chat in documents.docs) {
+        var chatInfoMap = chat.data() as Map;
+        String? name, profilepic, chatid;
+        // Check if it is group or private
+        if (chatInfoMap['type'] == ChatType.private) {
+          chatid = chat.id;
+          for (Map member in chatInfoMap['members']) {
+            if (member['uid'] != Core.auth.user.uid) {
+              name = member['name'];
+              profilepic = member['profilepicture'];
+            }
+          }
+          listOfMapChatInfo.add({
+            'type': ChatType.private,
+            'name': name,
+            'profilepic': profilepic,
+            'chatId': chatid
+          });
+        } else if (chatInfoMap['type'] == ChatType.group) {
+          if (chatInfoMap.containsKey('title')) {
+            var chatInfo = {
+              'type': ChatType.group,
+              'name': chatInfoMap['title'],
+              'chatId': chat.id,
+              'profilepic': chatInfoMap['profilepic']
+            };
+            listOfMapChatInfo.add(chatInfo);
+          }
+        }
+      }
+      state = listOfMapChatInfo;
+    } else {
+      state = ['Loading'];
+    }
+  }
 }
 
 class Chat {
@@ -112,7 +157,7 @@ class Messages {
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
     final auth = Core.auth;
     await db.collection('messages').add({
-      'type': MessageTypes.TEXT,
+      'type': MessageTypes.text,
       'name': auth.user.name,
       'username': await auth.user.username,
       'uid': auth.user.uid,
@@ -120,6 +165,7 @@ class Messages {
       'time': Timestamp.now(),
     });
     await _sendNotification(
+        profilePicture: Core.auth.user.profilePicture,
         chatName: chatName,
         name: auth.user.name,
         content: text,
@@ -146,7 +192,7 @@ class Messages {
       if (event.state == TaskState.success) {
         progress.value = 1.1;
         await db.collection('messages').add({
-          'type': MessageTypes.IMAGE,
+          'type': MessageTypes.image,
           'name': auth.user.name,
           'username': await auth.user.username,
           'uid': auth.user.uid,
@@ -159,7 +205,8 @@ class Messages {
             name: auth.user.name,
             content: 'Imagine' + (description != null ? ' - $description' : ''),
             uid: auth.user.uid,
-            chatType: chatType);
+            chatType: chatType,
+            profilePicture: Core.auth.user.profilePicture);
         Navigator.of(context).pop();
       }
     });
@@ -170,7 +217,8 @@ class Messages {
       required String name,
       required String content,
       required String uid,
-      required String chatType}) async {
+      required String chatType,
+      required String? profilePicture}) async {
     await post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
@@ -186,7 +234,8 @@ class Messages {
           'text': content,
           'toChat': chatId,
           'uid': uid,
-          'type': chatType
+          'type': chatType,
+          'profilePicture': profilePicture,
         }
       }),
     );

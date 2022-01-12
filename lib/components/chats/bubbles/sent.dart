@@ -1,5 +1,5 @@
-import 'package:allo/logic/chat/chat.dart';
 import 'package:allo/logic/core.dart';
+import 'package:allo/logic/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -9,67 +9,72 @@ import 'package:intl/intl.dart';
 
 void bubbleMenu(BuildContext context, String messageId, String chatId) {
   showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       context: context,
       builder: (context) {
-        return Material(
-          child: SizedBox(
-            height: 200,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      alignment: Alignment.topRight,
-                      child: const Icon(
-                        FluentIcons.dismiss_circle_20_filled,
-                        color: Colors.grey,
-                        size: 30,
+        return ClipRRect(
+          child: Material(
+            child: SizedBox(
+              height: 200,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        alignment: Alignment.topRight,
+                        child: const Icon(
+                          FluentIcons.dismiss_circle_20_filled,
+                          color: Colors.grey,
+                          size: 30,
+                        ),
                       ),
                     ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              Future.delayed(
-                                const Duration(seconds: 1),
-                                () => Core.chat(chatId)
-                                    .messages
-                                    .deleteMessage(messageId: messageId),
-                              );
-                            },
-                            child: ClipOval(
-                              child: Container(
-                                height: 60,
-                                width: 60,
-                                alignment: Alignment.center,
-                                color: Colors.red,
-                                child: const Icon(
-                                  FluentIcons.delete_16_regular,
-                                  color: Colors.white,
-                                  size: 30,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Future.delayed(
+                                  const Duration(seconds: 1),
+                                  () => Core.chat(chatId)
+                                      .messages
+                                      .deleteMessage(messageId: messageId),
+                                );
+                              },
+                              child: ClipOval(
+                                child: Container(
+                                  height: 60,
+                                  width: 60,
+                                  alignment: Alignment.center,
+                                  color: Colors.red,
+                                  child: const Icon(
+                                    FluentIcons.delete_16_regular,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Text(
-                                'Șterge mesajul',
-                                style: TextStyle(fontSize: 16),
-                              )),
-                        ],
-                      )
-                    ],
-                  )
-                ],
+                            const Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Text(
+                                  'Șterge mesajul',
+                                  style: TextStyle(fontSize: 16),
+                                )),
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -134,7 +139,7 @@ class SentMessageBubble extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Chat bubble
-              if (type == MessageTypes.TEXT) ...[
+              if (type == MessageTypes.text) ...[
                 GestureDetector(
                   onTap: () => change(),
                   onLongPress: () => bubbleMenu(context, messageId, chatId),
@@ -155,7 +160,7 @@ class SentMessageBubble extends HookWidget {
                     ),
                   ),
                 )
-              ] else if (type == MessageTypes.IMAGE) ...[
+              ] else if (type == MessageTypes.image) ...[
                 GestureDetector(
                   onTap: () => Core.navigation.push(
                     context: context,

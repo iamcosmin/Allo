@@ -8,8 +8,8 @@ import 'chat/chat.dart';
 import 'home.dart';
 import 'settings.dart';
 
-class StackNavigator extends HookWidget {
-  StackNavigator({Key? key}) : super(key: key);
+class TabbedNavigator extends HookWidget {
+  TabbedNavigator({Key? key}) : super(key: key);
   final List<Widget> pages = [const Home(), const Settings()];
 
   @override

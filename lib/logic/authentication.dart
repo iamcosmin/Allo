@@ -1,10 +1,10 @@
-import 'package:allo/interface/home/stack_navigator.dart';
+import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/interface/login/existing/enter_password.dart';
 import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/repositories/error_codes.dart';
+import 'package:allo/logic/error_codes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -99,7 +99,7 @@ class Authentication {
           .signInWithEmailAndPassword(email: email, password: password);
       await Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => StackNavigator(),
+            builder: (context) => TabbedNavigator(),
           ),
           (route) => false);
       var prefs = await SharedPreferences.getInstance();
@@ -248,7 +248,7 @@ class Authentication {
         }
       }
       await FirebaseAuth.instance.signOut();
-      Core.navigation.pushPermanent(context: context, route: const MyApp());
+      Core.navigation.pushPermanent(context: context, route: const InnerApp());
     } catch (e) {
       throw Exception('Something is wrong...');
     }

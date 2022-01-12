@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   animations: ^2.0.2
-  awesome_notifications: ^0.6.19
+  awesome_notifications: ^0.6.20
   cached_network_image: ^3.2.0
   cloud_firestore: ^3.1.6
   firebase_auth: ^3.3.5
@@ -18,12 +18,12 @@ dependencies:
   fluentui_system_icons: ^1.1.153
   flutter:
     sdk: flutter
-  flutter_hooks: ^0.17.0
-  hooks_riverpod: ^0.14.0+4
+  flutter_hooks: ^0.18.0
+  hooks_riverpod: ^1.0.1
   image_cropper: ^1.4.1
   image_picker: ^0.8.4+4
   in_app_update: ^2.0.0
-  shared_preferences: ^2.0.11
+  shared_preferences: ^2.0.12
 
 dev_dependencies:
   flutter_lints: ^1.0.4
