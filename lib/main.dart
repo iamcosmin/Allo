@@ -17,7 +17,6 @@ import 'logic/notifications.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   if (!kIsWeb) {
     await Core.notifications.setupNotifications();
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:allo/logic/types.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -50,16 +51,18 @@ class Notifications {
 
 /// This function sets up the notification system.
 Future<void> onBackgroundMessage(RemoteMessage message) async {
+  await Firebase.initializeApp();
   final _uid = message.data['uid'];
   final _senderName = message.data['senderName'];
   final _text = message.data['text'];
-  final _profilePicture = message.data['profilePicture'];
+  String? _profilePicture = message.data['profilePicture'];
   final _chatId = message.data['toChat'];
   final _smallNotificationText = message.data['type'] == ChatType.group
       ? message.data['chatName']
       : 'Privat';
-  final _suplimentaryInfo = {
-    'profilePicture': _profilePicture,
+  // ignore: omit_local_variable_types
+  final Map<String, String> _suplimentaryInfo = {
+    'profilePicture': _profilePicture ?? '',
     'chatId': _chatId,
     'chatName': _title(
         type: message.data['type'],
@@ -74,12 +77,13 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
         title: _senderName,
         body: _text,
         channelKey: 'conversations',
+        roundedLargeIcon: true,
         largeIcon: _profilePicture,
         notificationLayout: NotificationLayout.Messaging,
         category: NotificationCategory.Message,
         groupKey: _chatId,
         summary: _smallNotificationText,
-        payload: _suplimentaryInfo as Map<String, String>,
+        payload: _suplimentaryInfo,
       ),
     );
   }
