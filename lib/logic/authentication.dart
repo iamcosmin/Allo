@@ -296,11 +296,15 @@ class Authentication {
     return initials;
   }
 
-  Future<String> getUserProfilePicture(String uid) async {
-    return await FirebaseStorage.instance
-        .ref()
-        .child('profilePictures/$uid.png')
-        .getDownloadURL();
+  Future<String?> getUserProfilePicture(String uid) async {
+    String? url;
+    try {
+      url = await FirebaseStorage.instance
+          .ref()
+          .child('profilePictures/$uid.png')
+          .getDownloadURL();
+    } on FirebaseException catch (_) {}
+    return url;
   }
 }
 

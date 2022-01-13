@@ -11,13 +11,6 @@ final darkMode = StateNotifierProvider<PreferenceManager, bool>((ref) {
   return PreferenceManager(returnValue, parameter);
 });
 
-final experimentalMessageOptions =
-    StateNotifierProvider<PreferenceManager, bool>((ref) {
-  const parameter = 'experimentalMessageOptions';
-  final returnValue = ref.read(preferencesProvider).getBool(parameter);
-  return PreferenceManager(returnValue, parameter);
-});
-
 final privateConversations =
     StateNotifierProvider<PreferenceManager, bool>((ref) {
   const parameter = 'privateConversations';
@@ -25,9 +18,8 @@ final privateConversations =
   return PreferenceManager(returnValue, parameter);
 });
 
-final experimentalProfilePicture =
-    StateNotifierProvider<PreferenceManager, bool>((ref) {
-  const parameter = 'experimentalProfilePicture';
+final newMessageOptions = StateNotifierProvider<PreferenceManager, bool>((ref) {
+  const parameter = 'newMessageOptions';
   final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });

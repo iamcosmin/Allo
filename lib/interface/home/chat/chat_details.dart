@@ -1,4 +1,5 @@
 import 'package:allo/components/person_picture.dart';
+import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -100,9 +101,11 @@ class ChatDetails extends HookWidget {
                           .doc(id)
                           .get();
                       var currentTheme = chat.data()!['theme'] ?? 'blue';
-                      showBottomSheet(
+                      showMagicBottomSheet(
                         context: context,
                         title: 'Temă',
+                        initialChildSize: 0.4,
+                        maxChildSize: 0.75,
                         children: [
                           for (var theme in themes) ...[
                             Padding(
@@ -146,60 +149,6 @@ class ChatDetails extends HookWidget {
           )
         ],
       ),
-    );
-  }
-
-  Future<dynamic> showBottomSheet({
-    required BuildContext context,
-    required String title,
-    required List<Widget> children,
-  }) {
-    return showModalBottomSheet(
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-      ),
-      context: context,
-      builder: (context) => DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.4,
-          maxChildSize: 0.75,
-          expand: false,
-          builder: (context, controller) {
-            return Column(
-              children: [
-                const Padding(padding: EdgeInsets.only(top: 10)),
-                Container(
-                  height: 5,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.grey
-                        : Colors.grey.shade700,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(top: 15, bottom: 20),
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                        fontSize: 17, fontWeight: FontWeight.w700),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: ListView(
-                      controller: controller,
-                      children: children,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }),
     );
   }
 }

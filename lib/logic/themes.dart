@@ -12,6 +12,9 @@ const pageTransitionsTheme = PageTransitionsTheme(
 );
 
 final lightTheme = ThemeData(
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: Color(0xFF1A76C6),
+    ),
     colorScheme: ColorScheme.fromSwatch(
       brightness: Brightness.light,
       accentColor: const Color(0xFF1A76C6),
@@ -21,6 +24,14 @@ final lightTheme = ThemeData(
       backgroundColor: Colors.white,
       foregroundColor: Colors.black,
     ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: Color(0xFF323232),
+      actionTextColor: Color(0xFFFFFFFF),
+      behavior: SnackBarBehavior.floating,
+      contentTextStyle:
+          TextStyle(color: Color(0xFFFFFFFF), fontFamily: 'GS-Text'),
+    ),
+    toggleableActiveColor: const Color(0xFF1A76C6),
     scaffoldBackgroundColor: Colors.white,
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.grey.shade300,
@@ -33,6 +44,9 @@ final lightTheme = ThemeData(
     pageTransitionsTheme: pageTransitionsTheme);
 
 final darkTheme = ThemeData(
+  progressIndicatorTheme: const ProgressIndicatorThemeData(
+    color: Color(0xFF49B3EA),
+  ),
   colorScheme: ColorScheme.fromSwatch(
     brightness: Brightness.dark,
     accentColor: const Color(0xFF49B3EA),
@@ -52,4 +66,12 @@ final darkTheme = ThemeData(
       backgroundColor: Colors.grey.shade800),
   fontFamily: 'GS-Text',
   scaffoldBackgroundColor: const Color(0xFF1c1c1c),
+  snackBarTheme: const SnackBarThemeData(
+    backgroundColor: Color(0xFF323232),
+    actionTextColor: Color(0xFFFFFFFF),
+    behavior: SnackBarBehavior.floating,
+    contentTextStyle:
+        TextStyle(color: Color(0xFFFFFFFF), fontFamily: 'GS-Text'),
+  ),
+  toggleableActiveColor: const Color(0xFF49B3EA),
 );

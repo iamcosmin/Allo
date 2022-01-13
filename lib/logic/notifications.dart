@@ -46,41 +46,41 @@ class Notifications {
       ],
     );
   }
+}
 
-  /// This function sets up the notification system.
-  Future onBackgroundMessage(RemoteMessage message) async {
-    final _uid = message.data['uid'];
-    final _senderName = message.data['senderName'];
-    final _text = message.data['text'];
-    final _profilePicture = message.data['profilePicture'];
-    final _chatId = message.data['toChat'];
-    final _smallNotificationText = message.data['type'] == ChatType.group
-        ? message.data['chatName']
-        : 'Privat';
-    final _suplimentaryInfo = {
-      'profilePicture': message.data['profilePicture'],
-      'chatId': message.data['toChat'],
-      'chatName': _title(
-          type: message.data['type'],
-          chatName: message.data['chatName'],
-          senderName: message.data['senderName']),
-      'chatType': message.data['type'] ?? ChatType.group,
-    };
-    if (_uid != Core.auth.user.uid) {
-      await AwesomeNotifications().createNotification(
-        content: NotificationContent(
-          id: _createUniqueID(AwesomeNotifications.maxID),
-          title: _senderName,
-          body: _text,
-          channelKey: 'conversations',
-          largeIcon: _profilePicture,
-          notificationLayout: NotificationLayout.Messaging,
-          category: NotificationCategory.Message,
-          groupKey: _chatId,
-          summary: _smallNotificationText,
-          payload: _suplimentaryInfo as Map<String, String>,
-        ),
-      );
-    }
+/// This function sets up the notification system.
+Future<void> onBackgroundMessage(RemoteMessage message) async {
+  final _uid = message.data['uid'];
+  final _senderName = message.data['senderName'];
+  final _text = message.data['text'];
+  final _profilePicture = message.data['profilePicture'];
+  final _chatId = message.data['toChat'];
+  final _smallNotificationText = message.data['type'] == ChatType.group
+      ? message.data['chatName']
+      : 'Privat';
+  final _suplimentaryInfo = {
+    'profilePicture': _profilePicture,
+    'chatId': _chatId,
+    'chatName': _title(
+        type: message.data['type'],
+        chatName: message.data['chatName'],
+        senderName: message.data['senderName']),
+    'chatType': message.data['type'] ?? ChatType.group,
+  };
+  if (_uid != Core.auth.user.uid) {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: _createUniqueID(AwesomeNotifications.maxID),
+        title: _senderName,
+        body: _text,
+        channelKey: 'conversations',
+        largeIcon: _profilePicture,
+        notificationLayout: NotificationLayout.Messaging,
+        category: NotificationCategory.Message,
+        groupKey: _chatId,
+        summary: _smallNotificationText,
+        payload: _suplimentaryInfo as Map<String, String>,
+      ),
+    );
   }
 }

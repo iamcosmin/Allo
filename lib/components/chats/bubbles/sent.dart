@@ -1,11 +1,106 @@
+import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/logic/core.dart';
+import 'package:allo/logic/preferences.dart';
 import 'package:allo/logic/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+
+void deleteMessage(
+    {required BuildContext context,
+    required String chatId,
+    required String messageId}) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Ștergere mesaj'),
+      content: const Text('Sigur dorești să ștergi acest mesaj?'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Anulează'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Future.delayed(
+              const Duration(seconds: 1),
+              () {
+                Core.chat(chatId).messages.deleteMessage(messageId: messageId);
+                Core.stub.showInfoBar(
+                    context: context,
+                    icon: FluentIcons.delete_20_regular,
+                    text: 'Mesajul a fost șters.');
+              },
+            );
+          },
+          child: const Text(
+            'Șterge',
+            style: TextStyle(color: Colors.red),
+          ),
+        )
+      ],
+    ),
+  );
+}
+
+void textMessageOptions(
+    BuildContext context, String messageId, String chatId, String messageText) {
+  showMagicBottomSheet(
+    context: context,
+    title: 'Opțiuni mesaj',
+    initialChildSize: 0.3,
+    children: [
+      ListTile(
+        leading: const Icon(FluentIcons.copy_24_regular),
+        title: const Text('Copiere mesaj'),
+        onTap: () {
+          Navigator.of(context).pop();
+          Clipboard.setData(ClipboardData(text: messageText));
+          Core.stub.showInfoBar(
+            context: context,
+            icon: FluentIcons.copy_24_regular,
+            text: 'Mesajul a fost copiat.',
+          );
+        },
+      ),
+      ListTile(
+        leading: const Icon(FluentIcons.delete_20_regular),
+        title: const Text('Șterge mesaj'),
+        onTap: () {
+          Navigator.of(context).pop();
+          deleteMessage(context: context, chatId: chatId, messageId: messageId);
+        },
+      ),
+    ],
+  );
+}
+
+void imageMessageOptions(
+    BuildContext context, String messageId, String chatId) {
+  showMagicBottomSheet(
+    context: context,
+    title: 'Opțiuni mesaj',
+    initialChildSize: 0.2,
+    children: [
+      ListTile(
+        leading: const Icon(FluentIcons.delete_20_regular),
+        title: const Text('Șterge mesaj'),
+        onTap: () {
+          Navigator.of(context).pop();
+          deleteMessage(context: context, chatId: chatId, messageId: messageId);
+        },
+      ),
+    ],
+  );
+}
 
 void bubbleMenu(BuildContext context, String messageId, String chatId) {
   showModalBottomSheet(
@@ -82,7 +177,7 @@ void bubbleMenu(BuildContext context, String messageId, String chatId) {
       });
 }
 
-class SentMessageBubble extends HookWidget {
+class SentMessageBubble extends HookConsumerWidget {
   const SentMessageBubble(
       {required Key key,
       required this.pastUID,
@@ -98,7 +193,7 @@ class SentMessageBubble extends HookWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final documentData = data.data() as Map;
 
     var uid = documentData['uid'] ?? documentData['senderUID'] ?? 'No UID';
@@ -128,6 +223,8 @@ class SentMessageBubble extends HookWidget {
           : 20),
       bottomLeft: const Radius.circular(20),
     );
+
+    final msgOpt = ref.watch(newMessageOptions);
     return Padding(
       padding: EdgeInsets.only(
           bottom: (isSameSenderAsInFuture || nextUID == 'null') ? 1 : 15,
@@ -142,7 +239,9 @@ class SentMessageBubble extends HookWidget {
               if (type == MessageTypes.text) ...[
                 GestureDetector(
                   onTap: () => change(),
-                  onLongPress: () => bubbleMenu(context, messageId, chatId),
+                  onLongPress: () => msgOpt == true
+                      ? textMessageOptions(context, messageId, chatId, text)
+                      : bubbleMenu(context, messageId, chatId),
                   child: Container(
                     decoration:
                         BoxDecoration(color: color, borderRadius: bubbleRadius),
@@ -168,18 +267,17 @@ class SentMessageBubble extends HookWidget {
                       documentData['link'],
                     ),
                   ),
-                  onLongPress: () => bubbleMenu(context, messageId, chatId),
+                  onLongPress: () => msgOpt == true
+                      ? imageMessageOptions(context, messageId, chatId)
+                      : bubbleMenu(context, messageId, chatId),
                   child: Container(
                     decoration: BoxDecoration(borderRadius: bubbleRadius),
                     constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width / 1.4),
                     child: ClipRRect(
                       borderRadius: bubbleRadius,
-                      child: Hero(
-                        tag: documentData['link'],
-                        child: CachedNetworkImage(
-                          imageUrl: documentData['link'],
-                        ),
+                      child: CachedNetworkImage(
+                        imageUrl: documentData['link'],
                       ),
                     ),
                   ),
@@ -232,11 +330,8 @@ class ImageView extends HookWidget {
       ),
       backgroundColor: Colors.black,
       body: Center(
-        child: Hero(
-          tag: imageUrl,
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
-          ),
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
         ),
       ),
     );

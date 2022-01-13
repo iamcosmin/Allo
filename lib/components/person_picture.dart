@@ -70,20 +70,7 @@ class PersonPicture extends HookWidget {
           width: radius,
           child: Builder(
             builder: (context) {
-              if (profilePicture == null) {
-                return Container(
-                  height: radius,
-                  width: radius,
-                  decoration: BoxDecoration(color: color, gradient: gradient),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      initials!,
-                      style: TextStyle(fontSize: radius / 2),
-                    ),
-                  ),
-                );
-              } else {
+              if (profilePicture != null && profilePicture!.isNotEmpty) {
                 return CachedNetworkImage(
                   imageUrl: profilePicture!,
                   progressIndicatorBuilder: (context, string, progress) =>
@@ -103,6 +90,19 @@ class PersonPicture extends HookWidget {
                       ),
                     );
                   },
+                );
+              } else {
+                return Container(
+                  height: radius,
+                  width: radius,
+                  decoration: BoxDecoration(color: color, gradient: gradient),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      initials!,
+                      style: TextStyle(fontSize: radius / 2),
+                    ),
+                  ),
                 );
               }
             },

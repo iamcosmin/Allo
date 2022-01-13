@@ -93,21 +93,17 @@ class Settings extends HookConsumerWidget {
               ),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
-            ListTile(
+            SwitchListTile(
               title:
                   const Text('Mod întunecat', style: TextStyle(fontSize: 18)),
-              leading: const Icon(FluentIcons.dark_theme_24_regular, size: 27),
-              minLeadingWidth: 35,
-              onTap: () => darkMethod.switcher(ref, context),
-              trailing: Switch(
-                value: dark,
-                activeColor: Colors.blue,
-                onChanged: (value) => darkMethod.switcher(ref, context),
-              ),
+              secondary:
+                  const Icon(FluentIcons.dark_theme_24_regular, size: 27),
+              value: dark,
+              onChanged: (value) => darkMethod.switcher(ref, context),
             ),
             ListTile(
               leading: const Icon(FluentIcons.sign_out_20_regular, size: 27),
-              minLeadingWidth: 35,
+              minLeadingWidth: 40,
               title: const Text('Deconectare', style: TextStyle(fontSize: 18)),
               onTap: () async => await Core.auth.signOut(context),
             ),

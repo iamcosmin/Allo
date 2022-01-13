@@ -1,9 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-const _backgroundColor = Color(0xFF333333);
 
 class ExampleIsTyping extends StatefulWidget {
   const ExampleIsTyping({
@@ -19,12 +16,12 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      backgroundColor: _backgroundColor,
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Typing Indicator'),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text('Demo indicator scriere'),
       ),
-      child: Column(
+      body: Column(
         children: [
           Expanded(
             child: _buildMessages(),
@@ -58,10 +55,10 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
 
   Widget _buildIsTypingSimulator() {
     return Container(
-      color: Colors.grey,
+      color: Theme.of(context).canvasColor,
       padding: const EdgeInsets.all(16),
       child: Center(
-        child: CupertinoSwitch(
+        child: Switch(
           onChanged: (newValue) {
             setState(() {
               _isSomeoneTyping = newValue;

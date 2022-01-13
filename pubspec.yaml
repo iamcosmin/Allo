@@ -1,10 +1,10 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.3.1+150
+version: 1.3.2+153
 
 environment:
-  sdk: ">=2.13.0 <3.0.0"
+  sdk: ">=2.15.1 <3.0.0"
 
 dependencies:
   animations: ^2.0.2

@@ -1,15 +1,43 @@
 import 'package:allo/components/chats/bubbles/sent.dart';
+import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/logic/core.dart';
+import 'package:allo/logic/preferences.dart';
 import 'package:allo/logic/theme.dart';
 import 'package:allo/logic/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../person_picture.dart';
+
+void textMessageOptions(
+    BuildContext context, String messageId, String chatId, String messageText) {
+  showMagicBottomSheet(
+    context: context,
+    title: 'Opțiuni mesaj',
+    initialChildSize: 0.2,
+    children: [
+      ListTile(
+        leading: const Icon(FluentIcons.copy_24_regular),
+        title: const Text('Copiere mesaj'),
+        onTap: () {
+          Navigator.of(context).pop();
+          Clipboard.setData(ClipboardData(text: messageText));
+          Core.stub.showInfoBar(
+            context: context,
+            icon: FluentIcons.copy_24_regular,
+            text: 'Mesajul a fost copiat.',
+          );
+        },
+      ),
+    ],
+  );
+}
 
 class ReceiveMessageBubble extends HookConsumerWidget {
   // If the nextUID == senderUID, we need to keep the name and to reduce
@@ -68,6 +96,8 @@ class ReceiveMessageBubble extends HookConsumerWidget {
       }
     });
 
+    final msgOpt = ref.watch(newMessageOptions);
+
     return Container(
       padding: EdgeInsets.only(
           bottom: (isSameSenderAsInFuture || nextUID == 'null') ? 1 : 15,
@@ -81,18 +111,14 @@ class ReceiveMessageBubble extends HookConsumerWidget {
               // Profile picture
               if (chatType == ChatType.group) ...[
                 if (!isSameSenderAsInFuture) ...[
-                  FutureBuilder<String>(
+                  FutureBuilder<String?>(
                       future: Core.auth.getUserProfilePicture(uid),
                       builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return PersonPicture.profilePicture(
-                              radius: 36, profilePicture: snapshot.data);
-                        } else {
-                          return PersonPicture.initials(
-                              color: Colors.indigo,
-                              radius: 36,
-                              initials: Core.auth.returnNameInitials(name));
-                        }
+                        return PersonPicture.determine(
+                            radius: 36,
+                            color: Colors.indigo,
+                            profilePicture: snapshot.data,
+                            initials: Core.auth.returnNameInitials(name));
                       }),
                 ] else ...[
                   const Padding(
@@ -120,6 +146,10 @@ class ReceiveMessageBubble extends HookConsumerWidget {
                   if (type == MessageTypes.text) ...[
                     GestureDetector(
                       onTap: () => change(),
+                      onLongPress: msgOpt == false
+                          ? null
+                          : () => textMessageOptions(
+                              context, messageId, chatId, text),
                       child: Container(
                         decoration: BoxDecoration(
                           color: colors.messageBubble,

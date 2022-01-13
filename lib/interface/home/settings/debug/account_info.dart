@@ -15,7 +15,7 @@ class AccountInfo extends HookWidget {
     }, const []);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account info'),
+        title: const Text('Informații despre cont'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

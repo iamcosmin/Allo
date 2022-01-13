@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/tabbed_navigator.dart';
+import 'logic/notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +20,7 @@ void main() async {
 
   if (!kIsWeb) {
     await Core.notifications.setupNotifications();
-    FirebaseMessaging.onBackgroundMessage(
-        Core.notifications.onBackgroundMessage);
+    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
   final _kSharedPreferences = await SharedPreferences.getInstance();
   // await FirebaseMessaging.instance.requestPermission(
