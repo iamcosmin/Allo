@@ -52,18 +52,22 @@ class Notifications {
 /// This function sets up the notification system.
 Future<void> onBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
-  final _uid = message.data['uid'];
-  final _senderName = message.data['senderName'];
-  final _text = message.data['text'];
+  String? _uid = message.data['uid'];
+  String? _senderName = message.data['senderName'];
+  String? _text = message.data['text'];
   String? _profilePicture = message.data['profilePicture'];
-  final _chatId = message.data['toChat'];
-  final _smallNotificationText = message.data['type'] == ChatType.group
+  String? _sentPicture = message.data['photo'];
+  String? _chatId = message.data['toChat'];
+  String _smallNotificationText = message.data['type'] == ChatType.group
       ? message.data['chatName']
       : 'Privat';
+  final _notificationLayout = message.data['type'] == ChatType.group
+      ? NotificationLayout.MessagingGroup
+      : NotificationLayout.Messaging;
   // ignore: omit_local_variable_types
   final Map<String, String> _suplimentaryInfo = {
     'profilePicture': _profilePicture ?? '',
-    'chatId': _chatId,
+    'chatId': _chatId ?? '',
     'chatName': _title(
         type: message.data['type'],
         chatName: message.data['chatName'],
@@ -75,12 +79,14 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
       content: NotificationContent(
         id: _createUniqueID(AwesomeNotifications.maxID),
         title: _senderName,
-        body: _text,
+        body: _sentPicture != null ? 'Imagine' : _text,
         channelKey: 'conversations',
         roundedLargeIcon: true,
         largeIcon: _profilePicture,
-        notificationLayout: NotificationLayout.Messaging,
+        notificationLayout: _notificationLayout,
         category: NotificationCategory.Message,
+        roundedBigPicture: true,
+        bigPicture: _sentPicture,
         groupKey: _chatId,
         summary: _smallNotificationText,
         payload: _suplimentaryInfo,

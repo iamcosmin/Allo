@@ -190,12 +190,13 @@ class Messages {
       progress.value = event.bytesTransferred / event.totalBytes;
       if (event.state == TaskState.success) {
         progress.value = 1.1;
+        final link = await event.ref.getDownloadURL();
         await db.collection('messages').add({
           'type': MessageTypes.image,
           'name': auth.user.name,
           'username': await auth.user.username,
           'uid': auth.user.uid,
-          'link': await event.ref.getDownloadURL(),
+          'link': link,
           'description': description,
           'time': DateTime.now(),
         });
@@ -205,19 +206,22 @@ class Messages {
             content: 'Imagine' + (description != null ? ' - $description' : ''),
             uid: auth.user.uid,
             chatType: chatType,
-            profilePicture: Core.auth.user.profilePicture);
+            profilePicture: Core.auth.user.profilePicture,
+            photo: link);
         Navigator.of(context).pop();
       }
     });
   }
 
-  Future _sendNotification(
-      {required String chatName,
-      required String name,
-      required String content,
-      required String uid,
-      required String chatType,
-      required String? profilePicture}) async {
+  Future _sendNotification({
+    required String chatName,
+    required String name,
+    required String content,
+    required String uid,
+    required String chatType,
+    required String? profilePicture,
+    String? photo,
+  }) async {
     await post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
@@ -235,6 +239,7 @@ class Messages {
           'uid': uid,
           'type': chatType,
           'profilePicture': profilePicture,
+          'photo': photo,
         }
       }),
     );
