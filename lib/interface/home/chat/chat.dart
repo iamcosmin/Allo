@@ -67,7 +67,10 @@ class Chat extends HookConsumerWidget {
             ),
           ),
           flexibleSpace: FlexibleSpaceBar(
-            titlePadding: const EdgeInsets.only(left: 20, bottom: 10, top: 75),
+            titlePadding: const EdgeInsets.only(
+              left: 20,
+              bottom: 10,
+            ),
             title: InkWell(
               onTap: () => Core.navigation.push(
                   context: context,
@@ -76,26 +79,34 @@ class Chat extends HookConsumerWidget {
                     id: chatId,
                     profilepic: profilepic,
                   )),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    alignment: Alignment.bottomLeft,
-                    padding: const EdgeInsets.only(right: 10),
-                    child: PersonPicture.determine(
-                      profilePicture: profilepic,
-                      radius: 37,
-                      initials: Core.auth.returnNameInitials(title),
-                      color: Colors.green,
-                    ),
-                  ),
-                  Text(
-                    title,
-                    style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).textTheme.bodyText1!.color),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        alignment: Alignment.bottomLeft,
+                        padding: const EdgeInsets.only(right: 10),
+                        child: PersonPicture.determine(
+                          profilePicture: profilepic,
+                          radius: 37,
+                          initials: Core.auth.returnNameInitials(title),
+                          color: Colors.green,
+                        ),
+                      ),
+                      Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w600,
+                            color:
+                                Theme.of(context).textTheme.bodyText1!.color),
+                      ),
+                    ],
                   ),
                 ],
               ),
