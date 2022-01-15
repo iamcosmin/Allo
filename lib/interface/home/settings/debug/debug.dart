@@ -11,8 +11,12 @@ class C extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final conversations = ref.watch(privateConversations);
     final conversationsMethod = ref.watch(privateConversations.notifier);
-    final newMsgOpt = ref.watch(newMessageOptions);
-    final newMsgOptMethod = ref.watch(newMessageOptions.notifier);
+    final reactions = ref.watch(reactionsDebug);
+    final reactionsMethod = ref.watch(reactionsDebug.notifier);
+    final replies = ref.watch(repliesDebug);
+    final repliesMethod = ref.watch(repliesDebug.notifier);
+    final editMessage = ref.watch(editMessageDebug);
+    final editMessageMethod = ref.watch(editMessageDebug.notifier);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Opțiuni experimentale'),
@@ -38,29 +42,25 @@ class C extends HookConsumerWidget {
               ),
             ),
           ),
-          const SwitchListTile(
-            title: Text('Reacții'),
-            value: false,
-            onChanged: null,
+          SwitchListTile(
+            title: const Text('Reacții'),
+            value: reactions,
+            onChanged: (value) => reactionsMethod.switcher(ref, context),
           ),
-          const SwitchListTile(
-            title: Text('Editare mesaje'),
-            value: false,
-            onChanged: null,
+          SwitchListTile(
+            title: const Text('Răspunde la mesaj'),
+            value: replies,
+            onChanged: (value) => repliesMethod.switcher(ref, context),
+          ),
+          SwitchListTile(
+            title: const Text('Editare mesaje'),
+            value: editMessage,
+            onChanged: (value) => editMessageMethod.switcher(ref, context),
           ),
           SwitchListTile(
             title: const Text('Creare conversații'),
             value: conversations,
-            onChanged: (value) {
-              conversationsMethod.switcher(ref, context);
-            },
-          ),
-          SwitchListTile(
-            title: const Text('Noul meniu pentru mesaje'),
-            value: newMsgOpt,
-            onChanged: (value) {
-              newMsgOptMethod.switcher(ref, context);
-            },
+            onChanged: (value) => conversationsMethod.switcher(ref, context),
           ),
         ],
       ),

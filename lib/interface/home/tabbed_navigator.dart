@@ -15,7 +15,6 @@ class TabbedNavigator extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selected = useState(0);
-    final pageController = usePageController(initialPage: 0, keepPage: true);
 
     useEffect(() {
       AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
@@ -30,13 +29,7 @@ class TabbedNavigator extends HookWidget {
       });
     }, const []);
     return Scaffold(
-      body: PageView(
-        controller: pageController,
-        children: pages,
-        onPageChanged: (index) {
-          selected.value = index;
-        },
-      ),
+      body: pages[selected.value],
       bottomNavigationBar: NavigationBar(
         height: 56,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
@@ -67,8 +60,6 @@ class TabbedNavigator extends HookWidget {
         selectedIndex: selected.value,
         onDestinationSelected: (index) {
           selected.value = index;
-          pageController.animateToPage(index,
-              duration: const Duration(milliseconds: 200), curve: Curves.ease);
         },
       ),
     );

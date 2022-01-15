@@ -18,8 +18,20 @@ final privateConversations =
   return PreferenceManager(returnValue, parameter);
 });
 
-final newMessageOptions = StateNotifierProvider<PreferenceManager, bool>((ref) {
-  const parameter = 'newMessageOptions';
+final reactionsDebug = StateNotifierProvider<PreferenceManager, bool>((ref) {
+  const parameter = 'alloReactionsDebug';
+  final returnValue = ref.read(preferencesProvider).getBool(parameter);
+  return PreferenceManager(returnValue, parameter);
+});
+
+final repliesDebug = StateNotifierProvider<PreferenceManager, bool>((ref) {
+  const parameter = 'alloRepliesDebug';
+  final returnValue = ref.read(preferencesProvider).getBool(parameter);
+  return PreferenceManager(returnValue, parameter);
+});
+
+final editMessageDebug = StateNotifierProvider<PreferenceManager, bool>((ref) {
+  const parameter = 'alloEditMessageDebug';
   final returnValue = ref.read(preferencesProvider).getBool(parameter);
   return PreferenceManager(returnValue, parameter);
 });

@@ -67,8 +67,8 @@ class Chat extends HookConsumerWidget {
             ),
           ),
           flexibleSpace: FlexibleSpaceBar(
-            titlePadding: const EdgeInsets.only(left: 20, bottom: 10),
-            title: GestureDetector(
+            titlePadding: const EdgeInsets.only(left: 20, bottom: 10, top: 75),
+            title: InkWell(
               onTap: () => Core.navigation.push(
                   context: context,
                   route: ChatDetails(
@@ -78,8 +78,7 @@ class Chat extends HookConsumerWidget {
                   )),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.max,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     alignment: Alignment.bottomLeft,
@@ -93,8 +92,10 @@ class Chat extends HookConsumerWidget {
                   ),
                   Text(
                     title,
-                    style: const TextStyle(
-                        fontSize: 30, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).textTheme.bodyText1!.color),
                   ),
                 ],
               ),
@@ -145,12 +146,13 @@ class Chat extends HookConsumerWidget {
                               children: [
                                 ElevatedButton(
                                   style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              isLoadingPrevMessages.value ==
-                                                      false
-                                                  ? Colors.blue
-                                                  : Colors.black)),
+                                    shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(100))),
+                                    backgroundColor:
+                                        MaterialStateProperty.all(theme.value),
+                                  ),
                                   onPressed: () {
                                     isLoadingPrevMessages.value = true;
                                     FirebaseFirestore.instance
@@ -239,7 +241,12 @@ class Chat extends HookConsumerWidget {
                 flex: 0,
                 child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: MessageInput(chatId, title, chatType)),
+                    child: MessageInput(
+                      chatId: chatId,
+                      chatName: title,
+                      chatType: chatType,
+                      color: theme.value,
+                    )),
               )
             ],
           ),

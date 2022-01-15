@@ -1,3 +1,4 @@
+import 'package:allo/components/chats/bubbles/sent.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/logic/core.dart';
@@ -74,11 +75,19 @@ class ChatDetails extends HookWidget {
           Container(
             padding: const EdgeInsets.only(top: 50),
             alignment: Alignment.topCenter,
-            child: PersonPicture.determine(
-              profilePicture: profilepic,
-              radius: 100,
-              color: Colors.green,
-              initials: Core.auth.returnNameInitials(name),
+            child: InkWell(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onTap: profilepic == null
+                  ? null
+                  : () => Core.navigation
+                      .push(context: context, route: ImageView(profilepic!)),
+              child: PersonPicture.determine(
+                profilePicture: profilepic,
+                radius: 100,
+                color: Colors.green,
+                initials: Core.auth.returnNameInitials(name),
+              ),
             ),
           ),
           Container(

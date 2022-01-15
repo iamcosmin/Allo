@@ -20,7 +20,7 @@ void textMessageOptions(
   showMagicBottomSheet(
     context: context,
     title: 'Opțiuni mesaj',
-    initialChildSize: 0.2,
+    initialChildSize: 0.17,
     children: [
       ListTile(
         leading: const Icon(FluentIcons.copy_24_regular),
@@ -96,8 +96,6 @@ class ReceiveMessageBubble extends HookConsumerWidget {
       }
     });
 
-    final msgOpt = ref.watch(newMessageOptions);
-
     return Container(
       padding: EdgeInsets.only(
           bottom: (isSameSenderAsInFuture || nextUID == 'null') ? 1 : 15,
@@ -146,10 +144,8 @@ class ReceiveMessageBubble extends HookConsumerWidget {
                   if (type == MessageTypes.text) ...[
                     GestureDetector(
                       onTap: () => change(),
-                      onLongPress: msgOpt == false
-                          ? null
-                          : () => textMessageOptions(
-                              context, messageId, chatId, text),
+                      onLongPress: () =>
+                          textMessageOptions(context, messageId, chatId, text),
                       child: Container(
                         decoration: BoxDecoration(
                           color: colors.messageBubble,

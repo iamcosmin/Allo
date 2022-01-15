@@ -56,7 +56,7 @@ void textMessageOptions(
   showMagicBottomSheet(
     context: context,
     title: 'Opțiuni mesaj',
-    initialChildSize: 0.3,
+    initialChildSize: 0.25,
     children: [
       ListTile(
         leading: const Icon(FluentIcons.copy_24_regular),
@@ -88,7 +88,7 @@ void imageMessageOptions(
   showMagicBottomSheet(
     context: context,
     title: 'Opțiuni mesaj',
-    initialChildSize: 0.2,
+    initialChildSize: 0.17,
     children: [
       ListTile(
         leading: const Icon(FluentIcons.delete_20_regular),
@@ -100,81 +100,6 @@ void imageMessageOptions(
       ),
     ],
   );
-}
-
-void bubbleMenu(BuildContext context, String messageId, String chatId) {
-  showModalBottomSheet(
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-      context: context,
-      builder: (context) {
-        return ClipRRect(
-          child: Material(
-            child: SizedBox(
-              height: 200,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: const Icon(
-                          FluentIcons.dismiss_circle_20_filled,
-                          color: Colors.grey,
-                          size: 30,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Future.delayed(
-                                  const Duration(seconds: 1),
-                                  () => Core.chat(chatId)
-                                      .messages
-                                      .deleteMessage(messageId: messageId),
-                                );
-                              },
-                              child: ClipOval(
-                                child: Container(
-                                  height: 60,
-                                  width: 60,
-                                  alignment: Alignment.center,
-                                  color: Colors.red,
-                                  child: const Icon(
-                                    FluentIcons.delete_16_regular,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: Text(
-                                  'Șterge mesajul',
-                                  style: TextStyle(fontSize: 16),
-                                )),
-                          ],
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      });
 }
 
 class SentMessageBubble extends HookConsumerWidget {
@@ -223,8 +148,6 @@ class SentMessageBubble extends HookConsumerWidget {
           : 20),
       bottomLeft: const Radius.circular(20),
     );
-
-    final msgOpt = ref.watch(newMessageOptions);
     return Padding(
       padding: EdgeInsets.only(
           bottom: (isSameSenderAsInFuture || nextUID == 'null') ? 1 : 15,
@@ -239,9 +162,8 @@ class SentMessageBubble extends HookConsumerWidget {
               if (type == MessageTypes.text) ...[
                 GestureDetector(
                   onTap: () => change(),
-                  onLongPress: () => msgOpt == true
-                      ? textMessageOptions(context, messageId, chatId, text)
-                      : bubbleMenu(context, messageId, chatId),
+                  onLongPress: () =>
+                      textMessageOptions(context, messageId, chatId, text),
                   child: Container(
                     decoration:
                         BoxDecoration(color: color, borderRadius: bubbleRadius),
@@ -267,9 +189,8 @@ class SentMessageBubble extends HookConsumerWidget {
                       documentData['link'],
                     ),
                   ),
-                  onLongPress: () => msgOpt == true
-                      ? imageMessageOptions(context, messageId, chatId)
-                      : bubbleMenu(context, messageId, chatId),
+                  onLongPress: () =>
+                      imageMessageOptions(context, messageId, chatId),
                   child: Container(
                     decoration: BoxDecoration(borderRadius: bubbleRadius),
                     constraints: BoxConstraints(
