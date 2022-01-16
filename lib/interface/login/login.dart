@@ -17,7 +17,7 @@ class Login extends HookConsumerWidget {
         Text(
           'Să ne conectăm...',
           style: TextStyle(
-            fontSize: 40,
+            fontSize: 32,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.left,
@@ -26,7 +26,7 @@ class Login extends HookConsumerWidget {
           padding: EdgeInsets.only(top: 5),
           child: Text(
             'Pentru a continua, introdu emailul tău.',
-            style: TextStyle(fontSize: 18, color: Colors.grey),
+            style: TextStyle(fontSize: 17, color: Colors.grey),
           ),
         ),
       ],

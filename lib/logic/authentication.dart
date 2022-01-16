@@ -112,8 +112,11 @@ class Authentication {
         case 'wrong-password':
           error.value = ErrorCodes.wrongPassword;
           break;
+        case 'too-many-requests':
+          error.value = ErrorCodes.tooManyRequests;
+          break;
         default:
-          error.value = 'O eroare s-a întâmplat.';
+          error.value = 'Eroare necunoscută.';
           break;
       }
     }
@@ -305,6 +308,15 @@ class Authentication {
           .getDownloadURL();
     } on FirebaseException catch (_) {}
     return url;
+  }
+
+  Future sendPasswordResetEmail(
+      {required String email, required BuildContext context}) async {
+    FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    Core.stub.showInfoBar(
+        context: context,
+        icon: Icons.mail_outline,
+        text: 'Vei primi un link pe email.');
   }
 }
 

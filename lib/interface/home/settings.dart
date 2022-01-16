@@ -4,7 +4,6 @@ import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -36,7 +35,7 @@ class Settings extends HookConsumerWidget {
                 color: Theme.of(context).scaffoldBackgroundColor,
               ),
               centerTitle: false,
-              title: GestureDetector(
+              title: InkWell(
                   onTap: () => _b(),
                   child: Text(
                     'Setări',
@@ -96,13 +95,12 @@ class Settings extends HookConsumerWidget {
             SwitchListTile(
               title:
                   const Text('Mod întunecat', style: TextStyle(fontSize: 18)),
-              secondary:
-                  const Icon(FluentIcons.dark_theme_24_regular, size: 27),
+              secondary: const Icon(Icons.dark_mode_outlined, size: 27),
               value: dark,
               onChanged: (value) => darkMethod.switcher(ref, context),
             ),
             ListTile(
-              leading: const Icon(FluentIcons.sign_out_20_regular, size: 27),
+              leading: const Icon(Icons.logout_outlined, size: 27),
               minLeadingWidth: 40,
               title: const Text('Deconectare', style: TextStyle(fontSize: 18)),
               onTap: () async => await Core.auth.signOut(context),

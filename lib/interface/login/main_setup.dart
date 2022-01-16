@@ -13,14 +13,14 @@ class Setup extends HookWidget {
         header: const [
           Text(
             'Bine ai venit la Allo!',
-            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             textAlign: TextAlign.left,
           ),
           Padding(
             padding: EdgeInsets.only(right: 10, top: 10),
             child: Text(
               'Comunică simplu și ușor cu persoanele dragi ție în siguranță și confort.',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: TextStyle(fontSize: 17, color: Colors.grey),
               textAlign: TextAlign.left,
             ),
           )

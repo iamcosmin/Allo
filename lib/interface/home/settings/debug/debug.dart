@@ -17,6 +17,8 @@ class C extends HookConsumerWidget {
     final repliesMethod = ref.watch(repliesDebug.notifier);
     final editMessage = ref.watch(editMessageDebug);
     final editMessageMethod = ref.watch(editMessageDebug.notifier);
+    final participants = ref.watch(participantsDebug);
+    final participantsMethod = ref.watch(participantsDebug.notifier);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Opțiuni experimentale'),
@@ -61,6 +63,11 @@ class C extends HookConsumerWidget {
             title: const Text('Creare conversații'),
             value: conversations,
             onChanged: (value) => conversationsMethod.switcher(ref, context),
+          ),
+          SwitchListTile(
+            title: const Text('Vezi lista cu participanți'),
+            value: participants,
+            onChanged: (value) => participantsMethod.switcher(ref, context),
           ),
         ],
       ),

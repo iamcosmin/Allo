@@ -36,6 +36,12 @@ final editMessageDebug = StateNotifierProvider<PreferenceManager, bool>((ref) {
   return PreferenceManager(returnValue, parameter);
 });
 
+final participantsDebug = StateNotifierProvider<PreferenceManager, bool>((ref) {
+  const parameter = 'alloParticipantsDebug';
+  final returnValue = ref.read(preferencesProvider).getBool(parameter);
+  return PreferenceManager(returnValue, parameter);
+});
+
 //? </Preferences>
 
 final preferencesProvider = Provider<Preferences>((ref) {

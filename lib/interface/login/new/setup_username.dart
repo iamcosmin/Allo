@@ -18,7 +18,7 @@ class SetupUsername extends HookWidget {
       header: const [
         Text(
           'Ce nume de utilizator vrei?',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
@@ -26,7 +26,7 @@ class SetupUsername extends HookWidget {
         ),
         Text(
           'Pentru a continua, introdu un numele de utilizator pe care îl dorești.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+          style: TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],

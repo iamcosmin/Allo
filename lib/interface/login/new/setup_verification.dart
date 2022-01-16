@@ -19,14 +19,14 @@ class SetupVerification extends HookWidget {
         header: [
           const Text(
             'Dorim să te verificăm.',
-            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             textAlign: TextAlign.left,
           ),
           const Padding(
             padding: EdgeInsets.only(right: 10, top: 10),
             child: Text(
               'Ți-am trimis un email cu un link pe care trebuie să îl accesezi pentru a verifica contul tău.',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: TextStyle(fontSize: 17, color: Colors.grey),
               textAlign: TextAlign.left,
             ),
           ),

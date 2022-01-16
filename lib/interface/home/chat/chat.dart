@@ -4,7 +4,6 @@ import 'package:allo/logic/core.dart';
 import 'package:allo/logic/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/chats/message_input.dart';
@@ -62,7 +61,7 @@ class Chat extends HookConsumerWidget {
             padding: const EdgeInsets.only(left: 10, top: 0),
             alignment: Alignment.topLeft,
             child: IconButton(
-              icon: const Icon(FluentIcons.arrow_left_16_regular),
+              icon: const Icon(Icons.arrow_back_outlined),
               onPressed: () => Navigator.pop(context),
             ),
           ),

@@ -3,8 +3,6 @@ import 'dart:typed_data';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/theme.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,15 +15,13 @@ void _attachMenu({
   required String chatName,
   required String chatId,
 }) {
-  FocusScope.of(context).unfocus();
   XFile? file;
   showMagicBottomSheet(
     context: context,
     title: 'Atașează',
-    initialChildSize: 0.25,
     children: [
       ListTile(
-        leading: const Icon(FluentIcons.camera_20_regular),
+        leading: const Icon(Icons.camera_alt_outlined),
         title: const Text('Cameră'),
         onTap: () async {
           try {
@@ -58,7 +54,7 @@ void _attachMenu({
         },
       ),
       ListTile(
-        leading: const Icon(FluentIcons.image_20_regular),
+        leading: const Icon(Icons.image_outlined),
         title: const Text('Galerie'),
         onTap: () async {
           Navigator.of(context).pop();
@@ -116,8 +112,8 @@ class MessageInput extends HookConsumerWidget {
                 alignment: Alignment.center,
                 iconSize: 25,
                 icon: empty.value
-                    ? const Icon(FluentIcons.attach_16_regular)
-                    : const Icon(FluentIcons.search_16_regular),
+                    ? const Icon(Icons.attach_file_outlined)
+                    : const Icon(Icons.search_outlined),
                 onPressed: empty.value == false
                     ? null
                     : () => _attachMenu(
@@ -165,7 +161,7 @@ class MessageInput extends HookConsumerWidget {
                   ),
                   IconButton(
                     iconSize: progress.value == 0 ? 23 : 17,
-                    icon: const Icon(FluentIcons.send_16_filled),
+                    icon: const Icon(Icons.send_rounded),
                     onPressed: empty.value
                         ? null
                         : () {
@@ -221,7 +217,7 @@ class UploadImage extends HookWidget {
               context: context,
               chatType: chatType);
         },
-        child: const Icon(FluentIcons.checkmark_20_regular),
+        child: const Icon(Icons.check_rounded),
       ),
       body: Center(
         child: Image.memory(imageFileBytes),

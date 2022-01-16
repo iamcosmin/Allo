@@ -1,6 +1,5 @@
 import 'package:allo/logic/core.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -36,21 +35,21 @@ class TabbedNavigator extends HookWidget {
         destinations: [
           NavigationDestination(
             icon: const Icon(
-              FluentIcons.home_16_regular,
+              Icons.home_outlined,
             ),
             label: 'Acasă',
             selectedIcon: Icon(
-              FluentIcons.home_16_filled,
+              Icons.home,
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.black
                   : Colors.white,
             ),
           ),
           NavigationDestination(
-            icon: const Icon(FluentIcons.settings_20_regular),
+            icon: const Icon(Icons.settings_outlined),
             label: 'Setări',
             selectedIcon: Icon(
-              FluentIcons.settings_20_filled,
+              Icons.settings,
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.black
                   : Colors.white,

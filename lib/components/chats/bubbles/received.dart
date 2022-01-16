@@ -6,7 +6,6 @@ import 'package:allo/logic/theme.dart';
 import 'package:allo/logic/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -15,26 +14,65 @@ import 'package:intl/intl.dart';
 
 import '../../person_picture.dart';
 
-void textMessageOptions(
-    BuildContext context, String messageId, String chatId, String messageText) {
+void textMessageOptions(BuildContext context, String messageId, String chatId,
+    String messageText, WidgetRef ref) {
+  final replies = ref.watch(repliesDebug);
   showMagicBottomSheet(
     context: context,
     title: 'Opțiuni mesaj',
-    initialChildSize: 0.17,
     children: [
+      if (replies) ...[
+        ListTile(
+          leading: const Icon(Icons.reply_outlined),
+          title: const Text('Răspunde'),
+          onTap: () {
+            Navigator.of(context).pop();
+            Core.stub.showInfoBar(
+              context: context,
+              icon: Icons.info_outline,
+              text: 'În curând...',
+            );
+          },
+        ),
+      ],
       ListTile(
-        leading: const Icon(FluentIcons.copy_24_regular),
+        leading: const Icon(Icons.copy_outlined),
         title: const Text('Copiere mesaj'),
         onTap: () {
           Navigator.of(context).pop();
           Clipboard.setData(ClipboardData(text: messageText));
           Core.stub.showInfoBar(
             context: context,
-            icon: FluentIcons.copy_24_regular,
+            icon: Icons.copy_outlined,
             text: 'Mesajul a fost copiat.',
           );
         },
       ),
+    ],
+  );
+}
+
+void imageMessageOptions(
+    BuildContext context, String messageId, String chatId, WidgetRef ref) {
+  final replies = ref.watch(repliesDebug);
+  showMagicBottomSheet(
+    context: context,
+    title: 'Opțiuni mesaj',
+    children: [
+      if (replies) ...[
+        ListTile(
+          leading: const Icon(Icons.reply_outlined),
+          title: const Text('Răspunde'),
+          onTap: () {
+            Navigator.of(context).pop();
+            Core.stub.showInfoBar(
+              context: context,
+              icon: Icons.info_outline,
+              text: 'În curând...',
+            );
+          },
+        ),
+      ],
     ],
   );
 }
@@ -142,10 +180,12 @@ class ReceiveMessageBubble extends HookConsumerWidget {
                     ),
                   ],
                   if (type == MessageTypes.text) ...[
-                    GestureDetector(
+                    InkWell(
+                      splashFactory: NoSplash.splashFactory,
+                      highlightColor: const Color(0x00000000),
                       onTap: () => change(),
-                      onLongPress: () =>
-                          textMessageOptions(context, messageId, chatId, text),
+                      onLongPress: () => textMessageOptions(
+                          context, messageId, chatId, text, ref),
                       child: Container(
                         decoration: BoxDecoration(
                           color: colors.messageBubble,
@@ -182,13 +222,18 @@ class ReceiveMessageBubble extends HookConsumerWidget {
                       ),
                     ),
                   ] else if (type == MessageTypes.image) ...[
-                    GestureDetector(
+                    InkWell(
+                      splashFactory: NoSplash.splashFactory,
+                      highlightColor: const Color(0x00000000),
                       onTap: () => Core.navigation.push(
                         context: context,
                         route: ImageView(
                           documentData['link'],
                         ),
                       ),
+                      onLongPress: () => ref.watch(repliesDebug)
+                          ? imageMessageOptions(context, messageId, chatId, ref)
+                          : null,
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: bubbleRadius,

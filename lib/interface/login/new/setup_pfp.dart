@@ -16,7 +16,7 @@ class SetupProfilePicture extends HookWidget {
       header: const [
         Text(
           'Alege o fotografie de profil.',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
@@ -24,7 +24,7 @@ class SetupProfilePicture extends HookWidget {
         ),
         Text(
           'Personalizează contul. Poți sări acest pas dacă dorești.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+          style: TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],

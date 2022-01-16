@@ -11,21 +11,22 @@ class EnterPassword extends HookWidget {
     final error = useState('');
     final controller = useTextEditingController();
     return SetupPage(
+      alignment: CrossAxisAlignment.start,
       header: [
         const Text(
           'Bine ai revenit, ',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         ),
         Text(
           '$email!',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
         ),
         const Padding(
           padding: EdgeInsets.only(top: 10),
         ),
         const Text(
           'Pentru a continua, introdu parola contului Allo.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+          style: TextStyle(fontSize: 17, color: Colors.grey),
         ),
       ],
       body: [
@@ -43,6 +44,18 @@ class EnterPassword extends HookWidget {
             obscureText: true,
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: TextButton(
+            style: const ButtonStyle(
+                visualDensity: VisualDensity.compact,
+                alignment: Alignment.topLeft),
+            onPressed: () {
+              Core.auth.sendPasswordResetEmail(email: email, context: context);
+            },
+            child: const Text('Am uitat parola'),
+          ),
+        )
       ],
       onButtonPress: () async {
         await Core.auth.signIn(

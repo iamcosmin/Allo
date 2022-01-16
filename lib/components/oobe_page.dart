@@ -10,20 +10,22 @@ class SetupPage extends HookConsumerWidget {
       required this.body,
       required this.onButtonPress,
       required this.isAsync,
+      this.alignment = CrossAxisAlignment.center,
       Key? key})
       : super(key: key);
   final List<Widget> header;
   final List<Widget> body;
   final Function onButtonPress;
   final bool isAsync;
+  final CrossAxisAlignment alignment;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loading = useState(false);
-    final colors = ref.watch(colorsProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colors.nonColors,
+        elevation: 0,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,6 +50,7 @@ class SetupPage extends HookConsumerWidget {
               flex: 2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: alignment,
                 children: body,
               ),
             ),
@@ -66,12 +69,16 @@ class SetupPage extends HookConsumerWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: [
-                        SettingsListTile(
-                          title: 'Continuare',
-                          color: Colors.blue,
-                          type: RadiusType.BOTH,
-                          center: true,
-                          trailing: loading.value
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100))),
+                            minimumSize: MaterialStateProperty.all(
+                              Size(MediaQuery.of(context).size.width - 10, 50),
+                            ),
+                          ),
+                          child: loading.value
                               ? const SizedBox(
                                   height: 23,
                                   width: 23,
@@ -80,8 +87,8 @@ class SetupPage extends HookConsumerWidget {
                                     strokeWidth: 3,
                                   ),
                                 )
-                              : null,
-                          onTap: () async {
+                              : const Text('Continuare'),
+                          onPressed: () async {
                             if (isAsync) {
                               loading.value = true;
                               await onButtonPress();

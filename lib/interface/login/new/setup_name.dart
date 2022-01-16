@@ -18,7 +18,7 @@ class SetupName extends HookWidget {
       header: const [
         Text(
           'Cum te numești?',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
@@ -26,7 +26,7 @@ class SetupName extends HookWidget {
         ),
         Text(
           'Pentru a continua, introdu numele tău.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+          style: TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],

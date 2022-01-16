@@ -16,7 +16,7 @@ class SetupPersonalize extends HookConsumerWidget {
       header: const [
         Text(
           'Personalizează-ți experiența.',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
@@ -24,7 +24,7 @@ class SetupPersonalize extends HookConsumerWidget {
         ),
         Text(
           'Asta este ultima etapă. Alege opțiunile de personalizare dorite.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+          style: TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],

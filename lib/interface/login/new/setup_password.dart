@@ -24,7 +24,7 @@ class SetupPassword extends HookWidget {
       header: const [
         Text(
           'Securitatea este importantă.',
-          style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
         Padding(
@@ -32,7 +32,7 @@ class SetupPassword extends HookWidget {
         ),
         Text(
           'Pentru a crea contul, introdu parola pe care o vrei asociată acestui cont.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+          style: TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
@@ -48,7 +48,7 @@ class SetupPassword extends HookWidget {
                   errorStyle: const TextStyle(fontSize: 14),
                   labelText: 'Parolă',
                   border: const OutlineInputBorder(),
-                  suffix: GestureDetector(
+                  suffix: InkWell(
                     onTap: () {
                       if (obscure.value) {
                         obscure.value = false;
@@ -74,7 +74,7 @@ class SetupPassword extends HookWidget {
                   errorStyle: const TextStyle(fontSize: 14),
                   labelText: 'Confirmă parola',
                   border: const OutlineInputBorder(),
-                  suffix: GestureDetector(
+                  suffix: InkWell(
                     onTap: () {
                       if (obscure.value) {
                         obscure.value = false;

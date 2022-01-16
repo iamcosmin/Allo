@@ -1,9 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Navigation {
-  Future push({required BuildContext context, required Widget route}) {
+  Future push(
+      {required BuildContext context,
+      required Widget route,
+      bool login = false}) {
     return Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => route),
+      login
+          ? CupertinoPageRoute(builder: (context) => route)
+          : MaterialPageRoute(builder: (context) => route),
     );
   }
 
