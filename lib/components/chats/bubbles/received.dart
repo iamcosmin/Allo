@@ -181,8 +181,10 @@ class ReceiveMessageBubble extends HookConsumerWidget {
                   ],
                   if (type == MessageTypes.text) ...[
                     InkWell(
-                      splashFactory: NoSplash.splashFactory,
                       highlightColor: const Color(0x00000000),
+                      focusColor: const Color(0x00000000),
+                      hoverColor: const Color(0x00000000),
+                      splashColor: const Color(0x00000000),
                       onTap: () => change(),
                       onLongPress: () => textMessageOptions(
                           context, messageId, chatId, text, ref),
@@ -223,8 +225,10 @@ class ReceiveMessageBubble extends HookConsumerWidget {
                     ),
                   ] else if (type == MessageTypes.image) ...[
                     InkWell(
-                      splashFactory: NoSplash.splashFactory,
                       highlightColor: const Color(0x00000000),
+                      focusColor: const Color(0x00000000),
+                      hoverColor: const Color(0x00000000),
+                      splashColor: const Color(0x00000000),
                       onTap: () => Core.navigation.push(
                         context: context,
                         route: ImageView(

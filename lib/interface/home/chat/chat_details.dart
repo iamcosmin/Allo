@@ -175,8 +175,10 @@ class ChatDetails extends HookConsumerWidget {
             padding: const EdgeInsets.only(top: 50),
             alignment: Alignment.topCenter,
             child: InkWell(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+              highlightColor: const Color(0x00000000),
+              focusColor: const Color(0x00000000),
+              hoverColor: const Color(0x00000000),
+              splashColor: const Color(0x00000000),
               onTap: profilepic == null
                   ? null
                   : () => Core.navigation
