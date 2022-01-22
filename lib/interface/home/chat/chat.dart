@@ -203,7 +203,7 @@ class Chat extends HookConsumerWidget {
                                     nextUID: nextUID,
                                     color: theme.value,
                                     data: messages.value[i],
-                                    key: UniqueKey(),
+                                    key: Key(messages.value[i].id),
                                   ),
                                 ),
                               ),
@@ -217,14 +217,13 @@ class Chat extends HookConsumerWidget {
                               opacity: CurvedAnimation(
                                   curve: Curves.easeIn, parent: animation),
                               child: MessageBubble(
-                                chatType: chatType,
-                                pastUID: pastUID,
-                                chatId: chatId,
-                                nextUID: nextUID,
-                                color: theme.value,
-                                data: messages.value[i],
-                                key: UniqueKey(),
-                              ),
+                                  chatType: chatType,
+                                  pastUID: pastUID,
+                                  chatId: chatId,
+                                  nextUID: nextUID,
+                                  color: theme.value,
+                                  data: messages.value[i],
+                                  key: Key(messages.value[i].id)),
                             ),
                           );
                         }

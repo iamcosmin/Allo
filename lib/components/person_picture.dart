@@ -12,6 +12,7 @@ class PersonPicture extends HookWidget {
   Gradient? gradient;
   String? profilePicture;
   String? initials;
+  String? stringKey;
 
   PersonPicture.profilePicture(
       {required this.radius, required this.profilePicture, Key? key})
@@ -32,6 +33,7 @@ class PersonPicture extends HookWidget {
       required this.radius,
       required this.profilePicture,
       required this.initials,
+      this.stringKey,
       this.color,
       this.gradient})
       : _type = _PersonPictureType.determine,
@@ -65,13 +67,18 @@ class PersonPicture extends HookWidget {
       );
     } else if (_type == _PersonPictureType.determine) {
       return ClipOval(
+        key: stringKey != null ? Key(stringKey!) : UniqueKey(),
         child: SizedBox(
+          key: stringKey != null ? Key(stringKey!) : UniqueKey(),
           height: radius,
           width: radius,
           child: Builder(
+            key: stringKey != null ? Key(stringKey!) : UniqueKey(),
             builder: (context) {
               if (profilePicture != null && profilePicture!.isNotEmpty) {
                 return CachedNetworkImage(
+                  key: stringKey != null ? Key(stringKey!) : UniqueKey(),
+                  cacheKey: stringKey,
                   imageUrl: profilePicture!,
                   progressIndicatorBuilder: (context, string, progress) =>
                       const CircularProgressIndicator(),
@@ -93,6 +100,7 @@ class PersonPicture extends HookWidget {
                 );
               } else {
                 return Container(
+                  key: stringKey != null ? Key(stringKey!) : UniqueKey(),
                   height: radius,
                   width: radius,
                   decoration: BoxDecoration(color: color, gradient: gradient),

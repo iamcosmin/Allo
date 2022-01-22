@@ -86,7 +86,8 @@ class Chat {
                 listKey.currentState?.insertItem(docChanges.newIndex,
                     duration: const Duration(seconds: 0));
               } else {
-                listKey.currentState?.insertItem(docChanges.newIndex);
+                listKey.currentState?.insertItem(docChanges.newIndex,
+                    duration: const Duration(milliseconds: 275));
               }
 
               messages.value.insert(docChanges.newIndex, docChanges.doc);

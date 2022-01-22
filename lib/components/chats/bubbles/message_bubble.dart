@@ -13,7 +13,7 @@ class MessageBubble extends HookWidget {
   final String chatId;
   final Color color;
   const MessageBubble({
-    required Key key,
+    Key? key,
     required this.data,
     required this.chatId,
     required this.pastUID,
@@ -30,20 +30,20 @@ class MessageBubble extends HookWidget {
     if (uid != auth.user.uid) {
       return ReceiveMessageBubble(
         chatType: chatType,
-        key: UniqueKey(),
         pastUID: pastUID,
         nextUID: nextUID,
         chatId: chatId,
         data: data,
+        key: key,
       );
     } else {
       return SentMessageBubble(
-        key: UniqueKey(),
         pastUID: pastUID,
         nextUID: nextUID,
         chatId: chatId,
         data: data,
         color: color,
+        key: key,
       );
     }
   }

@@ -89,7 +89,7 @@ class ReceiveMessageBubble extends HookConsumerWidget {
   // If the pastUID == senderUID, we need to eliminate the name and change bubble
   // characteristics
   const ReceiveMessageBubble(
-      {required Key key,
+      {Key? key,
       required this.pastUID,
       required this.nextUID,
       required this.chatId,
@@ -121,6 +121,7 @@ class ReceiveMessageBubble extends HookConsumerWidget {
     var isSameSenderAsInFuture = uid == nextUID;
     final colors = ref.watch(colorsProvider);
     final selected = useState(false);
+    final profilePicture = useState<String?>(null);
     final bubbleRadius = BorderRadius.only(
       topLeft: Radius.circular(isSameSenderAsInPast ? 5 : 20),
       bottomLeft: Radius.circular(isSameSenderAsInFuture ||
@@ -138,7 +139,10 @@ class ReceiveMessageBubble extends HookConsumerWidget {
       if (!isRead) {
         Core.chat(chatId).messages.markAsRead(messageId: messageId);
       }
-    });
+      Future.microtask(() async {
+        profilePicture.value = await Core.auth.getUserProfilePicture(uid);
+      });
+    }, const []);
 
     return Container(
       padding: EdgeInsets.only(
@@ -153,15 +157,14 @@ class ReceiveMessageBubble extends HookConsumerWidget {
               // Profile picture
               if (chatType == ChatType.group) ...[
                 if (!isSameSenderAsInFuture) ...[
-                  FutureBuilder<String?>(
-                      future: Core.auth.getUserProfilePicture(uid),
-                      builder: (context, snapshot) {
-                        return PersonPicture.determine(
-                            radius: 36,
-                            color: Colors.indigo,
-                            profilePicture: snapshot.data,
-                            initials: Core.auth.returnNameInitials(name));
-                      }),
+                  PersonPicture.determine(
+                    key: Key(messageId),
+                    stringKey: messageId,
+                    radius: 36,
+                    color: Colors.indigo,
+                    profilePicture: profilePicture.value,
+                    initials: Core.auth.returnNameInitials(name),
+                  ),
                 ] else ...[
                   const Padding(
                     padding: EdgeInsets.only(left: 36),

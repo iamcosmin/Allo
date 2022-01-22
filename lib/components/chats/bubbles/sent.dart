@@ -152,7 +152,7 @@ void imageMessageOptions(
 
 class SentMessageBubble extends HookConsumerWidget {
   const SentMessageBubble(
-      {required Key key,
+      {Key? key,
       required this.pastUID,
       required this.nextUID,
       required this.chatId,
