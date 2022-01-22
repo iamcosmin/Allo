@@ -1,6 +1,6 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/settings_list.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/new/setup_personalize.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
@@ -10,21 +10,22 @@ class SetupProfilePicture extends HookWidget {
   const SetupProfilePicture({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     final percentage = useState(0.0);
     final loaded = useState(false);
     return SetupPage(
-      header: const [
+      header: [
         Text(
-          'Alege o fotografie de profil.',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          locales.setupProfilePictureScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(top: 10),
         ),
         Text(
-          'Personalizează contul. Poți sări acest pas dacă dorești.',
-          style: TextStyle(fontSize: 17, color: Colors.grey),
+          locales.setupProfilePictureScreenDescription,
+          style: const TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
@@ -53,10 +54,8 @@ class SetupProfilePicture extends HookWidget {
                   ],
                 ),
               ),
-              const SettingsListHeader('Gestionează imaginea de profil'),
-              SettingsListTile(
-                title: 'Încarcă imagine',
-                type: RadiusType.BOTH,
+              ListTile(
+                title: Text(locales.uploadPicture),
                 onTap: () async => await Core.auth.user.updateProfilePicture(
                     loaded: loaded,
                     percentage: percentage,

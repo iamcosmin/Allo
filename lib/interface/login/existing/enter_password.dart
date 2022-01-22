@@ -1,4 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,13 +10,15 @@ class EnterPassword extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final error = useState('');
+    final obscure = useState(true);
     final controller = useTextEditingController();
+    final locales = S.of(context);
     return SetupPage(
       alignment: CrossAxisAlignment.start,
       header: [
-        const Text(
-          'Bine ai revenit, ',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        Text(
+          '${locales.welcomeBack}, ',
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         ),
         Text(
           '$email!',
@@ -24,9 +27,9 @@ class EnterPassword extends HookWidget {
         const Padding(
           padding: EdgeInsets.only(top: 10),
         ),
-        const Text(
-          'Pentru a continua, introdu parola contului Allo.',
-          style: TextStyle(fontSize: 17, color: Colors.grey),
+        Text(
+          locales.enterPasswordDescription,
+          style: const TextStyle(fontSize: 17, color: Colors.grey),
         ),
       ],
       body: [
@@ -37,8 +40,23 @@ class EnterPassword extends HookWidget {
               contentPadding: const EdgeInsets.all(10),
               errorText: error.value == '' ? null : error.value,
               errorStyle: const TextStyle(fontSize: 14),
-              labelText: 'Parola',
+              labelText: locales.password,
               border: const OutlineInputBorder(),
+              suffix: InkWell(
+                onTap: () {
+                  if (obscure.value) {
+                    obscure.value = false;
+                  } else {
+                    obscure.value = true;
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: Icon(
+                    obscure.value ? Icons.visibility_off : Icons.visibility,
+                  ),
+                ),
+              ),
             ),
             controller: controller,
             obscureText: true,
@@ -53,7 +71,7 @@ class EnterPassword extends HookWidget {
             onPressed: () {
               Core.auth.sendPasswordResetEmail(email: email, context: context);
             },
-            child: const Text('Am uitat parola'),
+            child: Text(locales.forgotPassword),
           ),
         )
       ],

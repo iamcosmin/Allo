@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.3.2+161
+version: 1.3.3+168
 
 environment:
   sdk: ">=2.15.1 <3.0.0"
@@ -18,11 +18,16 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.0
+  flutter_linkify: ^5.0.2
+  flutter_localizations:
+    sdk: flutter
   hooks_riverpod: ^1.0.1
   image_cropper: ^1.4.1
   image_picker: ^0.8.4+4
   in_app_update: ^2.0.0
+  intl: ^0.17.0
   shared_preferences: ^2.0.12
+  url_launcher: ^6.0.18
 
 dev_dependencies:
   flutter_lints: ^1.0.4
@@ -32,6 +37,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   fonts:
     - family: GS-Text
       fonts:
@@ -47,5 +53,7 @@ flutter:
           weight: 500
           style: italic
         - asset: fonts/GS-Text-Italic.ttf
-          style: italic 
-    
+          style: italic
+flutter_intl:
+  enabled: true
+  main_locale: en

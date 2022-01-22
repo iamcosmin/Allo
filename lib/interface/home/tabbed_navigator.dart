@@ -1,3 +1,4 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class TabbedNavigator extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selected = useState(0);
+    final locales = S.of(context);
 
     useEffect(() {
       AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
@@ -37,7 +39,7 @@ class TabbedNavigator extends HookWidget {
             icon: const Icon(
               Icons.home_outlined,
             ),
-            label: 'Acasă',
+            label: locales.home,
             selectedIcon: Icon(
               Icons.home,
               color: Theme.of(context).brightness == Brightness.dark
@@ -47,7 +49,7 @@ class TabbedNavigator extends HookWidget {
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_outlined),
-            label: 'Setări',
+            label: locales.settings,
             selectedIcon: Icon(
               Icons.settings,
               color: Theme.of(context).brightness == Brightness.dark
@@ -62,16 +64,5 @@ class TabbedNavigator extends HookWidget {
         },
       ),
     );
-  }
-}
-
-class StringUtils {
-  static final RegExp _emptyRegex = RegExp(r'^\s*$');
-  static bool isNullOrEmpty(String? value,
-      {bool considerWhiteSpaceAsEmpty = true}) {
-    if (considerWhiteSpaceAsEmpty) {
-      return value == null || _emptyRegex.hasMatch(value);
-    }
-    return value?.isEmpty ?? true;
   }
 }

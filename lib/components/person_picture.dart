@@ -110,7 +110,8 @@ class PersonPicture extends HookWidget {
         ),
       );
     } else {
-      throw Exception();
+      throw Exception(
+          'Please use the underlying submethods for choosing how to display your person picture, as this class does not have a default.');
     }
   }
 }

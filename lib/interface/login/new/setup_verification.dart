@@ -1,3 +1,4 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/new/setup_pfp.dart';
 import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,7 @@ class SetupVerification extends HookWidget {
   const SetupVerification({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     final error = useState('');
 
     useEffect(() {
@@ -17,16 +19,16 @@ class SetupVerification extends HookWidget {
     });
     return SetupPage(
         header: [
-          const Text(
-            'Dorim să te verificăm.',
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          Text(
+            locales.setupVerificationScreenTitle,
+            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             textAlign: TextAlign.left,
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 10, top: 10),
+          Padding(
+            padding: const EdgeInsets.only(right: 10, top: 10),
             child: Text(
-              'Ți-am trimis un email cu un link pe care trebuie să îl accesezi pentru a verifica contul tău.',
-              style: TextStyle(fontSize: 17, color: Colors.grey),
+              locales.setupVerificationScreenDescription,
+              style: const TextStyle(fontSize: 17, color: Colors.grey),
               textAlign: TextAlign.left,
             ),
           ),
@@ -34,7 +36,7 @@ class SetupVerification extends HookWidget {
             padding: const EdgeInsets.only(right: 10, top: 10),
             child: Text(
               error.value,
-              style: const TextStyle(fontSize: 18, color: Colors.red),
+              style: const TextStyle(fontSize: 17, color: Colors.red),
               textAlign: TextAlign.left,
             ),
           )
@@ -49,7 +51,7 @@ class SetupVerification extends HookWidget {
               route: const SetupProfilePicture(),
             );
           } else {
-            error.value = 'Se pare că nu ai accesat linkul. Încearcă din nou.';
+            error.value = locales.errorVerificationLinkNotAccessed;
           }
         },
         isAsync: true);

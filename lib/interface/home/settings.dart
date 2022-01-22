@@ -1,3 +1,4 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/debug.dart';
 import 'package:allo/interface/home/settings/account.dart';
 import 'package:allo/logic/core.dart';
@@ -12,6 +13,7 @@ class Settings extends HookConsumerWidget {
   const Settings({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locales = S.of(context);
     final dark = ref.watch(darkMode);
     final darkMethod = ref.watch(darkMode.notifier);
     final name = FirebaseAuth.instance.currentUser!.displayName!;
@@ -38,7 +40,7 @@ class Settings extends HookConsumerWidget {
               title: InkWell(
                   onTap: () => _b(),
                   child: Text(
-                    'Setări',
+                    locales.settings,
                     style: TextStyle(
                         color: Theme.of(context).appBarTheme.foregroundColor,
                         fontSize: 24),
@@ -81,9 +83,9 @@ class Settings extends HookConsumerWidget {
                         ),
                       ),
                       const Padding(padding: EdgeInsets.only(top: 5)),
-                      const Text(
-                        'Personalizează-ți contul tău.',
-                        style: TextStyle(color: Colors.grey),
+                      Text(
+                        locales.customizeYourAccount,
+                        style: const TextStyle(color: Colors.grey),
                       )
                     ],
                   ),
@@ -94,7 +96,7 @@ class Settings extends HookConsumerWidget {
             const Padding(padding: EdgeInsets.only(top: 20)),
             SwitchListTile(
               title:
-                  const Text('Mod întunecat', style: TextStyle(fontSize: 18)),
+                  Text(locales.darkMode, style: const TextStyle(fontSize: 18)),
               secondary: const Icon(Icons.dark_mode_outlined, size: 27),
               value: dark,
               onChanged: (value) => darkMethod.switcher(ref, context),
@@ -102,7 +104,7 @@ class Settings extends HookConsumerWidget {
             ListTile(
               leading: const Icon(Icons.logout_outlined, size: 27),
               minLeadingWidth: 40,
-              title: const Text('Deconectare', style: TextStyle(fontSize: 18)),
+              title: Text(locales.logOut, style: const TextStyle(fontSize: 18)),
               onTap: () async => await Core.auth.signOut(context),
             ),
           ],

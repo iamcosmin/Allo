@@ -1,3 +1,4 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -6,9 +7,10 @@ class CreateChat extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Creează o conversație nouă'),
+        title: Text(locales.createNewChat),
       ),
     );
   }

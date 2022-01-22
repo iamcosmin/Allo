@@ -1,3 +1,4 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
 import 'package:allo/logic/core.dart';
@@ -34,6 +35,7 @@ class Chat extends HookConsumerWidget {
     final messages = useState(<DocumentSnapshot>[]);
     final controller = useScrollController();
     final isLoadingPrevMessages = useState(false);
+    final locales = S.of(context);
 
     useEffect(() {
       if (!kIsWeb) {
@@ -47,219 +49,215 @@ class Chat extends HookConsumerWidget {
         (event) {
           typing.value = event.data()!['typing'] ?? false;
           var dbThemeId = event.data()!['theme'] ?? 'blue';
-          var themeIndex = themesId().indexOf(dbThemeId);
-          theme.value = themes[themeIndex]['color'];
+          var themeIndex = themesId(context).indexOf(dbThemeId);
+          theme.value = themes(context)[themeIndex]['color'];
         },
       );
       Core.chat(chatId)
           .streamChatMessages(messages: messages, listKey: listKey);
     }, const []);
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 100,
-          leading: Container(
-            padding: const EdgeInsets.only(left: 10, top: 0),
-            alignment: Alignment.topLeft,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_outlined),
-              onPressed: () => Navigator.pop(context),
-            ),
+      appBar: AppBar(
+        toolbarHeight: 100,
+        leading: Container(
+          padding: const EdgeInsets.only(left: 10, top: 0),
+          alignment: Alignment.topLeft,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_outlined),
+            onPressed: () => Navigator.pop(context),
           ),
-          flexibleSpace: FlexibleSpaceBar(
-            titlePadding: const EdgeInsets.only(
-              left: 20,
-              bottom: 10,
-            ),
-            title: InkWell(
-              onTap: () => Core.navigation.push(
-                  context: context,
-                  route: ChatDetails(
-                    name: title,
-                    id: chatId,
-                    profilepic: profilepic,
-                  )),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Container(
-                        alignment: Alignment.bottomLeft,
-                        padding: const EdgeInsets.only(right: 10),
-                        child: PersonPicture.determine(
-                          profilePicture: profilepic,
-                          radius: 37,
-                          initials: Core.auth.returnNameInitials(title),
-                          color: Colors.green,
-                        ),
+        ),
+        flexibleSpace: FlexibleSpaceBar(
+          titlePadding: const EdgeInsets.only(
+            left: 20,
+            bottom: 10,
+          ),
+          title: InkWell(
+            onTap: () => Core.navigation.push(
+                context: context,
+                route: ChatDetails(
+                  name: title,
+                  id: chatId,
+                  profilepic: profilepic,
+                )),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      alignment: Alignment.bottomLeft,
+                      padding: const EdgeInsets.only(right: 10),
+                      child: PersonPicture.determine(
+                        profilePicture: profilepic,
+                        radius: 37,
+                        initials: Core.auth.returnNameInitials(title),
+                        color: Colors.green,
                       ),
-                      Text(
-                        title,
-                        style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w600,
-                            color:
-                                Theme.of(context).textTheme.bodyText1!.color),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    Text(
+                      title,
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).textTheme.bodyText1!.color),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 10,
-                      child: AnimatedList(
-                        padding: const EdgeInsets.only(top: 10),
-                        key: listKey,
-                        reverse: true,
-                        controller: controller,
-                        itemBuilder: (context, i, animation) {
-                          final Map pastData, nextData;
-                          if (i == 0) {
-                            nextData = {'senderUID': 'null'};
-                          } else {
-                            nextData = messages.value[i - 1].data() as Map;
-                          }
-                          if (i == messages.value.length - 1) {
-                            pastData = {'senderUID': 'null'};
-                          } else {
-                            pastData = messages.value[i + 1].data() as Map;
-                          }
-                          // Above, pastData should have been i-1 and nextData i+1.
-                          // But, as the list needs to be in reverse order, we need
-                          // to consider this workaround.
-                          final pastUID = pastData.containsKey('uid')
-                              ? pastData['uid']
-                              : pastData.containsKey('senderUID')
-                                  ? pastData['senderUID']
-                                  : 'null';
-                          final nextUID = nextData.containsKey('uid')
-                              ? nextData['uid']
-                              : nextData.containsKey('senderUID')
-                                  ? nextData['senderUID']
-                                  : 'null';
-                          if (i == messages.value.length - 1) {
-                            return Column(
-                              children: [
-                                ElevatedButton(
-                                  style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(100))),
-                                    backgroundColor:
-                                        MaterialStateProperty.all(theme.value),
-                                  ),
-                                  onPressed: () {
-                                    isLoadingPrevMessages.value = true;
-                                    FirebaseFirestore.instance
-                                        .collection('chats')
-                                        .doc(chatId)
-                                        .collection('messages')
-                                        .orderBy('time', descending: true)
-                                        .startAfterDocument(messages
-                                            .value[messages.value.length - 1])
-                                        .limit(20)
-                                        .get()
-                                        .then((value) {
-                                      for (var doc in value.docs) {
-                                        messages.value.add(doc);
-                                        listKey.currentState?.insertItem(
-                                            messages.value.length - 1,
-                                            duration:
-                                                const Duration(seconds: 0));
-                                      }
-                                    });
-                                    isLoadingPrevMessages.value = false;
-                                  },
-                                  child: isLoadingPrevMessages.value == false
-                                      ? const Text(
-                                          'Afișează mesajele anterioare')
-                                      : const CircularProgressIndicator(),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 10,
+                    child: AnimatedList(
+                      padding: const EdgeInsets.only(top: 10),
+                      key: listKey,
+                      reverse: true,
+                      controller: controller,
+                      itemBuilder: (context, i, animation) {
+                        final Map pastData, nextData;
+                        if (i == 0) {
+                          nextData = {'senderUID': 'null'};
+                        } else {
+                          nextData = messages.value[i - 1].data() as Map;
+                        }
+                        if (i == messages.value.length - 1) {
+                          pastData = {'senderUID': 'null'};
+                        } else {
+                          pastData = messages.value[i + 1].data() as Map;
+                        }
+                        // Above, pastData should have been i-1 and nextData i+1.
+                        // But, as the list needs to be in reverse order, we need
+                        // to consider this workaround.
+                        final pastUID = pastData.containsKey('uid')
+                            ? pastData['uid']
+                            : pastData.containsKey('senderUID')
+                                ? pastData['senderUID']
+                                : 'null';
+                        final nextUID = nextData.containsKey('uid')
+                            ? nextData['uid']
+                            : nextData.containsKey('senderUID')
+                                ? nextData['senderUID']
+                                : 'null';
+                        if (i == messages.value.length - 1) {
+                          return Column(
+                            children: [
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(100))),
+                                  backgroundColor:
+                                      MaterialStateProperty.all(theme.value),
                                 ),
-                                const Padding(
-                                    padding: EdgeInsets.only(top: 20)),
-                                SizeTransition(
-                                  axisAlignment: -1.0,
-                                  sizeFactor: animation,
-                                  child: FadeTransition(
-                                    opacity: CurvedAnimation(
-                                        curve: Curves.easeIn,
-                                        parent: animation),
-                                    child: MessageBubble(
-                                      chatType: chatType,
-                                      pastUID: pastUID,
-                                      chatId: chatId,
-                                      nextUID: nextUID,
-                                      color: theme.value,
-                                      data: messages.value[i],
-                                      key: UniqueKey(),
-                                    ),
+                                onPressed: () {
+                                  isLoadingPrevMessages.value = true;
+                                  FirebaseFirestore.instance
+                                      .collection('chats')
+                                      .doc(chatId)
+                                      .collection('messages')
+                                      .orderBy('time', descending: true)
+                                      .startAfterDocument(messages
+                                          .value[messages.value.length - 1])
+                                      .limit(20)
+                                      .get()
+                                      .then((value) {
+                                    for (var doc in value.docs) {
+                                      messages.value.add(doc);
+                                      listKey.currentState?.insertItem(
+                                          messages.value.length - 1,
+                                          duration: const Duration(seconds: 0));
+                                    }
+                                  });
+                                  isLoadingPrevMessages.value = false;
+                                },
+                                child: isLoadingPrevMessages.value == false
+                                    ? Text(locales.showPastMessages)
+                                    : const CircularProgressIndicator(),
+                              ),
+                              const Padding(padding: EdgeInsets.only(top: 20)),
+                              SizeTransition(
+                                axisAlignment: -1.0,
+                                sizeFactor: animation,
+                                child: FadeTransition(
+                                  opacity: CurvedAnimation(
+                                      curve: Curves.easeIn, parent: animation),
+                                  child: MessageBubble(
+                                    chatType: chatType,
+                                    pastUID: pastUID,
+                                    chatId: chatId,
+                                    nextUID: nextUID,
+                                    color: theme.value,
+                                    data: messages.value[i],
+                                    key: UniqueKey(),
                                   ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            return SizeTransition(
-                              axisAlignment: -1.0,
-                              sizeFactor: animation,
-                              child: FadeTransition(
-                                opacity: CurvedAnimation(
-                                    curve: Curves.easeIn, parent: animation),
-                                child: MessageBubble(
-                                  chatType: chatType,
-                                  pastUID: pastUID,
-                                  chatId: chatId,
-                                  nextUID: nextUID,
-                                  color: theme.value,
-                                  data: messages.value[i],
-                                  key: UniqueKey(),
                                 ),
                               ),
-                            );
-                          }
-                        },
-                      ),
+                            ],
+                          );
+                        } else {
+                          return SizeTransition(
+                            axisAlignment: -1.0,
+                            sizeFactor: animation,
+                            child: FadeTransition(
+                              opacity: CurvedAnimation(
+                                  curve: Curves.easeIn, parent: animation),
+                              child: MessageBubble(
+                                chatType: chatType,
+                                pastUID: pastUID,
+                                chatId: chatId,
+                                nextUID: nextUID,
+                                color: theme.value,
+                                data: messages.value[i],
+                                key: UniqueKey(),
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: TypingIndicator(
-                        bubbleColor: colors.messageBubble,
-                        flashingCircleBrightColor:
-                            colors.flashingCircleBrightColor,
-                        flashingCircleDarkColor: colors.flashingCircleDarkColor,
-                        showIndicator: false,
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: TypingIndicator(
+                      bubbleColor: colors.messageBubble,
+                      flashingCircleBrightColor:
+                          colors.flashingCircleBrightColor,
+                      flashingCircleDarkColor: colors.flashingCircleDarkColor,
+                      showIndicator: false,
+                    ),
+                  )
+                ],
               ),
-              Expanded(
-                flex: 0,
-                child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: MessageInput(
-                      chatId: chatId,
-                      chatName: title,
-                      chatType: chatType,
-                      color: theme.value,
-                    )),
-              )
-            ],
-          ),
-        ));
+            ),
+            Expanded(
+              flex: 0,
+              child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: MessageInput(
+                    chatId: chatId,
+                    chatName: title,
+                    chatType: chatType,
+                    color: theme.value,
+                  )),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

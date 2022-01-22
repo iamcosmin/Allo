@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+@Deprecated(
+    'Please use an alternative, such as Text. This widget will be removed soon.')
 class SettingsListHeader extends HookWidget {
   const SettingsListHeader(this.text, {Key? key}) : super(key: key);
   final String text;
@@ -21,6 +23,8 @@ class SettingsListHeader extends HookWidget {
 // ignore: constant_identifier_names
 enum RadiusType { TOP, BOTTOM, BOTH }
 
+@Deprecated(
+    'Please use an alternative, such as a ListTile. This widget will be removed soon.')
 class SettingsListTile extends HookConsumerWidget {
   const SettingsListTile(
       {required this.title,

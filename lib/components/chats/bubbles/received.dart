@@ -1,5 +1,6 @@
 import 'package:allo/components/chats/bubbles/sent.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:allo/logic/theme.dart';
@@ -9,42 +10,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../person_picture.dart';
 
 void textMessageOptions(BuildContext context, String messageId, String chatId,
     String messageText, WidgetRef ref) {
   final replies = ref.watch(repliesDebug);
+  final locales = S.of(context);
   showMagicBottomSheet(
     context: context,
-    title: 'Opțiuni mesaj',
+    title: locales.messageOptions,
     children: [
       if (replies) ...[
         ListTile(
           leading: const Icon(Icons.reply_outlined),
-          title: const Text('Răspunde'),
+          title: Text(locales.reply),
           onTap: () {
             Navigator.of(context).pop();
             Core.stub.showInfoBar(
               context: context,
               icon: Icons.info_outline,
-              text: 'În curând...',
+              text: locales.comingSoon,
             );
           },
         ),
       ],
       ListTile(
         leading: const Icon(Icons.copy_outlined),
-        title: const Text('Copiere mesaj'),
+        title: Text(locales.copy),
         onTap: () {
           Navigator.of(context).pop();
           Clipboard.setData(ClipboardData(text: messageText));
           Core.stub.showInfoBar(
             context: context,
             icon: Icons.copy_outlined,
-            text: 'Mesajul a fost copiat.',
+            text: locales.messageCopied,
           );
         },
       ),
@@ -55,20 +59,21 @@ void textMessageOptions(BuildContext context, String messageId, String chatId,
 void imageMessageOptions(
     BuildContext context, String messageId, String chatId, WidgetRef ref) {
   final replies = ref.watch(repliesDebug);
+  final locales = S.of(context);
   showMagicBottomSheet(
     context: context,
-    title: 'Opțiuni mesaj',
+    title: locales.messageOptions,
     children: [
       if (replies) ...[
         ListTile(
           leading: const Icon(Icons.reply_outlined),
-          title: const Text('Răspunde'),
+          title: Text(locales.reply),
           onTap: () {
             Navigator.of(context).pop();
             Core.stub.showInfoBar(
               context: context,
               icon: Icons.info_outline,
-              text: 'În curând...',
+              text: locales.comingSoon,
             );
           },
         ),
@@ -110,6 +115,7 @@ class ReceiveMessageBubble extends HookConsumerWidget {
     var time = DateFormat.Hm().format(msSE);
     var messageId = data.id;
     var type = documentData['type'];
+    final locales = S.of(context);
 
     var isSameSenderAsInPast = uid == pastUID;
     var isSameSenderAsInFuture = uid == nextUID;
@@ -212,11 +218,28 @@ class ReceiveMessageBubble extends HookConsumerWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(left: 5, right: 5),
-                              child: Text(
-                                text,
+                              child: Linkify(
+                                text: text,
+                                onOpen: (link) async {
+                                  if (await canLaunch(link.url)) {
+                                    await launch(link.url, forceWebView: true);
+                                  } else {
+                                    throw 'Could not launch $link';
+                                  }
+                                },
                                 style: TextStyle(
                                     fontSize:
-                                        regexEmoji.hasMatch(text) ? 30 : 16),
+                                        regexEmoji.hasMatch(text) ? 30 : 16,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .color),
+                                linkStyle: TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .color),
                               ),
                             ),
                           ],
@@ -266,30 +289,31 @@ class ReceiveMessageBubble extends HookConsumerWidget {
             ],
           ),
           AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.ease,
-              padding:
-                  EdgeInsets.only(left: chatType == ChatType.private ? 20 : 60),
-              height: selected.value ? 20 : 0,
-              child: Row(
-                children: [
-                  const Text(
-                    'Primit',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const Padding(padding: EdgeInsets.only(left: 3)),
-                  Text(
-                    time,
-                    style: const TextStyle(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.ease,
+            padding:
+                EdgeInsets.only(left: chatType == ChatType.private ? 20 : 60),
+            height: selected.value ? 20 : 0,
+            child: Row(
+              children: [
+                Text(
+                  locales.received,
+                  style: const TextStyle(
                       fontSize: 12,
                       color: Colors.grey,
-                    ),
-                  )
-                ],
-              )),
+                      fontWeight: FontWeight.bold),
+                ),
+                const Padding(padding: EdgeInsets.only(left: 3)),
+                Text(
+                  time,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                )
+              ],
+            ),
+          ),
         ],
       ),
     );

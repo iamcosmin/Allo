@@ -1,4 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,21 +13,22 @@ class SetupUsername extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     final controller = useTextEditingController();
     final error = useState('');
     return SetupPage(
-      header: const [
+      header: [
         Text(
-          'Ce nume de utilizator vrei?',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          locales.setupUsernameScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(top: 10),
         ),
         Text(
-          'Pentru a continua, introdu un numele de utilizator pe care îl dorești.',
-          style: TextStyle(fontSize: 17, color: Colors.grey),
+          locales.setupUsernameScreenDescription,
+          style: const TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
@@ -41,15 +43,15 @@ class SetupUsername extends HookWidget {
                   prefix: const Text('@'),
                   errorText: error.value == '' ? null : error.value,
                   errorStyle: const TextStyle(fontSize: 14),
-                  labelText: 'Nume de utilizator',
+                  labelText: locales.username,
                   border: const OutlineInputBorder(),
                 ),
                 controller: controller,
               ),
               const Padding(padding: EdgeInsets.only(bottom: 10)),
-              const Text(
-                'Numele de utilizator este numele unic de identificare \nAcesta trebuie să fie format dintr-o combinație de litere mici, împreună cu underline-uri și puncte sau cifre. Acesta nu trebuie să conțină spații sau diacritice.',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                locales.setupUsernameRequirements,
+                style: const TextStyle(color: Colors.grey),
               )
             ],
           ),

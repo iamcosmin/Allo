@@ -103,7 +103,9 @@ Future<dynamic> showMagicBottomSheet({
                 children: children,
               ),
             ),
-            const Padding(padding: EdgeInsets.only(top: 10)),
+            const Padding(
+              padding: EdgeInsets.only(top: 10),
+            ),
           ],
         );
       }

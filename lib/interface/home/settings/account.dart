@@ -1,3 +1,4 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/profile_picture.dart';
 import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +9,7 @@ class AccountSettings extends HookWidget {
   const AccountSettings({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     final firstNameError = useState('');
     final secondNameError = useState('');
     final firstNameController = useTextEditingController();
@@ -15,25 +17,25 @@ class AccountSettings extends HookWidget {
     final nameReg = RegExp(r'^[a-zA-Z]+$');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cont'),
+        title: Text(locales.account),
       ),
       body: ListView(
         children: [
           ListTile(
-            title: const Text(
-              'Nume',
-              style: TextStyle(fontSize: 18),
+            title: Text(
+              locales.name,
+              style: const TextStyle(fontSize: 18),
             ),
             minLeadingWidth: 20,
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Schimbă numele'),
+                  title: Text(locales.changeName),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Introdu numele nou mai jos.'),
+                      Text(locales.changeNameDescription),
                       const Padding(padding: EdgeInsets.only(top: 20)),
                       TextFormField(
                         decoration: InputDecoration(
@@ -42,7 +44,7 @@ class AccountSettings extends HookWidget {
                               ? null
                               : firstNameError.value,
                           errorStyle: const TextStyle(fontSize: 14),
-                          labelText: 'Prenume',
+                          labelText: locales.firstName,
                           border: const OutlineInputBorder(),
                         ),
                         controller: firstNameController,
@@ -55,7 +57,8 @@ class AccountSettings extends HookWidget {
                               ? null
                               : secondNameError.value,
                           errorStyle: const TextStyle(fontSize: 14),
-                          labelText: 'Nume (opțional)',
+                          labelText: locales.lastName +
+                              ' (${locales.optional.toLowerCase()})',
                           border: const OutlineInputBorder(),
                         ),
                         controller: secondNameController,
@@ -65,7 +68,7 @@ class AccountSettings extends HookWidget {
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Anulare'),
+                      child: Text(locales.cancel),
                     ),
                     TextButton(
                       onPressed: () {
@@ -85,7 +88,7 @@ class AccountSettings extends HookWidget {
                                 Navigator.of(context).pop();
                               } else {
                                 secondNameError.value =
-                                    'Numele poate conține doar litere.';
+                                    locales.specialCharactersNotAllowed;
                               }
                             } else {
                               FirebaseAuth.instance.currentUser
@@ -94,29 +97,29 @@ class AccountSettings extends HookWidget {
                             }
                           } else {
                             firstNameError.value =
-                                'Numele poate conține doar litere.';
+                                locales.specialCharactersNotAllowed;
                           }
                         } else {
-                          firstNameError.value = 'Numele nu poate fi gol.';
+                          firstNameError.value = locales.errorFieldEmpty;
                         }
                       },
-                      child: const Text('Schimbă'),
+                      child: Text(locales.change),
                     ),
                   ],
                 ),
               );
             },
           ),
-          const ListTile(
+          ListTile(
             title: Text(
-              'Nume de utilizator',
-              style: TextStyle(fontSize: 18),
+              locales.username,
+              style: const TextStyle(fontSize: 18),
             ),
           ),
           ListTile(
-            title: const Text(
-              'Fotografie de profil',
-              style: TextStyle(fontSize: 18),
+            title: Text(
+              locales.profilePicture,
+              style: const TextStyle(fontSize: 18),
             ),
             onTap: () => Core.navigation
                 .push(context: context, route: ProfilePictureSettings()),

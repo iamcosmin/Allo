@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:allo/components/show_bottom_sheet.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/theme.dart';
 import 'package:flutter/material.dart';
@@ -15,14 +16,15 @@ void _attachMenu({
   required String chatName,
   required String chatId,
 }) {
+  final locales = S.of(context);
   XFile? file;
   showMagicBottomSheet(
     context: context,
-    title: 'Atașează',
+    title: locales.attach,
     children: [
       ListTile(
         leading: const Icon(Icons.camera_alt_outlined),
-        title: const Text('Cameră'),
+        title: Text(locales.camera),
         onTap: () async {
           try {
             Navigator.of(context).pop();
@@ -42,7 +44,7 @@ void _attachMenu({
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 behavior: SnackBarBehavior.floating,
-                content: const Text('Nicio cameră disponibilă.'),
+                content: Text(locales.noCameraAvailable),
                 action: SnackBarAction(
                     label: 'OK',
                     onPressed: () {
@@ -55,7 +57,7 @@ void _attachMenu({
       ),
       ListTile(
         leading: const Icon(Icons.image_outlined),
-        title: const Text('Galerie'),
+        title: Text(locales.gallery),
         onTap: () async {
           Navigator.of(context).pop();
           file = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -98,6 +100,7 @@ class MessageInput extends HookConsumerWidget {
     final _messageController = useTextEditingController();
     final _node = useFocusNode(descendantsAreFocusable: false);
     final progress = useState<double>(0);
+    final locales = S.of(context);
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
@@ -138,9 +141,9 @@ class MessageInput extends HookConsumerWidget {
                   textCapitalization: TextCapitalization.sentences,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Mesaj',
+                    hintText: locales.message,
                   ),
                   onChanged: (value) =>
                       value == '' ? empty.value = true : empty.value = false,

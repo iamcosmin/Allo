@@ -1,4 +1,5 @@
 import 'package:allo/components/show_bottom_sheet.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:allo/logic/types.dart';
@@ -9,22 +10,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void deleteMessage(
     {required BuildContext context,
     required String chatId,
     required String messageId}) {
+  final locales = S.of(context);
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Ștergere mesaj'),
-      content: const Text('Sigur dorești să ștergi acest mesaj?'),
+      title: Text(locales.deleteMessageTitle),
+      content: Text(locales.deleteMessageDescription),
       actions: [
         TextButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Anulează'),
+          child: Text(locales.cancel),
         ),
         TextButton(
           onPressed: () {
@@ -36,13 +40,13 @@ void deleteMessage(
                 Core.stub.showInfoBar(
                     context: context,
                     icon: Icons.delete_outline,
-                    text: 'Mesajul a fost șters.');
+                    text: locales.messageDeleted);
               },
             );
           },
-          child: const Text(
-            'Șterge',
-            style: TextStyle(color: Colors.red),
+          child: Text(
+            locales.delete,
+            style: const TextStyle(color: Colors.red),
           ),
         )
       ],
@@ -54,54 +58,55 @@ void textMessageOptions(BuildContext context, String messageId, String chatId,
     String messageText, WidgetRef ref) {
   final replies = ref.watch(repliesDebug);
   final editMessage = ref.watch(editMessageDebug);
+  final locales = S.of(context);
   showMagicBottomSheet(
     context: context,
-    title: 'Opțiuni mesaj',
+    title: locales.messageOptions,
     children: [
       if (replies) ...[
         ListTile(
           leading: const Icon(Icons.reply_outlined),
-          title: const Text('Răspunde'),
+          title: Text(locales.reply),
           onTap: () {
             Navigator.of(context).pop();
             Core.stub.showInfoBar(
               context: context,
               icon: Icons.info_outlined,
-              text: 'În curând...',
+              text: locales.comingSoon,
             );
           },
         ),
       ],
       ListTile(
         leading: const Icon(Icons.copy_outlined),
-        title: const Text('Copiază'),
+        title: Text(locales.copy),
         onTap: () {
           Navigator.of(context).pop();
           Clipboard.setData(ClipboardData(text: messageText));
           Core.stub.showInfoBar(
             context: context,
             icon: Icons.copy_outlined,
-            text: 'Mesajul a fost copiat.',
+            text: locales.messageCopied,
           );
         },
       ),
       if (editMessage) ...[
         ListTile(
           leading: const Icon(Icons.edit_outlined),
-          title: const Text('Editează'),
+          title: Text(locales.edit),
           onTap: () {
             Navigator.of(context).pop();
             Core.stub.showInfoBar(
               context: context,
               icon: Icons.info_outlined,
-              text: 'În curând...',
+              text: locales.comingSoon,
             );
           },
         ),
       ],
       ListTile(
         leading: const Icon(Icons.delete_outlined),
-        title: const Text('Șterge'),
+        title: Text(locales.delete),
         onTap: () {
           Navigator.of(context).pop();
           deleteMessage(context: context, chatId: chatId, messageId: messageId);
@@ -114,27 +119,28 @@ void textMessageOptions(BuildContext context, String messageId, String chatId,
 void imageMessageOptions(
     BuildContext context, String messageId, String chatId, WidgetRef ref) {
   final replies = ref.watch(repliesDebug);
+  final locales = S.of(context);
   showMagicBottomSheet(
     context: context,
-    title: 'Opțiuni mesaj',
+    title: locales.messageOptions,
     children: [
       if (replies) ...[
         ListTile(
           leading: const Icon(Icons.reply_outlined),
-          title: const Text('Răspunde'),
+          title: Text(locales.reply),
           onTap: () {
             Navigator.of(context).pop();
             Core.stub.showInfoBar(
               context: context,
               icon: Icons.info_outlined,
-              text: 'În curând...',
+              text: locales.comingSoon,
             );
           },
         ),
       ],
       ListTile(
         leading: const Icon(Icons.delete_outlined),
-        title: const Text('Șterge mesaj'),
+        title: Text(locales.delete),
         onTap: () {
           Navigator.of(context).pop();
           deleteMessage(context: context, chatId: chatId, messageId: messageId);
@@ -175,7 +181,7 @@ class SentMessageBubble extends HookConsumerWidget {
 
     var isSameSenderAsInPast = uid == pastUID;
     var isSameSenderAsInFuture = uid == nextUID;
-
+    final locales = S.of(context);
     final selected = useState(false);
     void change() =>
         selected.value == true ? selected.value = false : selected.value = true;
@@ -218,10 +224,20 @@ class SentMessageBubble extends HookConsumerWidget {
                         maxWidth: MediaQuery.of(context).size.width / 1.4),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 5, right: 2),
-                      child: Text(
-                        text,
+                      child: Linkify(
+                        text: text,
+                        onOpen: (link) async {
+                          if (await canLaunch(link.url)) {
+                            await launch(link.url);
+                          } else {
+                            throw 'Could not launch $link';
+                          }
+                        },
                         style: TextStyle(
                             fontSize: regexEmoji.hasMatch(text) ? 30 : 16,
+                            color: Colors.white),
+                        linkStyle: const TextStyle(
+                            decoration: TextDecoration.underline,
                             color: Colors.white),
                       ),
                     ),
@@ -267,7 +283,7 @@ class SentMessageBubble extends HookConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  isRead ? 'Citit' : 'Trimis',
+                  isRead ? locales.read : locales.sent,
                   style: const TextStyle(
                       fontSize: 12,
                       color: Colors.grey,

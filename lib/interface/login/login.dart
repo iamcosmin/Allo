@@ -1,4 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/theme.dart';
 import 'package:flutter/material.dart';
@@ -9,24 +10,25 @@ class Login extends HookConsumerWidget {
   const Login({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locales = S.of(context);
     final error = useState('');
     final controller = useTextEditingController();
     final colors = ref.watch(colorsProvider);
     return SetupPage(
-      header: const [
+      header: [
         Text(
-          'Să ne conectăm...',
-          style: TextStyle(
+          locales.loginScreenTitle,
+          style: const TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.left,
         ),
         Padding(
-          padding: EdgeInsets.only(top: 5),
+          padding: const EdgeInsets.only(top: 5),
           child: Text(
-            'Pentru a continua, introdu emailul tău.',
-            style: TextStyle(fontSize: 17, color: Colors.grey),
+            locales.loginScreenDescription,
+            style: const TextStyle(fontSize: 17, color: Colors.grey),
           ),
         ),
       ],
@@ -38,7 +40,7 @@ class Login extends HookConsumerWidget {
               contentPadding: const EdgeInsets.all(10),
               errorText: error.value == '' ? null : error.value,
               errorStyle: const TextStyle(fontSize: 14),
-              labelText: 'Email',
+              labelText: locales.email,
               border: const OutlineInputBorder(),
               fillColor: colors.tileColor,
             ),

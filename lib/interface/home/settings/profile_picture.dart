@@ -1,5 +1,5 @@
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/settings_list.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,15 +12,16 @@ class ProfilePictureSettings extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     var loaded = useState(false);
     var percentage = useState(0.0);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fotografie de profil'),
+        title: Text(locales.profilePicture),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
         children: [
           Container(
             alignment: Alignment.center,
@@ -29,29 +30,32 @@ class ProfilePictureSettings extends HookWidget {
               alignment: Alignment.center,
               children: [
                 SizedBox(
-                  height: 110,
-                  width: 110,
+                  height: 160,
+                  width: 160,
                   child: CircularProgressIndicator(
                     value: percentage.value,
                   ),
                 ),
                 PersonPicture.determine(
-                    radius: 100,
+                    radius: 150,
                     profilePicture: Core.auth.user.profilePicture,
                     initials: Core.auth.user.nameInitials),
               ],
             ),
           ),
-          const SettingsListHeader('Gestionează imaginea de profil'),
-          SettingsListTile(
-            title: 'Încarcă imagine',
-            type: RadiusType.TOP,
+          const Padding(padding: EdgeInsets.only(top: 30)),
+          ListTile(
+            leading: const Icon(Icons.upgrade_outlined),
+            title: Text(locales.changeProfilePicture),
             onTap: () => Core.auth.user.updateProfilePicture(
                 loaded: loaded, percentage: percentage, context: context),
           ),
           const Padding(padding: EdgeInsets.only(bottom: 2)),
-          const SettingsListTile(
-              title: 'Șterge imaginea', type: RadiusType.BOTTOM),
+          ListTile(
+            leading: const Icon(Icons.delete_outline),
+            title: Text(locales.deleteProfilePicture),
+            onTap: null,
+          ),
         ],
       ),
     );

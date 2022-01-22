@@ -1,4 +1,5 @@
 import 'package:allo/components/person_picture.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/create_chat.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
@@ -8,13 +9,14 @@ import 'package:allo/interface/home/chat/chat.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-String type(type) {
+String type(type, BuildContext context) {
+  final locales = S.of(context);
   if (type == ChatType.group) {
-    return 'Grup';
+    return locales.group;
   } else if (type == ChatType.private) {
-    return 'Privat';
+    return locales.private;
   } else {
-    return 'Unknown';
+    return locales.unknown;
   }
 }
 
@@ -24,6 +26,7 @@ class Home extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final loadChats = useState(Core.chat('').getChatsList(context));
     final createChat = ref.watch(privateConversations);
+    final locales = S.of(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: createChat == false ? Colors.grey.shade700 : null,
@@ -39,7 +42,7 @@ class Home extends HookConsumerWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
               title: Text(
-                'Conversații',
+                locales.chats,
                 style: TextStyle(
                     color: Theme.of(context).appBarTheme.foregroundColor,
                     fontSize: 24),
@@ -69,26 +72,23 @@ class Home extends HookConsumerWidget {
                   itemBuilder: (BuildContext context, int index) {
                     final chat = snapshot.data![index];
                     return ListTile(
-                      title: Text(chat['name'] ?? 'Niciun nume'),
+                      title: Text(chat['name'] ?? '???'),
                       subtitle: Text(
-                        type(
-                              chat['type'],
-                            ) +
-                            ' (${chat['chatId']})',
+                        type(chat['type'], context) + ' (${chat['chatId']})',
                       ),
                       leading: PersonPicture.determine(
                         profilePicture: chat['profilepic'] ?? '',
                         radius: 50,
                         color: Theme.of(context).colorScheme.secondary,
                         initials: Core.auth.returnNameInitials(
-                          chat['name'] ?? 'N',
+                          chat['name'] ?? '?',
                         ),
                       ),
                       onTap: () => Core.navigation.push(
                         context: context,
                         route: Chat(
                           chatType: chat['type']!,
-                          title: chat['name'] ?? 'Niciun nume',
+                          title: chat['name'] ?? '???',
                           chatId: chat['chatId']!,
                           profilepic: chat['profilepic'],
                         ),

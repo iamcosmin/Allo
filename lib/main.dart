@@ -1,4 +1,5 @@
 import 'package:allo/components/deferred.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/tabbed_navigator.dart';
@@ -59,6 +61,13 @@ class InnerApp extends HookConsumerWidget {
       themeMode: darkState ? ThemeMode.dark : ThemeMode.light,
       theme: lightTheme,
       darkTheme: darkTheme,
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en', ''), Locale('ro', '')],
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snap) {

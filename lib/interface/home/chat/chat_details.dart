@@ -1,58 +1,62 @@
 import 'package:allo/components/chats/bubbles/sent.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final themes = <Map>[
-  {
-    'name': 'Albastru',
-    'color': Colors.blue,
-    'id': 'blue',
-  },
-  {
-    'name': 'Mov',
-    'color': Colors.purple,
-    'id': 'purple',
-  },
-  {
-    'name': 'Rosu',
-    'color': Colors.red,
-    'id': 'red',
-  },
-  {
-    'name': 'Turcoaz',
-    'color': Colors.cyan,
-    'id': 'cyan',
-  },
-  {
-    'name': 'Roz',
-    'color': Colors.pink,
-    'id': 'pink',
-  },
-  {
-    'name': 'Verde smarald',
-    'color': const Color(0xFF1a521f),
-    'id': 'smarald_green'
-  },
-  {
-    'name': 'Vișiniu',
-    'color': const Color(0xFF571047),
-    'id': 'burgundy',
-  },
-  {
-    'name': 'Special: Gina',
-    'color': const Color(0xFF4f5a8f),
-    'id': 'special_gina'
-  }
-];
+List<Map> themes(BuildContext context) {
+  final locales = S.of(context);
+  return [
+    {
+      'name': locales.themeBlue,
+      'color': Colors.blue,
+      'id': 'blue',
+    },
+    {
+      'name': locales.themePurple,
+      'color': Colors.purple,
+      'id': 'purple',
+    },
+    {
+      'name': locales.themeRed,
+      'color': Colors.red,
+      'id': 'red',
+    },
+    {
+      'name': locales.themeCyan,
+      'color': Colors.cyan,
+      'id': 'cyan',
+    },
+    {
+      'name': locales.themePink,
+      'color': Colors.pink,
+      'id': 'pink',
+    },
+    {
+      'name': locales.themeEmerald,
+      'color': const Color(0xFF1a521f),
+      'id': 'smarald_green'
+    },
+    {
+      'name': locales.themeBurgundy,
+      'color': const Color(0xFF571047),
+      'id': 'burgundy',
+    },
+    {
+      'name': 'Special: Gina',
+      'color': const Color(0xFF4f5a8f),
+      'id': 'special_gina'
+    }
+  ];
+}
 
-List themesId() {
+List themesId(BuildContext context) {
   var list = [];
-  for (var theme in themes) {
+  for (var theme in themes(context)) {
     list.add(theme['id']);
   }
   return list;
@@ -64,25 +68,20 @@ void _changeTheme({
 }) async {
   final info = await returnChatInfo(id: id);
   var currentTheme = info.data()!['theme'];
+  final locales = S.of(context);
   showMagicBottomSheet(
     context: context,
-    title: 'Temă',
+    title: locales.theme,
     insets: const ScrollableInsets(
         initialChildSize: 0.5, minChildSize: 0.5, maxChildSize: 0.8),
     children: [
-      if (currentTheme == null) ...[
-        const SwitchListTile(
-          title: Text('Notificări'),
-          onChanged: null,
-          value: true,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-          child: Text(
-              'Tema curentă a conversației nu e disponibilă în versiunea aceasta a aplicației.'),
+      if (!themesId(context).contains(currentTheme)) ...[
+        Padding(
+          padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+          child: Text(locales.themeNotAvailable),
         )
       ],
-      for (var theme in themes) ...[
+      for (var theme in themes(context)) ...[
         Padding(
           padding: const EdgeInsets.only(
             top: 10,
@@ -117,20 +116,21 @@ void _changeTheme({
   );
 }
 
-void _showParticipants(
-    {required BuildContext context, required String id}) async {
+void _showMembers({required BuildContext context, required String id}) async {
   final info = await returnChatInfo(id: id);
   final members = info.data()!['members'];
+  final locales = S.of(context);
   showMagicBottomSheet(
     context: context,
-    title: 'Participanți',
+    title: locales.members,
     insets: const ScrollableInsets(
         initialChildSize: 0.4, minChildSize: 0.4, maxChildSize: 0.8),
     children: [
       for (var member in members) ...[
         ListTile(
-          title:
-              Text(member['uid'] != Core.auth.user.uid ? member['name'] : 'Eu'),
+          title: Text(member['uid'] != Core.auth.user.uid
+              ? member['name']
+              : locales.me),
           subtitle: Text('uid: ' + member['uid']),
           contentPadding:
               const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
@@ -164,10 +164,11 @@ class ChatDetails extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final participants = ref.watch(participantsDebug);
+    final locales = S.of(context);
+    final members = ref.watch(membersDebug);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalii conversație'),
+        title: Text(locales.chatInfo),
       ),
       body: ListView(
         children: [
@@ -203,23 +204,22 @@ class ChatDetails extends HookConsumerWidget {
             padding: const EdgeInsets.only(top: 30, left: 10, right: 10),
             child: Column(
               children: [
-                const SwitchListTile(
-                  secondary: Icon(Icons.notifications_outlined),
-                  title: Text('Notificări'),
+                SwitchListTile(
+                  secondary: const Icon(Icons.notifications_outlined),
+                  title: Text(locales.notifications),
                   onChanged: null,
                   value: true,
                 ),
                 ListTile(
                   leading: const Icon(Icons.brush_outlined),
-                  title: const Text('Temă'),
+                  title: Text(locales.theme),
                   onTap: () async => _changeTheme(context: context, id: id),
                 ),
-                if (participants == true) ...[
+                if (members == true) ...[
                   ListTile(
                     leading: const Icon(Icons.people_alt_outlined),
-                    title: const Text('Participanți'),
-                    onTap: () async =>
-                        _showParticipants(context: context, id: id),
+                    title: Text(locales.members),
+                    onTap: () async => _showMembers(context: context, id: id),
                   ),
                 ]
               ],

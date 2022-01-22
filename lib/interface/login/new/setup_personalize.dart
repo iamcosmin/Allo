@@ -1,5 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
-import 'package:allo/components/settings_list.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/new/setup_done.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
@@ -10,35 +10,32 @@ class SetupPersonalize extends HookConsumerWidget {
   const SetupPersonalize({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locales = S.of(context);
     final dark = ref.watch(darkMode);
     final darkMethod = ref.watch(darkMode.notifier);
     return SetupPage(
-      header: const [
+      header: [
         Text(
-          'Personalizează-ți experiența.',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          locales.setupPersonalizeScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(top: 10),
         ),
         Text(
-          'Asta este ultima etapă. Alege opțiunile de personalizare dorite.',
-          style: TextStyle(fontSize: 17, color: Colors.grey),
+          locales.setupPersonalizeScreenDescription,
+          style: const TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
       body: [
         Padding(
           padding: const EdgeInsets.only(left: 20, right: 20),
-          child: SettingsListTile(
-            title: 'Mod întunecat',
-            type: RadiusType.BOTH,
-            onTap: () => darkMethod.switcher(ref, context),
-            trailing: Switch(
-              value: dark,
-              onChanged: (value) => darkMethod.switcher(ref, context),
-            ),
+          child: SwitchListTile(
+            title: Text(locales.darkMode),
+            value: dark,
+            onChanged: (value) => darkMethod.switcher(ref, context),
           ),
         )
       ],

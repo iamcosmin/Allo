@@ -1,4 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -16,23 +17,24 @@ class SetupPassword extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final error = useState('');
+    final locales = S.of(context);
     final obscure = useState(true);
     final passController = useTextEditingController();
     final confirmPassController = useTextEditingController();
 
     return SetupPage(
-      header: const [
+      header: [
         Text(
-          'Securitatea este importantă.',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          locales.setupPasswordScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(top: 10),
         ),
         Text(
-          'Pentru a crea contul, introdu parola pe care o vrei asociată acestui cont.',
-          style: TextStyle(fontSize: 17, color: Colors.grey),
+          locales.setupPasswordScreenDescription,
+          style: const TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
@@ -46,7 +48,7 @@ class SetupPassword extends HookWidget {
                   contentPadding: const EdgeInsets.all(10),
                   errorText: error.value == '' ? null : error.value,
                   errorStyle: const TextStyle(fontSize: 14),
-                  labelText: 'Parolă',
+                  labelText: locales.password,
                   border: const OutlineInputBorder(),
                   suffix: InkWell(
                     onTap: () {
@@ -72,7 +74,7 @@ class SetupPassword extends HookWidget {
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.all(10),
                   errorStyle: const TextStyle(fontSize: 14),
-                  labelText: 'Confirmă parola',
+                  labelText: locales.confirmPassword,
                   border: const OutlineInputBorder(),
                   suffix: InkWell(
                     onTap: () {
@@ -94,9 +96,9 @@ class SetupPassword extends HookWidget {
                 obscureText: obscure.value,
               ),
               const Padding(padding: EdgeInsets.only(bottom: 10)),
-              const Text(
-                'Parola ta trebuie să conțină minim 8 caractere, litere mari și mici, cifre, simboluri.',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                locales.passwordCriteria,
+                style: const TextStyle(color: Colors.grey),
               )
             ],
           ),

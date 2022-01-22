@@ -1,3 +1,4 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,6 +9,7 @@ class AccountInfo extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final username = useState('');
+    final locales = S.of(context);
     useEffect(() {
       Future.microtask(() async {
         username.value = await Core.auth.user.username;
@@ -15,7 +17,7 @@ class AccountInfo extends HookWidget {
     }, const []);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Informații despre cont'),
+        title: Text(locales.internalAccountInfo),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -23,28 +25,28 @@ class AccountInfo extends HookWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SelectableText(
-              'Nume: ' + Core.auth.user.name,
+              '${locales.name}: ' + Core.auth.user.name,
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              'Inițiale: ' + Core.auth.user.nameInitials,
+              '${locales.initials}: ' + Core.auth.user.nameInitials,
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              'Identificator: ' + Core.auth.user.uid,
+              '${locales.uid}: ' + Core.auth.user.uid,
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              'Nume de utilizator: ' + username.value,
+              '${locales.username}: ' + username.value,
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              'Link poza profil: ' +
-                  (Core.auth.user.profilePicture ?? 'Nu ai poză de profil'),
+              '${locales.profilePicture} ' +
+                  (Core.auth.user.profilePicture ?? locales.noProfilePicture),
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),

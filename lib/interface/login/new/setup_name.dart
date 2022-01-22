@@ -1,4 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/new/setup_username.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
@@ -9,24 +10,25 @@ class SetupName extends HookWidget {
   final String email;
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     final firstFieldError = useState('');
     final secondFieldError = useState('');
     final firstNameController = useTextEditingController();
     final secondNameController = useTextEditingController();
     final nameReg = RegExp(r'^[a-zA-Z]+$');
     return SetupPage(
-      header: const [
+      header: [
         Text(
-          'Cum te numești?',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          locales.setupNameScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           textAlign: TextAlign.left,
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(top: 10),
         ),
         Text(
-          'Pentru a continua, introdu numele tău.',
-          style: TextStyle(fontSize: 17, color: Colors.grey),
+          locales.setupNameScreenDescription,
+          style: const TextStyle(fontSize: 17, color: Colors.grey),
           textAlign: TextAlign.left,
         ),
       ],
@@ -42,7 +44,7 @@ class SetupName extends HookWidget {
                       ? null
                       : firstFieldError.value,
                   errorStyle: const TextStyle(fontSize: 14),
-                  labelText: 'Prenume',
+                  labelText: locales.firstName,
                   border: const OutlineInputBorder(),
                 ),
                 controller: firstNameController,
@@ -55,7 +57,7 @@ class SetupName extends HookWidget {
                       ? null
                       : secondFieldError.value,
                   errorStyle: const TextStyle(fontSize: 14),
-                  labelText: 'Nume (opțional)',
+                  labelText: locales.lastName,
                   border: const OutlineInputBorder(),
                 ),
                 controller: secondNameController,
@@ -82,7 +84,7 @@ class SetupName extends HookWidget {
                   ),
                 );
               } else {
-                secondFieldError.value = 'Numele poate conține doar litere.';
+                secondFieldError.value = locales.specialCharactersNotAllowed;
               }
             } else {
               Core.navigation.push(
@@ -94,10 +96,10 @@ class SetupName extends HookWidget {
               );
             }
           } else {
-            firstFieldError.value = 'Numele poate conține doar litere.';
+            firstFieldError.value = locales.specialCharactersNotAllowed;
           }
         } else {
-          firstFieldError.value = 'Numele nu poate fi gol.';
+          firstFieldError.value = locales.errorFieldEmpty;
         }
       },
       isAsync: true,

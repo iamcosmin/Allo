@@ -1,10 +1,10 @@
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/interface/login/existing/enter_password.dart';
 import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/error_codes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -70,6 +70,7 @@ class Authentication {
       {required String email,
       required ValueNotifier<String> error,
       required BuildContext context}) async {
+    final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
       error.value = '';
@@ -82,7 +83,7 @@ class Authentication {
             .push(context: context, route: EnterPassword(email: email));
       }
     } catch (e) {
-      error.value = 'Acest email este invalid.';
+      error.value = locales.errorThisIsInvalid(locales.email.toLowerCase());
     }
   }
 
@@ -93,6 +94,7 @@ class Authentication {
       required String password,
       required BuildContext context,
       required ValueNotifier<String> error}) async {
+    final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
       await FirebaseAuth.instance
@@ -107,16 +109,16 @@ class Authentication {
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'user-disabled':
-          error.value = ErrorCodes.userDisabled;
+          error.value = locales.errorUserDisabled;
           break;
         case 'wrong-password':
-          error.value = ErrorCodes.wrongPassword;
+          error.value = locales.errorWrongPassword;
           break;
         case 'too-many-requests':
-          error.value = ErrorCodes.tooManyRequests;
+          error.value = locales.errorTooManyRequests;
           break;
         default:
-          error.value = 'Eroare necunoscută.';
+          error.value = locales.errorUnknown;
           break;
       }
     }
@@ -132,6 +134,7 @@ class Authentication {
       required String username,
       required ValueNotifier<String> error,
       required BuildContext context}) async {
+    final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
       if (password != '' && confirmPassword != '') {
@@ -168,18 +171,18 @@ class Authentication {
               route: const SetupVerification(),
             );
           } else {
-            error.value = 'Parola ta nu respectă cerințele.';
+            error.value = locales.errorPasswordRequirements;
           }
         } else {
-          error.value = 'Parolele nu sunt la fel.';
+          error.value = locales.errorPasswordMismatch;
         }
       } else {
-        error.value = 'Parolele nu trebuie să fie goale.';
+        error.value = locales.errorEmptyFields;
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'operation-not-allowed':
-          error.value = 'Momentan, înregistrările sunt închise.';
+          error.value = locales.errorOperationNotAllowed;
       }
     }
   }
@@ -192,6 +195,7 @@ class Authentication {
       required BuildContext context,
       required String displayName,
       required String email}) async {
+    final locales = S.of(context);
     final usernameReg = RegExp(r'^[a-zA-Z0-9_\.]+$');
     final navigation = Core.navigation;
     final usernamesDoc = await FirebaseFirestore.instance
@@ -212,13 +216,14 @@ class Authentication {
             ),
           );
         } else {
-          error.value = 'Acest nume de utilizator este deja luat.';
+          error.value = locales.errorUsernameTaken;
         }
       } else {
-        error.value = 'Numele de utilizator nu este valid.';
+        error.value =
+            locales.errorThisIsInvalid(locales.username.toLowerCase());
       }
     } else {
-      error.value = 'Numele de utilizator nu poate fi gol.';
+      error.value = locales.errorFieldEmpty;
     }
   }
 
@@ -313,10 +318,11 @@ class Authentication {
   Future sendPasswordResetEmail(
       {required String email, required BuildContext context}) async {
     FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    final locales = S.of(context);
     Core.stub.showInfoBar(
         context: context,
         icon: Icons.mail_outline,
-        text: 'Vei primi un link pe email.');
+        text: locales.resetLinkSent);
   }
 }
 

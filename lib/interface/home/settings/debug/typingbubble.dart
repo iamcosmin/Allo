@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:allo/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ExampleIsTyping extends StatefulWidget {
@@ -16,10 +17,11 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
 
   @override
   Widget build(BuildContext context) {
+    final locales = S.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Demo indicator scriere'),
+        title: Text(locales.internalTypingIndicatorDemo),
       ),
       body: Column(
         children: [

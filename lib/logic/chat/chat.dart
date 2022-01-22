@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:allo/generated/l10n.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -22,6 +23,7 @@ class Chat {
         .where('participants', arrayContains: _uid)
         .get();
     var _chatsMap = <Map<String, String?>>[];
+    final locales = S.of(context);
 
     if (_documents.docs.isNotEmpty) {
       for (var chat in _documents.docs) {
@@ -40,7 +42,7 @@ class Chat {
               }
               _chatsMap.add({
                 'type': ChatType.private,
-                'name': name ?? 'Niciun nume',
+                'name': name ?? '???',
                 'profilepic': profilepic,
                 'chatId': chat.id,
               });
@@ -52,7 +54,7 @@ class Chat {
               profilepic = chatInfo['profilepic'];
               _chatsMap.add({
                 'type': ChatType.group,
-                'name': name ?? 'Niciun nume',
+                'name': name ?? '???',
                 'chatId': chat.id,
                 'profilepic': profilepic,
               });
