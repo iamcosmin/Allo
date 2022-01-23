@@ -16,7 +16,6 @@ jobs:
       with:
         channel: 'beta'
     - name: Web - Build
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
           flutter build web
     - name: Web - Deploy
@@ -42,7 +41,6 @@ jobs:
       with:
         channel: 'beta'
     - name: Expand keystore
-      if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
            cd android/
            echo "${{ secrets.KEYSTORE }}" > release.jks.asc
@@ -50,7 +48,6 @@ jobs:
            echo "${{ secrets.KEYSTORE_PASS }}" > key.properties
            cd ..
     - name: Play Store - Build
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: | 
           flutter build appbundle --flavor prod
     - name: Play Store - Release
