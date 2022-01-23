@@ -209,7 +209,11 @@ class Bubble extends HookConsumerWidget {
     );
     final messageRadius =
         isNotCurrentUser ? receivedMessageRadius : sentMessageRadius;
-
+    useEffect(() {
+      if (isNotCurrentUser) {
+        Core.chat(chat.id).messages.markAsRead(messageId: message.id);
+      }
+    }, const []);
     return Padding(
       padding: betweenBubblesPadding,
       child: Column(
@@ -239,7 +243,9 @@ class Bubble extends HookConsumerWidget {
                   color: color,
                 ),
                 const Padding(padding: EdgeInsets.only(left: 10)),
-              ] else ...[
+              ] else if (chat.type == ChatType.private)
+                ...[]
+              else ...[
                 const Padding(padding: EdgeInsets.only(left: 46)),
               ],
               InkWell(
