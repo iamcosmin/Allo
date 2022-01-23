@@ -19,7 +19,7 @@ class TabbedNavigator extends HookWidget {
 
     useEffect(() {
       AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
-        await Core.navigation.push(
+        await Core.navigation.pushAndRemoveUntilHome(
           context: context,
           route: Chat(
             chatType: event.payload!['chatType']!,

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:firebase_image/firebase_image.dart';
 
 enum _PersonPictureType { profilePicture, initials, determine }
 
@@ -51,7 +52,8 @@ class PersonPicture extends HookWidget {
       );
     } else if (_type == _PersonPictureType.initials) {
       return ClipOval(
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
           height: radius,
           width: radius,
           decoration: BoxDecoration(color: color, gradient: gradient),
@@ -67,40 +69,41 @@ class PersonPicture extends HookWidget {
       );
     } else if (_type == _PersonPictureType.determine) {
       return ClipOval(
-        key: stringKey != null ? Key(stringKey!) : UniqueKey(),
-        child: SizedBox(
-          key: stringKey != null ? Key(stringKey!) : UniqueKey(),
+        key: key,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          key: key,
           height: radius,
           width: radius,
+          alignment: Alignment.center,
           child: Builder(
-            key: stringKey != null ? Key(stringKey!) : UniqueKey(),
+            key: key,
             builder: (context) {
               if (profilePicture != null && profilePicture!.isNotEmpty) {
-                return CachedNetworkImage(
-                  key: stringKey != null ? Key(stringKey!) : UniqueKey(),
-                  cacheKey: stringKey,
-                  imageUrl: profilePicture!,
-                  progressIndicatorBuilder: (context, string, progress) =>
-                      const CircularProgressIndicator(),
-                  errorWidget: (context, str, dn) {
-                    return Container(
-                      height: radius,
-                      width: radius,
-                      decoration:
-                          BoxDecoration(color: color, gradient: gradient),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          initials!,
-                          style: TextStyle(fontSize: radius / 2),
-                        ),
+                return Image(
+                  key: key,
+                  image: profilePicture!.startsWith('gs://')
+                      ? FirebaseImage(profilePicture!)
+                      : CachedNetworkImageProvider(profilePicture!)
+                          as ImageProvider,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    key: key,
+                    height: radius,
+                    width: radius,
+                    decoration: BoxDecoration(color: color, gradient: gradient),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        initials!,
+                        style: TextStyle(fontSize: radius / 2),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 );
               } else {
-                return Container(
-                  key: stringKey != null ? Key(stringKey!) : UniqueKey(),
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  key: key,
                   height: radius,
                   width: radius,
                   decoration: BoxDecoration(color: color, gradient: gradient),

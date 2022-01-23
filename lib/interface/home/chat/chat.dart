@@ -1,3 +1,4 @@
+import 'package:allo/components/chats/bubbles/message_bubble.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
@@ -123,11 +124,25 @@ class Chat extends HookConsumerWidget {
                   Expanded(
                     flex: 10,
                     child: AnimatedList(
+                      initialItemCount: messages.value.length,
                       padding: const EdgeInsets.only(top: 10),
                       key: listKey,
                       reverse: true,
                       controller: controller,
                       itemBuilder: (context, i, animation) {
+                        final currentUid = Core.auth.user.uid;
+                        final documentData = messages.value[i].data() as Map;
+                        var name = documentData['name'] ??
+                            documentData['senderName'] ??
+                            'No name';
+                        var uid = documentData['uid'] ??
+                            documentData['senderUID'] ??
+                            'No UID';
+                        String text = documentData['text'] ??
+                            documentData['messageTextContent'] ??
+                            'No text';
+                        final senderUid =
+                            (messages.value[i].data() as Map)['uid'];
                         final Map pastData, nextData;
                         if (i == 0) {
                           nextData = {'senderUID': 'null'};
@@ -152,6 +167,9 @@ class Chat extends HookConsumerWidget {
                             : nextData.containsKey('senderUID')
                                 ? nextData['senderUID']
                                 : 'null';
+
+                        final isNextSenderSame = nextUID == senderUid;
+                        final isPrevSenderSame = pastUID == senderUid;
                         if (i == messages.value.length - 1) {
                           return Column(
                             children: [
@@ -191,21 +209,31 @@ class Chat extends HookConsumerWidget {
                               ),
                               const Padding(padding: EdgeInsets.only(top: 20)),
                               SizeTransition(
-                                axisAlignment: -1.0,
+                                axisAlignment: -1.5,
                                 sizeFactor: animation,
-                                child: FadeTransition(
-                                  opacity: CurvedAnimation(
-                                      curve: Curves.easeIn, parent: animation),
-                                  child: MessageBubble(
-                                    chatType: chatType,
-                                    pastUID: pastUID,
-                                    chatId: chatId,
-                                    nextUID: nextUID,
+                                child: Bubble(
                                     color: theme.value,
-                                    data: messages.value[i],
-                                    key: Key(messages.value[i].id),
-                                  ),
-                                ),
+                                    chat: ChatInfo(id: chatId, type: chatType),
+                                    message: MessageInfo(
+                                        type: documentData['type'],
+                                        image: documentData['link'],
+                                        id: messages.value[i].id,
+                                        isNextSenderSame: isNextSenderSame,
+                                        isPreviousSenderSame: isPrevSenderSame,
+                                        text: text,
+                                        time:
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                (documentData['time']
+                                                        as Timestamp)
+                                                    .millisecondsSinceEpoch),
+                                        isRead: documentData['read'] ?? false,
+                                        isLast: nextUID == 'null'),
+                                    user: UserInfo(
+                                        name: name,
+                                        userId: uid,
+                                        profilePhoto:
+                                            'gs://allo-ms.appspot.com/profilePictures/$uid.png'),
+                                    key: Key(messages.value[i].id)),
                               ),
                             ],
                           );
@@ -213,18 +241,27 @@ class Chat extends HookConsumerWidget {
                           return SizeTransition(
                             axisAlignment: -1.0,
                             sizeFactor: animation,
-                            child: FadeTransition(
-                              opacity: CurvedAnimation(
-                                  curve: Curves.easeIn, parent: animation),
-                              child: MessageBubble(
-                                  chatType: chatType,
-                                  pastUID: pastUID,
-                                  chatId: chatId,
-                                  nextUID: nextUID,
-                                  color: theme.value,
-                                  data: messages.value[i],
-                                  key: Key(messages.value[i].id)),
-                            ),
+                            child: Bubble(
+                                color: theme.value,
+                                chat: ChatInfo(id: chatId, type: chatType),
+                                message: MessageInfo(
+                                    type: documentData['type'],
+                                    image: documentData['link'],
+                                    id: messages.value[i].id,
+                                    isNextSenderSame: isNextSenderSame,
+                                    isPreviousSenderSame: isPrevSenderSame,
+                                    text: text,
+                                    time: DateTime.fromMillisecondsSinceEpoch(
+                                        (documentData['time'] as Timestamp)
+                                            .millisecondsSinceEpoch),
+                                    isRead: documentData['read'] ?? false,
+                                    isLast: nextUID == 'null'),
+                                user: UserInfo(
+                                    name: name,
+                                    userId: uid,
+                                    profilePhoto:
+                                        'gs://allo-ms.appspot.com/profilePictures/$uid.png'),
+                                key: Key(messages.value[i].id)),
                           );
                         }
                       },
@@ -245,7 +282,8 @@ class Chat extends HookConsumerWidget {
             ),
             Expanded(
               flex: 0,
-              child: Align(
+              child: Container(
+                  color: Colors.transparent,
                   alignment: Alignment.bottomCenter,
                   child: MessageInput(
                     chatId: chatId,

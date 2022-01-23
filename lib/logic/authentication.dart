@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/interface/login/existing/enter_password.dart';

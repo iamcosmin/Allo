@@ -1,4 +1,4 @@
-import 'package:allo/components/chats/bubbles/sent.dart';
+import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/generated/l10n.dart';

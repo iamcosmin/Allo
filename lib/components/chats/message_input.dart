@@ -104,7 +104,7 @@ class MessageInput extends HookConsumerWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5, top: 10),
+        padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),

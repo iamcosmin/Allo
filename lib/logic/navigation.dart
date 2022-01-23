@@ -13,6 +13,14 @@ class Navigation {
     );
   }
 
+  Future pushAndRemoveUntilHome(
+      {required BuildContext context, required Widget route}) {
+    return Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => route),
+      (_) => false,
+    );
+  }
+
   Future pushPermanent({required BuildContext context, required Widget route}) {
     return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => route), (route) => false);
