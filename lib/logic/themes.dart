@@ -66,6 +66,7 @@ final darkTheme = ThemeData(
       backgroundColor: Colors.grey.shade800),
   fontFamily: 'GS-Text',
   scaffoldBackgroundColor: const Color(0xFF1c1c1c),
+  androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
   snackBarTheme: const SnackBarThemeData(
     backgroundColor: Color(0xFF323232),
     actionTextColor: Color(0xFFFFFFFF),

@@ -30,6 +30,7 @@ class Home extends HookConsumerWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: createChat == false ? Colors.grey.shade700 : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         onPressed: createChat == false
             ? null
             : () => Navigator.push(context,

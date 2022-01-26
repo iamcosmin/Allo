@@ -9,6 +9,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'bubbles/message_bubble.dart';
+
 void _attachMenu({
   required BuildContext context,
   required ValueNotifier<double> uploadProgressValue,
@@ -78,6 +80,45 @@ void _attachMenu({
   );
 }
 
+/// [ModifierType] is used to define if a Modifier is for replying to a message
+/// or for editing a message.
+enum ModifierType {
+  reply,
+  @Deprecated(
+      'DO NOT USE THIS VALUE, THIS IS NOT IMPLEMENTED IN LOGIC/CHAT.DART.')
+  edit
+}
+
+/// [ModifierAction] is used to get suplimentary metadata, such as
+/// if the Modifier is for editing some message, or for replying to a message.
+/// [ModifierAction] will be modified if there will be new scenarios.
+class ModifierAction {
+  ModifierAction({required this.type, this.replyMessageId, this.editMessageId})
+// Translation: If it is a reply modifier, assert that the replyMessageId is not null, else if it is a edit modifier,
+// assert that editMessageId is not null, else, trigger an exception.
+      : assert(type == ModifierType.reply
+            ? replyMessageId != null
+            : type == ModifierType.edit
+                ? editMessageId != null
+                : false);
+  final ModifierType type;
+  String? replyMessageId;
+  String? editMessageId;
+}
+
+class InputModifier {
+  const InputModifier({
+    required this.title,
+    required this.body,
+    required this.icon,
+    required this.action,
+  });
+  final String title;
+  final String body;
+  final IconData icon;
+  final ModifierAction action;
+}
+
 /// Provides input actions for the Chat object.
 // ignore: must_be_immutable
 class MessageInput extends HookConsumerWidget {
@@ -85,11 +126,13 @@ class MessageInput extends HookConsumerWidget {
   final String chatName;
   final String chatType;
   final Color color;
+  final ValueNotifier<InputModifier?> modifier;
   const MessageInput({
     required this.chatId,
     required this.chatName,
     required this.chatType,
     required this.color,
+    required this.modifier,
     Key? key,
   }) : super(key: key);
 
@@ -101,15 +144,81 @@ class MessageInput extends HookConsumerWidget {
     final _node = useFocusNode(descendantsAreFocusable: false);
     final progress = useState<double>(0);
     final locales = S.of(context);
-    return Align(
+    return Container(
       alignment: Alignment.bottomCenter,
-      child: Container(
-        padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: colors.messageInput),
-          child: Row(
+      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), color: colors.messageInput),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: modifier.value != null ? 50 : 0,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: !(modifier.value != null)
+                  ? null
+                  : Container(
+                      padding: const EdgeInsets.only(left: 15, right: 10),
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        children: [
+                          Icon(modifier.value?.icon),
+                          const Padding(padding: EdgeInsets.only(left: 15)),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                modifier.value?.title ?? '',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                modifier.value?.body ?? '',
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            ],
+                          ),
+                          if (modifier.value != null) ...[
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  icon: const Icon(Icons.close_rounded),
+                                  onPressed: () {
+                                    modifier.value = null;
+                                  },
+                                ),
+                              ),
+                            )
+                          ]
+                        ],
+                      ),
+                    ),
+              transitionBuilder: (child, animation) {
+                return Column(
+                  children: [
+                    SizeTransition(
+                      sizeFactor: animation,
+                      child: child,
+                      axis: Axis.vertical,
+                      axisAlignment: -1,
+                      key: key,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 alignment: Alignment.center,
@@ -117,7 +226,7 @@ class MessageInput extends HookConsumerWidget {
                 icon: empty.value
                     ? const Icon(Icons.attach_file_outlined)
                     : const Icon(Icons.search_outlined),
-                onPressed: empty.value == false
+                onPressed: empty.value == false || modifier.value != null
                     ? null
                     : () => _attachMenu(
                           chatId: chatId,
@@ -174,14 +283,15 @@ class MessageInput extends HookConsumerWidget {
                                 text: _messageController.text,
                                 context: context,
                                 chatName: chatName,
-                                controller: _messageController);
+                                controller: _messageController,
+                                modifier: modifier);
                           },
                   ),
                 ],
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

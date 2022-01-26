@@ -9,7 +9,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:allo/components/chats/message_input.dart';
-import 'package:allo/components/chats/bubbles/message_bubble.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -36,6 +35,7 @@ class Chat extends HookConsumerWidget {
     final messages = useState(<DocumentSnapshot>[]);
     final controller = useScrollController();
     final isLoadingPrevMessages = useState(false);
+    final inputModifiers = useState<InputModifier?>(null);
     final locales = S.of(context);
 
     useEffect(() {
@@ -212,28 +212,30 @@ class Chat extends HookConsumerWidget {
                                 axisAlignment: -1.5,
                                 sizeFactor: animation,
                                 child: Bubble(
-                                    color: theme.value,
-                                    chat: ChatInfo(id: chatId, type: chatType),
-                                    message: MessageInfo(
-                                        type: documentData['type'],
-                                        image: documentData['link'],
-                                        id: messages.value[i].id,
-                                        isNextSenderSame: isNextSenderSame,
-                                        isPreviousSenderSame: isPrevSenderSame,
-                                        text: text,
-                                        time:
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                                (documentData['time']
-                                                        as Timestamp)
-                                                    .millisecondsSinceEpoch),
-                                        isRead: documentData['read'] ?? false,
-                                        isLast: nextUID == 'null'),
-                                    user: UserInfo(
-                                        name: name,
-                                        userId: uid,
-                                        profilePhoto:
-                                            'gs://allo-ms.appspot.com/profilePictures/$uid.png'),
-                                    key: Key(messages.value[i].id)),
+                                  color: theme.value,
+                                  chat: ChatInfo(id: chatId, type: chatType),
+                                  message: MessageInfo(
+                                      type: documentData['type'],
+                                      image: documentData['link'],
+                                      id: messages.value[i].id,
+                                      isNextSenderSame: isNextSenderSame,
+                                      isPreviousSenderSame: isPrevSenderSame,
+                                      replyToMessageId:
+                                          documentData['reply_to_message'],
+                                      text: text,
+                                      time: DateTime.fromMillisecondsSinceEpoch(
+                                          (documentData['time'] as Timestamp)
+                                              .millisecondsSinceEpoch),
+                                      isRead: documentData['read'] ?? false,
+                                      isLast: nextUID == 'null'),
+                                  user: UserInfo(
+                                      name: name,
+                                      userId: uid,
+                                      profilePhoto:
+                                          'gs://allo-ms.appspot.com/profilePictures/$uid.png'),
+                                  key: Key(messages.value[i].id),
+                                  modifiers: inputModifiers,
+                                ),
                               ),
                             ],
                           );
@@ -242,26 +244,30 @@ class Chat extends HookConsumerWidget {
                             axisAlignment: -1.0,
                             sizeFactor: animation,
                             child: Bubble(
-                                color: theme.value,
-                                chat: ChatInfo(id: chatId, type: chatType),
-                                message: MessageInfo(
-                                    type: documentData['type'],
-                                    image: documentData['link'],
-                                    id: messages.value[i].id,
-                                    isNextSenderSame: isNextSenderSame,
-                                    isPreviousSenderSame: isPrevSenderSame,
-                                    text: text,
-                                    time: DateTime.fromMillisecondsSinceEpoch(
-                                        (documentData['time'] as Timestamp)
-                                            .millisecondsSinceEpoch),
-                                    isRead: documentData['read'] ?? false,
-                                    isLast: nextUID == 'null'),
-                                user: UserInfo(
-                                    name: name,
-                                    userId: uid,
-                                    profilePhoto:
-                                        'gs://allo-ms.appspot.com/profilePictures/$uid.png'),
-                                key: Key(messages.value[i].id)),
+                              color: theme.value,
+                              chat: ChatInfo(id: chatId, type: chatType),
+                              message: MessageInfo(
+                                  type: documentData['type'],
+                                  image: documentData['link'],
+                                  id: messages.value[i].id,
+                                  isNextSenderSame: isNextSenderSame,
+                                  isPreviousSenderSame: isPrevSenderSame,
+                                  replyToMessageId:
+                                      documentData['reply_to_message'],
+                                  text: text,
+                                  time: DateTime.fromMillisecondsSinceEpoch(
+                                      (documentData['time'] as Timestamp)
+                                          .millisecondsSinceEpoch),
+                                  isRead: documentData['read'] ?? false,
+                                  isLast: nextUID == 'null'),
+                              user: UserInfo(
+                                  name: name,
+                                  userId: uid,
+                                  profilePhoto:
+                                      'gs://allo-ms.appspot.com/profilePictures/$uid.png'),
+                              key: Key(messages.value[i].id),
+                              modifiers: inputModifiers,
+                            ),
                           );
                         }
                       },
@@ -286,6 +292,7 @@ class Chat extends HookConsumerWidget {
                   color: Colors.transparent,
                   alignment: Alignment.bottomCenter,
                   child: MessageInput(
+                    modifier: inputModifiers,
                     chatId: chatId,
                     chatName: title,
                     chatType: chatType,

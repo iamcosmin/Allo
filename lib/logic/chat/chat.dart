@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -148,6 +149,7 @@ class Messages {
       required BuildContext context,
       required String chatName,
       TextEditingController? controller,
+      ValueNotifier<InputModifier?>? modifier,
       required String chatType}) async {
     if (controller != null) {
       controller.clear();
@@ -158,14 +160,28 @@ class Messages {
         .update({'typing': false});
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
     final auth = Core.auth;
-    await db.collection('messages').add({
-      'type': MessageTypes.text,
-      'name': auth.user.name,
-      'username': await auth.user.username,
-      'uid': auth.user.uid,
-      'text': text,
-      'time': Timestamp.now(),
-    });
+    final replyMessageId = modifier!.value!.action.replyMessageId;
+    if (modifier.value == null) {
+      await db.collection('messages').add({
+        'type': MessageTypes.text,
+        'name': auth.user.name,
+        'username': await auth.user.username,
+        'uid': auth.user.uid,
+        'text': text,
+        'time': Timestamp.now(),
+      });
+    } else if (modifier.value!.action.type == ModifierType.reply) {
+      modifier.value = null;
+      await db.collection('messages').add({
+        'type': MessageTypes.text,
+        'name': auth.user.name,
+        'username': await auth.user.username,
+        'uid': auth.user.uid,
+        'reply_to_message': replyMessageId,
+        'text': text,
+        'time': Timestamp.now(),
+      });
+    }
     await _sendNotification(
         profilePicture: Core.auth.user.profilePicture,
         chatName: chatName,
