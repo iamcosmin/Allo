@@ -113,5 +113,8 @@
     "unknown": "Necunoscut",
     "uploadPicture": "Încarcă imagine",
     "username": "Nume de utilizator",
-    "welcomeBack": "Bine ai revenit"
+    "welcomeBack": "Bine ai revenit",
+    "error": "Eroare",
+    "noChats": "Nu ai nicio conversație.",
+    "anErrorOccurred": "A apărut o eroare."
 }

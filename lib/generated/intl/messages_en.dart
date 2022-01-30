@@ -25,6 +25,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "anErrorOccurred":
+            MessageLookupByLibrary.simpleMessage("An error occurred."),
         "attach": MessageLookupByLibrary.simpleMessage("Attach"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -61,6 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enable Members List"),
         "enterPasswordDescription": MessageLookupByLibrary.simpleMessage(
             "To continue, please enter your password."),
+        "error": MessageLookupByLibrary.simpleMessage("Error"),
         "errorEmailAlreadyInUse": MessageLookupByLibrary.simpleMessage(
             "The email is already in use."),
         "errorEmptyFields": MessageLookupByLibrary.simpleMessage(
@@ -128,6 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "name": MessageLookupByLibrary.simpleMessage("Name"),
         "noCameraAvailable":
             MessageLookupByLibrary.simpleMessage("No camera available."),
+        "noChats":
+            MessageLookupByLibrary.simpleMessage("You don\'t have any chats."),
         "noProfilePicture":
             MessageLookupByLibrary.simpleMessage("No profile picture"),
         "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),

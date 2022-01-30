@@ -37,3 +37,10 @@ jobs:
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
         track: beta
         whatsNewDirectory: distribution
+    - name: Publish Release Notes
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
+        token: ${{ secrets.TELEGRAM_BOT_ID }}
+        format: markdown
+        message: "beta ${{ github.event.head_commit.message }}\nActualizarea este dispoibilă în Magazin Play pentru cei din canalul alpha."
