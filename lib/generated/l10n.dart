@@ -1199,6 +1199,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Error`
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You don't have any chats.`
+  String get noChats {
+    return Intl.message(
+      'You don\'t have any chats.',
+      name: 'noChats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred.`
+  String get anErrorOccurred {
+    return Intl.message(
+      'An error occurred.',
+      name: 'anErrorOccurred',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

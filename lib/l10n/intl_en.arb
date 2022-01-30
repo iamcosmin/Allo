@@ -113,5 +113,8 @@
     "unknown": "Unknown",
     "uploadPicture": "Upload Picture",
     "username": "Username",
-    "welcomeBack": "Welcome back"
+    "welcomeBack": "Welcome back",
+    "error": "Error",
+    "noChats": "You don't have any chats.",
+    "anErrorOccurred": "An error occurred."
 }

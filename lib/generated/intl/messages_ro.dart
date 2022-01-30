@@ -25,6 +25,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Cont"),
+        "anErrorOccurred":
+            MessageLookupByLibrary.simpleMessage("A apărut o eroare."),
         "attach": MessageLookupByLibrary.simpleMessage("Atașează"),
         "camera": MessageLookupByLibrary.simpleMessage("Cameră"),
         "cancel": MessageLookupByLibrary.simpleMessage("Anulare"),
@@ -63,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Activează lista membrilor"),
         "enterPasswordDescription": MessageLookupByLibrary.simpleMessage(
             "Pentru a continua, introdu parola."),
+        "error": MessageLookupByLibrary.simpleMessage("Eroare"),
         "errorEmailAlreadyInUse":
             MessageLookupByLibrary.simpleMessage("Emailul este deja folosit."),
         "errorEmptyFields":
@@ -130,6 +133,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "name": MessageLookupByLibrary.simpleMessage("Nume"),
         "noCameraAvailable":
             MessageLookupByLibrary.simpleMessage("Nicio cameră disponibilă."),
+        "noChats":
+            MessageLookupByLibrary.simpleMessage("Nu ai nicio conversație."),
         "noProfilePicture":
             MessageLookupByLibrary.simpleMessage("Nicio fotografie de profil"),
         "notifications": MessageLookupByLibrary.simpleMessage("Notificări"),
