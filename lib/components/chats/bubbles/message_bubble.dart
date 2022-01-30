@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
@@ -163,9 +165,24 @@ class MessageInfo {
   final String? replyToMessageId;
 }
 
+Future retreiveDocument(String? messageID, String chatId) async {
+  if (messageID != null) {
+    log('RETREIVE DOCUMENT IS CALLED ONE TIME!',
+        time: DateTime.now(), level: 2000, name: 'ERROR!');
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageID)
+        .get();
+  } else {
+    return null;
+  }
+}
+
 class Bubble extends HookConsumerWidget {
-  const Bubble({
-    Key? key,
+  Bubble({
+    required Key key,
     required this.user,
     required this.chat,
     required this.message,
@@ -177,6 +194,7 @@ class Bubble extends HookConsumerWidget {
   final MessageInfo message;
   final Color color;
   final ValueNotifier<InputModifier?> modifiers;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
@@ -216,41 +234,14 @@ class Bubble extends HookConsumerWidget {
     );
     final messageRadius =
         isNotCurrentUser ? receivedMessageRadius : sentMessageRadius;
+
     useEffect(() {
-      if (isNotCurrentUser) {
+      if (isNotCurrentUser && message.isRead == false) {
         Core.chat(chat.id).messages.markAsRead(messageId: message.id);
       }
     }, const []);
 
-    Future retreiveDocument(String? messageID) async {
-      if (messageID != null) {
-        print(messageID);
-        return await FirebaseFirestore.instance
-            .collection('chats')
-            .doc(chat.id)
-            .collection('messages')
-            .doc(messageID)
-            .get();
-      } else {
-        return null;
-      }
-    }
-
-    final future = useFuture(retreiveDocument(message.replyToMessageId));
-    final replyToMessage = useMemoized<Map<String, String>?>(() {
-      if (future.data != null) {
-        if (future.data!.data() != null) {
-          return {
-            'name': future.data!.data()!['name'],
-            'text': future.data!.data()!['text']
-          };
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    }, [future.data]);
+    final fututz = useState(retreiveDocument(message.id, chat.id));
 
     return Padding(
       padding: betweenBubblesPadding,
@@ -364,72 +355,85 @@ class Bubble extends HookConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(
-                                  height: replyToMessage == null ? 0 : 50,
-                                  child: replyToMessage == null
-                                      ? null
-                                      : Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 5,
-                                              bottom: 5,
-                                              left: 5,
-                                              right: 5),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: isNotCurrentUser
-                                                      ? theme
-                                                          .colorScheme.onSurface
-                                                      : Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    2,
-                                                  ),
-                                                ),
-                                                height: 35,
-                                                width: 3,
-                                              ),
-                                              const Padding(
-                                                padding:
-                                                    EdgeInsets.only(right: 10),
-                                              ),
-                                              Container(
-                                                height: 40,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                FutureBuilder<dynamic>(
+                                    key: key,
+                                    future: fututz.value,
+                                    builder: (context, snapshot) {
+                                      return Container(
+                                        height: snapshot.data?.data() == null
+                                            ? 0
+                                            : 50,
+                                        child: snapshot.data?.data() == null
+                                            ? null
+                                            : Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 5,
+                                                    bottom: 5,
+                                                    left: 5,
+                                                    right: 5),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
-                                                    Text(
-                                                      replyToMessage['name'] ??
-                                                          '',
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          overflow: TextOverflow
-                                                              .ellipsis),
-                                                    ),
-                                                    ClipRect(
-                                                      clipBehavior:
-                                                          Clip.hardEdge,
-                                                      child: Text(
-                                                        replyToMessage[
-                                                                'text'] ??
-                                                            '',
-                                                        style: const TextStyle(
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis),
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        color: isNotCurrentUser
+                                                            ? theme.colorScheme
+                                                                .onSurface
+                                                            : Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                          2,
+                                                        ),
                                                       ),
+                                                      height: 35,
+                                                      width: 3,
                                                     ),
+                                                    const Padding(
+                                                      padding: EdgeInsets.only(
+                                                          right: 10),
+                                                    ),
+                                                    Container(
+                                                      height: 40,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            snapshot.data![
+                                                                    'name'] ??
+                                                                '',
+                                                            style: const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis),
+                                                          ),
+                                                          ClipRect(
+                                                            clipBehavior:
+                                                                Clip.hardEdge,
+                                                            child: Text(
+                                                              snapshot.data![
+                                                                      'text'] ??
+                                                                  '',
+                                                              style: const TextStyle(
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
                                                   ],
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                ),
+                                              ),
+                                      );
+                                    }),
                                 Linkify(
                                   text: message.text,
                                   onOpen: (link) async {
