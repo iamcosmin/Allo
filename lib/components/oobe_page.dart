@@ -71,9 +71,6 @@ class SetupPage extends HookConsumerWidget {
                       children: [
                         ElevatedButton(
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100))),
                             minimumSize: MaterialStateProperty.all(
                               Size(MediaQuery.of(context).size.width - 10, 50),
                             ),

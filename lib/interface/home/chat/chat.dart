@@ -31,7 +31,10 @@ class Chat extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final typing = useState(false);
-    final theme = useState<Color>(Colors.blue);
+    final theme = useState<ColorScheme>(
+      ColorScheme.fromSeed(
+          seedColor: Colors.blue, brightness: Theme.of(context).brightness),
+    );
     final colors = ref.watch(colorsProvider);
     final messages = useState(<Message>[]);
     final controller = useScrollController();
@@ -50,7 +53,10 @@ class Chat extends HookConsumerWidget {
           typing.value = event.data()!['typing'] ?? false;
           var dbThemeId = event.data()!['theme'] ?? 'blue';
           var themeIndex = themesId(context).indexOf(dbThemeId);
-          theme.value = themes(context)[themeIndex]['color'];
+          theme.value = ColorScheme.fromSeed(
+              seedColor: themes(context)[themeIndex]['color'],
+              primary: themes(context)[themeIndex]['color'],
+              brightness: Theme.of(context).brightness);
         },
       );
       Core.chat(chatId)
@@ -58,7 +64,11 @@ class Chat extends HookConsumerWidget {
       return;
     }, const []);
     return Scaffold(
+      backgroundColor: theme.value.background,
       appBar: AppBar(
+        backgroundColor: theme.value.surface,
+        elevation: 2,
+        iconTheme: IconThemeData(color: theme.value.onSurface),
         toolbarHeight: 100,
         leading: Container(
           padding: const EdgeInsets.only(left: 10, top: 0),
@@ -97,7 +107,6 @@ class Chat extends HookConsumerWidget {
                         profilePicture: profilepic,
                         radius: 37,
                         initials: Core.auth.returnNameInitials(title),
-                        color: Colors.green,
                       ),
                     ),
                     Text(
@@ -124,7 +133,6 @@ class Chat extends HookConsumerWidget {
                   Expanded(
                     flex: 10,
                     child: AnimatedList(
-                      initialItemCount: messages.value.length,
                       padding: const EdgeInsets.only(top: 10),
                       key: listKey,
                       reverse: true,
@@ -239,7 +247,7 @@ class Chat extends HookConsumerWidget {
                                     curve: Curves.easeOutQuint,
                                     parent: animation),
                                 child: Bubble(
-                                  color: theme.value,
+                                  color: theme.value.primary,
                                   chat: ChatInfo(id: chatId, type: chatType),
                                   message: messageInfo()!,
                                   user: UserInfo(
@@ -259,7 +267,7 @@ class Chat extends HookConsumerWidget {
                             sizeFactor: CurvedAnimation(
                                 curve: Curves.easeInOutCirc, parent: animation),
                             child: Bubble(
-                              color: theme.value,
+                              color: theme.value.primary,
                               chat: ChatInfo(id: chatId, type: chatType),
                               message: messageInfo()!,
                               user: UserInfo(
@@ -291,15 +299,16 @@ class Chat extends HookConsumerWidget {
             Expanded(
               flex: 0,
               child: Container(
-                  color: Colors.transparent,
-                  alignment: Alignment.bottomCenter,
-                  child: MessageInput(
-                    modifier: inputModifiers,
-                    chatId: chatId,
-                    chatName: title,
-                    chatType: chatType,
-                    color: theme.value,
-                  )),
+                color: Colors.transparent,
+                alignment: Alignment.bottomCenter,
+                child: MessageInput(
+                  modifier: inputModifiers,
+                  chatId: chatId,
+                  chatName: title,
+                  chatType: chatType,
+                  color: theme.value.secondaryContainer,
+                ),
+              ),
             )
           ],
         ),

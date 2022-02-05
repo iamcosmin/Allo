@@ -145,12 +145,13 @@ class MessageInput extends HookConsumerWidget {
     return Container(
       alignment: Alignment.bottomCenter,
       margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10), color: colors.messageInput),
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.circular(10), color: color),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedContainer(
+            color: color,
             duration: const Duration(milliseconds: 200),
             height: modifier.value != null ? 50 : 0,
             child: AnimatedSwitcher(
@@ -158,6 +159,7 @@ class MessageInput extends HookConsumerWidget {
               child: !(modifier.value != null)
                   ? null
                   : Container(
+                      color: color,
                       padding: const EdgeInsets.only(left: 15, right: 10),
                       height: 50,
                       width: MediaQuery.of(context).size.width,
@@ -245,6 +247,7 @@ class MessageInput extends HookConsumerWidget {
                   maxWidth: MediaQuery.of(context).size.width - 110,
                 ),
                 child: TextFormField(
+                  cursorColor: Theme.of(context).colorScheme.outline,
                   minLines: 1,
                   autofocus: false,
                   focusNode: _node,

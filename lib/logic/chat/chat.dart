@@ -82,8 +82,13 @@ class Chat {
         for (var docChanges in event.docChanges) {
           switch (docChanges.type) {
             case DocumentChangeType.added:
-              listKey.currentState?.insertItem(docChanges.newIndex,
-                  duration: const Duration(milliseconds: 275));
+              if (event.docChanges.length == 20) {
+                listKey.currentState?.insertItem(docChanges.newIndex,
+                    duration: const Duration(seconds: 0));
+              } else {
+                listKey.currentState?.insertItem(docChanges.newIndex,
+                    duration: const Duration(milliseconds: 275));
+              }
               final data = docChanges.doc.data() as Map<String, dynamic>;
               Message? message;
               switch (data['type']) {

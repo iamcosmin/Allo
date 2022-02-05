@@ -33,29 +33,28 @@ class TabbedNavigator extends HookWidget {
     return Scaffold(
       body: pages[selected.value],
       bottomNavigationBar: NavigationBar(
-        height: 56,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: [
           NavigationDestination(
-            icon: const Icon(
+            icon: Icon(
               Icons.home_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             label: locales.home,
             selectedIcon: Icon(
               Icons.home,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.black
-                  : Colors.white,
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
             ),
           ),
           NavigationDestination(
-            icon: const Icon(Icons.settings_outlined),
+            icon: Icon(
+              Icons.settings_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             label: locales.settings,
             selectedIcon: Icon(
               Icons.settings,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.black
-                  : Colors.white,
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
             ),
           )
         ],

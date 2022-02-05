@@ -29,7 +29,7 @@ class Stub {
             Text(text),
           ],
         ),
-        dismissDirection: DismissDirection.horizontal,
+        dismissDirection: DismissDirection.vertical,
       ),
     );
   }

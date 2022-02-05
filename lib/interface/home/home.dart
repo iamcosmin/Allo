@@ -53,15 +53,15 @@ class Home extends HookConsumerWidget {
               title: Text(
                 locales.chats,
                 style: TextStyle(
-                    color: Theme.of(context).appBarTheme.foregroundColor,
-                    fontSize: 24),
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 22),
               ),
               titlePadding: const EdgeInsets.only(left: 20, bottom: 15),
               background: Container(
                 color: Theme.of(context).scaffoldBackgroundColor,
               ),
             ),
-            expandedHeight: 170,
+            expandedHeight: 152,
             pinned: true,
           ),
         ],
@@ -92,7 +92,6 @@ class Home extends HookConsumerWidget {
                           leading: PersonPicture.determine(
                             profilePicture: chat['profilepic'] ?? '',
                             radius: 50,
-                            color: Theme.of(context).colorScheme.secondary,
                             initials: Core.auth.returnNameInitials(
                               chat['name'] ?? '?',
                             ),
