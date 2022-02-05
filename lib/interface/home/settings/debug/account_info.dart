@@ -14,6 +14,7 @@ class AccountInfo extends HookWidget {
       Future.microtask(() async {
         username.value = await Core.auth.user.username;
       });
+      return;
     }, const []);
     return Scaffold(
       appBar: AppBar(
