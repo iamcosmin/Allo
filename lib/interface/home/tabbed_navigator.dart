@@ -28,6 +28,7 @@ class TabbedNavigator extends HookWidget {
           ),
         );
       });
+      return;
     }, const []);
     return Scaffold(
       body: pages[selected.value],

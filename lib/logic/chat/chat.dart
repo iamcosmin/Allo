@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:allo/components/chats/message_input.dart';
-import 'package:allo/generated/l10n.dart';
+import 'package:allo/logic/chat/messages.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -24,7 +24,6 @@ class Chat {
         .where('participants', arrayContains: _uid)
         .get();
     var _chatsMap = <Map<String, String?>>[];
-    final locales = S.of(context);
 
     if (_documents.docs.isNotEmpty) {
       for (var chat in _documents.docs) {
@@ -67,7 +66,7 @@ class Chat {
   }
 
   void streamChatMessages({
-    required ValueNotifier<List<DocumentSnapshot>> messages,
+    required ValueNotifier<List<Message>> messages,
     required GlobalKey<AnimatedListState> listKey,
     int? limit,
   }) {
@@ -79,23 +78,187 @@ class Chat {
         .limit(limit ?? 20)
         .snapshots()
         .listen(
-      (event) {
+      (event) async {
         for (var docChanges in event.docChanges) {
           switch (docChanges.type) {
             case DocumentChangeType.added:
-              if (event.docChanges.length == 20) {
-                listKey.currentState?.insertItem(docChanges.newIndex,
-                    duration: const Duration(seconds: 0));
-              } else {
-                listKey.currentState?.insertItem(docChanges.newIndex,
-                    duration: const Duration(milliseconds: 275));
+              listKey.currentState?.insertItem(docChanges.newIndex,
+                  duration: const Duration(milliseconds: 275));
+              final data = docChanges.doc.data() as Map<String, dynamic>;
+              Message? message;
+              switch (data['type']) {
+                case MessageTypes.text:
+                  {
+                    if (data['reply_to_message'] != null) {
+                      final replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      final replyData = replyQuery.data();
+                      message = TextMessage(
+                        name: data['name'],
+                        userId: data['uid'],
+                        username: data['username'],
+                        id: docChanges.doc.id,
+                        timestamp: data['time'],
+                        read: data['read'] ?? false,
+                        text: data['text'],
+                        data: data,
+                        reply: replyData == null
+                            ? null
+                            : ReplyToMessage(
+                                name: replyData['name'],
+                                description: replyData['text'],
+                              ),
+                      );
+                    } else {
+                      message = TextMessage(
+                        name: data['name'],
+                        userId: data['uid'],
+                        username: data['username'],
+                        id: docChanges.doc.id,
+                        timestamp: data['time'],
+                        read: data['read'] ?? false,
+                        text: data['text'],
+                        data: data,
+                      );
+                    }
+                    break;
+                  }
+                case MessageTypes.image:
+                  {
+                    if (data['reply_to_message'] != null) {
+                      final replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      final replyData = replyQuery.data();
+                      message = ImageMessage(
+                        name: data['name'],
+                        userId: data['uid'],
+                        username: data['username'],
+                        id: docChanges.doc.id,
+                        timestamp: data['time'],
+                        read: data['read'] ?? false,
+                        link: data['link'],
+                        data: data,
+                        reply: replyData == null
+                            ? null
+                            : ReplyToMessage(
+                                name: replyData['name'],
+                                description: replyData['description'],
+                              ),
+                      );
+                    } else {
+                      message = ImageMessage(
+                        name: data['name'],
+                        userId: data['uid'],
+                        username: data['username'],
+                        id: docChanges.doc.id,
+                        timestamp: data['time'],
+                        read: data['read'] ?? false,
+                        link: data['link'],
+                        data: data,
+                      );
+                    }
+                    break;
+                  }
               }
-
-              messages.value.insert(docChanges.newIndex, docChanges.doc);
+              message != null
+                  ? messages.value.insert(docChanges.newIndex, message)
+                  : null;
               break;
             case DocumentChangeType.modified:
+              final data = docChanges.doc.data() as Map<String, dynamic>;
+              Message? message;
+              switch (data['type']) {
+                case MessageTypes.text:
+                  {
+                    if (data['reply_to_message'] != null) {
+                      final replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      final replyData = replyQuery.data();
+                      message = TextMessage(
+                        name: data['name'],
+                        userId: data['uid'],
+                        username: data['username'],
+                        id: docChanges.doc.id,
+                        timestamp: data['time'],
+                        read: data['read'],
+                        text: data['text'],
+                        data: data,
+                        reply: replyData == null
+                            ? null
+                            : ReplyToMessage(
+                                name: replyData['name'],
+                                description: replyData['text'],
+                              ),
+                      );
+                    } else {
+                      message = TextMessage(
+                          name: data['name'],
+                          userId: data['uid'],
+                          username: data['username'],
+                          id: docChanges.doc.id,
+                          timestamp: data['time'],
+                          read: data['read'],
+                          text: data['text'],
+                          data: data);
+                    }
+                    break;
+                  }
+                case MessageTypes.image:
+                  {
+                    if (data['reply_to_message'] != null) {
+                      final replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      final replyData = replyQuery.data();
+                      message = ImageMessage(
+                        name: data['name'],
+                        userId: data['uid'],
+                        username: data['username'],
+                        id: docChanges.doc.id,
+                        timestamp: data['time'],
+                        read: data['read'],
+                        link: data['link'],
+                        data: data,
+                        reply: replyData == null
+                            ? null
+                            : ReplyToMessage(
+                                name: replyData['name'],
+                                description: replyData['description'],
+                              ),
+                      );
+                    } else {
+                      message = ImageMessage(
+                          name: data['name'],
+                          userId: data['uid'],
+                          username: data['username'],
+                          id: docChanges.doc.id,
+                          timestamp: data['time'],
+                          read: data['read'],
+                          link: data['link'],
+                          data: data);
+                    }
+                    break;
+                  }
+              }
               listKey.currentState?.setState(() {
-                messages.value[docChanges.newIndex] = docChanges.doc;
+                message != null
+                    ? messages.value[docChanges.newIndex] = message
+                    : null;
               });
               break;
             case DocumentChangeType.removed:
@@ -154,14 +317,14 @@ class Messages {
     if (controller != null) {
       controller.clear();
     }
-    FirebaseFirestore.instance
-        .collection('chats')
-        .doc(chatId)
-        .update({'typing': false});
+    // FirebaseFirestore.instance
+    //     .collection('chats')
+    //     .doc(chatId)
+    //     .update({'typing': false});
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
     final auth = Core.auth;
-    final replyMessageId = modifier!.value!.action.replyMessageId;
-    if (modifier.value == null) {
+    final replyMessageId = modifier?.value?.action.replyMessageId;
+    if (modifier?.value == null) {
       await db.collection('messages').add({
         'type': MessageTypes.text,
         'name': auth.user.name,
@@ -170,8 +333,8 @@ class Messages {
         'text': text,
         'time': Timestamp.now(),
       });
-    } else if (modifier.value!.action.type == ModifierType.reply) {
-      modifier.value = null;
+    } else if (modifier?.value?.action.type == ModifierType.reply) {
+      modifier?.value = null;
       await db.collection('messages').add({
         'type': MessageTypes.text,
         'name': auth.user.name,

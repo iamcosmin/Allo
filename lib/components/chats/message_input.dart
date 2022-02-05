@@ -9,8 +9,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'bubbles/message_bubble.dart';
-
 void _attachMenu({
   required BuildContext context,
   required ValueNotifier<double> uploadProgressValue,
@@ -167,23 +165,26 @@ class MessageInput extends HookConsumerWidget {
                         children: [
                           Icon(modifier.value?.icon),
                           const Padding(padding: EdgeInsets.only(left: 15)),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                modifier.value?.title ?? '',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 1.5,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  modifier.value?.title ?? '',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                modifier.value?.body ?? '',
-                                overflow: TextOverflow.ellipsis,
-                              )
-                            ],
+                                Text(
+                                  modifier.value?.body ?? '',
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              ],
+                            ),
                           ),
                           if (modifier.value != null) ...[
                             Expanded(

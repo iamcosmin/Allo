@@ -1,16 +1,14 @@
-import 'dart:developer';
-
 import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/swipe_to.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/logic/chat/messages.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:allo/logic/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -151,7 +149,7 @@ class MessageInfo {
     required this.isRead,
     required this.time,
     required this.isLast,
-    required this.replyToMessageId,
+    required this.reply,
   });
   final String id;
   final String text;
@@ -162,26 +160,11 @@ class MessageInfo {
   final String? image;
   final bool isRead;
   final DateTime time;
-  final String? replyToMessageId;
-}
-
-Future retreiveDocument(String? messageID, String chatId) async {
-  if (messageID != null) {
-    log('RETREIVE DOCUMENT IS CALLED ONE TIME!',
-        time: DateTime.now(), level: 2000, name: 'ERROR!');
-    return FirebaseFirestore.instance
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .doc(messageID)
-        .get();
-  } else {
-    return null;
-  }
+  final ReplyToMessage? reply;
 }
 
 class Bubble extends HookConsumerWidget {
-  Bubble({
+  const Bubble({
     required Key key,
     required this.user,
     required this.chat,
@@ -239,9 +222,8 @@ class Bubble extends HookConsumerWidget {
       if (isNotCurrentUser && message.isRead == false) {
         Core.chat(chat.id).messages.markAsRead(messageId: message.id);
       }
+      return;
     }, const []);
-
-    final fututz = useState(retreiveDocument(message.id, chat.id));
 
     return Padding(
       padding: betweenBubblesPadding,
@@ -327,6 +309,8 @@ class Bubble extends HookConsumerWidget {
                         borderRadius: messageRadius,
                         color: isNotCurrentUser ? theme.dividerColor : color,
                       ),
+                      constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
+                      height: null,
                       padding: message.type != MessageTypes.image
                           ? const EdgeInsets.only(
                               top: 8,
@@ -341,8 +325,8 @@ class Bubble extends HookConsumerWidget {
                         builder: (context) {
                           if (message.type == MessageTypes.image) {
                             return Container(
-                              constraints: BoxConstraints(
-                                  maxHeight: 500, maxWidth: screenWidth / 1.5),
+                              constraints:
+                                  BoxConstraints(maxWidth: screenWidth / 1.5),
                               child: ClipRRect(
                                 borderRadius: messageRadius,
                                 child: CachedNetworkImage(
@@ -351,114 +335,107 @@ class Bubble extends HookConsumerWidget {
                               ),
                             );
                           } else {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                FutureBuilder<dynamic>(
-                                    key: key,
-                                    future: fututz.value,
-                                    builder: (context, snapshot) {
-                                      return Container(
-                                        height: snapshot.data?.data() == null
-                                            ? 0
-                                            : 50,
-                                        child: snapshot.data?.data() == null
-                                            ? null
-                                            : Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 5,
-                                                    bottom: 5,
-                                                    left: 5,
-                                                    right: 5),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        color: isNotCurrentUser
-                                                            ? theme.colorScheme
-                                                                .onSurface
-                                                            : Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                          2,
+                            return Container(
+                              constraints:
+                                  BoxConstraints(maxWidth: screenWidth / 1.5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: message.reply == null ? 0 : 50,
+                                    child: message.reply == null
+                                        ? null
+                                        : Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 5,
+                                                bottom: 5,
+                                                left: 5,
+                                                right: 5),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: isNotCurrentUser
+                                                        ? theme.colorScheme
+                                                            .onSurface
+                                                        : Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      2,
+                                                    ),
+                                                  ),
+                                                  height: 35,
+                                                  width: 3,
+                                                ),
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10),
+                                                ),
+                                                SizedBox(
+                                                  height: 40,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        message.reply?.name ??
+                                                            '',
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis),
+                                                      ),
+                                                      ClipRect(
+                                                        clipBehavior:
+                                                            Clip.hardEdge,
+                                                        child: Text(
+                                                          message.reply
+                                                                  ?.description ??
+                                                              '',
+                                                          style: const TextStyle(
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis),
                                                         ),
                                                       ),
-                                                      height: 35,
-                                                      width: 3,
-                                                    ),
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          right: 10),
-                                                    ),
-                                                    Container(
-                                                      height: 40,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            snapshot.data![
-                                                                    'name'] ??
-                                                                '',
-                                                            style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis),
-                                                          ),
-                                                          ClipRect(
-                                                            clipBehavior:
-                                                                Clip.hardEdge,
-                                                            child: Text(
-                                                              snapshot.data![
-                                                                      'text'] ??
-                                                                  '',
-                                                              style: const TextStyle(
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                      );
-                                    }),
-                                Linkify(
-                                  text: message.text,
-                                  onOpen: (link) async {
-                                    if (await canLaunch(link.url)) {
-                                      await launch(link.url);
-                                    } else {
-                                      throw 'Could not launch $link';
-                                    }
-                                  },
-                                  style: TextStyle(
-                                    fontSize: regexEmoji.hasMatch(message.text)
-                                        ? 30
-                                        : 16,
-                                    color: isNotCurrentUser
-                                        ? theme.colorScheme.onSurface
-                                        : Colors.white,
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
                                   ),
-                                  linkStyle: TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    color: isNotCurrentUser
-                                        ? theme.colorScheme.onSurface
-                                        : Colors.white,
+                                  Linkify(
+                                    text: message.text,
+                                    onOpen: (link) async {
+                                      if (await canLaunch(link.url)) {
+                                        await launch(link.url);
+                                      } else {
+                                        throw 'Could not launch $link';
+                                      }
+                                    },
+                                    style: TextStyle(
+                                      fontSize:
+                                          regexEmoji.hasMatch(message.text)
+                                              ? 30
+                                              : 16,
+                                      color: isNotCurrentUser
+                                          ? theme.colorScheme.onSurface
+                                          : Colors.white,
+                                    ),
+                                    linkStyle: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      color: isNotCurrentUser
+                                          ? theme.colorScheme.onSurface
+                                          : Colors.white,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             );
                           }
                         },

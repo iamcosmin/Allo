@@ -16,6 +16,7 @@ class SetupVerification extends HookWidget {
     useEffect(() {
       Future.microtask(() async =>
           await FirebaseAuth.instance.currentUser!.sendEmailVerification());
+      return;
     });
     return SetupPage(
         header: [
