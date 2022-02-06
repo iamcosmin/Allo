@@ -61,41 +61,38 @@ class SetupPage extends HookConsumerWidget {
               alignment: Alignment.bottomCenter,
               child: Container(
                 padding: const EdgeInsets.only(left: 30, right: 30, bottom: 20),
-                width: double.infinity,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(
-                              Size(MediaQuery.of(context).size.width - 10, 50),
-                            ),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
                           ),
-                          child: loading.value
-                              ? const SizedBox(
-                                  height: 23,
-                                  width: 23,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3,
-                                  ),
-                                )
-                              : Text(locales.setupNext),
-                          onPressed: () async {
-                            if (isAsync) {
-                              loading.value = true;
-                              await onButtonPress();
-                              loading.value = false;
-                            } else {
-                              onButtonPress();
-                            }
-                          },
                         ),
-                      ],
+                      ),
+                      child: loading.value
+                          ? SizedBox(
+                              height: 23,
+                              width: 23,
+                              child: CircularProgressIndicator(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                strokeWidth: 3,
+                              ),
+                            )
+                          : Text(locales.setupNext),
+                      onPressed: () async {
+                        if (isAsync) {
+                          loading.value = true;
+                          await onButtonPress();
+                          loading.value = false;
+                        } else {
+                          onButtonPress();
+                        }
+                      },
                     ),
                   ],
                 ),
