@@ -120,208 +120,172 @@ class Chats {
     return chats.isNotEmpty ? chats : null;
   }
 
-  void streamChatMessages({
-    required ValueNotifier<List<Message>> messages,
-    required GlobalKey<AnimatedListState> listKey,
-    int? limit,
-  }) {
-    FirebaseFirestore.instance
+  Stream<List<Message>> streamChatMessages(
+      {required GlobalKey<AnimatedListState> listKey, int? limit}) async* {
+    var messages = <Message>[];
+
+    var query = FirebaseFirestore.instance
         .collection('chats')
         .doc(chatId)
         .collection('messages')
         .orderBy('time', descending: true)
-        .limit(limit ?? 20)
-        .snapshots()
-        .listen(
-      (event) async {
-        for (var docChanges in event.docChanges) {
-          switch (docChanges.type) {
-            case DocumentChangeType.added:
-              if (event.docChanges.length == 20) {
-                listKey.currentState?.insertItem(docChanges.newIndex,
-                    duration: const Duration(seconds: 0));
-              } else {
-                listKey.currentState?.insertItem(docChanges.newIndex,
-                    duration: const Duration(milliseconds: 275));
-              }
+        .snapshots();
+
+    await for (var querySnapshot in query) {
+      for (var docChanges in querySnapshot.docChanges) {
+        switch (docChanges.type) {
+          case DocumentChangeType.added:
+            {
+              listKey.currentState?.insertItem(docChanges.newIndex,
+                  duration: const Duration(milliseconds: 275));
               final data = docChanges.doc.data() as Map<String, dynamic>;
               Message? message;
               switch (data['type']) {
                 case MessageTypes.text:
                   {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
                     if (data['reply_to_message'] != null) {
-                      final replyQuery = await FirebaseFirestore.instance
+                      replyQuery = await FirebaseFirestore.instance
                           .collection('chats')
                           .doc(chatId)
                           .collection('messages')
                           .doc(data['reply_to_message'])
                           .get();
-                      final replyData = replyQuery.data();
-                      message = TextMessage(
-                        name: data['name'],
-                        userId: data['uid'],
-                        username: data['username'],
-                        id: docChanges.doc.id,
-                        timestamp: data['time'],
-                        read: data['read'] ?? false,
-                        text: data['text'],
-                        data: data,
-                        reply: replyData == null
-                            ? null
-                            : ReplyToMessage(
-                                name: replyData['name'],
-                                description: replyData['text'],
-                              ),
-                      );
-                    } else {
-                      message = TextMessage(
-                        name: data['name'],
-                        userId: data['uid'],
-                        username: data['username'],
-                        id: docChanges.doc.id,
-                        timestamp: data['time'],
-                        read: data['read'] ?? false,
-                        text: data['text'],
-                        data: data,
-                      );
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
                     }
+                    message = TextMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'] ?? false,
+                      text: data['text'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['text'],
+                            ),
+                    );
                     break;
                   }
                 case MessageTypes.image:
                   {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
                     if (data['reply_to_message'] != null) {
-                      final replyQuery = await FirebaseFirestore.instance
+                      replyQuery = await FirebaseFirestore.instance
                           .collection('chats')
                           .doc(chatId)
                           .collection('messages')
                           .doc(data['reply_to_message'])
                           .get();
-                      final replyData = replyQuery.data();
-                      message = ImageMessage(
-                        name: data['name'],
-                        userId: data['uid'],
-                        username: data['username'],
-                        id: docChanges.doc.id,
-                        timestamp: data['time'],
-                        read: data['read'] ?? false,
-                        link: data['link'],
-                        data: data,
-                        reply: replyData == null
-                            ? null
-                            : ReplyToMessage(
-                                name: replyData['name'],
-                                description: replyData['description'],
-                              ),
-                      );
-                    } else {
-                      message = ImageMessage(
-                        name: data['name'],
-                        userId: data['uid'],
-                        username: data['username'],
-                        id: docChanges.doc.id,
-                        timestamp: data['time'],
-                        read: data['read'] ?? false,
-                        link: data['link'],
-                        data: data,
-                      );
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
                     }
+                    message = ImageMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'] ?? false,
+                      link: data['link'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['description'],
+                            ),
+                    );
                     break;
                   }
               }
               message != null
-                  ? messages.value.insert(docChanges.newIndex, message)
+                  ? messages.insert(docChanges.newIndex, message)
                   : null;
               break;
-            case DocumentChangeType.modified:
+            }
+          case DocumentChangeType.modified:
+            {
               final data = docChanges.doc.data() as Map<String, dynamic>;
               Message? message;
               switch (data['type']) {
                 case MessageTypes.text:
                   {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
                     if (data['reply_to_message'] != null) {
-                      final replyQuery = await FirebaseFirestore.instance
+                      replyQuery = await FirebaseFirestore.instance
                           .collection('chats')
                           .doc(chatId)
                           .collection('messages')
                           .doc(data['reply_to_message'])
                           .get();
-                      final replyData = replyQuery.data();
-                      message = TextMessage(
-                        name: data['name'],
-                        userId: data['uid'],
-                        username: data['username'],
-                        id: docChanges.doc.id,
-                        timestamp: data['time'],
-                        read: data['read'],
-                        text: data['text'],
-                        data: data,
-                        reply: replyData == null
-                            ? null
-                            : ReplyToMessage(
-                                name: replyData['name'],
-                                description: replyData['text'],
-                              ),
-                      );
-                    } else {
-                      message = TextMessage(
-                          name: data['name'],
-                          userId: data['uid'],
-                          username: data['username'],
-                          id: docChanges.doc.id,
-                          timestamp: data['time'],
-                          read: data['read'],
-                          text: data['text'],
-                          data: data);
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
                     }
+                    message = TextMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'],
+                      text: data['text'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['text'],
+                            ),
+                    );
                     break;
                   }
                 case MessageTypes.image:
                   {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
                     if (data['reply_to_message'] != null) {
-                      final replyQuery = await FirebaseFirestore.instance
+                      replyQuery = await FirebaseFirestore.instance
                           .collection('chats')
                           .doc(chatId)
                           .collection('messages')
                           .doc(data['reply_to_message'])
                           .get();
-                      final replyData = replyQuery.data();
-                      message = ImageMessage(
-                        name: data['name'],
-                        userId: data['uid'],
-                        username: data['username'],
-                        id: docChanges.doc.id,
-                        timestamp: data['time'],
-                        read: data['read'],
-                        link: data['link'],
-                        data: data,
-                        reply: replyData == null
-                            ? null
-                            : ReplyToMessage(
-                                name: replyData['name'],
-                                description: replyData['description'],
-                              ),
-                      );
-                    } else {
-                      message = ImageMessage(
-                          name: data['name'],
-                          userId: data['uid'],
-                          username: data['username'],
-                          id: docChanges.doc.id,
-                          timestamp: data['time'],
-                          read: data['read'],
-                          link: data['link'],
-                          data: data);
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
                     }
+                    message = ImageMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'],
+                      link: data['link'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['description'],
+                            ),
+                    );
                     break;
                   }
               }
               listKey.currentState?.setState(() {
                 message != null
-                    ? messages.value[docChanges.newIndex] = message
+                    ? messages[docChanges.newIndex] = message
                     : null;
               });
               break;
-            case DocumentChangeType.removed:
+            }
+          case DocumentChangeType.removed:
+            {
               listKey.currentState?.removeItem(
                 docChanges.oldIndex,
                 (context, animation) => SizeTransition(
@@ -333,12 +297,13 @@ class Chats {
                   ),
                 ),
               );
-              messages.value.removeAt(docChanges.oldIndex);
+              messages.removeAt(docChanges.oldIndex);
               break;
-          }
+            }
         }
-      },
-    );
+      }
+      yield messages;
+    }
   }
 }
 

@@ -11,16 +11,17 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../logic/chat/chat.dart';
 
-void _attachMenu({
-  required BuildContext context,
-  required ValueNotifier<double> uploadProgressValue,
-  required ChatType chatType,
-  required String chatName,
-  required String chatId,
-}) {
+void _attachMenu(
+    {required BuildContext context,
+    required ValueNotifier<double> uploadProgressValue,
+    required ChatType chatType,
+    required String chatName,
+    required String chatId,
+    required ColorScheme colorScheme}) {
   final locales = S.of(context);
   XFile? file;
   showMagicBottomSheet(
+    colorScheme: colorScheme,
     context: context,
     title: locales.attach,
     children: [
@@ -189,7 +190,8 @@ class MessageInput extends HookConsumerWidget {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  modifier.value?.body ?? '',
+                                  modifier.value?.body.replaceAll('\n', ' ') ??
+                                      '',
                                   overflow: TextOverflow.ellipsis,
                                 )
                               ],
@@ -240,12 +242,12 @@ class MessageInput extends HookConsumerWidget {
                 onPressed: empty.value == false || modifier.value != null
                     ? null
                     : () => _attachMenu(
-                          chatId: chatId,
-                          chatName: chatName,
-                          chatType: chatType,
-                          context: context,
-                          uploadProgressValue: progress,
-                        ),
+                        chatId: chatId,
+                        chatName: chatName,
+                        chatType: chatType,
+                        context: context,
+                        uploadProgressValue: progress,
+                        colorScheme: theme),
               ),
               Container(
                 constraints: BoxConstraints(

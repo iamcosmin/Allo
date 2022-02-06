@@ -43,4 +43,4 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
         token: ${{ secrets.TELEGRAM_BOT_ID }}
         format: markdown
-        message: "beta ${{ github.event.head_commit.message }}\nActualizarea este dispoibilă în Magazin Play pentru cei din canalul alpha."
+        message: "beta ${{ github.event.head_commit.message }}\n\n*Actualizarea va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți participanții canalului beta.*"

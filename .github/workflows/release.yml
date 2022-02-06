@@ -58,3 +58,10 @@ jobs:
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
         track: production
         whatsNewDirectory: distribution
+    - name: Publish Release Notes
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
+        token: ${{ secrets.TELEGRAM_BOT_ID }}
+        format: markdown
+        message: "stabil ${{ github.event.head_commit.message }}\n\n*Actualizarea va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți utilizatorii.*"

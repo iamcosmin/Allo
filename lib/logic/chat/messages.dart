@@ -6,14 +6,14 @@ abstract class Message {
   final String username;
   final String id;
   final Timestamp timestamp;
-  final Map<String, dynamic> data;
+  final DocumentSnapshot documentSnapshot;
   const Message({
     required this.name,
     required this.userId,
     required this.username,
     required this.id,
     required this.timestamp,
-    required this.data,
+    required this.documentSnapshot,
   });
 }
 
@@ -30,7 +30,7 @@ class TextMessage extends Message {
       required String username,
       required String id,
       required Timestamp timestamp,
-      required Map<String, dynamic> data,
+      required DocumentSnapshot documentSnapshot,
       required this.read,
       required this.text,
       this.reply})
@@ -40,7 +40,7 @@ class TextMessage extends Message {
             timestamp: timestamp,
             userId: userId,
             username: username,
-            data: data);
+            documentSnapshot: documentSnapshot);
   final bool read;
   final String text;
   final ReplyToMessage? reply;
@@ -53,7 +53,7 @@ class ImageMessage extends Message {
       required String username,
       required String id,
       required Timestamp timestamp,
-      required Map<String, dynamic> data,
+      required DocumentSnapshot documentSnapshot,
       required this.read,
       required this.link,
       this.reply})
@@ -63,7 +63,7 @@ class ImageMessage extends Message {
           timestamp: timestamp,
           userId: userId,
           username: username,
-          data: data,
+          documentSnapshot: documentSnapshot,
         );
   final bool read;
   final String link;

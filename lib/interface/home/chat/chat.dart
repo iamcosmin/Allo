@@ -1,10 +1,8 @@
 import 'package:allo/components/chats/bubbles/message_bubble.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
-import 'package:allo/interface/home/settings/debug/typingbubble.dart';
 import 'package:allo/logic/chat/messages.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/theme.dart';
 import 'package:allo/logic/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -36,8 +34,9 @@ class ChatScreen extends HookConsumerWidget {
       ColorScheme.fromSeed(
           seedColor: Colors.blue, brightness: Theme.of(context).brightness),
     );
-    final colors = ref.watch(colorsProvider);
-    final messages = useState(<Message>[]);
+    final limit = useState(20);
+    final stream = useState(
+        Core.chat(chatId).streamChatMessages(listKey: listKey, limit: 20));
     final controller = useScrollController();
     final inputModifiers = useState<InputModifier?>(null);
     final locales = S.of(context);
@@ -61,15 +60,13 @@ class ChatScreen extends HookConsumerWidget {
               brightness: Theme.of(context).brightness);
         },
       );
-      Core.chat(chatId)
-          .streamChatMessages(messages: messages, listKey: listKey);
       return;
     }, const []);
     return Scaffold(
       backgroundColor: theme.value.background,
       appBar: AppBar(
         backgroundColor: theme.value.surface,
-        elevation: 2,
+        elevation: 1,
         iconTheme: IconThemeData(color: theme.value.onSurface),
         toolbarHeight: 100,
         leading: Container(
@@ -134,167 +131,173 @@ class ChatScreen extends HookConsumerWidget {
                 children: [
                   Expanded(
                     flex: 10,
-                    child: AnimatedList(
-                      padding: const EdgeInsets.only(top: 10),
-                      key: listKey,
-                      reverse: true,
-                      controller: controller,
-                      itemBuilder: (context, i, animation) {
-                        final currentMessage = messages.value[i];
-                        final senderUid = currentMessage.userId;
-                        final Map pastData, nextData;
-                        if (i == 0) {
-                          nextData = {'senderUID': 'null'};
-                        } else {
-                          nextData = messages.value[i - 1].data;
-                        }
-                        if (i == messages.value.length - 1) {
-                          pastData = {'senderUID': 'null'};
-                        } else {
-                          pastData = messages.value[i + 1].data;
-                        }
-                        // Above, pastData should have been i-1 and nextData i+1.
-                        // But, as the list needs to be in reverse order, we need
-                        // to consider this workaround.
-                        final pastUID = pastData.containsKey('uid')
-                            ? pastData['uid']
-                            : pastData.containsKey('senderUID')
-                                ? pastData['senderUID']
-                                : 'null';
-                        final nextUID = nextData.containsKey('uid')
-                            ? nextData['uid']
-                            : nextData.containsKey('senderUID')
-                                ? nextData['senderUID']
-                                : 'null';
+                    child: StreamBuilder<List<Message>>(
+                      stream: stream.value,
+                      builder: (context, snapshot) {
+                        if (snapshot.data != null) {
+                          return AnimatedList(
+                            padding: const EdgeInsets.only(top: 10),
+                            key: listKey,
+                            reverse: true,
+                            initialItemCount: snapshot.data!.length,
+                            controller: controller,
+                            itemBuilder: (context, i, animation) {
+                              final currentMessage = snapshot.data![i];
+                              final senderUid = currentMessage.userId;
+                              final Map pastData, nextData;
+                              if (i == 0) {
+                                nextData = {'senderUID': 'null'};
+                              } else {
+                                nextData = snapshot
+                                    .data![i - 1].documentSnapshot
+                                    .data() as Map;
+                              }
+                              if (i == snapshot.data!.length - 1) {
+                                pastData = {'senderUID': 'null'};
+                              } else {
+                                pastData = snapshot
+                                    .data![i + 1].documentSnapshot
+                                    .data() as Map;
+                              }
+                              // Above, pastData should have been i-1 and nextData i+1.
+                              // But, as the list needs to be in reverse order, we need
+                              // to consider this workaround.
+                              final pastUID = pastData.containsKey('uid')
+                                  ? pastData['uid']
+                                  : pastData.containsKey('senderUID')
+                                      ? pastData['senderUID']
+                                      : 'null';
+                              final nextUID = nextData.containsKey('uid')
+                                  ? nextData['uid']
+                                  : nextData.containsKey('senderUID')
+                                      ? nextData['senderUID']
+                                      : 'null';
 
-                        final isNextSenderSame = nextUID == senderUid;
-                        final isPrevSenderSame = pastUID == senderUid;
-                        MessageInfo? messageInfo() {
-                          final messageValue = messages.value[i];
-                          if (messageValue is TextMessage) {
-                            return MessageInfo(
-                                id: messageValue.id,
-                                image: null,
-                                isLast: nextUID == 'null',
-                                isNextSenderSame: isNextSenderSame,
-                                isPreviousSenderSame: isPrevSenderSame,
-                                isRead: messageValue.read,
-                                reply: messageValue.reply,
-                                text: messageValue.text,
-                                time: DateTime.fromMillisecondsSinceEpoch(
-                                    messageValue
-                                        .timestamp.millisecondsSinceEpoch),
-                                type: MessageTypes.text);
-                          } else if (messageValue is ImageMessage) {
-                            return MessageInfo(
-                                id: messageValue.id,
-                                text: locales.image,
-                                isNextSenderSame: isNextSenderSame,
-                                isPreviousSenderSame: isPrevSenderSame,
-                                type: MessageTypes.image,
-                                image: messageValue.link,
-                                isRead: messageValue.read,
-                                time: DateTime.fromMillisecondsSinceEpoch(
-                                    messageValue
-                                        .timestamp.millisecondsSinceEpoch),
-                                isLast: nextUID == 'null',
-                                reply: messageValue.reply);
-                          } else {
-                            return null;
-                          }
-                        }
+                              final isNextSenderSame = nextUID == senderUid;
+                              final isPrevSenderSame = pastUID == senderUid;
+                              MessageInfo? messageInfo() {
+                                final messageValue = snapshot.data![i];
+                                if (messageValue is TextMessage) {
+                                  return MessageInfo(
+                                      id: messageValue.id,
+                                      image: null,
+                                      isLast: nextUID == 'null',
+                                      isNextSenderSame: isNextSenderSame,
+                                      isPreviousSenderSame: isPrevSenderSame,
+                                      isRead: messageValue.read,
+                                      reply: messageValue.reply,
+                                      text: messageValue.text,
+                                      time: DateTime.fromMillisecondsSinceEpoch(
+                                          messageValue.timestamp
+                                              .millisecondsSinceEpoch),
+                                      type: MessageTypes.text);
+                                } else if (messageValue is ImageMessage) {
+                                  return MessageInfo(
+                                      id: messageValue.id,
+                                      text: locales.image,
+                                      isNextSenderSame: isNextSenderSame,
+                                      isPreviousSenderSame: isPrevSenderSame,
+                                      type: MessageTypes.image,
+                                      image: messageValue.link,
+                                      isRead: messageValue.read,
+                                      time: DateTime.fromMillisecondsSinceEpoch(
+                                          messageValue.timestamp
+                                              .millisecondsSinceEpoch),
+                                      isLast: nextUID == 'null',
+                                      reply: messageValue.reply);
+                                } else {
+                                  return null;
+                                }
+                              }
 
-                        if (i == messages.value.length - 1) {
-                          return Column(
-                            children: [
-                              /// TODO: MODIFY THIS SO IT COMPLIES WITH THE NEW [Message] MODEL.
-                              // ElevatedButton(
-                              //   style: ButtonStyle(
-                              //     shape: MaterialStateProperty.all(
-                              //         RoundedRectangleBorder(
-                              //             borderRadius:
-                              //                 BorderRadius.circular(100))),
-                              //     backgroundColor:
-                              //         MaterialStateProperty.all(theme.value),
-                              //   ),
-                              //   onPressed: () {
-                              //     isLoadingPrevMessages.value = true;
-                              //     FirebaseFirestore.instance
-                              //         .collection('chats')
-                              //         .doc(chatId)
-                              //         .collection('messages')
-                              //         .orderBy('time', descending: true)
-                              //         .startAfterDocument(documentSnapshot)
-                              //         .limit(20)
-                              //         .get()
-                              //         .then((value) {
-                              //       for (var doc in value.docs) {
-                              //         messages.value.add(doc);
-                              //         listKey.currentState?.insertItem(
-                              //             messages.value.length - 1,
-                              //             duration: const Duration(seconds: 0));
-                              //       }
-                              //     });
-                              //     isLoadingPrevMessages.value = false;
-                              //   },
-                              //   child: isLoadingPrevMessages.value == false
-                              //       ? Text(locales.showPastMessages)
-                              //       : const CircularProgressIndicator(),
-                              // ),
-                              const Padding(padding: EdgeInsets.only(top: 20)),
-
-                              SizeTransition(
-                                axisAlignment: -1,
-                                sizeFactor: CurvedAnimation(
-                                    curve: Curves.easeOutQuint,
-                                    parent: animation),
-                                child: Bubble(
-                                  colorScheme: theme.value,
-                                  chat: ChatInfo(id: chatId, type: chatType),
-                                  message: messageInfo()!,
-                                  user: UserInfo(
-                                      name: messages.value[i].name,
-                                      userId: messages.value[i].userId,
-                                      profilePhoto:
-                                          'gs://allo-ms.appspot.com/profilePictures/${messages.value[i].userId}.png'),
-                                  key: Key(messages.value[i].id),
-                                  modifiers: inputModifiers,
-                                ),
+                              return Column(
+                                children: [
+                                  if (i == snapshot.data!.length - 1) ...[
+                                    const Padding(
+                                        padding: EdgeInsets.only(top: 20)),
+                                    ElevatedButton(
+                                      style: ButtonStyle(
+                                        shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100))),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                theme.value.primary),
+                                      ),
+                                      onPressed: () {
+                                        Core.stub.showInfoBar(
+                                            context: context,
+                                            icon: Icons.info,
+                                            text: locales.comingSoon);
+                                      },
+                                      child: Text(
+                                        locales.showPastMessages,
+                                        style: TextStyle(
+                                            color: theme.value.onPrimary),
+                                      ),
+                                    ),
+                                  ],
+                                  SizeTransition(
+                                    axisAlignment: -1,
+                                    sizeFactor: CurvedAnimation(
+                                        curve: Curves.easeInOutCirc,
+                                        parent: animation),
+                                    child: Bubble(
+                                      colorScheme: theme.value,
+                                      chat:
+                                          ChatInfo(id: chatId, type: chatType),
+                                      message: messageInfo()!,
+                                      user: UserInfo(
+                                          name: snapshot.data![i].name,
+                                          userId: snapshot.data![i].userId,
+                                          profilePhoto:
+                                              'gs://allo-ms.appspot.com/profilePictures/${snapshot.data![i].userId}.png'),
+                                      key: Key(snapshot.data![i].id),
+                                      modifiers: inputModifiers,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          final errorMessage = locales.anErrorOccurred +
+                              '\n' +
+                              ((snapshot.error is FirebaseException)
+                                  ? 'Code: ${(snapshot.error as FirebaseException).code}'
+                                      '\n'
+                                      'Element: ${(snapshot.error as FirebaseException).plugin}'
+                                      '\n\n'
+                                      '${(snapshot.error as FirebaseException).message}'
+                                  : snapshot.error.toString());
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 30, right: 30),
+                            child: Center(
+                              child: SelectableText(
+                                errorMessage,
                               ),
-                            ],
+                            ),
                           );
                         } else {
-                          return SizeTransition(
-                            axisAlignment: -1,
-                            sizeFactor: CurvedAnimation(
-                                curve: Curves.easeInOutCirc, parent: animation),
-                            child: Bubble(
-                              colorScheme: theme.value,
-                              chat: ChatInfo(id: chatId, type: chatType),
-                              message: messageInfo()!,
-                              user: UserInfo(
-                                  name: messages.value[i].name,
-                                  userId: messages.value[i].userId,
-                                  profilePhoto:
-                                      'gs://allo-ms.appspot.com/profilePictures/${messages.value[i].userId}.png'),
-                              key: Key(messages.value[i].id),
-                              modifiers: inputModifiers,
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 30, right: 30),
+                            child: Center(
+                              child: Text(
+                                locales.anErrorOccurred,
+                              ),
                             ),
                           );
                         }
                       },
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: TypingIndicator(
-                      bubbleColor: colors.messageBubble,
-                      flashingCircleBrightColor:
-                          colors.flashingCircleBrightColor,
-                      flashingCircleDarkColor: colors.flashingCircleDarkColor,
-                      showIndicator: false,
-                    ),
-                  )
                 ],
               ),
             ),

@@ -49,7 +49,7 @@ class _PinchZoomState extends State<PinchZoom>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: double.maxFinite,
       width: double.maxFinite,
       child: InteractiveViewer(

@@ -74,76 +74,64 @@ class Home extends HookConsumerWidget {
             future: loadChats.value,
             builder:
                 (BuildContext context, AsyncSnapshot<List<Chat>?> snapshot) {
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: Builder(builder: (context) {
-                  if (snapshot.data != null) {
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(5),
-                      shrinkWrap: true,
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final chat = snapshot.data![index];
-                        return ListTile(
-                          title: Text(chat.title),
-                          subtitle: Text(
-                            type(chat, context) + ' (${chat.id})',
-                          ),
-                          leading: PersonPicture.determine(
-                            profilePicture: chat.picture,
-                            radius: 50,
-                            initials: Core.auth.returnNameInitials(
-                              chat.title,
-                            ),
-                          ),
-                          onTap: () => Core.navigation.push(
-                            context: context,
-                            route: ChatScreen(
-                              chatType: getChatTypeFromType(chat),
-                              title: chat.title,
-                              chatId: chat.id,
-                              profilepic: chat.picture,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    final errorMessage = locales.anErrorOccurred +
-                        '\n' +
-                        ((snapshot.error is FirebaseException)
-                            ? 'Code: ${(snapshot.error as FirebaseException).code}'
-                                '\n'
-                                'Element: ${(snapshot.error as FirebaseException).plugin}'
-                                '\n\n'
-                                '${(snapshot.error as FirebaseException).message}'
-                            : snapshot.error.toString());
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 30, right: 30),
-                      child: Center(
-                        child: SelectableText(
-                          errorMessage,
+              if (snapshot.data != null) {
+                return ListView.builder(
+                  padding: const EdgeInsets.all(5),
+                  shrinkWrap: true,
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final chat = snapshot.data![index];
+                    return ListTile(
+                      title: Text(chat.title),
+                      subtitle: Text(
+                        type(chat, context) + ' (${chat.id})',
+                      ),
+                      leading: PersonPicture.determine(
+                        profilePicture: chat.picture,
+                        radius: 50,
+                        initials: Core.auth.returnNameInitials(
+                          chat.title,
+                        ),
+                      ),
+                      onTap: () => Core.navigation.push(
+                        context: context,
+                        route: ChatScreen(
+                          chatType: getChatTypeFromType(chat),
+                          title: chat.title,
+                          chatId: chat.id,
+                          profilepic: chat.picture,
                         ),
                       ),
                     );
-                  } else if (snapshot.data == null) {
-                    return Center(
-                      child: Text(locales.noChats),
-                    );
-                  } else {
-                    return Container();
-                  }
-                }),
-                transitionBuilder: (child, animation) {
-                  return ScaleTransition(
-                    scale: animation,
-                    child: child,
-                  );
-                },
-              );
+                  },
+                );
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                final errorMessage = locales.anErrorOccurred +
+                    '\n' +
+                    ((snapshot.error is FirebaseException)
+                        ? 'Code: ${(snapshot.error as FirebaseException).code}'
+                            '\n'
+                            'Element: ${(snapshot.error as FirebaseException).plugin}'
+                            '\n\n'
+                            '${(snapshot.error as FirebaseException).message}'
+                        : snapshot.error.toString());
+                return Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 30),
+                  child: Center(
+                    child: SelectableText(
+                      errorMessage,
+                    ),
+                  ),
+                );
+              } else if (snapshot.data == null) {
+                return Center(
+                  child: Text(locales.noChats),
+                );
+              } else {
+                return Container();
+              }
             },
           ),
         ),

@@ -396,37 +396,63 @@ class Bubble extends HookConsumerWidget {
                                                   padding: EdgeInsets.only(
                                                       right: 10),
                                                 ),
-                                                SizedBox(
-                                                  height: 40,
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        message.reply?.name ??
-                                                            '',
-                                                        style: const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis),
-                                                      ),
-                                                      ClipRect(
-                                                        clipBehavior:
-                                                            Clip.hardEdge,
-                                                        child: Text(
-                                                          message.reply
-                                                                  ?.description ??
+                                                Flexible(
+                                                  child: Container(
+                                                    height: 40,
+                                                    constraints: BoxConstraints(
+                                                        maxWidth:
+                                                            screenWidth / 1.8,
+                                                        minWidth: 1),
+                                                    width:
+                                                        ((message.reply!.description
+                                                                        .length
+                                                                        .toDouble() >=
+                                                                    message
+                                                                        .reply!
+                                                                        .name
+                                                                        .length
+                                                                        .toDouble()
+                                                                ? message
+                                                                    .reply!
+                                                                    .description
+                                                                    .length
+                                                                    .toDouble()
+                                                                : message.reply!
+                                                                    .name.length
+                                                                    .toDouble()) *
+                                                            9),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          message.reply?.name ??
                                                               '',
                                                           style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis),
                                                         ),
-                                                      ),
-                                                    ],
+                                                        ClipRect(
+                                                          child: Text(
+                                                            message.reply
+                                                                    ?.description
+                                                                    .replaceAll(
+                                                                        '\n',
+                                                                        ' ') ??
+                                                                '',
+                                                            style: const TextStyle(
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 )
                                               ],
