@@ -128,7 +128,7 @@ class Chats {
         .collection('chats')
         .doc(chatId)
         .collection('messages')
-        .orderBy('time', descending: true,
+        .orderBy('time', descending: true),
         .limit(limit ?? 30)
         .snapshots();
 
