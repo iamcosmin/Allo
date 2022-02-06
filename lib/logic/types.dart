@@ -3,7 +3,4 @@ class MessageTypes {
   static const String image = 'image';
 }
 
-class ChatType {
-  static const String private = 'private';
-  static const String group = 'group';
-}
+enum ChatType { private, group }

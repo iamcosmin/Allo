@@ -105,6 +105,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gallery": MessageLookupByLibrary.simpleMessage("Gallery"),
         "group": MessageLookupByLibrary.simpleMessage("Group"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "image": MessageLookupByLibrary.simpleMessage("Image"),
         "initials": MessageLookupByLibrary.simpleMessage("Initials"),
         "internalAccountInfo":
             MessageLookupByLibrary.simpleMessage("Account Info"),

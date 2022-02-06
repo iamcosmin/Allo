@@ -1,4 +1,3 @@
-import 'package:allo/components/settings_list.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
@@ -28,7 +27,13 @@ class C extends HookConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(10),
         children: [
-          SettingsListHeader(locales.internalMenuDisclamer),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 7, left: 10, top: 7),
+            child: Text(
+              locales.internalMenuDisclamer,
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ),
           ListTile(
             title: Text(locales.internalTypingIndicatorDemo),
             onTap: () => Navigator.of(context).push(

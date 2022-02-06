@@ -11,58 +11,113 @@ import 'package:image_picker/image_picker.dart';
 
 import '../types.dart';
 
-class Chat {
-  Chat({required this.chatId});
+abstract class Chat {
+  const Chat({required this.title, required this.id, required this.picture});
+  final String title;
+  final String id;
+  final String picture;
+}
+
+class PrivateChat extends Chat {
+  const PrivateChat(
+      {required String name, required this.userId, required String chatId})
+      : super(
+          title: name,
+          id: chatId,
+          picture: 'gs://allo-ms.appspot.com/profilePictures/$userId.png',
+        );
+  final String userId;
+}
+
+class GroupChat extends Chat {
+  const GroupChat({required String title, required String chatId})
+      : super(
+          title: title,
+          id: chatId,
+          picture: 'gs://allo-ms.appspot.com/chats/$chatId.png',
+        );
+}
+
+ChatType? getChatTypeFromString(String chatType) {
+  switch (chatType) {
+    case 'private':
+      {
+        return ChatType.private;
+      }
+    case 'group':
+      {
+        return ChatType.group;
+      }
+    default:
+      {
+        return null;
+      }
+  }
+}
+
+String getStringFromChatType(ChatType chatType) {
+  if (chatType == ChatType.private) {
+    return 'private';
+  } else {
+    return 'group';
+  }
+}
+
+ChatType getChatTypeFromType(Chat chat) {
+  if (chat is PrivateChat) {
+    return ChatType.private;
+  } else {
+    return ChatType.group;
+  }
+}
+
+class Chats {
+  Chats({required this.chatId});
   final String chatId;
 
   Messages get messages => Messages(chatId: chatId);
 
-  Future<List<Map<String, String?>>> getChatsList(BuildContext context) async {
+  Future<List<Chat>?> getChatsList() async {
     final _uid = Core.auth.user.uid;
     final _documents = await FirebaseFirestore.instance
         .collection('chats')
         .where('participants', arrayContains: _uid)
         .get();
-    var _chatsMap = <Map<String, String?>>[];
-
+    var chats = <Chat>[];
     if (_documents.docs.isNotEmpty) {
       for (var chat in _documents.docs) {
         var chatInfo = chat.data();
-        String? name, profilepic;
+        String? _name, _userId;
         // Check the chat type to sort accordingly
-        switch (chatInfo['type']) {
+        switch (getChatTypeFromString(chatInfo['type'])) {
           case ChatType.private:
             {
               for (var member in chatInfo['members']) {
                 if (member['uid'] != Core.auth.user.uid) {
-                  name = member['name'];
-                  profilepic =
-                      await Core.auth.getUserProfilePicture(member['uid']);
+                  _name = member['name'];
+                  _userId = member['uid'];
                 }
               }
-              _chatsMap.add({
-                'type': ChatType.private,
-                'name': name ?? '???',
-                'profilepic': profilepic,
-                'chatId': chat.id,
-              });
+              if (_userId != null) {
+                chats.add(PrivateChat(
+                    name: _name ?? '???', userId: _userId, chatId: chat.id));
+              }
               break;
             }
           case ChatType.group:
             {
-              name = chatInfo['title'];
-              profilepic = chatInfo['profilepic'];
-              _chatsMap.add({
-                'type': ChatType.group,
-                'name': name ?? '???',
-                'chatId': chat.id,
-                'profilepic': profilepic,
-              });
+              _name = chatInfo['title'];
+              chats.add(GroupChat(title: _name ?? '', chatId: chat.id));
+              break;
+            }
+          default:
+            {
+              break;
             }
         }
       }
     }
-    return _chatsMap;
+    return chats.isNotEmpty ? chats : null;
   }
 
   void streamChatMessages({

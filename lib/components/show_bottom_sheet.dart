@@ -19,8 +19,10 @@ Future<dynamic> showMagicBottomSheet({
   required String title,
   required List<Widget> children,
   ScrollableInsets? insets,
+  ColorScheme? colorScheme,
 }) {
   FocusScope.of(context).unfocus();
+  final colors = colorScheme ?? Theme.of(context).colorScheme;
   return showModalBottomSheet(
     isScrollControlled: insets != null ? true : false,
     shape: const RoundedRectangleBorder(
@@ -29,6 +31,7 @@ Future<dynamic> showMagicBottomSheet({
         topRight: Radius.circular(20),
       ),
     ),
+    backgroundColor: colors.surface,
     context: context,
     builder: (context) {
       if (insets != null) {
@@ -45,9 +48,7 @@ Future<dynamic> showMagicBottomSheet({
                   height: 5,
                   width: 50,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.grey
-                        : Colors.grey.shade700,
+                    color: colors.surfaceVariant,
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
@@ -55,8 +56,10 @@ Future<dynamic> showMagicBottomSheet({
                   padding: const EdgeInsets.only(top: 15, bottom: 20),
                   child: Text(
                     title,
-                    style: const TextStyle(
-                        fontSize: 17, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface),
                   ),
                 ),
                 Expanded(
@@ -83,9 +86,7 @@ Future<dynamic> showMagicBottomSheet({
               height: 5,
               width: 50,
               decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.grey
-                    : Colors.grey.shade700,
+                color: colors.surfaceVariant,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
@@ -93,8 +94,10 @@ Future<dynamic> showMagicBottomSheet({
               padding: const EdgeInsets.only(top: 15, bottom: 20),
               child: Text(
                 title,
-                style:
-                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface),
               ),
             ),
             Padding(

@@ -3,7 +3,6 @@ import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/create_chat.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
-import 'package:allo/logic/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +10,13 @@ import 'package:allo/interface/home/chat/chat.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-String type(type, BuildContext context) {
+import '../../logic/chat/chat.dart';
+
+String type(Chat chat, BuildContext context) {
   final locales = S.of(context);
-  if (type == ChatType.group) {
+  if (chat is GroupChat) {
     return locales.group;
-  } else if (type == ChatType.private) {
+  } else if (chat is PrivateChat) {
     return locales.private;
   } else {
     return locales.unknown;
@@ -26,7 +27,8 @@ class Home extends HookConsumerWidget {
   const Home({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loadChats = useState(Core.chat('').getChatsList(context));
+    final loadChats =
+        useState<Future<List<Chat>?>>(Core.chat('').getChatsList());
     final createChat = ref.watch(privateConversations);
     final locales = S.of(context);
     return Scaffold(
@@ -58,7 +60,7 @@ class Home extends HookConsumerWidget {
               ),
               titlePadding: const EdgeInsets.only(left: 20, bottom: 15),
               background: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Theme.of(context).colorScheme.surface,
               ),
             ),
             expandedHeight: 152,
@@ -67,12 +69,11 @@ class Home extends HookConsumerWidget {
         ],
         body: RefreshIndicator(
           triggerMode: RefreshIndicatorTriggerMode.onEdge,
-          onRefresh: () =>
-              loadChats.value = Core.chat('').getChatsList(context),
-          child: FutureBuilder<List<Map<String, String?>>>(
+          onRefresh: () => loadChats.value = Core.chat('').getChatsList(),
+          child: FutureBuilder<List<Chat>?>(
             future: loadChats.value,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Map<String, String?>>> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Chat>?> snapshot) {
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 child: Builder(builder: (context) {
@@ -80,29 +81,28 @@ class Home extends HookConsumerWidget {
                     return ListView.builder(
                       padding: const EdgeInsets.all(5),
                       shrinkWrap: true,
-                      itemCount: snapshot.data!.length,
+                      itemCount: snapshot.data?.length,
                       itemBuilder: (BuildContext context, int index) {
                         final chat = snapshot.data![index];
                         return ListTile(
-                          title: Text(chat['name'] ?? '???'),
+                          title: Text(chat.title),
                           subtitle: Text(
-                            type(chat['type'], context) +
-                                ' (${chat['chatId']})',
+                            type(chat, context) + ' (${chat.id})',
                           ),
                           leading: PersonPicture.determine(
-                            profilePicture: chat['profilepic'] ?? '',
+                            profilePicture: chat.picture,
                             radius: 50,
                             initials: Core.auth.returnNameInitials(
-                              chat['name'] ?? '?',
+                              chat.title,
                             ),
                           ),
                           onTap: () => Core.navigation.push(
                             context: context,
-                            route: Chat(
-                              chatType: chat['type']!,
-                              title: chat['name'] ?? '???',
-                              chatId: chat['chatId']!,
-                              profilepic: chat['profilepic'],
+                            route: ChatScreen(
+                              chatType: getChatTypeFromType(chat),
+                              title: chat.title,
+                              chatId: chat.id,
+                              profilepic: chat.picture,
                             ),
                           ),
                         );

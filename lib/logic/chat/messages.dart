@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Message {
+abstract class Message {
   final String name;
   final String userId;
   final String username;

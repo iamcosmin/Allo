@@ -3,16 +3,18 @@ import 'dart:typed_data';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/theme.dart';
+import 'package:allo/logic/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../logic/chat/chat.dart';
+
 void _attachMenu({
   required BuildContext context,
   required ValueNotifier<double> uploadProgressValue,
-  required String chatType,
+  required ChatType chatType,
   required String chatName,
   required String chatId,
 }) {
@@ -36,7 +38,7 @@ void _attachMenu({
                 await file!.readAsBytes(),
                 chatId: chatId,
                 chatName: chatName,
-                chatType: chatType,
+                chatType: getStringFromChatType(chatType),
                 progress: uploadProgressValue,
               ),
             );
@@ -68,7 +70,7 @@ void _attachMenu({
               await file!.readAsBytes(),
               chatId: chatId,
               chatName: chatName,
-              chatType: chatType,
+              chatType: getStringFromChatType(chatType),
               progress: uploadProgressValue,
             ),
           );
@@ -122,44 +124,49 @@ class InputModifier {
 class MessageInput extends HookConsumerWidget {
   final String chatId;
   final String chatName;
-  final String chatType;
-  final Color color;
+  final ChatType chatType;
+  final ColorScheme theme;
   final ValueNotifier<InputModifier?> modifier;
   const MessageInput({
     required this.chatId,
     required this.chatName,
     required this.chatType,
-    required this.color,
+    required this.theme,
     required this.modifier,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = ref.watch(colorsProvider);
     final empty = useState(true);
     final _messageController = useTextEditingController();
     final _node = useFocusNode(descendantsAreFocusable: false);
     final progress = useState<double>(0);
     final locales = S.of(context);
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
       alignment: Alignment.bottomCenter,
-      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-      decoration:
-          BoxDecoration(borderRadius: BorderRadius.circular(10), color: color),
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: theme.secondaryContainer),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedContainer(
-            color: color,
-            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+                color: theme.secondaryContainer,
+                borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(milliseconds: 150),
             height: modifier.value != null ? 50 : 0,
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 150),
               child: !(modifier.value != null)
                   ? null
                   : Container(
-                      color: color,
+                      decoration: BoxDecoration(
+                          color: theme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(10)),
                       padding: const EdgeInsets.only(left: 15, right: 10),
                       height: 50,
                       width: MediaQuery.of(context).size.width,
@@ -226,6 +233,7 @@ class MessageInput extends HookConsumerWidget {
               IconButton(
                 alignment: Alignment.center,
                 iconSize: 25,
+                color: theme.onSecondaryContainer,
                 icon: empty.value
                     ? const Icon(Icons.attach_file_outlined)
                     : const Icon(Icons.search_outlined),
@@ -255,9 +263,9 @@ class MessageInput extends HookConsumerWidget {
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: locales.message,
-                  ),
+                      border: InputBorder.none,
+                      hintText: locales.message,
+                      hintStyle: TextStyle(color: theme.onSecondaryContainer)),
                   onChanged: (value) =>
                       value == '' ? empty.value = true : empty.value = false,
                   controller: _messageController,
@@ -272,18 +280,19 @@ class MessageInput extends HookConsumerWidget {
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
                       value: progress.value,
-                      color: color,
+                      color: theme.primary,
                     ),
                   ),
                   IconButton(
                     iconSize: progress.value == 0 ? 23 : 17,
                     icon: const Icon(Icons.send_rounded),
+                    color: theme.onSecondaryContainer,
                     onPressed: empty.value
                         ? null
                         : () {
                             empty.value = true;
                             Core.chat(chatId).messages.sendTextMessage(
-                                chatType: chatType,
+                                chatType: getStringFromChatType(chatType),
                                 text: _messageController.text,
                                 context: context,
                                 chatName: chatName,

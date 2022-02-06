@@ -17,12 +17,20 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void _messageOptions(BuildContext context, String messageId, String chatId,
-    String messageText, WidgetRef ref, bool isSentByUser, bool isImage) {
+void _messageOptions(
+    BuildContext context,
+    String messageId,
+    String chatId,
+    String messageText,
+    WidgetRef ref,
+    bool isSentByUser,
+    bool isImage,
+    ColorScheme colorScheme) {
   final replies = ref.watch(repliesDebug);
   final editMessage = ref.watch(editMessageDebug);
   final locales = S.of(context);
   showMagicBottomSheet(
+    colorScheme: colorScheme,
     context: context,
     title: locales.messageOptions,
     children: [
@@ -76,7 +84,10 @@ void _messageOptions(BuildContext context, String messageId, String chatId,
           onTap: () {
             Navigator.of(context).pop();
             _deleteMessage(
-                context: context, chatId: chatId, messageId: messageId);
+                context: context,
+                chatId: chatId,
+                messageId: messageId,
+                colorScheme: colorScheme);
           },
         ),
       ],
@@ -87,19 +98,30 @@ void _messageOptions(BuildContext context, String messageId, String chatId,
 void _deleteMessage(
     {required BuildContext context,
     required String chatId,
-    required String messageId}) {
+    required String messageId,
+    required ColorScheme colorScheme}) {
   final locales = S.of(context);
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(locales.deleteMessageTitle),
-      content: Text(locales.deleteMessageDescription),
+      backgroundColor: colorScheme.surface,
+      title: Text(
+        locales.deleteMessageTitle,
+        style: TextStyle(color: colorScheme.onSurface),
+      ),
+      content: Text(
+        locales.deleteMessageDescription,
+        style: TextStyle(color: colorScheme.onSurface),
+      ),
       actions: [
         TextButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text(locales.cancel),
+          child: Text(
+            locales.cancel,
+            style: TextStyle(color: colorScheme.onSurface),
+          ),
         ),
         TextButton(
           onPressed: () {
@@ -134,7 +156,7 @@ class UserInfo {
 
 class ChatInfo {
   const ChatInfo({required this.type, required this.id});
-  final String type;
+  final ChatType type;
   final String id;
 }
 
@@ -169,13 +191,13 @@ class Bubble extends HookConsumerWidget {
     required this.user,
     required this.chat,
     required this.message,
-    required this.color,
+    required this.colorScheme,
     required this.modifiers,
   }) : super(key: key);
   final UserInfo user;
   final ChatInfo chat;
   final MessageInfo message;
-  final Color color;
+  final ColorScheme colorScheme;
   final ValueNotifier<InputModifier?> modifiers;
 
   @override
@@ -240,7 +262,8 @@ class Bubble extends HookConsumerWidget {
             ),
           ],
           SwipeTo(
-            animationDuration: const Duration(milliseconds: 200),
+            animationDuration: const Duration(milliseconds: 140),
+            offsetDx: 0.2,
             leftSwipeWidget: Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Container(
@@ -277,7 +300,7 @@ class Bubble extends HookConsumerWidget {
                       radius: 36,
                       profilePicture: user.profilePhoto,
                       initials: nameInitials,
-                      color: color,
+                      color: colorScheme.primary,
                     ),
                     const Padding(padding: EdgeInsets.only(left: 10)),
                   ] else if (chat.type == ChatType.private)
@@ -289,25 +312,26 @@ class Bubble extends HookConsumerWidget {
                     onTap: message.type == MessageTypes.image
                         ? () => Core.navigation.push(
                               context: context,
-                              route: ImageView(
-                                message.image!,
-                              ),
+                              route: ImageView(message.image!,
+                                  colorScheme: colorScheme),
                             )
                         : () => selected.value = !selected.value,
                     onLongPress: () => _messageOptions(
-                      context,
-                      message.id,
-                      chat.id,
-                      message.text,
-                      ref,
-                      !isNotCurrentUser,
-                      message.type == MessageTypes.image,
-                    ),
+                        context,
+                        message.id,
+                        chat.id,
+                        message.text,
+                        ref,
+                        !isNotCurrentUser,
+                        message.type == MessageTypes.image,
+                        colorScheme),
                     borderRadius: messageRadius,
                     child: AnimatedContainer(
                       decoration: BoxDecoration(
                         borderRadius: messageRadius,
-                        color: isNotCurrentUser ? theme.dividerColor : color,
+                        color: isNotCurrentUser
+                            ? theme.dividerColor
+                            : colorScheme.primary,
                       ),
                       constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
                       height: null,

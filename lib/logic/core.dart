@@ -9,7 +9,7 @@ class Core {
   static final Authentication auth = Authentication();
   static final Navigation navigation = Navigation();
   static final Notifications notifications = Notifications();
-  static Chat chat(chatId) => Chat(chatId: chatId);
+  static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();
 }
 

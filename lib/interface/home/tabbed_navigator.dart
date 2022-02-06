@@ -1,23 +1,11 @@
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/logic/core.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'chat/chat.dart';
 import 'home.dart';
 import 'settings.dart';
-
-final tabState = StateNotifierProvider<TabState, int>((ref) => TabState());
-
-class TabState extends StateNotifier<int> {
-  TabState() : super(0);
-
-  void changePage(int index) {
-    state = index;
-  }
-}
 
 class TabbedNavigator extends HookConsumerWidget {
   TabbedNavigator({Key? key}) : super(key: key);
@@ -33,15 +21,20 @@ class TabbedNavigator extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = useState(0);
-    void _changeSelected(int index) {
-      return ref.watch(tabState.notifier).changePage(index);
-    }
 
     final locales = S.of(context);
     return Scaffold(
       body: pages[selected.value],
+      //? TODO: Old configurations, used for fallback in case of issues with devices.
+      //? Remove when migration is done.
       bottomNavigationBar: NavigationBar(
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        height: FirebaseRemoteConfig.instance.getBool('new_themes') == false
+            ? 56
+            : null,
+        labelBehavior:
+            FirebaseRemoteConfig.instance.getBool('new_themes') == false
+                ? NavigationDestinationLabelBehavior.alwaysHide
+                : NavigationDestinationLabelBehavior.alwaysShow,
         destinations: [
           NavigationDestination(
             icon: Icon(

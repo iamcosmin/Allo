@@ -108,6 +108,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gallery": MessageLookupByLibrary.simpleMessage("Galerie"),
         "group": MessageLookupByLibrary.simpleMessage("Grup"),
         "home": MessageLookupByLibrary.simpleMessage("Acasă"),
+        "image": MessageLookupByLibrary.simpleMessage("Imagine"),
         "initials": MessageLookupByLibrary.simpleMessage("Inițiale"),
         "internalAccountInfo":
             MessageLookupByLibrary.simpleMessage("Informații despre cont"),

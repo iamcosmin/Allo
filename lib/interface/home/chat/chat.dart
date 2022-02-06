@@ -1,4 +1,5 @@
 import 'package:allo/components/chats/bubbles/message_bubble.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
 import 'package:allo/logic/chat/messages.dart';
@@ -15,12 +16,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // ignore: must_be_immutable
-class Chat extends HookConsumerWidget {
-  final String chatType;
+class ChatScreen extends HookConsumerWidget {
+  final ChatType chatType;
   final String title;
   final String chatId;
   String? profilepic;
-  Chat(
+  ChatScreen(
       {required this.title,
       required this.chatId,
       required this.chatType,
@@ -39,6 +40,7 @@ class Chat extends HookConsumerWidget {
     final messages = useState(<Message>[]);
     final controller = useScrollController();
     final inputModifiers = useState<InputModifier?>(null);
+    final locales = S.of(context);
 
     useEffect(() {
       if (!kIsWeb) {
@@ -186,7 +188,7 @@ class Chat extends HookConsumerWidget {
                           } else if (messageValue is ImageMessage) {
                             return MessageInfo(
                                 id: messageValue.id,
-                                text: '',
+                                text: locales.image,
                                 isNextSenderSame: isNextSenderSame,
                                 isPreviousSenderSame: isPrevSenderSame,
                                 type: MessageTypes.image,
@@ -247,7 +249,7 @@ class Chat extends HookConsumerWidget {
                                     curve: Curves.easeOutQuint,
                                     parent: animation),
                                 child: Bubble(
-                                  color: theme.value.primary,
+                                  colorScheme: theme.value,
                                   chat: ChatInfo(id: chatId, type: chatType),
                                   message: messageInfo()!,
                                   user: UserInfo(
@@ -267,7 +269,7 @@ class Chat extends HookConsumerWidget {
                             sizeFactor: CurvedAnimation(
                                 curve: Curves.easeInOutCirc, parent: animation),
                             child: Bubble(
-                              color: theme.value.primary,
+                              colorScheme: theme.value,
                               chat: ChatInfo(id: chatId, type: chatType),
                               message: messageInfo()!,
                               user: UserInfo(
@@ -306,7 +308,7 @@ class Chat extends HookConsumerWidget {
                   chatId: chatId,
                   chatName: title,
                   chatType: chatType,
-                  color: theme.value.secondaryContainer,
+                  theme: theme.value,
                 ),
               ),
             )
