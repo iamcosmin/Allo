@@ -34,13 +34,18 @@ class ChatScreen extends HookConsumerWidget {
       ColorScheme.fromSeed(
           seedColor: Colors.blue, brightness: Theme.of(context).brightness),
     );
-    final limit = useState(20);
-    final stream = useState(
-        Core.chat(chatId).streamChatMessages(listKey: listKey, limit: 20));
     final controller = useScrollController();
     final inputModifiers = useState<InputModifier?>(null);
     final locales = S.of(context);
-
+    final streamList = useState<List<Message>?>(null);
+    useEffect(() {
+      Core.chat(chatId)
+          .streamChatMessages(listKey: listKey, limit: 30)
+          .listen((event) {
+        streamList.value = event;
+      });
+      return;
+    }, const []);
     useEffect(() {
       if (!kIsWeb) {
         FirebaseMessaging.instance.subscribeToTopic(chatId);
@@ -131,33 +136,31 @@ class ChatScreen extends HookConsumerWidget {
                 children: [
                   Expanded(
                     flex: 10,
-                    child: StreamBuilder<List<Message>>(
-                      stream: stream.value,
-                      builder: (context, snapshot) {
-                        if (snapshot.data != null) {
+                    child: Builder(
+                      builder: (context) {
+                        if (streamList.value != null) {
+                          final data = streamList.value!;
                           return AnimatedList(
                             padding: const EdgeInsets.only(top: 10),
                             key: listKey,
                             reverse: true,
-                            initialItemCount: snapshot.data!.length,
+                            initialItemCount: data.length,
                             controller: controller,
                             itemBuilder: (context, i, animation) {
-                              final currentMessage = snapshot.data![i];
+                              final currentMessage = data[i];
                               final senderUid = currentMessage.userId;
                               final Map pastData, nextData;
                               if (i == 0) {
                                 nextData = {'senderUID': 'null'};
                               } else {
-                                nextData = snapshot
-                                    .data![i - 1].documentSnapshot
-                                    .data() as Map;
+                                nextData =
+                                    data[i - 1].documentSnapshot.data() as Map;
                               }
-                              if (i == snapshot.data!.length - 1) {
+                              if (i == data.length - 1) {
                                 pastData = {'senderUID': 'null'};
                               } else {
-                                pastData = snapshot
-                                    .data![i + 1].documentSnapshot
-                                    .data() as Map;
+                                pastData =
+                                    data[i + 1].documentSnapshot.data() as Map;
                               }
                               // Above, pastData should have been i-1 and nextData i+1.
                               // But, as the list needs to be in reverse order, we need
@@ -176,7 +179,7 @@ class ChatScreen extends HookConsumerWidget {
                               final isNextSenderSame = nextUID == senderUid;
                               final isPrevSenderSame = pastUID == senderUid;
                               MessageInfo? messageInfo() {
-                                final messageValue = snapshot.data![i];
+                                final messageValue = data[i];
                                 if (messageValue is TextMessage) {
                                   return MessageInfo(
                                       id: messageValue.id,
@@ -212,7 +215,7 @@ class ChatScreen extends HookConsumerWidget {
 
                               return Column(
                                 children: [
-                                  if (i == snapshot.data!.length - 1) ...[
+                                  if (i == data.length - 1) ...[
                                     const Padding(
                                         padding: EdgeInsets.only(top: 20)),
                                     ElevatedButton(
@@ -227,10 +230,16 @@ class ChatScreen extends HookConsumerWidget {
                                                 theme.value.primary),
                                       ),
                                       onPressed: () {
-                                        Core.stub.showInfoBar(
-                                            context: context,
-                                            icon: Icons.info,
-                                            text: locales.comingSoon);
+                                        Core.chat(chatId)
+                                            .streamChatMessages(
+                                                listKey: listKey,
+                                                limit: 20,
+                                                lastIndex: data.length - 1,
+                                                startAfter:
+                                                    data.last.documentSnapshot)
+                                            .listen((event) {
+                                          streamList.value!.addAll(event);
+                                        });
                                       },
                                       child: Text(
                                         locales.showPastMessages,
@@ -250,11 +259,11 @@ class ChatScreen extends HookConsumerWidget {
                                           ChatInfo(id: chatId, type: chatType),
                                       message: messageInfo()!,
                                       user: UserInfo(
-                                          name: snapshot.data![i].name,
-                                          userId: snapshot.data![i].userId,
+                                          name: data[i].name,
+                                          userId: data[i].userId,
                                           profilePhoto:
-                                              'gs://allo-ms.appspot.com/profilePictures/${snapshot.data![i].userId}.png'),
-                                      key: Key(snapshot.data![i].id),
+                                              'gs://allo-ms.appspot.com/profilePictures/${data[i].userId}.png'),
+                                      key: Key(data[i].id),
                                       modifiers: inputModifiers,
                                     ),
                                   ),
@@ -262,29 +271,28 @@ class ChatScreen extends HookConsumerWidget {
                               );
                             },
                           );
-                        } else if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                        } else if (streamList.value == null) {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
-                        } else if (snapshot.hasError) {
-                          final errorMessage = locales.anErrorOccurred +
-                              '\n' +
-                              ((snapshot.error is FirebaseException)
-                                  ? 'Code: ${(snapshot.error as FirebaseException).code}'
-                                      '\n'
-                                      'Element: ${(snapshot.error as FirebaseException).plugin}'
-                                      '\n\n'
-                                      '${(snapshot.error as FirebaseException).message}'
-                                  : snapshot.error.toString());
-                          return Padding(
-                            padding: const EdgeInsets.only(left: 30, right: 30),
-                            child: Center(
-                              child: SelectableText(
-                                errorMessage,
-                              ),
-                            ),
-                          );
+                          // } else if (snapshot.hasError) {
+                          //   final errorMessage = locales.anErrorOccurred +
+                          //       '\n' +
+                          //       ((snapshot.error is FirebaseException)
+                          //           ? 'Code: ${(snapshot.error as FirebaseException).code}'
+                          //               '\n'
+                          //               'Element: ${(snapshot.error as FirebaseException).plugin}'
+                          //               '\n\n'
+                          //               '${(snapshot.error as FirebaseException).message}'
+                          //           : snapshot.error.toString());
+                          //   return Padding(
+                          //     padding: const EdgeInsets.only(left: 30, right: 30),
+                          //     child: Center(
+                          //       child: SelectableText(
+                          //         errorMessage,
+                          //       ),
+                          //     ),
+                          //   );
                         } else {
                           return Padding(
                             padding: const EdgeInsets.only(left: 30, right: 30),

@@ -71,6 +71,14 @@ ChatType getChatTypeFromType(Chat chat) {
   }
 }
 
+int calculateIndex(int index, int? lastIndex) {
+  if (lastIndex != null) {
+    return index + lastIndex;
+  } else {
+    return index;
+  }
+}
+
 class Chats {
   Chats({required this.chatId});
   final String chatId;
@@ -121,24 +129,30 @@ class Chats {
   }
 
   Stream<List<Message>> streamChatMessages(
-      {required GlobalKey<AnimatedListState> listKey, int? limit}) async* {
-    var messages = <Message>[];
+      {required GlobalKey<AnimatedListState> listKey,
+      int? limit,
+      DocumentSnapshot? startAfter,
 
-    var query = FirebaseFirestore.instance
+      /// [lastIndex] is used to combine the lists with different indexes.
+      int? lastIndex}) async* {
+    var messages = <Message>[];
+    Stream<QuerySnapshot> query;
+    var collection = FirebaseFirestore.instance
         .collection('chats')
         .doc(chatId)
         .collection('messages')
         .orderBy('time', descending: true)
-        .limit(limit ?? 30)
-        .snapshots();
-
+        .limit(limit ?? 30);
+    if (startAfter != null) {
+      query = collection.startAfterDocument(startAfter).snapshots();
+    } else {
+      query = collection.snapshots();
+    }
     await for (var querySnapshot in query) {
       for (var docChanges in querySnapshot.docChanges) {
         switch (docChanges.type) {
           case DocumentChangeType.added:
             {
-              listKey.currentState?.insertItem(docChanges.newIndex,
-                  duration: const Duration(milliseconds: 275));
               final data = docChanges.doc.data() as Map<String, dynamic>;
               Message? message;
               switch (data['type']) {
@@ -205,9 +219,12 @@ class Chats {
                     break;
                   }
               }
-              message != null
-                  ? messages.insert(docChanges.newIndex, message)
-                  : null;
+              if (message != null) {
+                listKey.currentState?.insertItem(
+                    calculateIndex(docChanges.newIndex, lastIndex),
+                    duration: const Duration(milliseconds: 275));
+                messages.insert(docChanges.newIndex, message);
+              }
               break;
             }
           case DocumentChangeType.modified:
@@ -280,7 +297,8 @@ class Chats {
               }
               listKey.currentState?.setState(() {
                 message != null
-                    ? messages[docChanges.newIndex] = message
+                    ? messages[calculateIndex(docChanges.newIndex, lastIndex)] =
+                        message
                     : null;
               });
               break;
@@ -288,7 +306,7 @@ class Chats {
           case DocumentChangeType.removed:
             {
               listKey.currentState?.removeItem(
-                docChanges.oldIndex,
+                calculateIndex(docChanges.oldIndex, lastIndex),
                 (context, animation) => SizeTransition(
                   axisAlignment: -1.0,
                   sizeFactor: animation,
