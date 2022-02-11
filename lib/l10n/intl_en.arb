@@ -117,5 +117,7 @@
     "error": "Error",
     "noChats": "You don't have any chats.",
     "anErrorOccurred": "An error occurred.",
-    "image": "Image"
+    "image": "Image",
+    "material3App": "Enable Material 3 in app",
+    "material3Chat": "Enable Material 3 in chats"
 }

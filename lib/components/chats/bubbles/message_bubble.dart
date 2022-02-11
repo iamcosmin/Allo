@@ -26,28 +26,14 @@ void _messageOptions(
     bool isSentByUser,
     bool isImage,
     ColorScheme colorScheme) {
-  final replies = ref.watch(repliesDebug);
   final editMessage = ref.watch(editMessageDebug);
   final locales = S.of(context);
+  final material3InChat = usePreference(ref, material3Chat, context);
   showMagicBottomSheet(
-    colorScheme: colorScheme,
+    colorScheme: material3InChat.preference == true ? colorScheme : null,
     context: context,
     title: locales.messageOptions,
     children: [
-      if (replies) ...[
-        ListTile(
-          leading: const Icon(Icons.reply_outlined),
-          title: Text(locales.reply),
-          onTap: () {
-            Navigator.of(context).pop();
-            Core.stub.showInfoBar(
-              context: context,
-              icon: Icons.info_outline,
-              text: locales.comingSoon,
-            );
-          },
-        ),
-      ],
       if (!isImage) ...[
         ListTile(
           leading: const Icon(Icons.copy_outlined),
@@ -87,7 +73,8 @@ void _messageOptions(
                 context: context,
                 chatId: chatId,
                 messageId: messageId,
-                colorScheme: colorScheme);
+                colorScheme: colorScheme,
+                ref: ref);
           },
         ),
       ],
@@ -99,19 +86,28 @@ void _deleteMessage(
     {required BuildContext context,
     required String chatId,
     required String messageId,
-    required ColorScheme colorScheme}) {
+    required ColorScheme colorScheme,
+    required WidgetRef ref}) {
   final locales = S.of(context);
+  final material3InChat = usePreference(ref, material3Chat, context);
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: colorScheme.surface,
+      backgroundColor:
+          material3InChat.preference == true ? colorScheme.surface : null,
       title: Text(
         locales.deleteMessageTitle,
-        style: TextStyle(color: colorScheme.onSurface),
+        style: TextStyle(
+            color: material3InChat.preference == true
+                ? colorScheme.onSurface
+                : null),
       ),
       content: Text(
         locales.deleteMessageDescription,
-        style: TextStyle(color: colorScheme.onSurface),
+        style: TextStyle(
+            color: material3InChat.preference == true
+                ? colorScheme.onSurface
+                : null),
       ),
       actions: [
         TextButton(
@@ -120,7 +116,10 @@ void _deleteMessage(
           },
           child: Text(
             locales.cancel,
-            style: TextStyle(color: colorScheme.onSurface),
+            style: TextStyle(
+                color: material3InChat.preference == true
+                    ? colorScheme.onSurface
+                    : null),
           ),
         ),
         TextButton(
@@ -218,6 +217,8 @@ class Bubble extends HookConsumerWidget {
         message.isNextSenderSame == false;
     final showReadIndicator =
         !isNotCurrentUser && message.isLast && message.isRead;
+    final replies = usePreference(ref, repliesDebug, context);
+    final material3InChat = usePreference(ref, material3Chat, context);
     // Paddings
     final betweenBubblesPadding = EdgeInsets.only(
         top: message.isPreviousSenderSame ? 1 : 10,
@@ -276,17 +277,19 @@ class Bubble extends HookConsumerWidget {
                 child: const Icon(Icons.reply_rounded),
               ),
             ),
-            onLeftSwipe: () {
-              modifiers.value = InputModifier(
-                title: user.name,
-                body: message.text,
-                icon: Icons.reply_rounded,
-                action: ModifierAction(
-                  type: ModifierType.reply,
-                  replyMessageId: message.id,
-                ),
-              );
-            },
+            onLeftSwipe: replies.preference == false
+                ? null
+                : () {
+                    modifiers.value = InputModifier(
+                      title: user.name,
+                      body: message.text,
+                      icon: Icons.reply_rounded,
+                      action: ModifierAction(
+                        type: ModifierType.reply,
+                        replyMessageId: message.id,
+                      ),
+                    );
+                  },
             child: InkWell(
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -330,7 +333,9 @@ class Bubble extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         borderRadius: messageRadius,
                         color: isNotCurrentUser
-                            ? theme.dividerColor
+                            ? (material3InChat.preference == true
+                                ? colorScheme.secondaryContainer
+                                : Colors.grey.shade800)
                             : colorScheme.primary,
                       ),
                       constraints: BoxConstraints(maxWidth: screenWidth / 1.5),

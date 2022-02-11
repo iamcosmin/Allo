@@ -3,6 +3,7 @@ import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/logic/chat/messages.dart';
 import 'package:allo/logic/core.dart';
+import 'package:allo/logic/preferences.dart';
 import 'package:allo/logic/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,6 +31,7 @@ class ChatScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final typing = useState(false);
+    final material3InChat = usePreference(ref, material3Chat, context);
     final theme = useState<ColorScheme>(
       ColorScheme.fromSeed(
           seedColor: Colors.blue, brightness: Theme.of(context).brightness),
@@ -68,11 +70,16 @@ class ChatScreen extends HookConsumerWidget {
       return;
     }, const []);
     return Scaffold(
-      backgroundColor: theme.value.background,
+      backgroundColor:
+          material3InChat.preference == true ? theme.value.background : null,
       appBar: AppBar(
-        backgroundColor: theme.value.surface,
+        backgroundColor:
+            material3InChat.preference == true ? theme.value.surface : null,
         elevation: 1,
-        iconTheme: IconThemeData(color: theme.value.onSurface),
+        iconTheme: IconThemeData(
+            color: material3InChat.preference == true
+                ? theme.value.onSurface
+                : null),
         toolbarHeight: 100,
         leading: Container(
           padding: const EdgeInsets.only(left: 10, top: 0),

@@ -1,1 +1,6 @@
-{}
+{
+  "ro": [
+    "material3App",
+    "material3Chat"
+  ]
+}

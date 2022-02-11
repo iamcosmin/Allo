@@ -71,6 +71,7 @@ class InnerApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final darkState = ref.watch(darkMode);
+    final material3InApp = usePreference(ref, material3App, context);
     const _scrollBehavior = MaterialScrollBehavior(
         androidOverscrollIndicator: AndroidOverscrollIndicator.stretch);
     useEffect(() {
@@ -82,12 +83,8 @@ class InnerApp extends HookConsumerWidget {
       navigatorKey: navigatorKey,
       scrollBehavior: _scrollBehavior,
       themeMode: darkState ? ThemeMode.dark : ThemeMode.light,
-      theme: FirebaseRemoteConfig.instance.getBool('new_themes') == false
-          ? oldLightTheme
-          : lightTheme,
-      darkTheme: FirebaseRemoteConfig.instance.getBool('new_themes') == false
-          ? oldDarkTheme
-          : darkTheme,
+      theme: material3InApp.preference == false ? oldLightTheme : lightTheme,
+      darkTheme: material3InApp.preference == false ? oldDarkTheme : darkTheme,
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,

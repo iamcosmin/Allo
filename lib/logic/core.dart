@@ -2,8 +2,10 @@ import 'package:allo/logic/authentication.dart';
 import 'package:allo/logic/chat/chat.dart';
 import 'package:allo/logic/navigation.dart';
 import 'package:allo/logic/notifications.dart';
+import 'package:allo/logic/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Core {
   static final Authentication auth = Authentication();
@@ -75,4 +77,23 @@ MemoizedAsyncSnapshot<T> useMemoizedFuture<T>(
   void refreshMe() => refresh.value++;
 
   return MemoizedAsyncSnapshot<T>(result, refreshMe);
+}
+
+class Preference {
+  const Preference(this.preference, this.switcher, this.clear);
+  final bool preference;
+  final void Function(WidgetRef, BuildContext) switcher;
+  final void Function(WidgetRef, BuildContext) clear;
+}
+
+Preference usePreference(
+  WidgetRef ref,
+  StateNotifierProvider<PreferenceManager, bool> provider,
+  BuildContext context,
+) {
+  return Preference(
+    ref.watch(provider),
+    ref.watch(provider.notifier).switcher,
+    ref.watch(provider.notifier).cleanPreference,
+  );
 }
