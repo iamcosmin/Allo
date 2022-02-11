@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:allo/logic/chat/chat.dart';
 import 'package:allo/logic/types.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,7 +14,7 @@ String _title(
     {required String? type,
     required String chatName,
     required String senderName}) {
-  if ((type ?? 'group') == ChatType.private) {
+  if (getChatTypeFromString((type ?? 'group')) == ChatType.private) {
     return senderName;
   } else {
     return chatName;
@@ -58,12 +59,14 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
   String? _profilePicture = message.data['profilePicture'];
   String? _sentPicture = message.data['photo'];
   String? _chatId = message.data['toChat'];
-  String _smallNotificationText = message.data['type'] == ChatType.group
-      ? message.data['chatName']
-      : 'Privat';
-  final _notificationLayout = message.data['type'] == ChatType.group
-      ? NotificationLayout.MessagingGroup
-      : NotificationLayout.Messaging;
+  String _smallNotificationText =
+      getChatTypeFromString(message.data['type']) == ChatType.group
+          ? message.data['chatName']
+          : 'Privat';
+  final _notificationLayout =
+      getChatTypeFromString(message.data['type']) == ChatType.group
+          ? NotificationLayout.MessagingGroup
+          : NotificationLayout.Messaging;
   // ignore: omit_local_variable_types
   final Map<String, String> _suplimentaryInfo = {
     'profilePicture': _profilePicture ?? '',
@@ -72,7 +75,7 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
         type: message.data['type'],
         chatName: message.data['chatName'],
         senderName: message.data['senderName']),
-    'chatType': message.data['type'] ?? ChatType.group,
+    'chatType': message.data['type'] ?? 'group',
   };
   if (_uid != Core.auth.user.uid) {
     await AwesomeNotifications().createNotification(

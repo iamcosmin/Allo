@@ -1229,6 +1229,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Image`
+  String get image {
+    return Intl.message(
+      'Image',
+      name: 'image',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable Material 3 in app`
+  String get material3App {
+    return Intl.message(
+      'Enable Material 3 in app',
+      name: 'material3App',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable Material 3 in chats`
+  String get material3Chat {
+    return Intl.message(
+      'Enable Material 3 in chats',
+      name: 'material3Chat',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

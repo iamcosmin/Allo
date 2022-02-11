@@ -34,7 +34,7 @@ class Settings extends HookConsumerWidget {
           SliverAppBar(
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Theme.of(context).colorScheme.surface,
               ),
               centerTitle: false,
               title: InkWell(
@@ -42,12 +42,12 @@ class Settings extends HookConsumerWidget {
                   child: Text(
                     locales.settings,
                     style: TextStyle(
-                        color: Theme.of(context).appBarTheme.foregroundColor,
-                        fontSize: 24),
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 22),
                   )),
               titlePadding: const EdgeInsets.only(left: 20, bottom: 15),
             ),
-            expandedHeight: 170,
+            expandedHeight: 152,
             pinned: true,
           ),
         ],

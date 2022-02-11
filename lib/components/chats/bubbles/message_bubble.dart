@@ -1,7 +1,10 @@
+import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
+import 'package:allo/components/swipe_to.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/logic/chat/messages.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:allo/logic/types.dart';
@@ -14,29 +17,23 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void _messageOptions(BuildContext context, String messageId, String chatId,
-    String messageText, WidgetRef ref, bool isSentByUser, bool isImage) {
-  final replies = ref.watch(repliesDebug);
+void _messageOptions(
+    BuildContext context,
+    String messageId,
+    String chatId,
+    String messageText,
+    WidgetRef ref,
+    bool isSentByUser,
+    bool isImage,
+    ColorScheme colorScheme) {
   final editMessage = ref.watch(editMessageDebug);
   final locales = S.of(context);
+  final material3InChat = usePreference(ref, material3Chat, context);
   showMagicBottomSheet(
+    colorScheme: material3InChat.preference == true ? colorScheme : null,
     context: context,
     title: locales.messageOptions,
     children: [
-      if (replies) ...[
-        ListTile(
-          leading: const Icon(Icons.reply_outlined),
-          title: Text(locales.reply),
-          onTap: () {
-            Navigator.of(context).pop();
-            Core.stub.showInfoBar(
-              context: context,
-              icon: Icons.info_outline,
-              text: locales.comingSoon,
-            );
-          },
-        ),
-      ],
       if (!isImage) ...[
         ListTile(
           leading: const Icon(Icons.copy_outlined),
@@ -73,7 +70,11 @@ void _messageOptions(BuildContext context, String messageId, String chatId,
           onTap: () {
             Navigator.of(context).pop();
             _deleteMessage(
-                context: context, chatId: chatId, messageId: messageId);
+                context: context,
+                chatId: chatId,
+                messageId: messageId,
+                colorScheme: colorScheme,
+                ref: ref);
           },
         ),
       ],
@@ -84,19 +85,42 @@ void _messageOptions(BuildContext context, String messageId, String chatId,
 void _deleteMessage(
     {required BuildContext context,
     required String chatId,
-    required String messageId}) {
+    required String messageId,
+    required ColorScheme colorScheme,
+    required WidgetRef ref}) {
   final locales = S.of(context);
+  final material3InChat = usePreference(ref, material3Chat, context);
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(locales.deleteMessageTitle),
-      content: Text(locales.deleteMessageDescription),
+      backgroundColor:
+          material3InChat.preference == true ? colorScheme.surface : null,
+      title: Text(
+        locales.deleteMessageTitle,
+        style: TextStyle(
+            color: material3InChat.preference == true
+                ? colorScheme.onSurface
+                : null),
+      ),
+      content: Text(
+        locales.deleteMessageDescription,
+        style: TextStyle(
+            color: material3InChat.preference == true
+                ? colorScheme.onSurface
+                : null),
+      ),
       actions: [
         TextButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text(locales.cancel),
+          child: Text(
+            locales.cancel,
+            style: TextStyle(
+                color: material3InChat.preference == true
+                    ? colorScheme.onSurface
+                    : null),
+          ),
         ),
         TextButton(
           onPressed: () {
@@ -131,7 +155,7 @@ class UserInfo {
 
 class ChatInfo {
   const ChatInfo({required this.type, required this.id});
-  final String type;
+  final ChatType type;
   final String id;
 }
 
@@ -146,6 +170,7 @@ class MessageInfo {
     required this.isRead,
     required this.time,
     required this.isLast,
+    required this.reply,
   });
   final String id;
   final String text;
@@ -156,20 +181,24 @@ class MessageInfo {
   final String? image;
   final bool isRead;
   final DateTime time;
+  final ReplyToMessage? reply;
 }
 
 class Bubble extends HookConsumerWidget {
   const Bubble({
-    Key? key,
+    required Key key,
     required this.user,
     required this.chat,
     required this.message,
-    required this.color,
+    required this.colorScheme,
+    required this.modifiers,
   }) : super(key: key);
   final UserInfo user;
   final ChatInfo chat;
   final MessageInfo message;
-  final Color color;
+  final ColorScheme colorScheme;
+  final ValueNotifier<InputModifier?> modifiers;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
@@ -188,6 +217,8 @@ class Bubble extends HookConsumerWidget {
         message.isNextSenderSame == false;
     final showReadIndicator =
         !isNotCurrentUser && message.isLast && message.isRead;
+    final replies = usePreference(ref, repliesDebug, context);
+    final material3InChat = usePreference(ref, material3Chat, context);
     // Paddings
     final betweenBubblesPadding = EdgeInsets.only(
         top: message.isPreviousSenderSame ? 1 : 10,
@@ -209,11 +240,14 @@ class Bubble extends HookConsumerWidget {
     );
     final messageRadius =
         isNotCurrentUser ? receivedMessageRadius : sentMessageRadius;
+
     useEffect(() {
-      if (isNotCurrentUser) {
+      if (isNotCurrentUser && message.isRead == false) {
         Core.chat(chat.id).messages.markAsRead(messageId: message.id);
       }
+      return;
     }, const []);
+
     return Padding(
       padding: betweenBubblesPadding,
       child: Column(
@@ -228,100 +262,244 @@ class Bubble extends HookConsumerWidget {
               ),
             ),
           ],
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: isNotCurrentUser
-                ? MainAxisAlignment.start
-                : MainAxisAlignment.end,
-            children: [
-              if (showProfilePictureConditionsMet) ...[
-                PersonPicture.determine(
-                  radius: 36,
-                  profilePicture: user.profilePhoto,
-                  initials: nameInitials,
-                  color: color,
+          SwipeTo(
+            animationDuration: const Duration(milliseconds: 140),
+            offsetDx: 0.2,
+            leftSwipeWidget: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Container(
+                height: 35,
+                width: 35,
+                decoration: BoxDecoration(
+                  color: theme.disabledColor.withAlpha(20),
+                  shape: BoxShape.circle,
                 ),
-                const Padding(padding: EdgeInsets.only(left: 10)),
-              ] else if (chat.type == ChatType.private)
-                ...[]
-              else ...[
-                const Padding(padding: EdgeInsets.only(left: 46)),
-              ],
-              InkWell(
-                onTap: message.type == MessageTypes.image
-                    ? () => Core.navigation.push(
-                          context: context,
-                          route: ImageView(
-                            message.image!,
-                          ),
-                        )
-                    : () => selected.value = !selected.value,
-                onLongPress: () => _messageOptions(
-                    context,
-                    message.id,
-                    chat.id,
-                    message.text,
-                    ref,
-                    !isNotCurrentUser,
-                    message.type == MessageTypes.image),
-                customBorder:
-                    RoundedRectangleBorder(borderRadius: messageRadius),
-                child: AnimatedContainer(
-                  decoration: BoxDecoration(
-                    borderRadius: messageRadius,
-                    color: isNotCurrentUser ? theme.dividerColor : color,
-                  ),
-                  constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
-                  padding: message.type != MessageTypes.image
-                      ? const EdgeInsets.only(
-                          top: 8,
-                          bottom: 8,
-                          left: 10,
-                          right: 10,
-                        )
-                      : EdgeInsets.zero,
-                  key: key,
-                  duration: const Duration(milliseconds: 250),
-                  child: Builder(
-                    builder: (context) {
-                      if (message.type == MessageTypes.image) {
-                        return ClipRRect(
-                          borderRadius: messageRadius,
-                          child: CachedNetworkImage(
-                            imageUrl: message.image!,
-                          ),
-                        );
-                      } else {
-                        return Linkify(
-                          text: message.text,
-                          onOpen: (link) async {
-                            if (await canLaunch(link.url)) {
-                              await launch(link.url);
-                            } else {
-                              throw 'Could not launch $link';
-                            }
-                          },
-                          style: TextStyle(
-                            fontSize:
-                                regexEmoji.hasMatch(message.text) ? 30 : 16,
-                            color: isNotCurrentUser
-                                ? theme.colorScheme.onSurface
-                                : Colors.white,
-                          ),
-                          linkStyle: TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: isNotCurrentUser
-                                ? theme.colorScheme.onSurface
-                                : Colors.white,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
+                child: const Icon(Icons.reply_rounded),
               ),
-            ],
+            ),
+            onLeftSwipe: replies.preference == false
+                ? null
+                : () {
+                    modifiers.value = InputModifier(
+                      title: user.name,
+                      body: message.text,
+                      icon: Icons.reply_rounded,
+                      action: ModifierAction(
+                        type: ModifierType.reply,
+                        replyMessageId: message.id,
+                      ),
+                    );
+                  },
+            child: InkWell(
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: isNotCurrentUser
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.end,
+                children: [
+                  if (showProfilePictureConditionsMet) ...[
+                    PersonPicture.determine(
+                      radius: 36,
+                      profilePicture: user.profilePhoto,
+                      initials: nameInitials,
+                      color: colorScheme.primary,
+                    ),
+                    const Padding(padding: EdgeInsets.only(left: 10)),
+                  ] else if (chat.type == ChatType.private)
+                    ...[]
+                  else ...[
+                    const Padding(padding: EdgeInsets.only(left: 46)),
+                  ],
+                  InkWell(
+                    onTap: message.type == MessageTypes.image
+                        ? () => Core.navigation.push(
+                              context: context,
+                              route: ImageView(message.image!,
+                                  colorScheme: colorScheme),
+                            )
+                        : () => selected.value = !selected.value,
+                    onLongPress: () => _messageOptions(
+                        context,
+                        message.id,
+                        chat.id,
+                        message.text,
+                        ref,
+                        !isNotCurrentUser,
+                        message.type == MessageTypes.image,
+                        colorScheme),
+                    borderRadius: messageRadius,
+                    child: AnimatedContainer(
+                      decoration: BoxDecoration(
+                        borderRadius: messageRadius,
+                        color: isNotCurrentUser
+                            ? (material3InChat.preference == true
+                                ? colorScheme.secondaryContainer
+                                : Colors.grey.shade800)
+                            : colorScheme.primary,
+                      ),
+                      constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
+                      height: null,
+                      padding: message.type != MessageTypes.image
+                          ? const EdgeInsets.only(
+                              top: 8,
+                              bottom: 8,
+                              left: 10,
+                              right: 10,
+                            )
+                          : EdgeInsets.zero,
+                      key: key,
+                      duration: const Duration(milliseconds: 250),
+                      child: Builder(
+                        builder: (context) {
+                          if (message.type == MessageTypes.image) {
+                            return Container(
+                              constraints:
+                                  BoxConstraints(maxWidth: screenWidth / 1.5),
+                              child: ClipRRect(
+                                borderRadius: messageRadius,
+                                child: CachedNetworkImage(
+                                  imageUrl: message.image!,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Container(
+                              constraints:
+                                  BoxConstraints(maxWidth: screenWidth / 1.5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: message.reply == null ? 0 : 50,
+                                    child: message.reply == null
+                                        ? null
+                                        : Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 5,
+                                                bottom: 5,
+                                                left: 5,
+                                                right: 5),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: isNotCurrentUser
+                                                        ? theme.colorScheme
+                                                            .onSurface
+                                                        : Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      2,
+                                                    ),
+                                                  ),
+                                                  height: 35,
+                                                  width: 3,
+                                                ),
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10),
+                                                ),
+                                                Flexible(
+                                                  child: Container(
+                                                    height: 40,
+                                                    constraints: BoxConstraints(
+                                                        maxWidth:
+                                                            screenWidth / 1.8,
+                                                        minWidth: 1),
+                                                    width:
+                                                        ((message.reply!.description
+                                                                        .length
+                                                                        .toDouble() >=
+                                                                    message
+                                                                        .reply!
+                                                                        .name
+                                                                        .length
+                                                                        .toDouble()
+                                                                ? message
+                                                                    .reply!
+                                                                    .description
+                                                                    .length
+                                                                    .toDouble()
+                                                                : message.reply!
+                                                                    .name.length
+                                                                    .toDouble()) *
+                                                            9),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          message.reply?.name ??
+                                                              '',
+                                                          style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis),
+                                                        ),
+                                                        ClipRect(
+                                                          child: Text(
+                                                            message.reply
+                                                                    ?.description
+                                                                    .replaceAll(
+                                                                        '\n',
+                                                                        ' ') ??
+                                                                '',
+                                                            style: const TextStyle(
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                  ),
+                                  Linkify(
+                                    text: message.text,
+                                    onOpen: (link) async {
+                                      if (await canLaunch(link.url)) {
+                                        await launch(link.url);
+                                      } else {
+                                        throw 'Could not launch $link';
+                                      }
+                                    },
+                                    style: TextStyle(
+                                      fontSize:
+                                          regexEmoji.hasMatch(message.text)
+                                              ? 30
+                                              : 16,
+                                      color: isNotCurrentUser
+                                          ? theme.colorScheme.onSurface
+                                          : Colors.white,
+                                    ),
+                                    linkStyle: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      color: isNotCurrentUser
+                                          ? theme.colorScheme.onSurface
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 150),

@@ -116,5 +116,6 @@
     "welcomeBack": "Bine ai revenit",
     "error": "Eroare",
     "noChats": "Nu ai nicio conversație.",
-    "anErrorOccurred": "A apărut o eroare."
+    "anErrorOccurred": "A apărut o eroare.",
+    "image": "Imagine"
 }

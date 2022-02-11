@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:allo/generated/l10n.dart';
+import 'package:allo/components/chats/message_input.dart';
+import 'package:allo/logic/chat/messages.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -10,96 +11,302 @@ import 'package:image_picker/image_picker.dart';
 
 import '../types.dart';
 
-class Chat {
-  Chat({required this.chatId});
+abstract class Chat {
+  const Chat({required this.title, required this.id, required this.picture});
+  final String title;
+  final String id;
+  final String picture;
+}
+
+class PrivateChat extends Chat {
+  const PrivateChat(
+      {required String name, required this.userId, required String chatId})
+      : super(
+          title: name,
+          id: chatId,
+          picture: 'gs://allo-ms.appspot.com/profilePictures/$userId.png',
+        );
+  final String userId;
+}
+
+class GroupChat extends Chat {
+  const GroupChat({required String title, required String chatId})
+      : super(
+          title: title,
+          id: chatId,
+          picture: 'gs://allo-ms.appspot.com/chats/$chatId.png',
+        );
+}
+
+ChatType? getChatTypeFromString(String chatType) {
+  switch (chatType) {
+    case 'private':
+      {
+        return ChatType.private;
+      }
+    case 'group':
+      {
+        return ChatType.group;
+      }
+    default:
+      {
+        return null;
+      }
+  }
+}
+
+String getStringFromChatType(ChatType chatType) {
+  if (chatType == ChatType.private) {
+    return 'private';
+  } else {
+    return 'group';
+  }
+}
+
+ChatType getChatTypeFromType(Chat chat) {
+  if (chat is PrivateChat) {
+    return ChatType.private;
+  } else {
+    return ChatType.group;
+  }
+}
+
+int calculateIndex(int index, int? lastIndex) {
+  if (lastIndex != null) {
+    return index + lastIndex;
+  } else {
+    return index;
+  }
+}
+
+class Chats {
+  Chats({required this.chatId});
   final String chatId;
 
   Messages get messages => Messages(chatId: chatId);
 
-  Future<List<Map<String, String?>>> getChatsList(BuildContext context) async {
+  Future<List<Chat>?> getChatsList() async {
     final _uid = Core.auth.user.uid;
     final _documents = await FirebaseFirestore.instance
         .collection('chats')
         .where('participants', arrayContains: _uid)
         .get();
-    var _chatsMap = <Map<String, String?>>[];
-    final locales = S.of(context);
-
+    var chats = <Chat>[];
     if (_documents.docs.isNotEmpty) {
       for (var chat in _documents.docs) {
         var chatInfo = chat.data();
-        String? name, profilepic;
+        String? _name, _userId;
         // Check the chat type to sort accordingly
-        switch (chatInfo['type']) {
+        switch (getChatTypeFromString(chatInfo['type'])) {
           case ChatType.private:
             {
               for (var member in chatInfo['members']) {
                 if (member['uid'] != Core.auth.user.uid) {
-                  name = member['name'];
-                  profilepic =
-                      await Core.auth.getUserProfilePicture(member['uid']);
+                  _name = member['name'];
+                  _userId = member['uid'];
                 }
               }
-              _chatsMap.add({
-                'type': ChatType.private,
-                'name': name ?? '???',
-                'profilepic': profilepic,
-                'chatId': chat.id,
-              });
+              if (_userId != null) {
+                chats.add(PrivateChat(
+                    name: _name ?? '???', userId: _userId, chatId: chat.id));
+              }
               break;
             }
           case ChatType.group:
             {
-              name = chatInfo['title'];
-              profilepic = chatInfo['profilepic'];
-              _chatsMap.add({
-                'type': ChatType.group,
-                'name': name ?? '???',
-                'chatId': chat.id,
-                'profilepic': profilepic,
-              });
+              _name = chatInfo['title'];
+              chats.add(GroupChat(title: _name ?? '', chatId: chat.id));
+              break;
+            }
+          default:
+            {
+              break;
             }
         }
       }
     }
-    return _chatsMap;
+    return chats.isNotEmpty ? chats : null;
   }
 
-  void streamChatMessages({
-    required ValueNotifier<List<DocumentSnapshot>> messages,
-    required GlobalKey<AnimatedListState> listKey,
-    int? limit,
-  }) {
-    FirebaseFirestore.instance
+  Stream<List<Message>> streamChatMessages(
+      {required GlobalKey<AnimatedListState> listKey,
+      int? limit,
+      DocumentSnapshot? startAfter,
+
+      /// [lastIndex] is used to combine the lists with different indexes.
+      int? lastIndex}) async* {
+    var messages = <Message>[];
+    Stream<QuerySnapshot> query;
+    var collection = FirebaseFirestore.instance
         .collection('chats')
         .doc(chatId)
         .collection('messages')
         .orderBy('time', descending: true)
-        .limit(limit ?? 20)
-        .snapshots()
-        .listen(
-      (event) {
-        for (var docChanges in event.docChanges) {
-          switch (docChanges.type) {
-            case DocumentChangeType.added:
-              if (event.docChanges.length == 20) {
-                listKey.currentState?.insertItem(docChanges.newIndex,
-                    duration: const Duration(seconds: 0));
-              } else {
-                listKey.currentState?.insertItem(docChanges.newIndex,
-                    duration: const Duration(milliseconds: 275));
+        .limit(limit ?? 30);
+    if (startAfter != null) {
+      query = collection.startAfterDocument(startAfter).snapshots();
+    } else {
+      query = collection.snapshots();
+    }
+    await for (var querySnapshot in query) {
+      for (var docChanges in querySnapshot.docChanges) {
+        switch (docChanges.type) {
+          case DocumentChangeType.added:
+            {
+              final data = docChanges.doc.data() as Map<String, dynamic>;
+              Message? message;
+              switch (data['type']) {
+                case MessageTypes.text:
+                  {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
+                    if (data['reply_to_message'] != null) {
+                      replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
+                    }
+                    message = TextMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'] ?? false,
+                      text: data['text'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['text'],
+                            ),
+                    );
+                    break;
+                  }
+                case MessageTypes.image:
+                  {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
+                    if (data['reply_to_message'] != null) {
+                      replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
+                    }
+                    message = ImageMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'] ?? false,
+                      link: data['link'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['description'],
+                            ),
+                    );
+                    break;
+                  }
               }
-
-              messages.value.insert(docChanges.newIndex, docChanges.doc);
+              if (message != null) {
+                listKey.currentState?.insertItem(
+                    calculateIndex(docChanges.newIndex, lastIndex),
+                    duration: const Duration(milliseconds: 275));
+                messages.insert(docChanges.newIndex, message);
+              }
               break;
-            case DocumentChangeType.modified:
+            }
+          case DocumentChangeType.modified:
+            {
+              final data = docChanges.doc.data() as Map<String, dynamic>;
+              Message? message;
+              switch (data['type']) {
+                case MessageTypes.text:
+                  {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
+                    if (data['reply_to_message'] != null) {
+                      replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
+                    }
+                    message = TextMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'],
+                      text: data['text'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['text'],
+                            ),
+                    );
+                    break;
+                  }
+                case MessageTypes.image:
+                  {
+                    DocumentSnapshot replyQuery;
+                    Map<String, dynamic>? replyData;
+                    if (data['reply_to_message'] != null) {
+                      replyQuery = await FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(chatId)
+                          .collection('messages')
+                          .doc(data['reply_to_message'])
+                          .get();
+                      replyData = replyQuery.data() as Map<String, dynamic>?;
+                    }
+                    message = ImageMessage(
+                      name: data['name'],
+                      userId: data['uid'],
+                      username: data['username'],
+                      id: docChanges.doc.id,
+                      timestamp: data['time'],
+                      read: data['read'],
+                      link: data['link'],
+                      documentSnapshot: docChanges.doc,
+                      reply: replyData == null
+                          ? null
+                          : ReplyToMessage(
+                              name: replyData['name'],
+                              description: replyData['description'],
+                            ),
+                    );
+                    break;
+                  }
+              }
               listKey.currentState?.setState(() {
-                messages.value[docChanges.newIndex] = docChanges.doc;
+                message != null
+                    ? messages[calculateIndex(docChanges.newIndex, lastIndex)] =
+                        message
+                    : null;
               });
               break;
-            case DocumentChangeType.removed:
+            }
+          case DocumentChangeType.removed:
+            {
               listKey.currentState?.removeItem(
-                docChanges.oldIndex,
+                calculateIndex(docChanges.oldIndex, lastIndex),
                 (context, animation) => SizeTransition(
                   axisAlignment: -1.0,
                   sizeFactor: animation,
@@ -109,12 +316,13 @@ class Chat {
                   ),
                 ),
               );
-              messages.value.removeAt(docChanges.oldIndex);
+              messages.removeAt(docChanges.oldIndex);
               break;
-          }
+            }
         }
-      },
-    );
+      }
+      yield messages;
+    }
   }
 }
 
@@ -148,24 +356,39 @@ class Messages {
       required BuildContext context,
       required String chatName,
       TextEditingController? controller,
+      ValueNotifier<InputModifier?>? modifier,
       required String chatType}) async {
     if (controller != null) {
       controller.clear();
     }
-    FirebaseFirestore.instance
-        .collection('chats')
-        .doc(chatId)
-        .update({'typing': false});
+    // FirebaseFirestore.instance
+    //     .collection('chats')
+    //     .doc(chatId)
+    //     .update({'typing': false});
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
     final auth = Core.auth;
-    await db.collection('messages').add({
-      'type': MessageTypes.text,
-      'name': auth.user.name,
-      'username': await auth.user.username,
-      'uid': auth.user.uid,
-      'text': text,
-      'time': Timestamp.now(),
-    });
+    final replyMessageId = modifier?.value?.action.replyMessageId;
+    if (modifier?.value == null) {
+      await db.collection('messages').add({
+        'type': MessageTypes.text,
+        'name': auth.user.name,
+        'username': await auth.user.username,
+        'uid': auth.user.uid,
+        'text': text,
+        'time': Timestamp.now(),
+      });
+    } else if (modifier?.value?.action.type == ModifierType.reply) {
+      modifier?.value = null;
+      await db.collection('messages').add({
+        'type': MessageTypes.text,
+        'name': auth.user.name,
+        'username': await auth.user.username,
+        'uid': auth.user.uid,
+        'reply_to_message': replyMessageId,
+        'text': text,
+        'time': Timestamp.now(),
+      });
+    }
     await _sendNotification(
         profilePicture: Core.auth.user.profilePicture,
         chatName: chatName,

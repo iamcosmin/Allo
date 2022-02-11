@@ -105,6 +105,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gallery": MessageLookupByLibrary.simpleMessage("Gallery"),
         "group": MessageLookupByLibrary.simpleMessage("Group"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "image": MessageLookupByLibrary.simpleMessage("Image"),
         "initials": MessageLookupByLibrary.simpleMessage("Initials"),
         "internalAccountInfo":
             MessageLookupByLibrary.simpleMessage("Account Info"),
@@ -119,6 +120,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "To continue, please enter your email address."),
         "loginScreenTitle":
             MessageLookupByLibrary.simpleMessage("Let\'s sign in..."),
+        "material3App":
+            MessageLookupByLibrary.simpleMessage("Enable Material 3 in app"),
+        "material3Chat":
+            MessageLookupByLibrary.simpleMessage("Enable Material 3 in chats"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
         "members": MessageLookupByLibrary.simpleMessage("Members"),
         "message": MessageLookupByLibrary.simpleMessage("Message"),

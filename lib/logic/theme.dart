@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// Pass to theme manager the arguments of the theme ([true, Colors.red]), then let the manager update the state
 /// so the colors and the dark mode value changes in real time.
-// TODO
 
 final appThemeProvider = Provider<AppTheme>((ref) => AppTheme(ref));
 
