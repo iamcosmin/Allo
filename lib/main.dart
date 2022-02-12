@@ -26,11 +26,16 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   if (!kIsWeb) {
     await Core.notifications.setupNotifications();
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
+  final remoteConfig = RemoteConfig.instance;
+  await remoteConfig.setConfigSettings(RemoteConfigSettings(
+    fetchTimeout: Duration(seconds: 60),
+    minimumFetchInterval: Duration(hours: 1),
+  ));
+  await remoteConfig.fetchAndActivate();
   final _kSharedPreferences = await SharedPreferences.getInstance();
   // await FirebaseMessaging.instance.requestPermission(
   //   alert: true,
