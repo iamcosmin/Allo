@@ -119,5 +119,8 @@
     "anErrorOccurred": "An error occurred.",
     "image": "Image",
     "material3App": "Enable Material 3 in app",
-    "material3Chat": "Enable Material 3 in chats"
+    "material3Chat": "Enable Material 3 in chats",
+    "canceledOperation": "The operation was canceled.",
+    "personalise": "Personalise",
+    "personaliseHideNavigationHints": "Hide navigation hints"
 }

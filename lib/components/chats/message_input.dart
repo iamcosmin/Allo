@@ -22,9 +22,8 @@ void _attachMenu(
     required WidgetRef ref}) {
   final locales = S.of(context);
   XFile? file;
-  final material3InChat = usePreference(ref, material3Chat, context);
   showMagicBottomSheet(
-    colorScheme: material3InChat.preference == true ? colorScheme : null,
+    colorScheme: colorScheme,
     context: context,
     title: locales.attach,
     children: [
@@ -147,24 +146,19 @@ class MessageInput extends HookConsumerWidget {
     final _node = useFocusNode(descendantsAreFocusable: false);
     final progress = useState<double>(0);
     final locales = S.of(context);
-    final material3InChat = usePreference(ref, material3Chat, context);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       alignment: Alignment.bottomCenter,
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: material3InChat.preference == true
-              ? theme.secondaryContainer
-              : Colors.grey.shade800),
+          color: theme.secondaryContainer),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedContainer(
             decoration: BoxDecoration(
-                color: material3InChat.preference == true
-                    ? theme.secondaryContainer
-                    : null,
+                color: theme.secondaryContainer,
                 borderRadius: BorderRadius.circular(10)),
             duration: const Duration(milliseconds: 120),
             height: modifier.value != null ? 50 : 0,
@@ -242,9 +236,7 @@ class MessageInput extends HookConsumerWidget {
               IconButton(
                 alignment: Alignment.center,
                 iconSize: 25,
-                color: material3InChat.preference == true
-                    ? theme.onSecondaryContainer
-                    : null,
+                color: theme.onSecondaryContainer,
                 icon: empty.value
                     ? const Icon(Icons.attach_file_outlined)
                     : const Icon(Icons.search_outlined),
@@ -275,12 +267,10 @@ class MessageInput extends HookConsumerWidget {
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: locales.message,
-                      hintStyle: TextStyle(
-                          color: material3InChat.preference == true
-                              ? theme.onSecondaryContainer
-                              : null)),
+                    border: InputBorder.none,
+                    hintText: locales.message,
+                    hintStyle: TextStyle(color: theme.onSecondaryContainer),
+                  ),
                   onChanged: (value) =>
                       value == '' ? empty.value = true : empty.value = false,
                   controller: _messageController,
@@ -295,17 +285,13 @@ class MessageInput extends HookConsumerWidget {
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
                       value: progress.value,
-                      color: material3InChat.preference == true
-                          ? theme.primary
-                          : null,
+                      color: theme.primary,
                     ),
                   ),
                   IconButton(
                     iconSize: progress.value == 0 ? 23 : 17,
                     icon: const Icon(Icons.send_rounded),
-                    color: material3InChat.preference == true
-                        ? theme.onSecondaryContainer
-                        : null,
+                    color: theme.onSecondaryContainer,
                     onPressed: empty.value
                         ? null
                         : () {

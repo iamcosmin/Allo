@@ -1259,6 +1259,36 @@ class S {
       args: [],
     );
   }
+
+  /// `The operation was canceled.`
+  String get canceledOperation {
+    return Intl.message(
+      'The operation was canceled.',
+      name: 'canceledOperation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personalise`
+  String get personalise {
+    return Intl.message(
+      'Personalise',
+      name: 'personalise',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide navigation hints`
+  String get personaliseHideNavigationHints {
+    return Intl.message(
+      'Hide navigation hints',
+      name: 'personaliseHideNavigationHints',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

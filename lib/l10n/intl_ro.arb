@@ -117,5 +117,8 @@
     "error": "Eroare",
     "noChats": "Nu ai nicio conversație.",
     "anErrorOccurred": "A apărut o eroare.",
-    "image": "Imagine"
+    "image": "Imagine",
+    "canceledOperation": "Operațiunea a fost anulată.",
+    "personalise": "Personalizare",
+    "personaliseHideNavigationHints": "Ascunde indiciile de navigare"
 }

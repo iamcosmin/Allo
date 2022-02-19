@@ -28,9 +28,8 @@ void _messageOptions(
     ColorScheme colorScheme) {
   final editMessage = ref.watch(editMessageDebug);
   final locales = S.of(context);
-  final material3InChat = usePreference(ref, material3Chat, context);
   showMagicBottomSheet(
-    colorScheme: material3InChat.preference == true ? colorScheme : null,
+    colorScheme: colorScheme,
     context: context,
     title: locales.messageOptions,
     children: [
@@ -89,25 +88,17 @@ void _deleteMessage(
     required ColorScheme colorScheme,
     required WidgetRef ref}) {
   final locales = S.of(context);
-  final material3InChat = usePreference(ref, material3Chat, context);
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor:
-          material3InChat.preference == true ? colorScheme.surface : null,
+      backgroundColor: colorScheme.surface,
       title: Text(
         locales.deleteMessageTitle,
-        style: TextStyle(
-            color: material3InChat.preference == true
-                ? colorScheme.onSurface
-                : null),
+        style: TextStyle(color: colorScheme.onSurface),
       ),
       content: Text(
         locales.deleteMessageDescription,
-        style: TextStyle(
-            color: material3InChat.preference == true
-                ? colorScheme.onSurface
-                : null),
+        style: TextStyle(color: colorScheme.onSurface),
       ),
       actions: [
         TextButton(
@@ -116,10 +107,7 @@ void _deleteMessage(
           },
           child: Text(
             locales.cancel,
-            style: TextStyle(
-                color: material3InChat.preference == true
-                    ? colorScheme.onSurface
-                    : null),
+            style: TextStyle(color: colorScheme.onSurface),
           ),
         ),
         TextButton(
@@ -217,8 +205,7 @@ class Bubble extends HookConsumerWidget {
         message.isNextSenderSame == false;
     final showReadIndicator =
         !isNotCurrentUser && message.isLast && message.isRead;
-    final replies = usePreference(ref, repliesDebug, context);
-    final material3InChat = usePreference(ref, material3Chat, context);
+    final replies = usePreference(ref, repliesDebug);
     // Paddings
     final betweenBubblesPadding = EdgeInsets.only(
         top: message.isPreviousSenderSame ? 1 : 10,
@@ -333,9 +320,7 @@ class Bubble extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         borderRadius: messageRadius,
                         color: isNotCurrentUser
-                            ? (material3InChat.preference == true
-                                ? colorScheme.secondaryContainer
-                                : Colors.grey.shade800)
+                            ? colorScheme.secondaryContainer
                             : colorScheme.primary,
                       ),
                       constraints: BoxConstraints(maxWidth: screenWidth / 1.5),

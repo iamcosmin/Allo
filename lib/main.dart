@@ -45,17 +45,6 @@ void main() async {
   //   vapidKey:
   //       'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
   // );
-  AwesomeNotifications().actionStream.listen((ReceivedAction event) async {
-    await Core.navigation.push(
-      context: navigatorKey.currentState!.context,
-      route: ChatScreen(
-        chatType: getChatTypeFromString(event.payload!['chatType']!) ??
-            ChatType.group,
-        title: event.payload!['chatName']!,
-        chatId: event.payload!['chatId']!,
-      ),
-    );
-  });
   runApp(
     ProviderScope(
       overrides: [
@@ -71,20 +60,21 @@ class InnerApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final darkState = ref.watch(darkMode);
-    final material3InApp = usePreference(ref, material3App, context);
     const _scrollBehavior = MaterialScrollBehavior(
         androidOverscrollIndicator: AndroidOverscrollIndicator.stretch);
     useEffect(() {
       FirebaseRemoteConfig.instance.fetchAndActivate();
       return;
     }, const []);
+    useNotificationListener(context);
     return MaterialApp(
       title: 'Allo',
+      debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       scrollBehavior: _scrollBehavior,
       themeMode: darkState ? ThemeMode.dark : ThemeMode.light,
-      theme: material3InApp.preference == false ? oldLightTheme : lightTheme,
-      darkTheme: material3InApp.preference == false ? oldDarkTheme : darkTheme,
+      theme: theme(Brightness.light, ref, context),
+      darkTheme: theme(Brightness.dark, ref, context),
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,

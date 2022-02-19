@@ -4,6 +4,7 @@ import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class AccountSettings extends HookWidget {
   const AccountSettings({Key? key}) : super(key: key);
@@ -28,10 +29,13 @@ class AccountSettings extends HookWidget {
             ),
             minLeadingWidth: 20,
             onTap: () {
-              showDialog(
+              showPlatformDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text(locales.changeName),
+                  title: Text(
+                    locales.changeName,
+                    textAlign: TextAlign.center,
+                  ),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -65,45 +69,56 @@ class AccountSettings extends HookWidget {
                       ),
                     ],
                   ),
+                  actionsAlignment: MainAxisAlignment.center,
+                  alignment: Alignment.center,
+                  actionsPadding: EdgeInsets.only(left: 20, right: 20),
                   actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(locales.cancel),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        firstNameError.value = '';
-                        secondNameError.value = '';
-                        if (firstNameController.text != '') {
-                          if (nameReg.hasMatch(firstNameController.text)) {
-                            if (secondNameController.text != '') {
-                              if (nameReg.hasMatch(secondNameController.text)) {
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 1.5,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          firstNameError.value = '';
+                          secondNameError.value = '';
+                          if (firstNameController.text != '') {
+                            if (nameReg.hasMatch(firstNameController.text)) {
+                              if (secondNameController.text != '') {
+                                if (nameReg
+                                    .hasMatch(secondNameController.text)) {
+                                  FirebaseAuth.instance.currentUser
+                                      ?.updateDisplayName(
+                                    firstNameController.text +
+                                        ' ' +
+                                        secondNameController.text,
+                                  );
+                                  Navigator.of(context).pop();
+                                } else {
+                                  secondNameError.value =
+                                      locales.specialCharactersNotAllowed;
+                                }
+                              } else {
                                 FirebaseAuth.instance.currentUser
                                     ?.updateDisplayName(
-                                  firstNameController.text +
-                                      ' ' +
-                                      secondNameController.text,
-                                );
+                                        firstNameController.text);
                                 Navigator.of(context).pop();
-                              } else {
-                                secondNameError.value =
-                                    locales.specialCharactersNotAllowed;
                               }
                             } else {
-                              FirebaseAuth.instance.currentUser
-                                  ?.updateDisplayName(firstNameController.text);
-                              Navigator.of(context).pop();
+                              firstNameError.value =
+                                  locales.specialCharactersNotAllowed;
                             }
                           } else {
-                            firstNameError.value =
-                                locales.specialCharactersNotAllowed;
+                            firstNameError.value = locales.errorFieldEmpty;
                           }
-                        } else {
-                          firstNameError.value = locales.errorFieldEmpty;
-                        }
-                      },
-                      child: Text(locales.change),
+                        },
+                        child: Text(locales.change),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 1.5,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(locales.cancel),
+                      ),
                     ),
                   ],
                 ),

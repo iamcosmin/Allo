@@ -30,6 +30,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "attach": MessageLookupByLibrary.simpleMessage("Attach"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "canceledOperation":
+            MessageLookupByLibrary.simpleMessage("The operation was canceled."),
         "change": MessageLookupByLibrary.simpleMessage("Change"),
         "changeName": MessageLookupByLibrary.simpleMessage("Change Name"),
         "changeNameDescription":
@@ -145,6 +147,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordCriteria": MessageLookupByLibrary.simpleMessage(
             "Your password must contain a minimum of 8 characters, which include: letters (uppercase and lowercase), digits, symbols."),
+        "personalise": MessageLookupByLibrary.simpleMessage("Personalise"),
+        "personaliseHideNavigationHints":
+            MessageLookupByLibrary.simpleMessage("Hide navigation hints"),
         "private": MessageLookupByLibrary.simpleMessage("Private"),
         "profilePicture":
             MessageLookupByLibrary.simpleMessage("Profile Picture"),

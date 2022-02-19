@@ -30,6 +30,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "attach": MessageLookupByLibrary.simpleMessage("Atașează"),
         "camera": MessageLookupByLibrary.simpleMessage("Cameră"),
         "cancel": MessageLookupByLibrary.simpleMessage("Anulare"),
+        "canceledOperation":
+            MessageLookupByLibrary.simpleMessage("Operațiunea a fost anulată."),
         "change": MessageLookupByLibrary.simpleMessage("Schimbă"),
         "changeName": MessageLookupByLibrary.simpleMessage("Schimbă nume"),
         "changeNameDescription":
@@ -143,6 +145,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Parolă"),
         "passwordCriteria": MessageLookupByLibrary.simpleMessage(
             "Parola trebuie să conțină minimum 8 caractere, care includ: litere (mari și mici), cifre, simboluri."),
+        "personalise": MessageLookupByLibrary.simpleMessage("Personalizare"),
+        "personaliseHideNavigationHints": MessageLookupByLibrary.simpleMessage(
+            "Ascunde indiciile de navigare"),
         "private": MessageLookupByLibrary.simpleMessage("Privat"),
         "profilePicture":
             MessageLookupByLibrary.simpleMessage("Poză de profil"),

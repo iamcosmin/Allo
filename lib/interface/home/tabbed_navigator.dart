@@ -1,4 +1,5 @@
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -23,17 +24,15 @@ class TabbedNavigator extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = useState(0);
-    final material3InApp = usePreference(ref, material3App, context);
+    final labels = usePreference(ref, navBarLabels);
     final locales = S.of(context);
     return Scaffold(
       body: pages[selected.value],
-      //? TODO: Old configurations, used for fallback in case of issues with devices.
-      //? Remove when migration is done.
       bottomNavigationBar: NavigationBar(
-        height: material3InApp.preference == false ? 56 : null,
-        labelBehavior: material3InApp.preference == false
-            ? NavigationDestinationLabelBehavior.alwaysHide
-            : NavigationDestinationLabelBehavior.alwaysShow,
+        height: labels.preference == false ? 70 : 60,
+        labelBehavior: labels.preference == false
+            ? NavigationDestinationLabelBehavior.alwaysShow
+            : NavigationDestinationLabelBehavior.alwaysHide,
         destinations: [
           NavigationDestination(
             icon: Icon(

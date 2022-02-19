@@ -89,7 +89,6 @@ class Preference {
 Preference usePreference(
   WidgetRef ref,
   StateNotifierProvider<PreferenceManager, bool> provider,
-  BuildContext context,
 ) {
   return Preference(
     ref.watch(provider),
