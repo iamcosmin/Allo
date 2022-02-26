@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/core.dart';
@@ -10,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -25,7 +28,22 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyAyLt2_FAHc0I2c1iBLH_MxWzo2kllSvA8",
+        authDomain: "allo-ms.firebaseapp.com",
+        projectId: "allo-ms",
+        storageBucket: "allo-ms.appspot.com",
+        messagingSenderId: "1049075385887",
+        appId: "1:1049075385887:web:89f4887e574f8b93f2372a",
+        measurementId: "G-N5D9CRB413",
+      ),
+    );
+  } else if (Platform.isAndroid) {
+    // Todo: Migrate to dart only initialisation for android.
+    await Firebase.initializeApp();
+  }
 
   if (!kIsWeb) {
     await Core.notifications.setupNotifications();
@@ -81,26 +99,40 @@ class InnerApp extends HookConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en', ''), Locale('ro', '')],
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snap) {
-          if (snap.hasData) {
-            return TabbedNavigator();
-          } else if (snap.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(
-                child: SizedBox(
-                  height: 60,
-                  width: 60,
-                  child: CircularProgressIndicator(),
+      supportedLocales: S.delegate.supportedLocales,
+      home: CupertinoTheme(
+        data: CupertinoThemeData(
+            brightness: darkState ? Brightness.dark : Brightness.light,
+            primaryColor: theme(darkState ? Brightness.dark : Brightness.light,
+                    ref, context)
+                .colorScheme
+                .primary,
+            scaffoldBackgroundColor: theme(
+                    darkState ? Brightness.dark : Brightness.light,
+                    ref,
+                    context)
+                .colorScheme
+                .surface),
+        child: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snap) {
+            if (snap.hasData) {
+              return TabbedNavigator();
+            } else if (snap.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(
+                  child: SizedBox(
+                    height: 60,
+                    width: 60,
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-              ),
-            );
-          } else {
-            return const Setup();
-          }
-        },
+              );
+            } else {
+              return const Setup();
+            }
+          },
+        ),
       ),
     );
   }

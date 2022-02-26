@@ -1,4 +1,5 @@
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/home/settings/about.dart';
 import 'package:allo/interface/home/settings/debug/debug.dart';
 import 'package:allo/interface/home/settings/account.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
@@ -84,7 +85,13 @@ class Settings extends HookConsumerWidget {
                 .push(context: context, route: const PersonalisePage()),
           ),
           ListTile(
-            leading: const Icon(Icons.logout_outlined, size: 27),
+            leading: const Icon(Icons.info),
+            title: Text(locales.about, style: const TextStyle(fontSize: 18)),
+            onTap: () => Core.navigation
+                .push(context: context, route: const AboutPage()),
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, size: 27),
             minLeadingWidth: 40,
             title: Text(locales.logOut, style: const TextStyle(fontSize: 18)),
             onTap: () async => await Core.auth.signOut(context),

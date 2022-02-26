@@ -24,10 +24,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "about": MessageLookupByLibrary.simpleMessage("Despre"),
         "account": MessageLookupByLibrary.simpleMessage("Cont"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("A apărut o eroare."),
         "attach": MessageLookupByLibrary.simpleMessage("Atașează"),
+        "buildNumber": MessageLookupByLibrary.simpleMessage("Număr versiune"),
         "camera": MessageLookupByLibrary.simpleMessage("Cameră"),
         "cancel": MessageLookupByLibrary.simpleMessage("Anulare"),
         "canceledOperation":
@@ -142,6 +144,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Nicio fotografie de profil"),
         "notifications": MessageLookupByLibrary.simpleMessage("Notificări"),
         "optional": MessageLookupByLibrary.simpleMessage("Opțional"),
+        "packageName": MessageLookupByLibrary.simpleMessage("Package Name"),
         "password": MessageLookupByLibrary.simpleMessage("Parolă"),
         "passwordCriteria": MessageLookupByLibrary.simpleMessage(
             "Parola trebuie să conțină minimum 8 caractere, care includ: litere (mari și mici), cifre, simboluri."),
@@ -212,6 +215,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "uploadPicture":
             MessageLookupByLibrary.simpleMessage("Încarcă imagine"),
         "username": MessageLookupByLibrary.simpleMessage("Nume de utilizator"),
+        "version": MessageLookupByLibrary.simpleMessage("Versiune"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Bine ai revenit")
       };
 }

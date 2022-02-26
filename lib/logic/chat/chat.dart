@@ -181,8 +181,8 @@ class Chats {
                       reply: replyData == null
                           ? null
                           : ReplyToMessage(
-                              name: replyData['name'],
-                              description: replyData['text'],
+                              name: replyData['name'] ?? 'null',
+                              description: replyData['text'] ?? 'null',
                             ),
                     );
                     break;

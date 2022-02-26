@@ -24,10 +24,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "about": MessageLookupByLibrary.simpleMessage("About"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("An error occurred."),
         "attach": MessageLookupByLibrary.simpleMessage("Attach"),
+        "buildNumber": MessageLookupByLibrary.simpleMessage("Build Number"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "canceledOperation":
@@ -144,12 +146,13 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No profile picture"),
         "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
         "optional": MessageLookupByLibrary.simpleMessage("Optional"),
+        "packageName": MessageLookupByLibrary.simpleMessage("Package Name"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordCriteria": MessageLookupByLibrary.simpleMessage(
             "Your password must contain a minimum of 8 characters, which include: letters (uppercase and lowercase), digits, symbols."),
         "personalise": MessageLookupByLibrary.simpleMessage("Personalise"),
         "personaliseHideNavigationHints":
-            MessageLookupByLibrary.simpleMessage("Hide navigation hints"),
+            MessageLookupByLibrary.simpleMessage("Hide Navigation Hints"),
         "private": MessageLookupByLibrary.simpleMessage("Private"),
         "profilePicture":
             MessageLookupByLibrary.simpleMessage("Profile Picture"),
@@ -213,6 +216,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
         "uploadPicture": MessageLookupByLibrary.simpleMessage("Upload Picture"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
+        "version": MessageLookupByLibrary.simpleMessage("Version"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Welcome back")
       };
 }

@@ -24,13 +24,11 @@ class PersonalisePage extends HookConsumerWidget {
         children: [
           SwitchListTile.adaptive(
             title: Text(locales.darkMode),
-            secondary: const Icon(Icons.dark_mode_outlined, size: 27),
             value: dark.preference,
             onChanged: (value) => dark.switcher(ref, context),
           ),
           SwitchListTile.adaptive(
             title: Text(locales.personaliseHideNavigationHints),
-            secondary: const Icon(Icons.wrap_text_sharp, size: 27),
             value: labels.preference,
             onChanged: (value) => labels.switcher(ref, context),
           ),

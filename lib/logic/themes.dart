@@ -55,6 +55,7 @@ ThemeData theme(
     ),
     dialogTheme: DialogTheme(
       backgroundColor: scheme.surface,
+      alignment: Alignment.center,
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
     ),

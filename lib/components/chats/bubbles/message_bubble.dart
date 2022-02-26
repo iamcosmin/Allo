@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -88,47 +89,71 @@ void _deleteMessage(
     required ColorScheme colorScheme,
     required WidgetRef ref}) {
   final locales = S.of(context);
-  showDialog(
+  showPlatformDialog(
     context: context,
     builder: (context) => AlertDialog(
+      alignment: Alignment.center,
+      actionsAlignment: MainAxisAlignment.center,
       backgroundColor: colorScheme.surface,
-      title: Text(
-        locales.deleteMessageTitle,
-        style: TextStyle(color: colorScheme.onSurface),
+      title: Column(
+        children: [
+          Icon(
+            Icons.delete_outlined,
+            color: colorScheme.error,
+          ),
+          const Padding(padding: EdgeInsets.only(bottom: 10)),
+          Text(
+            locales.deleteMessageTitle,
+            style: TextStyle(color: colorScheme.onSurface),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
       content: Text(
         locales.deleteMessageDescription,
         style: TextStyle(color: colorScheme.onSurface),
+        textAlign: TextAlign.center,
       ),
+      actionsPadding: EdgeInsets.only(left: 20, right: 20),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text(
-            locales.cancel,
-            style: TextStyle(color: colorScheme.onSurface),
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 1.5,
+          child: ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(colorScheme.error)),
+            onPressed: () {
+              Navigator.pop(context);
+              Future.delayed(
+                const Duration(seconds: 1),
+                () {
+                  Core.chat(chatId)
+                      .messages
+                      .deleteMessage(messageId: messageId);
+                  Core.stub.showInfoBar(
+                      context: context,
+                      icon: Icons.delete_outline,
+                      text: locales.messageDeleted);
+                },
+              );
+            },
+            child: Text(
+              locales.delete,
+              style: TextStyle(color: colorScheme.onError),
+            ),
           ),
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Future.delayed(
-              const Duration(seconds: 1),
-              () {
-                Core.chat(chatId).messages.deleteMessage(messageId: messageId);
-                Core.stub.showInfoBar(
-                    context: context,
-                    icon: Icons.delete_outline,
-                    text: locales.messageDeleted);
-              },
-            );
-          },
-          child: Text(
-            locales.delete,
-            style: const TextStyle(color: Colors.red),
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 1.5,
+          child: TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              locales.cancel,
+              style: TextStyle(color: colorScheme.onSurface),
+            ),
           ),
-        )
+        ),
       ],
     ),
   );
