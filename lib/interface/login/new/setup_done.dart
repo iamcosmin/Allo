@@ -10,29 +10,27 @@ class SetupDone extends HookWidget {
   Widget build(BuildContext context) {
     final locales = S.of(context);
     return SetupPage(
-        header: [
-          Text(
-            locales.finishScreenTitle,
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+      header: [
+        Text(
+          locales.finishScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.left,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 10, top: 10),
+          child: Text(
+            locales.finishScreenDescription,
+            style: const TextStyle(fontSize: 17, color: Colors.grey),
             textAlign: TextAlign.left,
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10, top: 10),
-            child: Text(
-              locales.finishScreenDescription,
-              style: const TextStyle(fontSize: 17, color: Colors.grey),
-              textAlign: TextAlign.left,
-            ),
-          )
-        ],
-        body: const [],
-        onButtonPress: () {
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => TabbedNavigator(),
-              ),
-              (route) => false);
-        },
-        isAsync: false);
+        )
+      ],
+      body: const [],
+      action: () async {
+        return true;
+      },
+      isRoutePermanent: true,
+      nextRoute: TabbedNavigator(),
+    );
   }
 }

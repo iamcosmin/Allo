@@ -124,5 +124,7 @@
   "about": "Despre",
   "version": "Versiune",
   "buildNumber": "Număr versiune",
-  "packageName": "Package Name"
+  "packageName": "Nume pachet",
+  "unsupported": "Nesuportat",
+  "preferenceCleared": "Preferință resetată."
 }

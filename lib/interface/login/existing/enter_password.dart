@@ -1,5 +1,6 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -75,14 +76,16 @@ class EnterPassword extends HookWidget {
           ),
         )
       ],
-      onButtonPress: () async {
-        await Core.auth.signIn(
-            email: email,
-            password: controller.text,
-            context: context,
-            error: error);
+      action: () async {
+        return await Core.auth.signIn(
+          email: email,
+          password: controller.text,
+          context: context,
+          error: error,
+        );
       },
-      isAsync: true,
+      nextRoute: TabbedNavigator(),
+      isRoutePermanent: true,
     );
   }
 }

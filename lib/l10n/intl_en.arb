@@ -126,5 +126,7 @@
   "about": "About",
   "version": "Version",
   "buildNumber": "Build Number",
-  "packageName": "Package Name"
+  "packageName": "Package Name",
+  "unsupported": "Unsupported",
+  "preferenceCleared": "Preference cleared."
 }

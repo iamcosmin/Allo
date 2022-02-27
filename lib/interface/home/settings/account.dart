@@ -71,7 +71,7 @@ class AccountSettings extends HookWidget {
                   ),
                   actionsAlignment: MainAxisAlignment.center,
                   alignment: Alignment.center,
-                  actionsPadding: EdgeInsets.only(left: 20, right: 20),
+                  actionsPadding: const EdgeInsets.only(left: 20, right: 20),
                   actions: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 1.5,

@@ -19,42 +19,41 @@ class SetupVerification extends HookWidget {
       return;
     });
     return SetupPage(
-        header: [
-          Text(
-            locales.setupVerificationScreenTitle,
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+      header: [
+        Text(
+          locales.setupVerificationScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.left,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 10, top: 10),
+          child: Text(
+            locales.setupVerificationScreenDescription,
+            style: const TextStyle(fontSize: 17, color: Colors.grey),
             textAlign: TextAlign.left,
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10, top: 10),
-            child: Text(
-              locales.setupVerificationScreenDescription,
-              style: const TextStyle(fontSize: 17, color: Colors.grey),
-              textAlign: TextAlign.left,
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 10, top: 10),
+          child: Text(
+            error.value,
+            style: const TextStyle(fontSize: 17, color: Colors.red),
+            textAlign: TextAlign.left,
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10, top: 10),
-            child: Text(
-              error.value,
-              style: const TextStyle(fontSize: 17, color: Colors.red),
-              textAlign: TextAlign.left,
-            ),
-          )
-        ],
-        body: const [],
-        onButtonPress: () async {
-          await FirebaseAuth.instance.currentUser?.reload();
-          final verified = FirebaseAuth.instance.currentUser!.emailVerified;
-          if (verified) {
-            await Core.navigation.push(
-              context: context,
-              route: const SetupProfilePicture(),
-            );
-          } else {
-            error.value = locales.errorVerificationLinkNotAccessed;
-          }
-        },
-        isAsync: true);
+        )
+      ],
+      body: const [],
+      action: () async {
+        await FirebaseAuth.instance.currentUser?.reload();
+        final verified = FirebaseAuth.instance.currentUser!.emailVerified;
+        if (verified) {
+          return true;
+        } else {
+          error.value = locales.errorVerificationLinkNotAccessed;
+          return false;
+        }
+      },
+      nextRoute: const SetupProfilePicture(),
+    );
   }
 }

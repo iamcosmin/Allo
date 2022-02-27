@@ -1,10 +1,11 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
-import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../../../logic/client/hooks.dart';
 
 class C extends HookConsumerWidget {
   const C({Key? key}) : super(key: key);
@@ -48,51 +49,63 @@ class C extends HookConsumerWidget {
             ),
           ),
           InkWell(
-            onLongPress: () => reactions.clear(ref, context),
+            onLongPress: () => reactions.clear(
+              context,
+            ),
             child: SwitchListTile.adaptive(
               title: Text(locales.reactions),
               value: reactions.preference,
-              onChanged: (value) => reactions.switcher(ref, context),
+              onChanged: (value) => reactions.switcher(),
             ),
           ),
           InkWell(
-            onLongPress: () => replies.clear(ref, context),
+            onLongPress: () => replies.clear(
+              context,
+            ),
             child: SwitchListTile.adaptive(
               title: Text(locales.replyToMessage),
               value: replies.preference,
-              onChanged: (value) => replies.switcher(ref, context),
+              onChanged: (value) => replies.switcher(),
             ),
           ),
           InkWell(
-            onLongPress: () => editMessage.clear(ref, context),
+            onLongPress: () => editMessage.clear(
+              context,
+            ),
             child: SwitchListTile.adaptive(
               title: Text(locales.editMessages),
               value: editMessage.preference,
-              onChanged: (value) => editMessage.switcher(ref, context),
+              onChanged: (value) => editMessage.switcher(),
             ),
           ),
           InkWell(
-            onLongPress: () => conversations.clear(ref, context),
+            onLongPress: () => conversations.clear(
+              context,
+            ),
             child: SwitchListTile.adaptive(
               title: Text(locales.createNewChats),
               value: conversations.preference,
-              onChanged: (value) => conversations.switcher(ref, context),
+              onChanged: (value) => conversations.switcher(),
             ),
           ),
           InkWell(
-            onLongPress: () => members.clear(ref, context),
+            onLongPress: () => members.clear(
+              context,
+            ),
             child: SwitchListTile.adaptive(
               title: Text(locales.enableParticipantsList),
               value: members.preference,
-              onChanged: (value) => members.switcher(ref, context),
+              onChanged: (value) => members.switcher(),
             ),
           ),
           InkWell(
-            onLongPress: () => iOSMode.clear(ref, context),
+            onLongPress: () => iOSMode.clear(
+              context,
+            ),
             child: SwitchListTile.adaptive(
               title: const Text('Cupertino behaviour'),
               value: iOSMode.preference,
-              onChanged: (value) => iOSMode.switcher(ref, context),
+              onChanged: (value) => iOSMode.switcher(),
             ),
           ),
         ],

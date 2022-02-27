@@ -66,7 +66,8 @@ class SetupName extends HookWidget {
           ),
         ),
       ],
-      onButtonPress: () {
+      isNavigationHandled: true,
+      action: () async {
         FocusScope.of(context).unfocus();
         firstFieldError.value = '';
         secondFieldError.value = '';
@@ -83,8 +84,10 @@ class SetupName extends HookWidget {
                     email: email,
                   ),
                 );
+                return true;
               } else {
                 secondFieldError.value = locales.specialCharactersNotAllowed;
+                return false;
               }
             } else {
               Core.navigation.push(
@@ -94,15 +97,17 @@ class SetupName extends HookWidget {
                   email: email,
                 ),
               );
+              return true;
             }
           } else {
             firstFieldError.value = locales.specialCharactersNotAllowed;
+            return false;
           }
         } else {
           firstFieldError.value = locales.errorFieldEmpty;
+          return false;
         }
       },
-      isAsync: true,
     );
   }
 }

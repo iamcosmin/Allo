@@ -1329,6 +1329,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Unsupported`
+  String get unsupported {
+    return Intl.message(
+      'Unsupported',
+      name: 'unsupported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preference cleared.`
+  String get preferenceCleared {
+    return Intl.message(
+      'Preference cleared.',
+      name: 'preferenceCleared',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

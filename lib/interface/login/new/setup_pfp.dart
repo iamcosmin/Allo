@@ -66,11 +66,8 @@ class SetupProfilePicture extends HookWidget {
           ),
         ),
       ],
-      onButtonPress: () async {
-        await Core.navigation
-            .push(context: context, route: const SetupPersonalize());
-      },
-      isAsync: true,
+      action: () async => true,
+      nextRoute: const SetupPersonalize(),
     );
   }
 }

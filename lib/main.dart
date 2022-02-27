@@ -2,12 +2,11 @@ import 'dart:io';
 
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
+import 'package:allo/logic/client/hooks.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
-import 'package:allo/logic/theme.dart';
-import 'package:allo/logic/themes.dart';
-import 'package:allo/logic/types.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:allo/logic/client/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -19,10 +18,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'interface/home/chat/chat.dart';
 import 'interface/home/tabbed_navigator.dart';
-import 'logic/chat/chat.dart';
-import 'logic/notifications.dart';
+import 'logic/client/notifications.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -41,7 +38,7 @@ void main() async {
       ),
     );
   } else if (Platform.isAndroid) {
-    // Todo: Migrate to dart only initialisation for android.
+    // TODO: Migrate to dart only initialisation for android.
     await Firebase.initializeApp();
   }
 
@@ -77,7 +74,7 @@ class InnerApp extends HookConsumerWidget {
   const InnerApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final darkState = ref.watch(darkMode);
+    final darkState = usePreference(ref, darkMode);
     const _scrollBehavior = MaterialScrollBehavior(
         androidOverscrollIndicator: AndroidOverscrollIndicator.stretch);
     useEffect(() {
@@ -90,7 +87,7 @@ class InnerApp extends HookConsumerWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       scrollBehavior: _scrollBehavior,
-      themeMode: darkState ? ThemeMode.dark : ThemeMode.light,
+      themeMode: darkState.preference ? ThemeMode.dark : ThemeMode.light,
       theme: theme(Brightness.light, ref, context),
       darkTheme: theme(Brightness.dark, ref, context),
       localizationsDelegates: const [
@@ -100,39 +97,25 @@ class InnerApp extends HookConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      home: CupertinoTheme(
-        data: CupertinoThemeData(
-            brightness: darkState ? Brightness.dark : Brightness.light,
-            primaryColor: theme(darkState ? Brightness.dark : Brightness.light,
-                    ref, context)
-                .colorScheme
-                .primary,
-            scaffoldBackgroundColor: theme(
-                    darkState ? Brightness.dark : Brightness.light,
-                    ref,
-                    context)
-                .colorScheme
-                .surface),
-        child: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snap) {
-            if (snap.hasData) {
-              return TabbedNavigator();
-            } else if (snap.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(
-                  child: SizedBox(
-                    height: 60,
-                    width: 60,
-                    child: CircularProgressIndicator(),
-                  ),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snap) {
+          if (snap.hasData) {
+            return TabbedNavigator();
+          } else if (snap.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(
+                child: SizedBox(
+                  height: 60,
+                  width: 60,
+                  child: CircularProgressIndicator(),
                 ),
-              );
-            } else {
-              return const Setup();
-            }
-          },
-        ),
+              ),
+            );
+          } else {
+            return const Setup();
+          }
+        },
       ),
     );
   }

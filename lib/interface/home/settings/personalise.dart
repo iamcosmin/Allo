@@ -1,9 +1,10 @@
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/logic/core.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../logic/preferences.dart';
+import '../../../logic/client/hooks.dart';
+import '../../../logic/client/preferences/manager.dart';
 
 /// Personalisation preferences
 final navBarLabels = preference('personalisation_nav_bar_labels');
@@ -25,12 +26,12 @@ class PersonalisePage extends HookConsumerWidget {
           SwitchListTile.adaptive(
             title: Text(locales.darkMode),
             value: dark.preference,
-            onChanged: (value) => dark.switcher(ref, context),
+            onChanged: (value) => dark.switcher(),
           ),
           SwitchListTile.adaptive(
             title: Text(locales.personaliseHideNavigationHints),
             value: labels.preference,
-            onChanged: (value) => labels.switcher(ref, context),
+            onChanged: (value) => labels.switcher(),
           ),
         ],
       ),

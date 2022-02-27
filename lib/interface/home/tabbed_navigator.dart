@@ -1,8 +1,6 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
-import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:allo/logic/client/hooks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,40 +24,80 @@ class TabbedNavigator extends HookConsumerWidget {
     final selected = useState(0);
     final labels = usePreference(ref, navBarLabels);
     final locales = S.of(context);
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: pages[selected.value],
-      bottomNavigationBar: NavigationBar(
-        height: labels.preference == false ? 70 : 60,
-        labelBehavior: labels.preference == false
-            ? NavigationDestinationLabelBehavior.alwaysShow
-            : NavigationDestinationLabelBehavior.alwaysHide,
-        destinations: [
-          NavigationDestination(
-            icon: Icon(
-              Icons.home_outlined,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+      body: Row(
+        children: [
+          if (width > 700) ...[
+            NavigationRail(
+              labelType: labels.preference == false
+                  ? NavigationRailLabelType.all
+                  : NavigationRailLabelType.none,
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(
+                    Icons.home_outlined,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  label: Text(locales.home),
+                  selectedIcon: Icon(
+                    Icons.home,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(
+                    Icons.settings_outlined,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  label: Text(locales.settings),
+                  selectedIcon: Icon(
+                    Icons.settings,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                )
+              ],
+              selectedIndex: selected.value,
+              onDestinationSelected: (i) => selected.value = i,
             ),
-            label: locales.home,
-            selectedIcon: Icon(
-              Icons.home,
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-            ),
-          ),
-          NavigationDestination(
-            icon: Icon(
-              Icons.settings_outlined,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            label: locales.settings,
-            selectedIcon: Icon(
-              Icons.settings,
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-            ),
-          )
+          ],
+          Expanded(child: pages[selected.value]),
         ],
-        selectedIndex: selected.value,
-        onDestinationSelected: (i) => selected.value = i,
       ),
+      bottomNavigationBar: width < 700
+          ? NavigationBar(
+              height: labels.preference == false ? 70 : 60,
+              labelBehavior: labels.preference == false
+                  ? NavigationDestinationLabelBehavior.alwaysShow
+                  : NavigationDestinationLabelBehavior.alwaysHide,
+              destinations: [
+                NavigationDestination(
+                  icon: Icon(
+                    Icons.home_outlined,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  label: locales.home,
+                  selectedIcon: Icon(
+                    Icons.home,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                ),
+                NavigationDestination(
+                  icon: Icon(
+                    Icons.settings_outlined,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  label: locales.settings,
+                  selectedIcon: Icon(
+                    Icons.settings,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                )
+              ],
+              selectedIndex: selected.value,
+              onDestinationSelected: (i) => selected.value = i,
+            )
+          : null,
     );
   }
 }

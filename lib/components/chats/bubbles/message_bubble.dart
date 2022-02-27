@@ -4,10 +4,11 @@ import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/swipe_to.dart';
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/logic/chat/messages.dart';
+import 'package:allo/logic/models/messages.dart';
+import 'package:allo/logic/client/hooks.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
-import 'package:allo/logic/types.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:allo/logic/models/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +28,7 @@ void _messageOptions(
     bool isSentByUser,
     bool isImage,
     ColorScheme colorScheme) {
-  final editMessage = ref.watch(editMessageDebug);
+  final editMessage = usePreference(ref, editMessageDebug);
   final locales = S.of(context);
   showMagicBottomSheet(
     colorScheme: colorScheme,
@@ -49,7 +50,7 @@ void _messageOptions(
           },
         ),
       ],
-      if (editMessage && isSentByUser) ...[
+      if (editMessage.preference && isSentByUser) ...[
         ListTile(
           leading: const Icon(Icons.edit_outlined),
           title: Text(locales.edit),
@@ -114,7 +115,7 @@ void _deleteMessage(
         style: TextStyle(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),
-      actionsPadding: EdgeInsets.only(left: 20, right: 20),
+      actionsPadding: const EdgeInsets.only(left: 20, right: 20),
       actions: [
         SizedBox(
           width: MediaQuery.of(context).size.width / 1.5,
@@ -190,11 +191,11 @@ class MessageInfo {
   final bool isNextSenderSame;
   final bool isPreviousSenderSame;
   final bool isLast;
-  final String type;
+  final MessageType type;
   final String? image;
   final bool isRead;
   final DateTime time;
-  final ReplyToMessage? reply;
+  final ReplyMessageData? reply;
 }
 
 class Bubble extends HookConsumerWidget {
@@ -324,7 +325,7 @@ class Bubble extends HookConsumerWidget {
                     const Padding(padding: EdgeInsets.only(left: 46)),
                   ],
                   InkWell(
-                    onTap: message.type == MessageTypes.image
+                    onTap: message.type == MessageType.image
                         ? () => Core.navigation.push(
                               context: context,
                               route: ImageView(message.image!,
@@ -338,7 +339,7 @@ class Bubble extends HookConsumerWidget {
                         message.text,
                         ref,
                         !isNotCurrentUser,
-                        message.type == MessageTypes.image,
+                        message.type == MessageType.image,
                         colorScheme),
                     borderRadius: messageRadius,
                     child: AnimatedContainer(
@@ -350,7 +351,7 @@ class Bubble extends HookConsumerWidget {
                       ),
                       constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
                       height: null,
-                      padding: message.type != MessageTypes.image
+                      padding: message.type != MessageType.image
                           ? const EdgeInsets.only(
                               top: 8,
                               bottom: 8,
@@ -362,7 +363,7 @@ class Bubble extends HookConsumerWidget {
                       duration: const Duration(milliseconds: 250),
                       child: Builder(
                         builder: (context) {
-                          if (message.type == MessageTypes.image) {
+                          if (message.type == MessageType.image) {
                             return Container(
                               constraints:
                                   BoxConstraints(maxWidth: screenWidth / 1.5),

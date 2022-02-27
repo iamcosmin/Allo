@@ -1,8 +1,9 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/new/setup_done.dart';
+import 'package:allo/logic/client/hooks.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -11,8 +12,7 @@ class SetupPersonalize extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
-    final dark = ref.watch(darkMode);
-    final darkMethod = ref.watch(darkMode.notifier);
+    final dark = usePreference(ref, darkMode);
     return SetupPage(
       header: [
         Text(
@@ -34,14 +34,13 @@ class SetupPersonalize extends HookConsumerWidget {
           padding: const EdgeInsets.only(left: 20, right: 20),
           child: SwitchListTile(
             title: Text(locales.darkMode),
-            value: dark,
-            onChanged: (value) => darkMethod.switcher(ref, context),
+            value: dark.preference,
+            onChanged: (value) => dark.switcher(),
           ),
         )
       ],
-      onButtonPress: () async =>
-          Core.navigation.push(context: context, route: const SetupDone()),
-      isAsync: true,
+      action: () async => true,
+      nextRoute: const SetupDone(),
     );
   }
 }

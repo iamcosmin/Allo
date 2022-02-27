@@ -1,11 +1,12 @@
-import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'hooks.dart';
+
 const pageTransitionsTheme = PageTransitionsTheme(
-  // Todo: If device is running android 9 or lower, [OpenUpwardsPageTransitionsBuilder] should
+  // TODO: If device is running android 9 or lower, [OpenUpwardsPageTransitionsBuilder] should
   // be used, otherwise ZoomPageTransitionsBuilder.
   builders: {
     TargetPlatform.android: ZoomPageTransitionsBuilder(),
@@ -28,12 +29,14 @@ ThemeData theme(
         seedColor: const Color(0xFF1A76C6),
         brightness: brightness,
       );
+  final platform = ThemeData().platform;
+  final iOS = usePreference(ref, emulateIOSBehaviour).preference == true ||
+      platform == TargetPlatform.iOS;
   return ThemeData(
-    platform: usePreference(ref, emulateIOSBehaviour).preference == true
-        ? TargetPlatform.iOS
-        : null,
+    platform: iOS ? TargetPlatform.iOS : null,
+    errorColor: scheme.error,
     useMaterial3: true,
-    splashFactory: InkRipple.splashFactory,
+    splashFactory: iOS ? NoSplash.splashFactory : InkRipple.splashFactory,
     shadowColor: scheme.shadow,
     cardTheme: CardTheme(
       color: scheme.surface,
@@ -44,8 +47,17 @@ ThemeData theme(
       backgroundColor: scheme.surface,
       indicatorColor: scheme.secondaryContainer,
       labelTextStyle: MaterialStateProperty.all(
-        const TextStyle(fontFamily: 'GS-Text', fontSize: 12.5),
+        TextStyle(
+            fontFamily: 'GS-Text', fontSize: 12.5, color: scheme.onSurface),
       ),
+    ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: scheme.surface,
+      indicatorColor: scheme.secondaryContainer,
+      selectedLabelTextStyle: TextStyle(
+          fontFamily: 'GS-Text', fontSize: 12.5, color: scheme.onSurface),
+      unselectedLabelTextStyle: TextStyle(
+          fontFamily: 'GS-Text', fontSize: 12.5, color: scheme.onSurface),
     ),
     buttonTheme: ButtonThemeData(
       buttonColor: scheme.primary,
@@ -69,6 +81,12 @@ ThemeData theme(
           shape: MaterialStateProperty.all(const StadiumBorder()),
           backgroundColor: MaterialStateProperty.all(scheme.primary),
           foregroundColor: MaterialStateProperty.all(scheme.onPrimary)),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(
+          shape: MaterialStateProperty.all(const StadiumBorder()),
+          backgroundColor: MaterialStateProperty.all(scheme.surface),
+          foregroundColor: MaterialStateProperty.all(scheme.onSurface)),
     ),
     backgroundColor: scheme.surface,
     colorScheme: scheme,

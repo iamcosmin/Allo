@@ -4,7 +4,6 @@ import 'package:allo/interface/home/settings/debug/debug.dart';
 import 'package:allo/interface/home/settings/account.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:flutter/material.dart';

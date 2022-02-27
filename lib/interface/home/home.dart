@@ -1,8 +1,9 @@
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/create_chat.dart';
+import 'package:allo/logic/client/hooks.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -11,7 +12,7 @@ import 'package:allo/interface/home/chat/chat.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../logic/chat/chat.dart';
+import '../../logic/models/chat.dart';
 
 String type(Chat chat, BuildContext context) {
   final locales = S.of(context);
@@ -24,13 +25,59 @@ String type(Chat chat, BuildContext context) {
   }
 }
 
+class ChatTile extends HookConsumerWidget {
+  const ChatTile(
+      {required this.leading,
+      required this.title,
+      required this.subtitle,
+      required this.onTap,
+      Key? key})
+      : super(key: key);
+  final Widget leading;
+  final Widget title;
+  final Widget subtitle;
+  final void Function() onTap;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 70,
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(10)),
+      child: InkWell(
+        onTap: onTap,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              child: leading,
+            ),
+            const Padding(padding: EdgeInsets.only(left: 10)),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [title, subtitle],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class Home extends HookConsumerWidget {
   const Home({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loadChats =
         useState<Future<List<Chat>?>>(Core.chat('').getChatsList());
-    final createChat = ref.watch(privateConversations);
+    final createChat = usePreference(ref, privateConversations);
     final locales = S.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +85,7 @@ class Home extends HookConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        onPressed: createChat == false
+        onPressed: createChat.preference == false
             ? null
             : () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const CreateChat())),
@@ -60,14 +107,27 @@ class Home extends HookConsumerWidget {
                 itemCount: snapshot.data?.length,
                 itemBuilder: (BuildContext context, int index) {
                   final chat = snapshot.data![index];
-                  return ListTile(
-                    title: Text(chat.title),
+                  return ChatTile(
+                    title: Text(
+                      chat.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     subtitle: Text(
                       type(chat, context) + ' (${chat.id})',
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurfaceVariant
+                            .withAlpha(200),
+                      ),
                     ),
                     leading: PersonPicture.determine(
                       profilePicture: chat.picture,
-                      radius: 55,
+                      radius: 50,
                       initials: Core.auth.returnNameInitials(
                         chat.title,
                       ),

@@ -1,5 +1,6 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -104,8 +105,8 @@ class SetupPassword extends HookWidget {
           ),
         ),
       ],
-      onButtonPress: () async {
-        await Core.auth.signUp(
+      action: () async {
+        return await Core.auth.signUp(
             email: email,
             password: passController.text,
             confirmPassword: confirmPassController.text,
@@ -114,7 +115,7 @@ class SetupPassword extends HookWidget {
             error: error,
             context: context);
       },
-      isAsync: true,
+      nextRoute: const SetupVerification(),
     );
   }
 }

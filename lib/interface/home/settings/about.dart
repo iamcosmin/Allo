@@ -33,6 +33,8 @@ class AboutPage extends HookConsumerWidget {
           if (snapshot.data != null) {
             final packageInfo = snapshot.data!.packageInfo;
             final deviceInfo = snapshot.data!.deviceInfo;
+
+            if (deviceInfo is AndroidDeviceInfo) {}
             return ListView(
               shrinkWrap: true,
               children: [
@@ -53,7 +55,7 @@ class AboutPage extends HookConsumerWidget {
                   trailing: Text(packageInfo.packageName),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 20)),
-                ListTile()
+                // TODO: Implement device info section
               ],
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {

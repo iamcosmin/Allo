@@ -2,8 +2,9 @@ import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/logic/client/hooks.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
+import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -165,7 +166,7 @@ class ChatDetails extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
-    final members = ref.watch(membersDebug);
+    final members = usePreference(ref, membersDebug);
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.chatInfo),
@@ -214,7 +215,7 @@ class ChatDetails extends HookConsumerWidget {
                   title: Text(locales.theme),
                   onTap: () async => _changeTheme(context: context, id: id),
                 ),
-                if (members == true) ...[
+                if (members.preference == true) ...[
                   ListTile(
                     leading: const Icon(Icons.people_alt_outlined),
                     title: Text(locales.members),

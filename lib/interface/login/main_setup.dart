@@ -12,25 +12,26 @@ class Setup extends HookWidget {
   Widget build(BuildContext context) {
     final locales = S.of(context);
     return SetupPage(
-        header: [
-          Text(
-            locales.setupWelcomeScreenTitle,
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+      header: [
+        Text(
+          locales.setupWelcomeScreenTitle,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.left,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 10, top: 10),
+          child: Text(
+            locales.setupWelcomeScreenDescription,
+            style: const TextStyle(fontSize: 17, color: Colors.grey),
             textAlign: TextAlign.left,
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10, top: 10),
-            child: Text(
-              locales.setupWelcomeScreenDescription,
-              style: const TextStyle(fontSize: 17, color: Colors.grey),
-              textAlign: TextAlign.left,
-            ),
-          )
-        ],
-        body: const [],
-        onButtonPress: () {
-          Core.navigation.push(context: context, route: const Login());
-        },
-        isAsync: false);
+        )
+      ],
+      body: const [],
+      action: () async {
+        return true;
+      },
+      nextRoute: const Login(),
+    );
   }
 }

@@ -1,10 +1,9 @@
 import 'package:allo/components/chats/bubbles/message_bubble.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
-import 'package:allo/logic/chat/messages.dart';
+import 'package:allo/logic/models/messages.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
-import 'package:allo/logic/types.dart';
+import 'package:allo/logic/models/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -14,7 +13,7 @@ import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../logic/themes.dart';
+import '../../../logic/client/theme.dart';
 
 // ignore: must_be_immutable
 class ChatScreen extends HookConsumerWidget {
@@ -44,7 +43,7 @@ class ChatScreen extends HookConsumerWidget {
     final brightness = Theme.of(context).brightness;
     useEffect(() {
       Core.chat(chatId)
-          .streamChatMessages(listKey: listKey, limit: 30)
+          .streamChatMessages(listKey: listKey, limit: 30, context: context)
           .listen((event) {
         streamList.value = event;
       });
@@ -98,7 +97,7 @@ class ChatScreen extends HookConsumerWidget {
                 )),
             child: Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.w600,
               ),
@@ -156,6 +155,8 @@ class ChatScreen extends HookConsumerWidget {
 
                                 final isNextSenderSame = nextUID == senderUid;
                                 final isPrevSenderSame = pastUID == senderUid;
+
+                                /// TODO: Implement [MessageType.unsupported]
                                 MessageInfo? messageInfo() {
                                   final messageValue = data[i];
                                   if (messageValue is TextMessage) {
@@ -172,14 +173,14 @@ class ChatScreen extends HookConsumerWidget {
                                             DateTime.fromMillisecondsSinceEpoch(
                                                 messageValue.timestamp
                                                     .millisecondsSinceEpoch),
-                                        type: MessageTypes.text);
+                                        type: MessageType.text);
                                   } else if (messageValue is ImageMessage) {
                                     return MessageInfo(
                                         id: messageValue.id,
                                         text: locales.image,
                                         isNextSenderSame: isNextSenderSame,
                                         isPreviousSenderSame: isPrevSenderSame,
-                                        type: MessageTypes.image,
+                                        type: MessageType.image,
                                         image: messageValue.link,
                                         isRead: messageValue.read,
                                         time:
@@ -214,6 +215,7 @@ class ChatScreen extends HookConsumerWidget {
                                               .streamChatMessages(
                                                   listKey: listKey,
                                                   limit: 20,
+                                                  context: context,
                                                   lastIndex: data.length - 1,
                                                   startAfter: data
                                                       .last.documentSnapshot)

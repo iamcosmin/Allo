@@ -153,6 +153,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "personalise": MessageLookupByLibrary.simpleMessage("Personalise"),
         "personaliseHideNavigationHints":
             MessageLookupByLibrary.simpleMessage("Hide Navigation Hints"),
+        "preferenceCleared":
+            MessageLookupByLibrary.simpleMessage("Preference cleared."),
         "private": MessageLookupByLibrary.simpleMessage("Private"),
         "profilePicture":
             MessageLookupByLibrary.simpleMessage("Profile Picture"),
@@ -214,6 +216,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "themeRed": MessageLookupByLibrary.simpleMessage("Red"),
         "uid": MessageLookupByLibrary.simpleMessage("UID"),
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
+        "unsupported": MessageLookupByLibrary.simpleMessage("Unsupported"),
         "uploadPicture": MessageLookupByLibrary.simpleMessage("Upload Picture"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "version": MessageLookupByLibrary.simpleMessage("Version"),

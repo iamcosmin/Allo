@@ -144,13 +144,15 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Nicio fotografie de profil"),
         "notifications": MessageLookupByLibrary.simpleMessage("Notificări"),
         "optional": MessageLookupByLibrary.simpleMessage("Opțional"),
-        "packageName": MessageLookupByLibrary.simpleMessage("Package Name"),
+        "packageName": MessageLookupByLibrary.simpleMessage("Nume pachet"),
         "password": MessageLookupByLibrary.simpleMessage("Parolă"),
         "passwordCriteria": MessageLookupByLibrary.simpleMessage(
             "Parola trebuie să conțină minimum 8 caractere, care includ: litere (mari și mici), cifre, simboluri."),
         "personalise": MessageLookupByLibrary.simpleMessage("Personalizare"),
         "personaliseHideNavigationHints": MessageLookupByLibrary.simpleMessage(
             "Ascunde indiciile de navigare"),
+        "preferenceCleared":
+            MessageLookupByLibrary.simpleMessage("Preferință resetată."),
         "private": MessageLookupByLibrary.simpleMessage("Privat"),
         "profilePicture":
             MessageLookupByLibrary.simpleMessage("Poză de profil"),
@@ -212,6 +214,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "themeRed": MessageLookupByLibrary.simpleMessage("Roșu"),
         "uid": MessageLookupByLibrary.simpleMessage("UID"),
         "unknown": MessageLookupByLibrary.simpleMessage("Necunoscut"),
+        "unsupported": MessageLookupByLibrary.simpleMessage("Nesuportat"),
         "uploadPicture":
             MessageLookupByLibrary.simpleMessage("Încarcă imagine"),
         "username": MessageLookupByLibrary.simpleMessage("Nume de utilizator"),

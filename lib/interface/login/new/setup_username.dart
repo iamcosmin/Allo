@@ -57,13 +57,14 @@ class SetupUsername extends HookWidget {
           ),
         )
       ],
-      onButtonPress: () async => Core.auth.isUsernameCompliant(
-          username: controller.text,
-          error: error,
-          context: context,
-          displayName: displayName,
-          email: email),
-      isAsync: true,
+      action: () async => await Core.auth.isUsernameCompliant(
+        username: controller.text,
+        error: error,
+        context: context,
+        displayName: displayName,
+        email: email,
+      ),
+      isNavigationHandled: true,
     );
   }
 }

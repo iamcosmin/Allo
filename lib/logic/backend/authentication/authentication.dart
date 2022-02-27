@@ -4,17 +4,15 @@ import 'package:allo/interface/login/existing/enter_password.dart';
 import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
+import 'package:allo/logic/backend/authentication/user.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
+import '../../../main.dart';
 
 Future<dynamic> _getType(Type type, String key) async {
   final prefs = await SharedPreferences.getInstance();
@@ -41,7 +39,7 @@ Future<dynamic> _getType(Type type, String key) async {
 /// Returns a key from storage if exists, otherwise fetches the data using the fetch function.
 /// Please remember that you need to return a value of the same type as the type parameter,
 /// otherwise the function will fail.
-Future _cache(
+Future cache(
     {required String key, required Function fetch, required Type type}) async {
   final prefs = await SharedPreferences.getInstance();
   if (await _getType(type, key) == null) {
@@ -66,7 +64,7 @@ class Authentication {
   }
 
   /// Checks if the user is eligible for login or signup.
-  Future checkAuthenticationAbility(
+  Future<bool> checkAuthenticationAbility(
       {required String email,
       required ValueNotifier<String> error,
       required BuildContext context}) async {
@@ -77,19 +75,22 @@ class Authentication {
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
-        Core.navigation.push(context: context, route: SetupName(email));
-      } else if (instance.toString() == '[password]') {
         Core.navigation
-            .push(context: context, route: EnterPassword(email: email));
+            .push(context: context, route: SetupName(email), login: true);
+      } else if (instance.toString() == '[password]') {
+        Core.navigation.push(
+            context: context, route: EnterPassword(email: email), login: true);
       }
+      return true;
     } catch (e) {
       error.value = locales.errorThisIsInvalid(locales.email.toLowerCase());
+      return false;
     }
   }
 
   //? [Login]
   /// Signs in an Allo user by email and password.
-  Future signIn(
+  Future<bool> signIn(
       {required String email,
       required String password,
       required BuildContext context,
@@ -99,13 +100,7 @@ class Authentication {
       FocusScope.of(context).unfocus();
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      await Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => TabbedNavigator(),
-          ),
-          (route) => false);
-      var prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('authenticated', true);
+      return true;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'user-disabled':
@@ -121,12 +116,13 @@ class Authentication {
           error.value = locales.errorUnknown;
           break;
       }
+      return false;
     }
   }
 
   //? Signup
   /// Signs up the user by email and password.
-  Future signUp(
+  Future<bool> signUp(
       {required String email,
       required String password,
       required String confirmPassword,
@@ -153,8 +149,6 @@ class Authentication {
             final user = await FirebaseAuth.instance
                 .createUserWithEmailAndPassword(
                     email: email, password: password);
-            var prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('authenticated', true);
             await user.user!.updateDisplayName(displayName);
             final db = FirebaseFirestore.instance;
             await db.collection('users').doc(username).set({
@@ -166,30 +160,31 @@ class Authentication {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            Core.navigation.push(
-              context: context,
-              route: const SetupVerification(),
-            );
+            return true;
           } else {
             error.value = locales.errorPasswordRequirements;
+            return false;
           }
         } else {
           error.value = locales.errorPasswordMismatch;
+          return false;
         }
       } else {
         error.value = locales.errorEmptyFields;
+        return false;
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'operation-not-allowed':
           error.value = locales.errorOperationNotAllowed;
       }
+      return false;
     }
   }
 
   /// Checks if the provided username is available and is compliant with
   /// the guidelines.
-  Future isUsernameCompliant(
+  Future<bool> isUsernameCompliant(
       {required String username,
       required ValueNotifier<String> error,
       required BuildContext context,
@@ -208,22 +203,26 @@ class Authentication {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
           await navigation.push(
-            context: context,
-            route: SetupPassword(
-              displayName: displayName,
-              username: username,
-              email: email,
-            ),
-          );
+              context: context,
+              route: SetupPassword(
+                displayName: displayName,
+                username: username,
+                email: email,
+              ),
+              login: true);
+          return true;
         } else {
           error.value = locales.errorUsernameTaken;
+          return false;
         }
       } else {
         error.value =
             locales.errorThisIsInvalid(locales.username.toLowerCase());
+        return false;
       }
     } else {
       error.value = locales.errorFieldEmpty;
+      return false;
     }
   }
 
@@ -316,113 +315,5 @@ class Authentication {
         context: context,
         icon: Icons.mail_outline,
         text: locales.resetLinkSent);
-  }
-}
-
-class CurrentUser {
-  /// The username of the authenticated account.
-  Future<String> get username async {
-    return await _cache(
-      key: 'username',
-      fetch: () async {
-        final db = FirebaseFirestore.instance;
-        final usernames = await db.collection('users').doc('usernames').get();
-        final usernamesMap = usernames.data();
-        final username = usernamesMap?.keys
-            .firstWhere((element) => usernamesMap[element] == uid);
-        return username;
-      },
-      type: String,
-    );
-  }
-
-  /// Gets a link of the current profile picture of the account. Returns
-  /// null if one does not exist.
-  String? get profilePicture {
-    return FirebaseAuth.instance.currentUser?.photoURL;
-  }
-
-  /// Returns the name of the authenticated account.
-  String get name {
-    return FirebaseAuth.instance.currentUser!.displayName!;
-  }
-
-  /// Returns the initials of the name of the authenticated account.
-  String get nameInitials {
-    final auth = FirebaseAuth.instance.currentUser;
-    var name = auth?.displayName ?? '';
-    final splitedName = name.split(' ');
-    final arrayOfInitials = [];
-    var initials = '';
-    if (splitedName.isEmpty) {
-      initials = splitedName[0].substring(0, 1);
-    } else {
-      for (var strings in splitedName) {
-        if (strings.isNotEmpty) {
-          arrayOfInitials.add(strings.substring(0, 1));
-        }
-      }
-      initials = arrayOfInitials.join('');
-    }
-    return initials;
-  }
-
-  String get uid {
-    return FirebaseAuth.instance.currentUser!.uid;
-  }
-
-  /// Updates the profile picture of the signed in account.
-  Future updateProfilePicture(
-      {required ValueNotifier<bool> loaded,
-      required ValueNotifier<double> percentage,
-      required BuildContext context,
-      Widget? route}) async {
-    PickedFile imageFile;
-    final locales = S.of(context);
-    var pickFromGallery =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    var uneditedImageFile = pickFromGallery?.path != null
-        ? PickedFile(pickFromGallery!.path)
-        : null;
-    if (uneditedImageFile != null) {
-      if (kIsWeb) {
-        imageFile = uneditedImageFile;
-        loaded.value = true;
-      } else {
-        var editImageFile = await ImageCropper.cropImage(
-            sourcePath: pickFromGallery!.path,
-            aspectRatioPresets: [CropAspectRatioPreset.square]);
-        var convertedEditImageFile = PickedFile(editImageFile!.path);
-        imageFile = convertedEditImageFile;
-        loaded.value = true;
-      }
-      var user = FirebaseAuth.instance.currentUser;
-      var filePath = 'profilePictures/${user?.uid}.png';
-      var uploadTask = FirebaseStorage.instance.ref(filePath).putData(
-          await imageFile.readAsBytes(),
-          SettableMetadata(contentType: 'image/png'));
-      uploadTask.snapshotEvents.listen(
-        (TaskSnapshot snapshot) async {
-          percentage.value =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          if (snapshot.state == TaskState.success) {
-            await user!.updatePhotoURL(await FirebaseStorage.instance
-                .ref()
-                .child(filePath)
-                .getDownloadURL());
-            if (route == null) {
-              Navigator.pop(context);
-            } else {
-              Core.navigation.push(context: context, route: route);
-            }
-          }
-        },
-      );
-    } else {
-      Core.stub.showInfoBar(
-          context: context,
-          icon: Icons.cancel,
-          text: locales.canceledOperation);
-    }
   }
 }
