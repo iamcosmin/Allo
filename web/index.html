@@ -99,6 +99,13 @@
       loadMainDartJs();
     }
   </script>
+  <script>
+   const element = document.querySelector("body");
+   element.addEventListener("touchstart", (e) => {
+     // prevent swipe to navigate gesture
+     e.preventDefault();
+   });
+  </script>
 </body>
 
 </html>
