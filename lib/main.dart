@@ -11,10 +11,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,28 +23,22 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyAyLt2_FAHc0I2c1iBLH_MxWzo2kllSvA8",
-        authDomain: "allo-ms.firebaseapp.com",
-        projectId: "allo-ms",
-        storageBucket: "allo-ms.appspot.com",
-        messagingSenderId: "1049075385887",
-        appId: "1:1049075385887:web:89f4887e574f8b93f2372a",
-        measurementId: "G-N5D9CRB413",
-      ),
-    );
-  } else if (Platform.isAndroid) {
-    // TODO: Migrate to dart only initialisation for android.
-    await Firebase.initializeApp();
-  }
-
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyAyLt2_FAHc0I2c1iBLH_MxWzo2kllSvA8",
+      authDomain: "allo-ms.firebaseapp.com",
+      projectId: "allo-ms",
+      storageBucket: "allo-ms.appspot.com",
+      messagingSenderId: "1049075385887",
+      appId: "1:1049075385887:web:89f4887e574f8b93f2372a",
+      measurementId: "G-N5D9CRB413",
+    ),
+  );
   if (!kIsWeb) {
     await Core.notifications.setupNotifications();
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
-  final _kSharedPreferences = await SharedPreferences.getInstance();
+  FirebaseRemoteConfig.instance.fetchAndActivate();
   // await FirebaseMessaging.instance.requestPermission(
   //   alert: true,
   //   announcement: false,
@@ -63,7 +55,9 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
-        sharedPreferencesProvider.overrideWithValue(_kSharedPreferences),
+        sharedPreferencesProvider.overrideWithValue(
+          await SharedPreferences.getInstance(),
+        ),
       ],
       child: const InnerApp(),
     ),
@@ -77,11 +71,6 @@ class InnerApp extends HookConsumerWidget {
     final darkState = usePreference(ref, darkMode);
     const _scrollBehavior = MaterialScrollBehavior(
         androidOverscrollIndicator: AndroidOverscrollIndicator.stretch);
-    useEffect(() {
-      FirebaseRemoteConfig.instance.fetchAndActivate();
-      return;
-    }, const []);
-    useNotificationListener(context);
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
