@@ -6,7 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SetupPage extends HookConsumerWidget {
   const SetupPage(
-      {required this.header,
+      {this.icon,
+      required this.header,
       required this.body,
       required this.action,
       this.nextRoute,
@@ -19,6 +20,7 @@ class SetupPage extends HookConsumerWidget {
                 (nextRoute == null && isNavigationHandled == true),
             'You cannot provide nextRoute if navigation is handled by your own library.'),
         super(key: key);
+  final IconData? icon;
   final List<Widget> header;
   final List<Widget> body;
   final Future<bool> Function() action;
