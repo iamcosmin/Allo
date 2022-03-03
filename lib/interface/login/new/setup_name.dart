@@ -17,53 +17,37 @@ class SetupName extends HookWidget {
     final secondNameController = useTextEditingController();
     final nameReg = RegExp(r'^[a-zA-Z]+$');
     return SetupPage(
-      header: [
-        Text(
-          locales.setupNameScreenTitle,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.left,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-        ),
-        Text(
-          locales.setupNameScreenDescription,
-          style: const TextStyle(fontSize: 17, color: Colors.grey),
-          textAlign: TextAlign.left,
-        ),
-      ],
+      icon: Icons.person,
+      title: locales.setupNameScreenTitle,
+      subtitle: locales.setupNameScreenDescription,
       body: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(10),
-                  errorText: firstFieldError.value == ''
-                      ? null
-                      : firstFieldError.value,
-                  errorStyle: const TextStyle(fontSize: 14),
-                  labelText: locales.firstName,
-                  border: const OutlineInputBorder(),
-                ),
-                controller: firstNameController,
+        Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(10),
+                errorText:
+                    firstFieldError.value == '' ? null : firstFieldError.value,
+                errorStyle: const TextStyle(fontSize: 14),
+                labelText: locales.firstName,
+                border: const OutlineInputBorder(),
               ),
-              const Padding(padding: EdgeInsets.only(bottom: 10)),
-              TextFormField(
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(10),
-                  errorText: secondFieldError.value == ''
-                      ? null
-                      : secondFieldError.value,
-                  errorStyle: const TextStyle(fontSize: 14),
-                  labelText: locales.lastName,
-                  border: const OutlineInputBorder(),
-                ),
-                controller: secondNameController,
+              controller: firstNameController,
+            ),
+            const Padding(padding: EdgeInsets.only(bottom: 10)),
+            TextFormField(
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(10),
+                errorText: secondFieldError.value == ''
+                    ? null
+                    : secondFieldError.value,
+                errorStyle: const TextStyle(fontSize: 14),
+                labelText: locales.lastName,
+                border: const OutlineInputBorder(),
               ),
-            ],
-          ),
+              controller: secondNameController,
+            ),
+          ],
         ),
       ],
       isNavigationHandled: true,

@@ -128,5 +128,7 @@
   "buildNumber": "Build Number",
   "packageName": "Package Name",
   "unsupported": "Unsupported",
-  "preferenceCleared": "Preference cleared."
+  "preferenceCleared": "Preference cleared.",
+  "accountChangeNameTitle": "Change Name",
+  "accountChangeNameDescription": "Enter your new name."
 }

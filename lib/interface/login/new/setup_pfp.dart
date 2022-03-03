@@ -14,56 +14,41 @@ class SetupProfilePicture extends HookWidget {
     final percentage = useState(0.0);
     final loaded = useState(false);
     return SetupPage(
-      header: [
-        Text(
-          locales.setupProfilePictureScreenTitle,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.left,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-        ),
-        Text(
-          locales.setupProfilePictureScreenDescription,
-          style: const TextStyle(fontSize: 17, color: Colors.grey),
-          textAlign: TextAlign.left,
-        ),
-      ],
+      icon: Icons.landscape,
+      title: context.locale.setupProfilePictureScreenTitle,
+      subtitle: context.locale.setupProfilePictureScreenDescription,
       body: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: Column(
-            children: [
-              Container(
+        Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Stack(
                 alignment: Alignment.center,
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      height: 110,
-                      width: 110,
-                      child: CircularProgressIndicator(
-                        value: percentage.value,
-                      ),
+                children: [
+                  SizedBox(
+                    height: 110,
+                    width: 110,
+                    child: CircularProgressIndicator(
+                      value: percentage.value,
                     ),
-                    PersonPicture.determine(
-                        radius: 100,
-                        profilePicture: Core.auth.user.profilePicture,
-                        initials: Core.auth.user.nameInitials),
-                  ],
-                ),
+                  ),
+                  PersonPicture.determine(
+                      radius: 100,
+                      profilePicture: Core.auth.user.profilePicture,
+                      initials: Core.auth.user.nameInitials),
+                ],
               ),
-              ListTile(
-                title: Text(locales.uploadPicture),
-                onTap: () async => await Core.auth.user.updateProfilePicture(
-                    loaded: loaded,
-                    percentage: percentage,
-                    context: context,
-                    route: const SetupPersonalize()),
-              ),
-            ],
-          ),
+            ),
+            ListTile(
+              title: Text(locales.uploadPicture),
+              onTap: () async => await Core.auth.user.updateProfilePicture(
+                  loaded: loaded,
+                  percentage: percentage,
+                  context: context,
+                  route: const SetupPersonalize()),
+            ),
+          ],
         ),
       ],
       action: () async => true,

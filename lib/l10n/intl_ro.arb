@@ -126,5 +126,7 @@
   "buildNumber": "Număr versiune",
   "packageName": "Nume pachet",
   "unsupported": "Nesuportat",
-  "preferenceCleared": "Preferință resetată."
+  "preferenceCleared": "Preferință resetată.",
+  "accountChangeNameTitle": "Schimbare nume",
+  "accountChangeNameDescription": "Introdu noul tău nume."
 }

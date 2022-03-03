@@ -1,22 +1,30 @@
 import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:animations/animations.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'hooks.dart';
 
-const pageTransitionsTheme = PageTransitionsTheme(
-  // TODO: If device is running android 9 or lower, [OpenUpwardsPageTransitionsBuilder] should
-  // be used, otherwise ZoomPageTransitionsBuilder.
-  builders: {
-    TargetPlatform.android: ZoomPageTransitionsBuilder(),
-    TargetPlatform.fuchsia: FadeUpwardsPageTransitionsBuilder(),
-    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.windows: ZoomPageTransitionsBuilder(),
-  },
-);
+PageTransitionsTheme pageTransitionsTheme(
+    WidgetRef ref, ColorScheme colorScheme) {
+  final motion2 = usePreference(ref, motionV2);
+  return PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: motion2.preference
+          ? SharedAxisPageTransitionsBuilder(
+              transitionType: SharedAxisTransitionType.horizontal,
+              fillColor: colorScheme.surface)
+          : const ZoomPageTransitionsBuilder(),
+      TargetPlatform.fuchsia: const FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+      TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
+      TargetPlatform.windows: const ZoomPageTransitionsBuilder(),
+    },
+  );
+}
 
 ThemeData theme(
   Brightness brightness,
@@ -105,11 +113,11 @@ ThemeData theme(
         color: scheme.onSurface,
       ),
     ),
-    pageTransitionsTheme: pageTransitionsTheme,
+    pageTransitionsTheme: pageTransitionsTheme(ref, scheme),
     scaffoldBackgroundColor: scheme.surface,
     fontFamily: 'GS-Text',
     //! TODO: IN ALL THEMEDATAS, THERE ARE TEMPORARY FIELDS
-    androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
+    androidOverscrollIndicator: AndroidOverscrollIndicator.glow,
     snackBarTheme: const SnackBarThemeData(
       backgroundColor: Color(0xFF323232),
       actionTextColor: Color(0xFFFFFFFF),

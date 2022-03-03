@@ -26,6 +26,10 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("Despre"),
         "account": MessageLookupByLibrary.simpleMessage("Cont"),
+        "accountChangeNameDescription":
+            MessageLookupByLibrary.simpleMessage("Introdu noul tău nume."),
+        "accountChangeNameTitle":
+            MessageLookupByLibrary.simpleMessage("Schimbare nume"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("A apărut o eroare."),
         "attach": MessageLookupByLibrary.simpleMessage("Atașează"),

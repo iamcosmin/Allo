@@ -1,17 +1,17 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/new/setup_pfp.dart';
-import 'package:allo/logic/core.dart';
+import 'package:allo/logic/client/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:allo/components/oobe_page.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class SetupVerification extends HookWidget {
   const SetupVerification({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final locales = S.of(context);
-    final error = useState('');
 
     useEffect(() {
       Future.microtask(() async =>
@@ -19,29 +19,9 @@ class SetupVerification extends HookWidget {
       return;
     });
     return SetupPage(
-      header: [
-        Text(
-          locales.setupVerificationScreenTitle,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.left,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 10, top: 10),
-          child: Text(
-            locales.setupVerificationScreenDescription,
-            style: const TextStyle(fontSize: 17, color: Colors.grey),
-            textAlign: TextAlign.left,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 10, top: 10),
-          child: Text(
-            error.value,
-            style: const TextStyle(fontSize: 17, color: Colors.red),
-            textAlign: TextAlign.left,
-          ),
-        )
-      ],
+      icon: Icons.email,
+      title: context.locale.setupVerificationScreenTitle,
+      subtitle: context.locale.setupVerificationScreenDescription,
       body: const [],
       action: () async {
         await FirebaseAuth.instance.currentUser?.reload();
@@ -49,7 +29,19 @@ class SetupVerification extends HookWidget {
         if (verified) {
           return true;
         } else {
-          error.value = locales.errorVerificationLinkNotAccessed;
+          showPlatformDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(context.locale.error),
+              content: Text(locales.errorVerificationLinkNotAccessed),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
           return false;
         }
       },

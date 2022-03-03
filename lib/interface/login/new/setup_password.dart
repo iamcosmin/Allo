@@ -24,85 +24,70 @@ class SetupPassword extends HookWidget {
     final confirmPassController = useTextEditingController();
 
     return SetupPage(
-      header: [
-        Text(
-          locales.setupPasswordScreenTitle,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.left,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-        ),
-        Text(
-          locales.setupPasswordScreenDescription,
-          style: const TextStyle(fontSize: 17, color: Colors.grey),
-          textAlign: TextAlign.left,
-        ),
-      ],
+      icon: Icons.password,
+      title: context.locale.setupPasswordScreenTitle,
+      subtitle: context.locale.setupPasswordScreenDescription,
       body: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(10),
-                  errorText: error.value == '' ? null : error.value,
-                  errorStyle: const TextStyle(fontSize: 14),
-                  labelText: locales.password,
-                  border: const OutlineInputBorder(),
-                  suffix: InkWell(
-                    onTap: () {
-                      if (obscure.value) {
-                        obscure.value = false;
-                      } else {
-                        obscure.value = true;
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
-                      child: Icon(
-                        obscure.value ? Icons.visibility_off : Icons.visibility,
-                      ),
+        Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(10),
+                errorText: error.value == '' ? null : error.value,
+                errorStyle: const TextStyle(fontSize: 14),
+                labelText: locales.password,
+                border: const OutlineInputBorder(),
+                suffix: InkWell(
+                  onTap: () {
+                    if (obscure.value) {
+                      obscure.value = false;
+                    } else {
+                      obscure.value = true;
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Icon(
+                      obscure.value ? Icons.visibility_off : Icons.visibility,
                     ),
                   ),
                 ),
-                controller: passController,
-                obscureText: obscure.value,
               ),
-              const Padding(padding: EdgeInsets.only(bottom: 10)),
-              TextFormField(
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(10),
-                  errorStyle: const TextStyle(fontSize: 14),
-                  labelText: locales.confirmPassword,
-                  border: const OutlineInputBorder(),
-                  suffix: InkWell(
-                    onTap: () {
-                      if (obscure.value) {
-                        obscure.value = false;
-                      } else {
-                        obscure.value = true;
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
-                      child: Icon(
-                        obscure.value ? Icons.visibility_off : Icons.visibility,
-                      ),
+              controller: passController,
+              obscureText: obscure.value,
+            ),
+            const Padding(padding: EdgeInsets.only(bottom: 10)),
+            TextFormField(
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(10),
+                errorStyle: const TextStyle(fontSize: 14),
+                labelText: locales.confirmPassword,
+                border: const OutlineInputBorder(),
+                suffix: InkWell(
+                  onTap: () {
+                    if (obscure.value) {
+                      obscure.value = false;
+                    } else {
+                      obscure.value = true;
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Icon(
+                      obscure.value ? Icons.visibility_off : Icons.visibility,
                     ),
                   ),
                 ),
-                controller: confirmPassController,
-                obscureText: obscure.value,
               ),
-              const Padding(padding: EdgeInsets.only(bottom: 10)),
-              Text(
-                locales.passwordCriteria,
-                style: const TextStyle(color: Colors.grey),
-              )
-            ],
-          ),
+              controller: confirmPassController,
+              obscureText: obscure.value,
+            ),
+            const Padding(padding: EdgeInsets.only(bottom: 10)),
+            Text(
+              locales.passwordCriteria,
+              style: const TextStyle(color: Colors.grey),
+            )
+          ],
         ),
       ],
       action: () async {

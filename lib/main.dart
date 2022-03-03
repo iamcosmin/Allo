@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/client/hooks.dart';

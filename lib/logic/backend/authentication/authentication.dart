@@ -1,9 +1,7 @@
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/interface/login/existing/enter_password.dart';
 import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
-import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/backend/authentication/user.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -75,15 +73,14 @@ class Authentication {
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
-        Core.navigation
-            .push(context: context, route: SetupName(email), login: true);
+        Core.navigation.push(context: context, route: SetupName(email));
       } else if (instance.toString() == '[password]') {
-        Core.navigation.push(
-            context: context, route: EnterPassword(email: email), login: true);
+        Core.navigation
+            .push(context: context, route: EnterPassword(email: email));
       }
       return true;
     } catch (e) {
-      error.value = locales.errorThisIsInvalid(locales.email.toLowerCase());
+      error.value = locales.errorThisIsInvalid(locales.email);
       return false;
     }
   }
@@ -203,21 +200,20 @@ class Authentication {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
           await navigation.push(
-              context: context,
-              route: SetupPassword(
-                displayName: displayName,
-                username: username,
-                email: email,
-              ),
-              login: true);
+            context: context,
+            route: SetupPassword(
+              displayName: displayName,
+              username: username,
+              email: email,
+            ),
+          );
           return true;
         } else {
           error.value = locales.errorUsernameTaken;
           return false;
         }
       } else {
-        error.value =
-            locales.errorThisIsInvalid(locales.username.toLowerCase());
+        error.value = locales.errorThisIsInvalid(locales.username);
         return false;
       }
     } else {

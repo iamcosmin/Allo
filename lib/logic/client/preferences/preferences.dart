@@ -7,3 +7,4 @@ final repliesDebug = preference('global_replies', online: true);
 final editMessageDebug = preference('alloEditMessageDebug');
 final membersDebug = preference('alloParticipantsDebug');
 final emulateIOSBehaviour = preference('experimentalEmulateIOSBehaviour');
+final motionV2 = preference('alpha_motion_2');

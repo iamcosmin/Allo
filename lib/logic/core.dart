@@ -2,12 +2,16 @@ import 'package:allo/logic/backend/authentication/authentication.dart';
 import 'package:allo/logic/backend/chat/chat.dart';
 import 'package:allo/logic/client/navigation.dart';
 import 'package:allo/logic/client/notifications.dart';
+import 'package:allo/logic/client/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+
+export 'client/extensions.dart';
 
 class Core {
   static final Authentication auth = Authentication();
   static final Navigation navigation = Navigation();
+  static Validators validators(BuildContext context) => Validators(context);
   static final Notifications notifications = Notifications();
   static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();

@@ -1349,6 +1349,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Change Name`
+  String get accountChangeNameTitle {
+    return Intl.message(
+      'Change Name',
+      name: 'accountChangeNameTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your new name.`
+  String get accountChangeNameDescription {
+    return Intl.message(
+      'Enter your new name.',
+      name: 'accountChangeNameDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

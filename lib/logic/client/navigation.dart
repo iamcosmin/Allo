@@ -5,24 +5,10 @@ class Navigation {
   Future push({
     required BuildContext context,
     required Widget route,
-    bool login = false,
+    @Deprecated('Whether this is true or false, the same transition will be used.')
+        bool login = false,
   }) {
-    Route? pageRoute;
-    if (login) {
-      pageRoute = PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return SharedAxisTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            transitionType: SharedAxisTransitionType.horizontal,
-            child: route,
-            fillColor: Theme.of(context).colorScheme.surface,
-          );
-        },
-      );
-    } else {
-      pageRoute = MaterialPageRoute(builder: (_) => route);
-    }
+    final pageRoute = MaterialPageRoute(builder: (_) => route);
     return Navigator.of(context).push(pageRoute);
   }
 

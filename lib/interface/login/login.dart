@@ -13,36 +13,19 @@ class Login extends HookConsumerWidget {
     final error = useState('');
     final controller = useTextEditingController();
     return SetupPage(
-      header: [
-        Text(
-          locales.loginScreenTitle,
-          style: const TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.left,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: Text(
-            locales.loginScreenDescription,
-            style: const TextStyle(fontSize: 17, color: Colors.grey),
-          ),
-        ),
-      ],
+      icon: Icons.login,
+      title: locales.loginScreenTitle,
+      subtitle: locales.loginScreenDescription,
       body: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: TextFormField(
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(10),
-              errorText: error.value == '' ? null : error.value,
-              errorStyle: const TextStyle(fontSize: 14),
-              labelText: locales.email,
-              border: const OutlineInputBorder(),
-            ),
-            controller: controller,
+        TextFormField(
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(10),
+            errorText: error.value == '' ? null : error.value,
+            errorStyle: const TextStyle(fontSize: 14),
+            labelText: locales.email,
+            border: const OutlineInputBorder(),
           ),
+          controller: controller,
         ),
       ],
       isNavigationHandled: true,

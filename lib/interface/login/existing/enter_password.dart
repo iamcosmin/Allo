@@ -1,4 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
+import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/logic/core.dart';
@@ -16,64 +17,46 @@ class EnterPassword extends HookWidget {
     final locales = S.of(context);
     return SetupPage(
       alignment: CrossAxisAlignment.start,
-      header: [
-        Text(
-          '${locales.welcomeBack}, ',
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          '$email!',
-          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-        ),
-        Text(
-          locales.enterPasswordDescription,
-          style: const TextStyle(fontSize: 17, color: Colors.grey),
-        ),
-      ],
+      icon: Icons.password,
+      title: locales.welcomeBack + '.',
+      subtitle: locales.enterPasswordDescription,
       body: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: TextFormField(
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(10),
-              errorText: error.value == '' ? null : error.value,
-              errorStyle: const TextStyle(fontSize: 14),
-              labelText: locales.password,
-              border: const OutlineInputBorder(),
-              suffix: InkWell(
-                onTap: () {
-                  if (obscure.value) {
-                    obscure.value = false;
-                  } else {
-                    obscure.value = true;
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: Icon(
-                    obscure.value ? Icons.visibility_off : Icons.visibility,
-                  ),
+        TextFormField(
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(10),
+            errorText: error.value == '' ? null : error.value,
+            errorStyle: const TextStyle(fontSize: 14),
+            labelText: locales.password,
+            border: const OutlineInputBorder(),
+            suffix: InkWell(
+              onTap: () {
+                if (obscure.value) {
+                  obscure.value = false;
+                } else {
+                  obscure.value = true;
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Icon(
+                  obscure.value ? Icons.visibility_off : Icons.visibility,
                 ),
               ),
             ),
-            controller: controller,
-            obscureText: true,
           ),
+          controller: controller,
+          obscureText: true,
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: TextButton(
-            style: const ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                alignment: Alignment.topLeft),
-            onPressed: () {
-              Core.auth.sendPasswordResetEmail(email: email, context: context);
-            },
-            child: Text(locales.forgotPassword),
+        const Space(2),
+        TextButton(
+          style: const ButtonStyle(
+            visualDensity: VisualDensity.compact,
+            alignment: Alignment.topLeft,
           ),
+          onPressed: () {
+            Core.auth.sendPasswordResetEmail(email: email, context: context);
+          },
+          child: Text(locales.forgotPassword),
         )
       ],
       action: () async {

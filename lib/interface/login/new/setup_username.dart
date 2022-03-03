@@ -1,5 +1,6 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -17,44 +18,29 @@ class SetupUsername extends HookWidget {
     final controller = useTextEditingController();
     final error = useState('');
     return SetupPage(
-      header: [
-        Text(
-          locales.setupUsernameScreenTitle,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.left,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-        ),
-        Text(
-          locales.setupUsernameScreenDescription,
-          style: const TextStyle(fontSize: 17, color: Colors.grey),
-          textAlign: TextAlign.left,
-        ),
-      ],
+      icon: Icons.person_search,
+      title: context.locale.setupUsernameScreenTitle,
+      subtitle: context.locale.setupUsernameScreenDescription,
       body: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(10),
-                  prefix: const Text('@'),
-                  errorText: error.value == '' ? null : error.value,
-                  errorStyle: const TextStyle(fontSize: 14),
-                  labelText: locales.username,
-                  border: const OutlineInputBorder(),
-                ),
-                controller: controller,
+        Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(10),
+                prefix: const Text('@'),
+                errorText: error.value == '' ? null : error.value,
+                errorStyle: const TextStyle(fontSize: 14),
+                labelText: locales.username,
+                border: const OutlineInputBorder(),
               ),
-              const Padding(padding: EdgeInsets.only(bottom: 10)),
-              Text(
-                locales.setupUsernameRequirements,
-                style: const TextStyle(color: Colors.grey),
-              )
-            ],
-          ),
+              controller: controller,
+            ),
+            const Padding(padding: EdgeInsets.only(bottom: 10)),
+            Text(
+              locales.setupUsernameRequirements,
+              style: const TextStyle(color: Colors.grey),
+            )
+          ],
         )
       ],
       action: () async => await Core.auth.isUsernameCompliant(
