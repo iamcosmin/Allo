@@ -297,7 +297,6 @@ class MessageInput extends HookConsumerWidget {
                             Core.chat(chatId).messages.sendTextMessage(
                                 chatType: getStringFromChatType(chatType),
                                 text: _messageController.text,
-                                context: context,
                                 chatName: chatName,
                                 controller: _messageController,
                                 modifier: modifier);

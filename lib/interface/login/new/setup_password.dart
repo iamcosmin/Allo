@@ -22,7 +22,6 @@ class SetupPassword extends HookWidget {
     final obscure = useState(true);
     final passController = useTextEditingController();
     final confirmPassController = useTextEditingController();
-
     return SetupPage(
       icon: Icons.password,
       title: context.locale.setupPasswordScreenTitle,
@@ -92,13 +91,14 @@ class SetupPassword extends HookWidget {
       ],
       action: () async {
         return await Core.auth.signUp(
-            email: email,
-            password: passController.text,
-            confirmPassword: confirmPassController.text,
-            displayName: displayName,
-            username: username,
-            error: error,
-            context: context);
+          email: email,
+          password: passController.text,
+          confirmPassword: confirmPassController.text,
+          displayName: displayName,
+          username: username,
+          error: error,
+          context: context,
+        );
       },
       nextRoute: const SetupVerification(),
     );

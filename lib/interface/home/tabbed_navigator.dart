@@ -1,6 +1,7 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/hooks.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -61,7 +62,20 @@ class TabbedNavigator extends HookConsumerWidget {
               onDestinationSelected: (i) => selected.value = i,
             ),
           ],
-          Expanded(child: pages[selected.value]),
+          // The page.
+          Expanded(
+            child: PageTransitionSwitcher(
+              child: pages[selected.value],
+              transitionBuilder: (child, animation, secondaryAnimation) {
+                return FadeThroughTransition(
+                  fillColor: Theme.of(context).colorScheme.surface,
+                  animation: animation,
+                  secondaryAnimation: secondaryAnimation,
+                  child: child,
+                );
+              },
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: width < 700

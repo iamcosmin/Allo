@@ -13,7 +13,7 @@ class Validators {
         return context.locale.specialCharactersNotAllowed;
       }
     } else {
-      context.locale.errorFieldEmpty;
+      return context.locale.errorFieldEmpty;
     }
   }
 }

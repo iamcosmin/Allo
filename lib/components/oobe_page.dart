@@ -1,7 +1,7 @@
 import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/home/settings/debug/debug.dart';
 import 'package:allo/logic/core.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,8 +11,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class SetupPage extends HookConsumerWidget {
   const SetupPage(
       {this.icon = Icons.warning,
-      //TODO: Require title after migration is done.
-      this.title = '//TODO: Implement title',
+      required this.title,
       this.subtitle,
       this.customButtonText,
       @Deprecated('Handle title using [title] parameter and any other subtitles with the [subtitle] parameter.')
@@ -101,7 +100,7 @@ class SetupPage extends HookConsumerWidget {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                          padding: const EdgeInsets.only(top: 5, bottom: 5),
                           child: Column(
                             crossAxisAlignment: alignment,
                             children: body,
@@ -138,11 +137,16 @@ class SetupPage extends HookConsumerWidget {
                             style: const ButtonStyle(
                               visualDensity: VisualDensity.standard,
                             ),
-                            child: AnimatedSwitcher(
+                            child: PageTransitionSwitcher(
                               duration: const Duration(milliseconds: 100),
-                              transitionBuilder: (child, animation) {
-                                return ScaleTransition(
-                                  scale: animation,
+                              transitionBuilder:
+                                  (child, animation, secondaryAnimation) {
+                                return SharedAxisTransition(
+                                  animation: animation,
+                                  secondaryAnimation: secondaryAnimation,
+                                  fillColor: Colors.transparent,
+                                  transitionType:
+                                      SharedAxisTransitionType.horizontal,
                                   child: child,
                                 );
                               },
@@ -181,7 +185,6 @@ class SetupPage extends HookConsumerWidget {
                                     Core.navigation.push(
                                       context: context,
                                       route: nextRoute!,
-                                      login: true,
                                     );
                                   }
                                 }

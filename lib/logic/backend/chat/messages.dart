@@ -36,7 +36,6 @@ class Messages {
 
   Future sendTextMessage(
       {required String text,
-      required BuildContext context,
       required String chatName,
       TextEditingController? controller,
       ValueNotifier<InputModifier?>? modifier,

@@ -68,7 +68,8 @@ class InnerApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final darkState = usePreference(ref, darkMode);
     const _scrollBehavior = MaterialScrollBehavior(
-        androidOverscrollIndicator: AndroidOverscrollIndicator.stretch);
+      androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
+    );
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,

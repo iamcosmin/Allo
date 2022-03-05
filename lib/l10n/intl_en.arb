@@ -130,5 +130,6 @@
   "unsupported": "Unsupported",
   "preferenceCleared": "Preference cleared.",
   "accountChangeNameTitle": "Change Name",
-  "accountChangeNameDescription": "Enter your new name."
+  "accountChangeNameDescription": "Enter your new name.",
+  "unsupportedMessage": "Unsupported message."
 }

@@ -36,7 +36,7 @@ class PersonPicture extends HookWidget {
       required this.initials,
       this.stringKey,
       this.color,
-      this.gradient})
+      @Deprecated('For performance reasons, please use color.') this.gradient})
       : _type = _PersonPictureType.determine,
         super(key: key);
 

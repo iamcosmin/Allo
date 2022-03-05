@@ -1,6 +1,5 @@
 import 'package:allo/components/oobe_page.dart';
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

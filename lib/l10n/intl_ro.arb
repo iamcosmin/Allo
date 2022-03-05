@@ -128,5 +128,6 @@
   "unsupported": "Nesuportat",
   "preferenceCleared": "Preferință resetată.",
   "accountChangeNameTitle": "Schimbare nume",
-  "accountChangeNameDescription": "Introdu noul tău nume."
+  "accountChangeNameDescription": "Introdu noul tău nume.",
+  "unsupportedMessage": "Unsupported message."
 }

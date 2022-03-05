@@ -219,6 +219,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "uid": MessageLookupByLibrary.simpleMessage("UID"),
         "unknown": MessageLookupByLibrary.simpleMessage("Necunoscut"),
         "unsupported": MessageLookupByLibrary.simpleMessage("Nesuportat"),
+        "unsupportedMessage":
+            MessageLookupByLibrary.simpleMessage("Unsupported message."),
         "uploadPicture":
             MessageLookupByLibrary.simpleMessage("Încarcă imagine"),
         "username": MessageLookupByLibrary.simpleMessage("Nume de utilizator"),

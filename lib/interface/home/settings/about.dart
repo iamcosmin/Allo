@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:allo/components/builders.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -27,51 +31,113 @@ class AboutPage extends HookConsumerWidget {
       appBar: AppBar(
         title: Text(locales.about),
       ),
-      body: FutureBuilder<AppInfo>(
+      body: FutureView<AppInfo>(
         future: getInfo(),
-        builder: (context, snapshot) {
-          if (snapshot.data != null) {
-            final packageInfo = snapshot.data!.packageInfo;
-            final deviceInfo = snapshot.data!.deviceInfo;
-
-            if (deviceInfo is AndroidDeviceInfo) {}
-            return ListView(
-              shrinkWrap: true,
-              children: [
-                ListTile(
-                  title: Text(locales.name),
-                  trailing: Text(packageInfo.appName),
+        success: (context, data) {
+          final packageInfo = data.packageInfo;
+          final deviceInfo = data.deviceInfo.toMap();
+          return ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                  'App Info',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
-                ListTile(
-                  title: Text(locales.version),
-                  trailing: Text(packageInfo.version),
-                ),
-                ListTile(
-                  title: Text(locales.buildNumber),
-                  trailing: Text(packageInfo.buildNumber),
-                ),
+              ),
+              ListTile(
+                title: Text(locales.name),
+                trailing: Text(packageInfo.appName),
+              ),
+              ListTile(
+                title: Text(locales.version),
+                trailing: Text(packageInfo.version),
+              ),
+              ListTile(
+                title: Text(locales.buildNumber),
+                trailing: Text(packageInfo.buildNumber),
+              ),
+              if (!kIsWeb) ...[
                 ListTile(
                   title: Text(locales.packageName),
                   trailing: Text(packageInfo.packageName),
                 ),
-                const Padding(padding: EdgeInsets.only(top: 20)),
-                // TODO: Implement device info section
               ],
-            );
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
-              child: Center(
-                child: SelectableText(
-                  snapshot.error.toString(),
+              const Padding(padding: EdgeInsets.only(top: 20)),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                  'Device Info',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
-            );
-          }
+              if (kIsWeb) ...[
+                ListTile(
+                  title: const Text('Device memory'),
+                  trailing: Text(
+                    deviceInfo['deviceMemory'] ?? 'nul',
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Language'),
+                  trailing: Text(
+                    deviceInfo['language'] ?? 'nul',
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Browser'),
+                  trailing: Text(
+                    deviceInfo['vendor'] ?? 'nul',
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Browser version'),
+                  trailing: Text(
+                    deviceInfo['vendorSub'] ?? 'nul',
+                  ),
+                ),
+              ] else if (Platform.isAndroid) ...[
+                ListTile(
+                  title: const Text('Model'),
+                  trailing: Text(
+                    deviceInfo['model'] ?? 'nul',
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Brand'),
+                  trailing: Text(
+                    deviceInfo['brand'] ?? 'nul',
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Device'),
+                  trailing: Text(
+                    deviceInfo['device'] ?? 'nul',
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Version'),
+                  trailing: Text(
+                    deviceInfo['version']['release'] ?? 'nul',
+                  ),
+                ),
+                ListTile(
+                  title: const Text('SDK'),
+                  trailing: Text(
+                    deviceInfo['version']['sdkInt'].toString(),
+                  ),
+                ),
+              ],
+            ],
+          );
         },
       ),
     );

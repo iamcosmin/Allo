@@ -292,6 +292,8 @@ class Authentication {
     return initials;
   }
 
+  @Deprecated(
+      'Please use the getProfilePicture method, which returns a String to use with FirebaseImage. (gs://)')
   Future<String?> getUserProfilePicture(String uid) async {
     String? url;
     try {
@@ -301,6 +303,16 @@ class Authentication {
           .getDownloadURL();
     } on FirebaseException catch (_) {}
     return url;
+  }
+
+  /// Attention: This returns a gs:// link.
+  /// This should only be used with [FirebaseImage].
+  String? getProfilePicture(String id, {bool? isGroup}) {
+    if (isGroup != null && isGroup) {
+      return 'gs://allo-ms.appspot.com/chats/$id.png';
+    } else {
+      return 'gs://allo-ms.appspot.com/profilePictures/$id.png';
+    }
   }
 
   Future sendPasswordResetEmail(

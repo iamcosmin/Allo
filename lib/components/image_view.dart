@@ -1,5 +1,6 @@
 import 'package:allo/components/pinch_to_zoom.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_image/firebase_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,8 +21,11 @@ class ImageView extends HookConsumerWidget {
       backgroundColor: colors.surface,
       body: Center(
         child: PinchZoom(
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
+          child: Image(
+            key: key,
+            image: imageUrl.startsWith('gs://')
+                ? FirebaseImage(imageUrl)
+                : CachedNetworkImageProvider(imageUrl) as ImageProvider,
           ),
         ),
       ),

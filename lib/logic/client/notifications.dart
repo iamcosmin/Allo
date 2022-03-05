@@ -103,20 +103,75 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
         summary: _smallNotificationText,
         payload: _suplimentaryInfo,
       ),
+      actionButtons: [
+        NotificationActionButton(
+          key: 'input',
+          actionType: ActionType.SilentBackgroundAction,
+          requireInputText: true,
+          label: 'Reply',
+        )
+      ],
     );
   }
 }
 
 class _NotificationController {
   static Future<void> onActionReceivedMethod(ReceivedAction action) async {
-    await Core.navigation.push(
-      context: navigatorKey.currentState!.context,
-      route: ChatScreen(
-        chatType: getChatTypeFromString(action.payload!['chatType']!) ??
-            ChatType.group,
-        title: action.payload!['chatName']!,
-        chatId: action.payload!['chatId']!,
-      ),
-    );
+    final payload = action.payload!;
+    final _notificationLayout =
+        getChatTypeFromString(payload['chatType']!) == ChatType.group
+            ? NotificationLayout.MessagingGroup
+            : NotificationLayout.Messaging;
+    final _smallNotificationText =
+        getChatTypeFromString(payload['chatType']!) == ChatType.group
+            ? payload['chatName']!
+            : 'Privat';
+    if (action.actionType == ActionType.SilentBackgroundAction &&
+        action.buttonKeyInput.isNotEmpty) {
+      //
+      await Core.chat(payload['chatId']).messages.sendTextMessage(
+          text: action.buttonKeyInput,
+          chatName: payload['chatName']!,
+          chatType: payload['chatType']!);
+      // ignore: omit_local_variable_types
+      final Map<String, String> _suplimentaryInfo = {
+        'chatId': payload['chatId'] ?? '',
+        'chatName': payload['chatName']!,
+        'chatType': payload['chatType']!,
+      };
+      await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: _createUniqueID(AwesomeNotifications.maxID),
+          title: 'Eu',
+          body: action.buttonKeyInput,
+          channelKey: 'conversations',
+          roundedLargeIcon: true,
+          notificationLayout: _notificationLayout,
+          category: NotificationCategory.Message,
+          roundedBigPicture: true,
+          groupKey: payload['chatId'],
+          summary: _smallNotificationText,
+          payload: _suplimentaryInfo,
+        ),
+        actionButtons: [
+          NotificationActionButton(
+            key: 'input',
+            actionType: ActionType.SilentBackgroundAction,
+            requireInputText: true,
+            label: 'Reply',
+          )
+        ],
+      );
+    } else {
+      await Core.navigation.push(
+        context: navigatorKey.currentState!.context,
+        route: ChatScreen(
+          chatType: getChatTypeFromString(action.payload!['chatType']!) ??
+              ChatType.group,
+          title: action.payload!['chatName']!,
+          chatId: action.payload!['chatId']!,
+        ),
+      );
+    }
   }
 }

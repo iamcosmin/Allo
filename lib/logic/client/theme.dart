@@ -1,6 +1,5 @@
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:animations/animations.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,7 +20,11 @@ PageTransitionsTheme pageTransitionsTheme(
       TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
       TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
       TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
-      TargetPlatform.windows: const ZoomPageTransitionsBuilder(),
+      TargetPlatform.windows: motion2.preference
+          ? SharedAxisPageTransitionsBuilder(
+              transitionType: SharedAxisTransitionType.horizontal,
+              fillColor: colorScheme.surface)
+          : const ZoomPageTransitionsBuilder(),
     },
   );
 }

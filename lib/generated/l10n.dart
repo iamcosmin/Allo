@@ -1369,6 +1369,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Unsupported message.`
+  String get unsupportedMessage {
+    return Intl.message(
+      'Unsupported message.',
+      name: 'unsupportedMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

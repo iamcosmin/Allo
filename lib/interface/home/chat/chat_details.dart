@@ -1,10 +1,13 @@
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
+import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/home/chat/members.dart';
 import 'package:allo/logic/client/hooks.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:allo/logic/models/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -117,39 +120,6 @@ void _changeTheme({
   );
 }
 
-void _showMembers({required BuildContext context, required String id}) async {
-  final info = await returnChatInfo(id: id);
-  final members = info.data()!['members'];
-  final locales = S.of(context);
-  showMagicBottomSheet(
-    context: context,
-    title: locales.members,
-    insets: const ScrollableInsets(
-        initialChildSize: 0.4, minChildSize: 0.4, maxChildSize: 0.8),
-    children: [
-      for (var member in members) ...[
-        ListTile(
-          title: Text(member['uid'] != Core.auth.user.uid
-              ? member['name']
-              : locales.me),
-          subtitle: Text('uid: ' + member['uid']),
-          contentPadding:
-              const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
-          leading: PersonPicture.determine(
-            radius: 50,
-            profilePicture: await Core.auth.getUserProfilePicture(
-              member['uid'],
-            ),
-            initials: Core.auth.returnNameInitials(
-              member['name'],
-            ),
-          ),
-        ),
-      ]
-    ],
-  );
-}
-
 Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo(
     {required String id}) async {
   return await FirebaseFirestore.instance.collection('chats').doc(id).get();
@@ -157,69 +127,71 @@ Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo(
 
 class ChatDetails extends HookConsumerWidget {
   const ChatDetails(
-      {Key? key, required this.name, required this.id, this.profilepic})
+      {Key? key,
+      required this.name,
+      required this.chatId,
+      required this.chatType})
       : super(key: key);
   final String name;
-  final String id;
-  final String? profilepic;
+  final ChatType chatType;
+  final String chatId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
     final members = usePreference(ref, membersDebug);
+    final profilePicture = Core.auth.getProfilePicture(chatId,
+        isGroup: chatType == ChatType.group ? true : false);
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.chatInfo),
       ),
       body: ListView(
         children: [
+          const Space(3),
           Container(
-            padding: const EdgeInsets.only(top: 50),
             alignment: Alignment.topCenter,
             child: InkWell(
               highlightColor: const Color(0x00000000),
               focusColor: const Color(0x00000000),
               hoverColor: const Color(0x00000000),
               splashColor: const Color(0x00000000),
-              onTap: profilepic == null
+              onTap: profilePicture == null
                   ? null
                   : () => Core.navigation
-                      .push(context: context, route: ImageView(profilepic!)),
+                      .push(context: context, route: ImageView(profilePicture)),
               child: PersonPicture.determine(
-                profilePicture: profilepic,
-                radius: 100,
+                profilePicture: profilePicture,
+                radius: 150,
                 initials: Core.auth.returnNameInitials(name),
               ),
             ),
           ),
+          const Space(3),
           Container(
-            padding: const EdgeInsets.only(top: 15),
             alignment: Alignment.topCenter,
             child: Text(
               name,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
+          const Space(4),
           Container(
-            padding: const EdgeInsets.only(top: 30, left: 10, right: 10),
+            padding: const EdgeInsets.only(left: 10, right: 10),
             child: Column(
               children: [
-                SwitchListTile(
-                  secondary: const Icon(Icons.notifications_outlined),
-                  title: Text(locales.notifications),
-                  onChanged: null,
-                  value: true,
-                ),
                 ListTile(
                   leading: const Icon(Icons.brush_outlined),
                   title: Text(locales.theme),
-                  onTap: () async => _changeTheme(context: context, id: id),
+                  onTap: () async => _changeTheme(context: context, id: chatId),
                 ),
                 if (members.preference == true) ...[
                   ListTile(
                     leading: const Icon(Icons.people_alt_outlined),
                     title: Text(locales.members),
-                    onTap: () async => _showMembers(context: context, id: id),
+                    onTap: () => Core.navigation.push(
+                        context: context,
+                        route: ChatMembersPage(chatId: chatId)),
                   ),
                 ]
               ],
