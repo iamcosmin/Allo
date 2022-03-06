@@ -1259,6 +1259,76 @@ class S {
       args: [],
     );
   }
+
+  /// `The operation was canceled.`
+  String get canceledOperation {
+    return Intl.message(
+      'The operation was canceled.',
+      name: 'canceledOperation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personalise`
+  String get personalise {
+    return Intl.message(
+      'Personalise',
+      name: 'personalise',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide Navigation Hints`
+  String get personaliseHideNavigationHints {
+    return Intl.message(
+      'Hide Navigation Hints',
+      name: 'personaliseHideNavigationHints',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About`
+  String get about {
+    return Intl.message(
+      'About',
+      name: 'about',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Version`
+  String get version {
+    return Intl.message(
+      'Version',
+      name: 'version',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Build Number`
+  String get buildNumber {
+    return Intl.message(
+      'Build Number',
+      name: 'buildNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Package Name`
+  String get packageName {
+    return Intl.message(
+      'Package Name',
+      name: 'packageName',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

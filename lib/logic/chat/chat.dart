@@ -181,8 +181,8 @@ class Chats {
                       reply: replyData == null
                           ? null
                           : ReplyToMessage(
-                              name: replyData['name'] ?? 'Solve later',
-                              description: replyData['text'] ?? 'Solve later',
+                              name: replyData['name'] ?? 'null',
+                              description: replyData['text'] ?? 'null',
                             ),
                     );
                     break;
@@ -212,9 +212,8 @@ class Chats {
                       reply: replyData == null
                           ? null
                           : ReplyToMessage(
-                              name: replyData['name'] ?? 'Solve later',
-                              description:
-                                  replyData['description'] ?? 'Solve later',
+                              name: replyData['name'],
+                              description: replyData['description'],
                             ),
                     );
                     break;

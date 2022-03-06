@@ -18,7 +18,7 @@ jobs:
     - name: Flutter Setup
       uses: subosito/flutter-action@v1
       with:
-        channel: 'stable'
+        channel: 'beta'
     - name: Expand keystore
       run: |
            cd android/
@@ -26,6 +26,19 @@ jobs:
            gpg -d --passphrase "${{ secrets.PASS_PHRASE }}" --batch release.jks.asc > app/release.jks
            echo "${{ secrets.KEYSTORE_PASS }}" > key.properties
            cd ..
+    - name: Web - Build
+      run: |
+          flutter build web --web-renderer canvaskit
+    - name: Web - Deploy
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALLO_MS }}'
+        projectId: allo-ms
+        channelId: live
+        target: beta
+      env:
+        FIREBASE_CLI_PREVIEWS: hostingchannels
     - name: Play Store - Build
       run: | 
           flutter build appbundle --flavor prod
@@ -43,4 +56,4 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
         token: ${{ secrets.TELEGRAM_BOT_ID }}
         format: markdown
-        message: "beta ${{ github.event.head_commit.message }}\n\n*Actualizarea va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți participanții canalului beta.*"
+        message: "beta ${{ github.event.head_commit.message }}\n\n*Actualizarea este disponibilă pe allobeta.web.app și va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți participanții canalului beta din Magazin Play.*"
