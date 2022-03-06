@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:allo/components/builders.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/home/settings/debug/debug.dart';
+import 'package:allo/logic/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -27,6 +30,19 @@ class AboutPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
+    // DO NOT REMOVE
+    final _a = useState(0);
+    void _b() {
+      if (Core.auth.user.email == 'i.am.cosmin.bicc@gmail.com') {
+        _a.value++;
+        if (_a.value == 10) {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => const C()));
+          _a.value = 0;
+        }
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.about),
@@ -41,7 +57,7 @@ class AboutPage extends HookConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
-                  'App Info',
+                  locales.appInfo,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -60,6 +76,7 @@ class AboutPage extends HookConsumerWidget {
               ListTile(
                 title: Text(locales.buildNumber),
                 trailing: Text(packageInfo.buildNumber),
+                onTap: _b,
               ),
               if (!kIsWeb) ...[
                 ListTile(
@@ -71,7 +88,7 @@ class AboutPage extends HookConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
-                  'Device Info',
+                  locales.deviceInfo,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -81,52 +98,46 @@ class AboutPage extends HookConsumerWidget {
               ),
               if (kIsWeb) ...[
                 ListTile(
-                  title: const Text('Device memory'),
-                  trailing: Text(
-                    deviceInfo['deviceMemory'] ?? 'nul',
-                  ),
-                ),
-                ListTile(
-                  title: const Text('Language'),
-                  trailing: Text(
-                    deviceInfo['language'] ?? 'nul',
-                  ),
-                ),
-                ListTile(
                   title: const Text('Browser'),
                   trailing: Text(
-                    deviceInfo['vendor'] ?? 'nul',
+                    deviceInfo['browserName'].toString().split('.')[1],
                   ),
                 ),
                 ListTile(
-                  title: const Text('Browser version'),
-                  trailing: Text(
-                    deviceInfo['vendorSub'] ?? 'nul',
+                  title: const Text('Browser agent'),
+                  subtitle: Text(
+                    deviceInfo['userAgent'].toString(),
                   ),
                 ),
+                ListTile(
+                  title: const Text('Platform'),
+                  trailing: Text(
+                    deviceInfo['platform'].toString(),
+                  ),
+                )
               ] else if (Platform.isAndroid) ...[
                 ListTile(
                   title: const Text('Model'),
                   trailing: Text(
-                    deviceInfo['model'] ?? 'nul',
+                    deviceInfo['model'].toString(),
                   ),
                 ),
                 ListTile(
                   title: const Text('Brand'),
                   trailing: Text(
-                    deviceInfo['brand'] ?? 'nul',
+                    deviceInfo['brand'].toString(),
                   ),
                 ),
                 ListTile(
                   title: const Text('Device'),
                   trailing: Text(
-                    deviceInfo['device'] ?? 'nul',
+                    deviceInfo['device'].toString(),
                   ),
                 ),
                 ListTile(
                   title: const Text('Version'),
                   trailing: Text(
-                    deviceInfo['version']['release'] ?? 'nul',
+                    deviceInfo['version']['release'].toString(),
                   ),
                 ),
                 ListTile(

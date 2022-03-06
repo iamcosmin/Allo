@@ -1,3 +1,4 @@
+import 'package:allo/components/space.dart';
 import 'package:allo/logic/backend/authentication/authentication.dart';
 import 'package:allo/logic/backend/chat/chat.dart';
 import 'package:allo/logic/backend/general/general.dart';
@@ -6,6 +7,7 @@ import 'package:allo/logic/client/notifications.dart';
 import 'package:allo/logic/client/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 export 'client/extensions.dart';
 
@@ -19,12 +21,27 @@ class Core {
   static final Stub stub = Stub();
 }
 
+class DialogBuilder {
+  final IconData icon;
+  final String title;
+  final Widget? body;
+  final List<ButtonStyleButton> actions;
+
+  const DialogBuilder({
+    required this.icon,
+    required this.title,
+    this.body,
+    required this.actions,
+  });
+}
+
 class Stub {
   void showInfoBar({
     required BuildContext context,
     required IconData icon,
     required String text,
   }) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
@@ -36,6 +53,41 @@ class Stub {
           ],
         ),
         dismissDirection: DismissDirection.vertical,
+      ),
+    );
+  }
+
+  void alert({
+    required BuildContext context,
+    required DialogBuilder dialogBuilder,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    showPlatformDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        alignment: Alignment.center,
+        actionsAlignment: MainAxisAlignment.center,
+        backgroundColor: colorScheme.surface,
+        title: Column(
+          children: [
+            Icon(
+              dialogBuilder.icon,
+              color: colorScheme.error,
+            ),
+            const Space(1),
+            Text(
+              dialogBuilder.title,
+              style: TextStyle(color: colorScheme.onSurface),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: DefaultTextStyle(
+          style: TextStyle(color: colorScheme.onSurface),
+          textAlign: TextAlign.center,
+          child: dialogBuilder.body ?? Container(),
+        ),
+        actions: dialogBuilder.actions,
       ),
     );
   }

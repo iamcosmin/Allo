@@ -6,15 +6,6 @@ on:
     - alpha
 
 jobs:
-  build-web: 
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Setup
-      uses: actions/checkout@v1
-    - name: Flutter Setup
-      uses: subosito/flutter-action@v1
-      with:
-        channel: 'beta'
   build-android:
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +28,7 @@ jobs:
            cd ..
     - name: Web - Build
       run: |
-          flutter build web
+          flutter build web --web-renderer canvaskit
     - name: Web - Deploy
       uses: FirebaseExtended/action-hosting-deploy@v0
       with:

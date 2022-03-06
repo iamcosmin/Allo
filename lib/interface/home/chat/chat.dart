@@ -64,7 +64,7 @@ class ChatScreen extends HookConsumerWidget {
             Container(
               alignment: Alignment.bottomLeft,
               padding: const EdgeInsets.all(10),
-              child: PersonPicture.determine(
+              child: PersonPicture(
                 profilePicture: Core.auth.getProfilePicture(
                   chatId,
                   isGroup: chatType == ChatType.group ? true : false,

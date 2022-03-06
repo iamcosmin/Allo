@@ -312,11 +312,10 @@ class Bubble extends HookConsumerWidget {
                     : MainAxisAlignment.end,
                 children: [
                   if (showProfilePictureConditionsMet) ...[
-                    PersonPicture.determine(
+                    PersonPicture(
                       radius: 36,
                       profilePicture: user.profilePhoto,
                       initials: nameInitials,
-                      color: colorScheme.primary,
                     ),
                     const Padding(padding: EdgeInsets.only(left: 10)),
                   ] else if (chat.type == ChatType.private)

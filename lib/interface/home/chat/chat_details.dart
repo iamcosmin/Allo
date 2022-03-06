@@ -160,7 +160,7 @@ class ChatDetails extends HookConsumerWidget {
                   ? null
                   : () => Core.navigation
                       .push(context: context, route: ImageView(profilePicture)),
-              child: PersonPicture.determine(
+              child: PersonPicture(
                 profilePicture: profilePicture,
                 radius: 150,
                 initials: Core.auth.returnNameInitials(name),

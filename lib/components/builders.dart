@@ -92,7 +92,12 @@ Widget _child<T>(
   if (snapshot.hasData) {
     return success(context, snapshot.data!);
   } else if (snapshot.connectionState == ConnectionState.waiting) {
-    return loading ?? const Center(child: CircularProgressIndicator());
+    return loading ??
+        Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        );
   } else if (snapshot.hasError) {
     return error!(context, snapshot.error) ??
         Center(

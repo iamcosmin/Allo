@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Schimbare nume"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("A apărut o eroare."),
+        "appInfo": MessageLookupByLibrary.simpleMessage("Informații aplicație"),
         "attach": MessageLookupByLibrary.simpleMessage("Atașează"),
         "buildNumber": MessageLookupByLibrary.simpleMessage("Număr versiune"),
         "camera": MessageLookupByLibrary.simpleMessage("Cameră"),
@@ -66,6 +67,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Șterge mesaj"),
         "deleteProfilePicture":
             MessageLookupByLibrary.simpleMessage("Șterge poza de profil"),
+        "deviceInfo":
+            MessageLookupByLibrary.simpleMessage("Informații dispozitiv"),
         "edit": MessageLookupByLibrary.simpleMessage("Editează"),
         "editMessages": MessageLookupByLibrary.simpleMessage("Editează mesaj"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),

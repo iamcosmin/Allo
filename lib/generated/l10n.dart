@@ -1379,6 +1379,26 @@ class S {
       args: [],
     );
   }
+
+  /// `App Info`
+  String get appInfo {
+    return Intl.message(
+      'App Info',
+      name: 'appInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Device Info`
+  String get deviceInfo {
+    return Intl.message(
+      'Device Info',
+      name: 'deviceInfo',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

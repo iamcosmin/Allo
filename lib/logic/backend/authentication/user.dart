@@ -38,6 +38,10 @@ class CurrentUser {
     return FirebaseAuth.instance.currentUser!.displayName!;
   }
 
+  String get email {
+    return FirebaseAuth.instance.currentUser!.email!;
+  }
+
   /// Returns the initials of the name of the authenticated account.
   String get nameInitials {
     final auth = FirebaseAuth.instance.currentUser;

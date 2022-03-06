@@ -35,7 +35,7 @@ class ChatMembersPage extends HookConsumerWidget {
                     : context.locale.me),
                 contentPadding: const EdgeInsets.only(
                     top: 5, bottom: 5, left: 10, right: 10),
-                leading: PersonPicture.determine(
+                leading: PersonPicture(
                   radius: 50,
                   profilePicture: Core.auth.getProfilePicture(
                     member['uid'],

@@ -46,7 +46,7 @@ class ChatList extends HookConsumerWidget {
                         .withAlpha(200),
                   ),
                 ),
-                leading: PersonPicture.determine(
+                leading: PersonPicture(
                   profilePicture: chat.picture,
                   radius: 50,
                   initials: Core.auth.returnNameInitials(

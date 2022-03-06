@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Change Name"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("An error occurred."),
+        "appInfo": MessageLookupByLibrary.simpleMessage("App Info"),
         "attach": MessageLookupByLibrary.simpleMessage("Attach"),
         "buildNumber": MessageLookupByLibrary.simpleMessage("Build Number"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
@@ -64,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Delete Message"),
         "deleteProfilePicture":
             MessageLookupByLibrary.simpleMessage("Delete Profile Picture"),
+        "deviceInfo": MessageLookupByLibrary.simpleMessage("Device Info"),
         "edit": MessageLookupByLibrary.simpleMessage("Edit"),
         "editMessages": MessageLookupByLibrary.simpleMessage("Edit Messages"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),

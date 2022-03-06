@@ -33,7 +33,7 @@ class SetupProfilePicture extends HookWidget {
                       value: percentage.value,
                     ),
                   ),
-                  PersonPicture.determine(
+                  PersonPicture(
                       radius: 100,
                       profilePicture: Core.auth.user.profilePicture,
                       initials: Core.auth.user.nameInitials),

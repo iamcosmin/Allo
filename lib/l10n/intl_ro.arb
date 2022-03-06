@@ -129,5 +129,7 @@
   "preferenceCleared": "Preferință resetată.",
   "accountChangeNameTitle": "Schimbare nume",
   "accountChangeNameDescription": "Introdu noul tău nume.",
-  "unsupportedMessage": "Unsupported message."
+  "unsupportedMessage": "Unsupported message.",
+  "appInfo": "Informații aplicație",
+  "deviceInfo": "Informații dispozitiv"
 }

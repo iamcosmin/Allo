@@ -23,6 +23,7 @@ class TabbedNavigator extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = useState(0);
+    final previousSelected = usePrevious(selected.value);
     final labels = usePreference(ref, navBarLabels);
     final locales = S.of(context);
     final width = MediaQuery.of(context).size.width;
@@ -37,12 +38,12 @@ class TabbedNavigator extends HookConsumerWidget {
               destinations: [
                 NavigationRailDestination(
                   icon: Icon(
-                    Icons.home_outlined,
+                    Icons.chat_outlined,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                  label: Text(locales.home),
+                  label: Text(locales.chats),
                   selectedIcon: Icon(
-                    Icons.home,
+                    Icons.chat,
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
                 ),
@@ -65,9 +66,13 @@ class TabbedNavigator extends HookConsumerWidget {
           // The page.
           Expanded(
             child: PageTransitionSwitcher(
+              reverse: (previousSelected ?? 0) > selected.value ? true : false,
               child: pages[selected.value],
               transitionBuilder: (child, animation, secondaryAnimation) {
-                return FadeThroughTransition(
+                return SharedAxisTransition(
+                  transitionType: width > 700
+                      ? SharedAxisTransitionType.vertical
+                      : SharedAxisTransitionType.horizontal,
                   fillColor: Theme.of(context).colorScheme.surface,
                   animation: animation,
                   secondaryAnimation: secondaryAnimation,
@@ -87,12 +92,12 @@ class TabbedNavigator extends HookConsumerWidget {
               destinations: [
                 NavigationDestination(
                   icon: Icon(
-                    Icons.home_outlined,
+                    Icons.chat_outlined,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                  label: locales.home,
+                  label: locales.chats,
                   selectedIcon: Icon(
-                    Icons.home,
+                    Icons.chat,
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
                 ),

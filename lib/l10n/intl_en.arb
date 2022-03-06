@@ -131,5 +131,7 @@
   "preferenceCleared": "Preference cleared.",
   "accountChangeNameTitle": "Change Name",
   "accountChangeNameDescription": "Enter your new name.",
-  "unsupportedMessage": "Unsupported message."
+  "unsupportedMessage": "Unsupported message.",
+  "appInfo": "App Info",
+  "deviceInfo": "Device Info"
 }
