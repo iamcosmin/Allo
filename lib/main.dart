@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/client/hooks.dart';
@@ -5,6 +7,7 @@ import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/client/theme.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -56,6 +59,11 @@ void main() async {
         sharedPreferencesProvider.overrideWithValue(
           await SharedPreferences.getInstance(),
         ),
+        if (!kIsWeb && Platform.isAndroid) ...[
+          deviceInfoProvider.overrideWithValue(
+            await DeviceInfoPlugin().androidInfo,
+          ),
+        ]
       ],
       child: const InnerApp(),
     ),
@@ -67,14 +75,10 @@ class InnerApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final darkState = usePreference(ref, darkMode);
-    const _scrollBehavior = MaterialScrollBehavior(
-      androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
-    );
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
-      scrollBehavior: _scrollBehavior,
       themeMode: darkState.preference ? ThemeMode.dark : ThemeMode.light,
       theme: theme(Brightness.light, ref, context),
       darkTheme: theme(Brightness.dark, ref, context),
