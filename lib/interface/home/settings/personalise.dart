@@ -1,3 +1,4 @@
+import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import '../../../logic/client/preferences/manager.dart';
 
 /// Personalisation preferences
 final navBarLabels = preference('personalisation_nav_bar_labels');
+final turnOffDynamicColor = preference('turn_off_dynamic_color');
 
 class PersonalisePage extends HookConsumerWidget {
   const PersonalisePage({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class PersonalisePage extends HookConsumerWidget {
     final dark = usePreference(ref, darkMode);
     final locales = S.of(context);
     final labels = usePreference(ref, navBarLabels);
+    final dynamicColors = usePreference(ref, turnOffDynamicColor);
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.personalise),
@@ -32,6 +35,12 @@ class PersonalisePage extends HookConsumerWidget {
             title: Text(locales.personaliseHideNavigationHints),
             value: labels.preference,
             onChanged: (value) => labels.switcher(),
+          ),
+          const Space(1),
+          SwitchListTile.adaptive(
+            title: const Text('Turn off system accent'),
+            value: dynamicColors.preference,
+            onChanged: (value) => dynamicColors.switcher(),
           ),
         ],
       ),

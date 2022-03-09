@@ -1,6 +1,7 @@
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/chat/chat_messages_list.dart';
 import 'package:allo/logic/core.dart';
+import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,31 +15,26 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../logic/client/theme.dart';
 
 class ChatScreen extends HookConsumerWidget {
-  final ChatType chatType;
-  final String title;
-  final String chatId;
-  const ChatScreen(
-      {required this.title,
-      required this.chatId,
-      required this.chatType,
-      Key? key})
-      : super(key: key);
+  final Chat chat;
+  const ChatScreen({required this.chat, Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final typing = useState(false);
     final scheme = useState<ColorScheme>(
       ColorScheme.fromSeed(
-          seedColor: Colors.blue, brightness: Theme.of(context).brightness),
+        seedColor: Colors.blue,
+        brightness: Theme.of(context).brightness,
+      ),
     );
     final inputModifiers = useState<InputModifier?>(null);
     final brightness = Theme.of(context).brightness;
     useEffect(() {
       if (!kIsWeb) {
-        FirebaseMessaging.instance.subscribeToTopic(chatId);
+        FirebaseMessaging.instance.subscribeToTopic(chat.id);
       }
       FirebaseFirestore.instance
           .collection('chats')
-          .doc(chatId)
+          .doc(chat.id)
           .snapshots()
           .listen(
         (event) {
@@ -66,11 +62,15 @@ class ChatScreen extends HookConsumerWidget {
               padding: const EdgeInsets.all(10),
               child: PersonPicture(
                 profilePicture: Core.auth.getProfilePicture(
-                  chatId,
-                  isGroup: chatType == ChatType.group ? true : false,
+                  chat is GroupChat
+                      ? chat.id
+                      : chat is PrivateChat
+                          ? (chat as PrivateChat).userId
+                          : '',
+                  isGroup: chat is GroupChat ? true : false,
                 ),
                 radius: 40,
-                initials: Core.auth.returnNameInitials(title),
+                initials: Core.auth.returnNameInitials(chat.title),
               ),
             ),
           ],
@@ -78,12 +78,10 @@ class ChatScreen extends HookConsumerWidget {
             onTap: () => Core.navigation.push(
                 context: context,
                 route: ChatDetails(
-                  name: title,
-                  chatId: chatId,
-                  chatType: chatType,
+                  chat: chat,
                 )),
             child: Text(
-              title,
+              chat.title,
               style: const TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.w600,
@@ -101,8 +99,10 @@ class ChatScreen extends HookConsumerWidget {
                     Expanded(
                       flex: 10,
                       child: ChatMessagesList(
-                        chatId: chatId,
-                        chatType: chatType,
+                        chatId: chat.id,
+                        chatType: chat is PrivateChat
+                            ? ChatType.private
+                            : ChatType.group,
                         inputModifiers: inputModifiers,
                       ),
                     ),
@@ -116,9 +116,10 @@ class ChatScreen extends HookConsumerWidget {
                   alignment: Alignment.bottomCenter,
                   child: MessageInput(
                     modifier: inputModifiers,
-                    chatId: chatId,
-                    chatName: title,
-                    chatType: chatType,
+                    chatId: chat.id,
+                    chatName: chat.title,
+                    chatType:
+                        chat is PrivateChat ? ChatType.private : ChatType.group,
                     theme: scheme.value,
                   ),
                 ),

@@ -34,7 +34,7 @@ class ChatList extends HookConsumerWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
                 ),
                 subtitle: Text(
@@ -42,7 +42,7 @@ class ChatList extends HookConsumerWidget {
                   style: TextStyle(
                     color: Theme.of(context)
                         .colorScheme
-                        .onSurfaceVariant
+                        .onSecondaryContainer
                         .withAlpha(200),
                   ),
                 ),
@@ -56,9 +56,7 @@ class ChatList extends HookConsumerWidget {
                 onTap: () => Core.navigation.push(
                   context: context,
                   route: ChatScreen(
-                    chatType: getChatTypeFromType(chat),
-                    title: chat.title,
-                    chatId: chat.id,
+                    chat: chat,
                   ),
                 ),
               );

@@ -85,6 +85,7 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
         chatName: message.data['chatName'],
         senderName: message.data['senderName']),
     'chatType': message.data['type'] ?? 'group',
+    'uid': _uid ?? 'no-uid'
   };
   if (_uid != Core.auth.user.uid) {
     await AwesomeNotifications().createNotification(
@@ -166,12 +167,27 @@ class _NotificationController {
       await Core.navigation.push(
         context: navigatorKey.currentState!.context,
         route: ChatScreen(
-          chatType: getChatTypeFromString(action.payload!['chatType']!) ??
-              ChatType.group,
-          title: action.payload!['chatName']!,
-          chatId: action.payload!['chatId']!,
+          chat: _getChat(action.payload!),
         ),
       );
+    }
+  }
+
+  static Chat _getChat(Map<String, String> payload) {
+    final chatType = getChatTypeFromString(payload['chatType'] ?? '???');
+    if (chatType == ChatType.private) {
+      return PrivateChat(
+        name: payload['chatName'] ?? '???',
+        userId: payload['uid'] ?? '???',
+        chatId: payload['chatId'] ?? '???',
+      );
+    } else if (chatType == ChatType.group) {
+      return GroupChat(
+        title: payload['chatName'] ?? '???',
+        chatId: payload['chatId'] ?? '???',
+      );
+    } else {
+      throw Exception('This chatType is not defined.');
     }
   }
 }

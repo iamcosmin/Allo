@@ -14,11 +14,9 @@ class C extends HookConsumerWidget {
     final locales = S.of(context);
     final conversations = usePreference(ref, privateConversations);
     final reactions = usePreference(ref, reactionsDebug);
-    final replies = usePreference(ref, repliesDebug);
     final editMessage = usePreference(ref, editMessageDebug);
     final members = usePreference(ref, membersDebug);
     final iOSMode = usePreference(ref, emulateIOSBehaviour);
-    final motion2 = usePreference(ref, motionV2);
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.internalMenu),
@@ -60,16 +58,6 @@ class C extends HookConsumerWidget {
             ),
           ),
           InkWell(
-            onLongPress: () => replies.clear(
-              context,
-            ),
-            child: SwitchListTile.adaptive(
-              title: Text(locales.replyToMessage),
-              value: replies.preference,
-              onChanged: (value) => replies.switcher(),
-            ),
-          ),
-          InkWell(
             onLongPress: () => editMessage.clear(
               context,
             ),
@@ -107,16 +95,6 @@ class C extends HookConsumerWidget {
               title: const Text('Cupertino behaviour'),
               value: iOSMode.preference,
               onChanged: (value) => iOSMode.switcher(),
-            ),
-          ),
-          InkWell(
-            onLongPress: () => motion2.clear(
-              context,
-            ),
-            child: SwitchListTile.adaptive(
-              title: const Text('Motion 2'),
-              value: motion2.preference,
-              onChanged: (value) => motion2.switcher(),
             ),
           ),
         ],

@@ -231,7 +231,6 @@ class Bubble extends HookConsumerWidget {
         message.isNextSenderSame == false;
     final showReadIndicator =
         !isNotCurrentUser && message.isLast && message.isRead;
-    final replies = usePreference(ref, repliesDebug);
     // Paddings
     final betweenBubblesPadding = EdgeInsets.only(
         top: message.isPreviousSenderSame ? 1 : 10,
@@ -290,19 +289,17 @@ class Bubble extends HookConsumerWidget {
                 child: const Icon(Icons.reply_rounded),
               ),
             ),
-            onLeftSwipe: replies.preference == false
-                ? null
-                : () {
-                    modifiers.value = InputModifier(
-                      title: user.name,
-                      body: message.text,
-                      icon: Icons.reply_rounded,
-                      action: ModifierAction(
-                        type: ModifierType.reply,
-                        replyMessageId: message.id,
-                      ),
-                    );
-                  },
+            onLeftSwipe: () {
+              modifiers.value = InputModifier(
+                title: user.name,
+                body: message.text,
+                icon: Icons.reply_rounded,
+                action: ModifierAction(
+                  type: ModifierType.reply,
+                  replyMessageId: message.id,
+                ),
+              );
+            },
             child: InkWell(
               child: Row(
                 mainAxisSize: MainAxisSize.max,

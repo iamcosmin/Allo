@@ -1,13 +1,9 @@
-import 'dart:io';
-
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/client/hooks.dart';
-import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/client/theme.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,7 +12,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'interface/home/tabbed_navigator.dart';
 import 'logic/client/notifications.dart';
 
@@ -55,16 +50,7 @@ void main() async {
   // );
   runApp(
     ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(
-          await SharedPreferences.getInstance(),
-        ),
-        if (!kIsWeb && Platform.isAndroid) ...[
-          deviceInfoProvider.overrideWithValue(
-            await DeviceInfoPlugin().androidInfo,
-          ),
-        ]
-      ],
+      overrides: await Core.getOverrides(),
       child: const InnerApp(),
     ),
   );

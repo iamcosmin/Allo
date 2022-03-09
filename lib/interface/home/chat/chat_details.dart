@@ -7,7 +7,7 @@ import 'package:allo/interface/home/chat/members.dart';
 import 'package:allo/logic/client/hooks.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
-import 'package:allo/logic/models/types.dart';
+import 'package:allo/logic/models/chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -126,22 +126,16 @@ Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo(
 }
 
 class ChatDetails extends HookConsumerWidget {
-  const ChatDetails(
-      {Key? key,
-      required this.name,
-      required this.chatId,
-      required this.chatType})
-      : super(key: key);
-  final String name;
-  final ChatType chatType;
-  final String chatId;
+  const ChatDetails({Key? key, required this.chat}) : super(key: key);
+  final Chat chat;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
     final members = usePreference(ref, membersDebug);
-    final profilePicture = Core.auth.getProfilePicture(chatId,
-        isGroup: chatType == ChatType.group ? true : false);
+    final profilePicture = Core.auth.getProfilePicture(
+        chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
+        isGroup: chat is GroupChat ? true : false);
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.chatInfo),
@@ -163,7 +157,7 @@ class ChatDetails extends HookConsumerWidget {
               child: PersonPicture(
                 profilePicture: profilePicture,
                 radius: 150,
-                initials: Core.auth.returnNameInitials(name),
+                initials: Core.auth.returnNameInitials(chat.title),
               ),
             ),
           ),
@@ -171,7 +165,7 @@ class ChatDetails extends HookConsumerWidget {
           Container(
             alignment: Alignment.topCenter,
             child: Text(
-              name,
+              chat.title,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
@@ -183,7 +177,8 @@ class ChatDetails extends HookConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.brush_outlined),
                   title: Text(locales.theme),
-                  onTap: () async => _changeTheme(context: context, id: chatId),
+                  onTap: () async =>
+                      _changeTheme(context: context, id: chat.id),
                 ),
                 if (members.preference == true) ...[
                   ListTile(
@@ -191,7 +186,7 @@ class ChatDetails extends HookConsumerWidget {
                     title: Text(locales.members),
                     onTap: () => Core.navigation.push(
                         context: context,
-                        route: ChatMembersPage(chatId: chatId)),
+                        route: ChatMembersPage(chatId: chat.id)),
                   ),
                 ]
               ],

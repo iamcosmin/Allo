@@ -3,21 +3,22 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_color_utilities/material_color_utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core.dart';
 
-final sharedPreferencesProvider = Provider<SharedPreferences>(
-  (ref) => throw UnimplementedError(
-    'This needs to be instantiated in the main method of the app.',
-  ),
-);
+final sharedPreferencesProvider = runtimeProvider<SharedPreferences>();
+final androidSdkVersionProvider = runtimeProvider<AndroidBuildVersion>();
+final dynamicColorsProvider = runtimeProvider<CorePalette?>();
 
-final deviceInfoProvider = Provider<AndroidDeviceInfo>(
-  (ref) => throw UnimplementedError(
-    'This needs to be instantiated in the main method of the app.',
-  ),
-);
+Provider<T> runtimeProvider<T>() {
+  return Provider<T>(
+    (ref) => throw UnimplementedError(
+      'This needs to be instantiated in the main method of the app.',
+    ),
+  );
+}
 
 StateNotifierProvider<PreferenceManager, bool> preference(
   String preference, {

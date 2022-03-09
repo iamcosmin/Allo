@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
-
 class ChatMessagesList extends HookConsumerWidget {
   const ChatMessagesList(
       {required this.chatId,
@@ -19,6 +17,8 @@ class ChatMessagesList extends HookConsumerWidget {
   final String chatId;
   final ChatType chatType;
   final ValueNotifier<InputModifier?> inputModifiers;
+  static final GlobalKey<AnimatedListState> listKey =
+      GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useScrollController();
