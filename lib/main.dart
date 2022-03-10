@@ -15,8 +15,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'interface/home/tabbed_navigator.dart';
 import 'logic/client/notifications.dart';
 
-final navigatorKey = GlobalKey<NavigatorState>();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -64,7 +62,7 @@ class InnerApp extends HookConsumerWidget {
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
+      navigatorKey: Core.navigatorKey,
       themeMode: darkState.preference ? ThemeMode.dark : ThemeMode.light,
       theme: theme(Brightness.light, ref, context),
       darkTheme: theme(Brightness.dark, ref, context),

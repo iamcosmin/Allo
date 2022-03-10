@@ -29,6 +29,7 @@ class Core {
   static final General general = General();
   static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();
+  static final navigatorKey = GlobalKey<NavigatorState>();
 
   static Future<List<Override>> getOverrides() async {
     return [

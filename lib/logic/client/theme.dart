@@ -94,7 +94,7 @@ ThemeData theme(
 
   ColorScheme getColorScheme() {
     final defaultColorScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF1A76C6),
+      seedColor: Colors.red,
       brightness: brightness,
     );
     if (colorScheme != null) {
@@ -202,22 +202,20 @@ ThemeData theme(
     useMaterial3: true,
     splashFactory: getSplashFactory(),
     shadowColor: scheme.shadow,
-    cardTheme: CardTheme(
-      color: scheme.surface,
-      shadowColor: scheme.shadow,
-      elevation: 5,
-    ),
+    scaffoldBackgroundColor: scheme.background,
+    // Backward compatibility
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: scheme.surface,
-      indicatorColor: scheme.secondaryContainer,
       labelTextStyle: MaterialStateProperty.all(
         TextStyle(
-            fontFamily: 'GS-Text', fontSize: 12.5, color: scheme.onSurface),
+          fontFamily: 'GS-Text',
+          fontSize: 12,
+          letterSpacing: 0.6,
+          color: scheme.onSurface,
+          inherit: true,
+        ),
       ),
     ),
     navigationRailTheme: NavigationRailThemeData(
-      backgroundColor: scheme.surface,
-      indicatorColor: scheme.secondaryContainer,
       selectedLabelTextStyle: TextStyle(
           fontFamily: 'GS-Text', fontSize: 12.5, color: scheme.onSurface),
       unselectedLabelTextStyle: TextStyle(
@@ -249,13 +247,13 @@ ThemeData theme(
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
           shape: MaterialStateProperty.all(const StadiumBorder()),
-          backgroundColor: MaterialStateProperty.all(scheme.primary),
           foregroundColor: MaterialStateProperty.all(scheme.primary)),
     ),
     textButtonTheme: TextButtonThemeData(
-        style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all(scheme.primary))),
-    backgroundColor: scheme.surface,
+      style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all(scheme.primary),
+      ),
+    ),
     colorScheme: scheme,
     brightness: brightness,
     appBarTheme: AppBarTheme(
@@ -274,7 +272,6 @@ ThemeData theme(
     ),
     androidOverscrollIndicator: getOverscrollIndicator(),
     pageTransitionsTheme: pageTransitionsTheme(),
-    scaffoldBackgroundColor: scheme.surface,
     fontFamily: 'GS-Text',
     //! TODO: These fields should be replaced when Material changes land,
     // as these are just emulations of the Material3 behaviour.

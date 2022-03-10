@@ -9,7 +9,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import '../../interface/home/chat/chat.dart';
-import '../../main.dart';
 import '../core.dart';
 
 /// Returns the title of the conversation (distinguish from group and private)
@@ -165,7 +164,7 @@ class _NotificationController {
       );
     } else {
       await Core.navigation.push(
-        context: navigatorKey.currentState!.context,
+        context: Core.navigatorKey.currentState!.context,
         route: ChatScreen(
           chat: _getChat(action.payload!),
         ),
