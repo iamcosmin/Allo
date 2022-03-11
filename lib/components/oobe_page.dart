@@ -62,20 +62,10 @@ class SetupPage extends HookConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onLongPress: debug != null
-                            ? () {
-                                Core.navigation.push(
-                                  context: context,
-                                  route: debug!,
-                                );
-                              }
-                            : null,
-                        child: Icon(
-                          icon,
-                          size: body.isNotEmpty ? 40 : 50,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                      Icon(
+                        icon,
+                        size: body.isNotEmpty ? 40 : 50,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       const Space(2),
                       Text(
@@ -183,7 +173,6 @@ class SetupPage extends HookConsumerWidget {
                                     );
                                   } else {
                                     Core.navigation.push(
-                                      context: context,
                                       route: nextRoute!,
                                     );
                                   }

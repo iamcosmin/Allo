@@ -43,7 +43,6 @@ void _messageOptions(
             Navigator.of(context).pop();
             Clipboard.setData(ClipboardData(text: messageText));
             Core.stub.showInfoBar(
-              context: context,
               icon: Icons.copy_outlined,
               text: locales.messageCopied,
             );
@@ -57,7 +56,6 @@ void _messageOptions(
           onTap: () {
             Navigator.of(context).pop();
             Core.stub.showInfoBar(
-              context: context,
               icon: Icons.info_outlined,
               text: locales.comingSoon,
             );
@@ -131,9 +129,7 @@ void _deleteMessage(
                       .messages
                       .deleteMessage(messageId: messageId);
                   Core.stub.showInfoBar(
-                      context: context,
-                      icon: Icons.delete_outline,
-                      text: locales.messageDeleted);
+                      icon: Icons.delete_outline, text: locales.messageDeleted);
                 },
               );
             },
@@ -323,7 +319,6 @@ class Bubble extends HookConsumerWidget {
                   InkWell(
                     onTap: message.type == MessageType.image
                         ? () => Core.navigation.push(
-                              context: context,
                               route: ImageView(message.image!,
                                   colorScheme: colorScheme),
                             )

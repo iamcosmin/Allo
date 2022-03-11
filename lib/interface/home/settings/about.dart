@@ -76,7 +76,7 @@ class AboutPage extends HookConsumerWidget {
               ListTile(
                 title: Text(locales.buildNumber),
                 trailing: Text(packageInfo.buildNumber),
-                onTap: _b,
+                onTap: () => _b(),
               ),
               if (!kIsWeb) ...[
                 ListTile(

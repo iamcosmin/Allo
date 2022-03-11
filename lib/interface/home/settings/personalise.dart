@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -8,8 +11,8 @@ import '../../../logic/client/hooks.dart';
 import '../../../logic/client/preferences/manager.dart';
 
 /// Personalisation preferences
-final navBarLabels = preference('personalisation_nav_bar_labels');
-final turnOffDynamicColor = preference('turn_off_dynamic_color');
+final navBarLabels = createPreference('personalisation_nav_bar_labels', false);
+final turnOffDynamicColor = createPreference('turn_off_dynamic_color', false);
 
 class PersonalisePage extends HookConsumerWidget {
   const PersonalisePage({Key? key}) : super(key: key);
@@ -20,6 +23,11 @@ class PersonalisePage extends HookConsumerWidget {
     final locales = S.of(context);
     final labels = usePreference(ref, navBarLabels);
     final dynamicColors = usePreference(ref, turnOffDynamicColor);
+    int? sdkInt;
+    if (!kIsWeb && Platform.isAndroid) {
+      sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
+    }
+    final dynamic12 = (sdkInt != null && sdkInt >= 31);
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.personalise),
@@ -29,19 +37,21 @@ class PersonalisePage extends HookConsumerWidget {
           SwitchListTile.adaptive(
             title: Text(locales.darkMode),
             value: dark.preference,
-            onChanged: (value) => dark.switcher(),
+            onChanged: dark.changeValue,
           ),
           SwitchListTile.adaptive(
             title: Text(locales.personaliseHideNavigationHints),
             value: labels.preference,
-            onChanged: (value) => labels.switcher(),
+            onChanged: labels.changeValue,
           ),
           const Space(1),
-          SwitchListTile.adaptive(
-            title: const Text('Turn off system accent'),
-            value: dynamicColors.preference,
-            onChanged: (value) => dynamicColors.switcher(),
-          ),
+          if (dynamic12) ...[
+            SwitchListTile.adaptive(
+              title: const Text('Turn off system accent'),
+              value: dynamicColors.preference,
+              onChanged: dynamicColors.changeValue,
+            ),
+          ],
         ],
       ),
     );

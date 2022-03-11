@@ -13,6 +13,7 @@ class StreamView<T> extends HookConsumerWidget {
       this.failed,
       this.error,
       this.loading,
+      this.isAnimated,
       Key? key})
       : super(key: key);
   final Stream<T> stream;
@@ -20,13 +21,15 @@ class StreamView<T> extends HookConsumerWidget {
   final Widget? loading;
   final AsyncErrorData error;
   final Widget? failed;
+  final bool? isAnimated;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return StreamBuilder<T>(
       stream: stream,
       builder: (context, snapshot) {
-        return _switcher<T>(context, snapshot, success, error, loading, failed);
+        return _switcher<T>(
+            context, snapshot, success, error, loading, failed, isAnimated);
       },
     );
   }
@@ -39,6 +42,7 @@ class FutureView<T> extends HookConsumerWidget {
       this.failed,
       this.error,
       this.loading,
+      this.isAnimated,
       Key? key})
       : super(key: key);
   final Future<T> future;
@@ -46,36 +50,47 @@ class FutureView<T> extends HookConsumerWidget {
   final Widget? loading;
   final AsyncErrorData error;
   final Widget? failed;
+  final bool? isAnimated;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) {
-        return _switcher<T>(context, snapshot, success, error, loading, failed);
+        return _switcher<T>(
+            context, snapshot, success, error, loading, failed, isAnimated);
       },
     );
   }
 }
 
 PageTransitionSwitcher _switcher<T>(
-  BuildContext context,
-  AsyncSnapshot snapshot,
-  AsyncSuccessData<T> success,
-  AsyncErrorData error,
-  Widget? loading,
-  Widget? failed,
-) {
+    BuildContext context,
+    AsyncSnapshot snapshot,
+    AsyncSuccessData<T> success,
+    AsyncErrorData error,
+    Widget? loading,
+    Widget? failed,
+    bool? isAnimated) {
   return PageTransitionSwitcher(
     duration: const Duration(milliseconds: 300),
     transitionBuilder: (child, animation, secondaryAnimation) {
-      return SharedAxisTransition(
-        fillColor: Theme.of(context).colorScheme.surface,
-        animation: animation,
-        secondaryAnimation: secondaryAnimation,
-        transitionType: SharedAxisTransitionType.vertical,
-        child: child,
-      );
+      if (isAnimated == null || isAnimated == true) {
+        return SharedAxisTransition(
+          fillColor: Theme.of(context).colorScheme.surface,
+          animation: animation,
+          secondaryAnimation: secondaryAnimation,
+          transitionType: SharedAxisTransitionType.vertical,
+          child: child,
+        );
+      } else {
+        return FadeThroughTransition(
+          animation: animation,
+          secondaryAnimation: secondaryAnimation,
+          fillColor: Theme.of(context).colorScheme.surface,
+          child: child,
+        );
+      }
     },
     child: _child<T>(snapshot, context, success, error, loading, failed),
   );

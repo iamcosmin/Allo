@@ -86,6 +86,7 @@ class Photo extends HookConsumerWidget {
               child: CircularProgressIndicator(),
             ),
           ),
+          isAnimated: false,
         );
       } else if (Platform.isAndroid) {
         return Image(

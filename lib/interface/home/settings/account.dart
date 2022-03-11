@@ -24,7 +24,6 @@ class AccountSettings extends HookWidget {
             minLeadingWidth: 20,
             onTap: () {
               Core.navigation.push(
-                context: context,
                 route: const ChangeNamePage(),
               );
             },
@@ -40,8 +39,7 @@ class AccountSettings extends HookWidget {
               locales.profilePicture,
               style: const TextStyle(fontSize: 18),
             ),
-            onTap: () => Core.navigation
-                .push(context: context, route: ProfilePictureSettings()),
+            onTap: () => Core.navigation.push(route: ProfilePictureSettings()),
           )
         ],
       ),

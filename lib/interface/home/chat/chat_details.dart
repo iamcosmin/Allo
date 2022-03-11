@@ -152,8 +152,8 @@ class ChatDetails extends HookConsumerWidget {
               splashColor: const Color(0x00000000),
               onTap: profilePicture == null
                   ? null
-                  : () => Core.navigation
-                      .push(context: context, route: ImageView(profilePicture)),
+                  : () =>
+                      Core.navigation.push(route: ImageView(profilePicture)),
               child: PersonPicture(
                 profilePicture: profilePicture,
                 radius: 150,
@@ -184,9 +184,8 @@ class ChatDetails extends HookConsumerWidget {
                   ListTile(
                     leading: const Icon(Icons.people_alt_outlined),
                     title: Text(locales.members),
-                    onTap: () => Core.navigation.push(
-                        context: context,
-                        route: ChatMembersPage(chatId: chat.id)),
+                    onTap: () => Core.navigation
+                        .push(route: ChatMembersPage(chatId: chat.id)),
                   ),
                 ]
               ],

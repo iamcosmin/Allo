@@ -54,7 +54,7 @@ class C extends HookConsumerWidget {
             child: SwitchListTile.adaptive(
               title: Text(locales.reactions),
               value: reactions.preference,
-              onChanged: (value) => reactions.switcher(),
+              onChanged: reactions.changeValue,
             ),
           ),
           InkWell(
@@ -64,7 +64,7 @@ class C extends HookConsumerWidget {
             child: SwitchListTile.adaptive(
               title: Text(locales.editMessages),
               value: editMessage.preference,
-              onChanged: (value) => editMessage.switcher(),
+              onChanged: editMessage.changeValue,
             ),
           ),
           InkWell(
@@ -74,7 +74,7 @@ class C extends HookConsumerWidget {
             child: SwitchListTile.adaptive(
               title: Text(locales.createNewChats),
               value: conversations.preference,
-              onChanged: (value) => conversations.switcher(),
+              onChanged: conversations.changeValue,
             ),
           ),
           InkWell(
@@ -84,7 +84,7 @@ class C extends HookConsumerWidget {
             child: SwitchListTile.adaptive(
               title: Text(locales.enableParticipantsList),
               value: members.preference,
-              onChanged: (value) => members.switcher(),
+              onChanged: members.changeValue,
             ),
           ),
           InkWell(
@@ -94,7 +94,7 @@ class C extends HookConsumerWidget {
             child: SwitchListTile.adaptive(
               title: const Text('Cupertino behaviour'),
               value: iOSMode.preference,
-              onChanged: (value) => iOSMode.switcher(),
+              onChanged: iOSMode.changeValue,
             ),
           ),
         ],

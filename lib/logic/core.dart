@@ -29,7 +29,8 @@ class Core {
   static final General general = General();
   static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();
-  static final navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   static Future<List<Override>> getOverrides() async {
     return [
@@ -67,24 +68,29 @@ class DialogBuilder {
 
 class Stub {
   void showInfoBar({
-    required BuildContext context,
+    @Deprecated('This function does not require context anymore, as it relies on ScaffoldMessengerState key.')
+        BuildContext? context,
     required IconData icon,
     required String text,
   }) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Row(
-          children: [
-            Icon(icon),
-            const Padding(padding: EdgeInsets.only(left: 20)),
-            Text(text),
-          ],
+    final key = Core.scaffoldMessengerKey.currentState;
+    if (key != null) {
+      key.hideCurrentSnackBar();
+      key.showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Row(
+            children: [
+              Icon(icon),
+              const Padding(padding: EdgeInsets.only(left: 20)),
+              Text(text),
+            ],
+          ),
         ),
-        dismissDirection: DismissDirection.vertical,
-      ),
-    );
+      );
+    } else {
+      throw Exception('The scaffoldMessengerKey is null.');
+    }
   }
 
   void alert({

@@ -108,16 +108,14 @@ class CurrentUser {
             if (route == null) {
               Navigator.pop(context);
             } else {
-              Core.navigation.push(context: context, route: route);
+              Core.navigation.push(route: route);
             }
           }
         },
       );
     } else {
-      Core.stub.showInfoBar(
-          context: context,
-          icon: Icons.cancel,
-          text: locales.canceledOperation);
+      Core.stub
+          .showInfoBar(icon: Icons.cancel, text: locales.canceledOperation);
     }
   }
 }

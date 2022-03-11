@@ -13,7 +13,7 @@ import 'package:material_color_utilities/palettes/core_palette.dart';
 
 import 'hooks.dart';
 
-ColorScheme getColorSchemeFromCorePalette(
+ColorScheme _getColorSchemeFromCorePalette(
     CorePalette palette, Brightness brightness) {
   if (brightness == Brightness.light) {
     return ColorScheme(
@@ -94,7 +94,7 @@ ThemeData theme(
 
   ColorScheme getColorScheme() {
     final defaultColorScheme = ColorScheme.fromSeed(
-      seedColor: Colors.red,
+      seedColor: Colors.blue,
       brightness: brightness,
     );
     if (colorScheme != null) {
@@ -108,7 +108,7 @@ ThemeData theme(
         if (dynamic12 && !turnOffDynamicPreference.preference) {
           final rawColorScheme = ref.read(dynamicColorsProvider);
           if (rawColorScheme != null) {
-            return getColorSchemeFromCorePalette(rawColorScheme, brightness);
+            return _getColorSchemeFromCorePalette(rawColorScheme, brightness);
           } else {
             return defaultColorScheme;
           }
@@ -198,6 +198,7 @@ ThemeData theme(
 
   return ThemeData(
     platform: iOS ? TargetPlatform.iOS : null,
+    // TODO: Remove once changes land in beta
     errorColor: scheme.error,
     useMaterial3: true,
     splashFactory: getSplashFactory(),
@@ -207,7 +208,7 @@ ThemeData theme(
     navigationBarTheme: NavigationBarThemeData(
       labelTextStyle: MaterialStateProperty.all(
         TextStyle(
-          fontFamily: 'GS-Text',
+          fontFamily: iOS ? null : 'GS-Text',
           fontSize: 12,
           letterSpacing: 0.6,
           color: scheme.onSurface,
@@ -217,15 +218,13 @@ ThemeData theme(
     ),
     navigationRailTheme: NavigationRailThemeData(
       selectedLabelTextStyle: TextStyle(
-          fontFamily: 'GS-Text', fontSize: 12.5, color: scheme.onSurface),
+          fontFamily: iOS ? null : 'GS-Text',
+          fontSize: 12.5,
+          color: scheme.onSurface),
       unselectedLabelTextStyle: TextStyle(
-          fontFamily: 'GS-Text', fontSize: 12.5, color: scheme.onSurface),
-    ),
-    buttonTheme: ButtonThemeData(
-      buttonColor: scheme.primary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(100),
-      ),
+          fontFamily: iOS ? null : 'GS-Text',
+          fontSize: 12.5,
+          color: scheme.onSurface),
     ),
     dialogTheme: DialogTheme(
       backgroundColor: scheme.surface,
@@ -238,20 +237,28 @@ ThemeData theme(
       iconColor: scheme.onSurface,
       tileColor: scheme.surface,
     ),
+
+    // TODO: All the button themes below should be removed when Material 3 button
+    // changes land in the beta branch.
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
-          shape: MaterialStateProperty.all(const StadiumBorder()),
-          backgroundColor: MaterialStateProperty.all(scheme.primary),
-          foregroundColor: MaterialStateProperty.all(scheme.onPrimary)),
+        shape: MaterialStateProperty.all(const StadiumBorder()),
+        backgroundColor: MaterialStateProperty.all(scheme.primary),
+        foregroundColor: MaterialStateProperty.all(scheme.onPrimary),
+        splashFactory: getSplashFactory(),
+      ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
-          shape: MaterialStateProperty.all(const StadiumBorder()),
-          foregroundColor: MaterialStateProperty.all(scheme.primary)),
+        shape: MaterialStateProperty.all(const StadiumBorder()),
+        foregroundColor: MaterialStateProperty.all(scheme.primary),
+        splashFactory: getSplashFactory(),
+      ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.all(scheme.primary),
+        splashFactory: getSplashFactory(),
       ),
     ),
     colorScheme: scheme,
@@ -272,7 +279,7 @@ ThemeData theme(
     ),
     androidOverscrollIndicator: getOverscrollIndicator(),
     pageTransitionsTheme: pageTransitionsTheme(),
-    fontFamily: 'GS-Text',
+    fontFamily: iOS ? null : 'GS-Text',
     //! TODO: These fields should be replaced when Material changes land,
     // as these are just emulations of the Material3 behaviour.
     snackBarTheme: SnackBarThemeData(
@@ -281,7 +288,7 @@ ThemeData theme(
       behavior: SnackBarBehavior.floating,
       contentTextStyle: TextStyle(
         color: scheme.onPrimaryContainer,
-        fontFamily: 'GS-Text',
+        fontFamily: iOS ? null : 'GS-Text',
       ),
     ),
     toggleableActiveColor: scheme.primary,

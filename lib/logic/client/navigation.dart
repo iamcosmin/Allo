@@ -2,14 +2,21 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 class Navigation {
-  Future push({
-    required BuildContext context,
+  final key = GlobalKey<NavigatorState>();
+
+  void push({
+    @Deprecated('BuildContext should not be specified as it is handled by the NavigatorState key.')
+        BuildContext? context,
     required Widget route,
     @Deprecated('Whether this is true or false, the same transition will be used.')
         bool login = false,
   }) {
     final pageRoute = MaterialPageRoute(builder: (_) => route);
-    return Navigator.of(context).push(pageRoute);
+    if (key.currentState != null) {
+      key.currentState!.push(pageRoute);
+    } else {
+      throw Exception('The navigatorKey is null.');
+    }
   }
 
   @Deprecated('Use pushPermanent.')

@@ -1,8 +1,9 @@
 import 'manager.dart';
 
-final darkMode = preference('isDarkModeEnabled');
-final privateConversations = preference('privateConversations');
-final reactionsDebug = preference('alloReactionsDebug');
-final editMessageDebug = preference('alloEditMessageDebug');
-final membersDebug = preference('alloParticipantsDebug');
-final emulateIOSBehaviour = preference('experimentalEmulateIOSBehaviour');
+final darkMode = createPreference('isDarkModeEnabled', false);
+final privateConversations = createPreference('privateConversations', false);
+final reactionsDebug = createPreference('alloReactionsDebug', false);
+final editMessageDebug = createPreference('alloEditMessageDebug', false);
+final membersDebug = createPreference('alloParticipantsDebug', false);
+final emulateIOSBehaviour =
+    createPreference('experimentalEmulateIOSBehaviour', false);

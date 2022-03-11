@@ -45,7 +45,6 @@ class ChatMembersPage extends HookConsumerWidget {
                   ),
                 ),
                 onTap: () => Core.navigation.push(
-                  context: context,
                   route: const UserPreviewPage(),
                 ),
               );

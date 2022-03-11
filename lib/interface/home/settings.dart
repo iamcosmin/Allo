@@ -24,8 +24,7 @@ class Settings extends HookConsumerWidget {
         children: [
           InkWell(
             onTap: () {
-              Core.navigation
-                  .push(context: context, route: const AccountSettings());
+              Core.navigation.push(route: const AccountSettings());
             },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -65,14 +64,12 @@ class Settings extends HookConsumerWidget {
             leading: const Icon(Icons.brush),
             title:
                 Text(locales.personalise, style: const TextStyle(fontSize: 18)),
-            onTap: () => Core.navigation
-                .push(context: context, route: const PersonalisePage()),
+            onTap: () => Core.navigation.push(route: const PersonalisePage()),
           ),
           ListTile(
             leading: const Icon(Icons.info),
             title: Text(locales.about, style: const TextStyle(fontSize: 18)),
-            onTap: () => Core.navigation
-                .push(context: context, route: const AboutPage()),
+            onTap: () => Core.navigation.push(route: const AboutPage()),
           ),
           ListTile(
             leading: const Icon(Icons.logout, size: 27),

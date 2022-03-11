@@ -20,18 +20,21 @@ Provider<T> runtimeProvider<T>() {
   );
 }
 
-StateNotifierProvider<PreferenceManager, bool> preference(
-  String preference, {
+StateNotifierProvider<PreferenceManager<T>, T> createPreference<T>(
+  String key,
+  T implicitValue, {
   bool? online,
 }) {
-  return StateNotifierProvider<PreferenceManager, bool>(
+  return StateNotifierProvider<PreferenceManager<T>, T>(
     (ref) {
-      final localValue = ref.read(preferencesProvider).get(preference);
-      return PreferenceManager(
-        preference: preference,
-        localValue: localValue,
+      final preferences = ref.read(preferencesProvider);
+      final localValue = preferences.get<T>(key);
+      return PreferenceManager<T>(
+        key: key,
         ref: ref,
         online: online,
+        firstValue: localValue,
+        implicitValue: implicitValue,
       );
     },
   );
@@ -50,8 +53,13 @@ class Preferences {
 
   /// This is a helper method for getting a value stored on the device,
   /// without specifying a exact function of [SharedPreferences].
-  dynamic get(String key) {
-    return sharedPreferences.get(key);
+  T? get<T>(String key) {
+    final _ = sharedPreferences.get(key);
+    if (_ is T?) {
+      return _;
+    } else {
+      throw Exception('The key specified does not return the required type.');
+    }
   }
 
   /// This is a helper method for setting a value and assigning automatically
@@ -101,45 +109,60 @@ class Preferences {
       await sharedPreferences.setBool(parameter, setter);
 }
 
-// TODO: Make PreferenceManager dynamic.
-class PreferenceManager extends StateNotifier<bool> {
-  PreferenceManager(
-      {required this.preference,
-      required this.localValue,
-      required this.ref,
-      this.online})
-      : super(
+T _getRemoteValue<T>(String key) {
+  final rConfig = FirebaseRemoteConfig.instance;
+  if (T is String) {
+    return rConfig.getString(key) as T;
+  } else if (T is bool) {
+    return rConfig.getBool(key) as T;
+  } else if (T is int) {
+    return rConfig.getInt(key) as T;
+  } else if (T is double) {
+    return rConfig.getDouble(key) as T;
+  } else {
+    throw Exception(
+        'The type specified cannot be returned from online source FirebaseRemoteConfig.');
+  }
+}
+
+class PreferenceManager<T> extends StateNotifier<T> {
+  PreferenceManager({
+    required this.key,
+    required T? firstValue,
+    required this.implicitValue,
+    required this.ref,
+    this.online,
+  }) : super(
           online == true
-              ? localValue ?? FirebaseRemoteConfig.instance.getBool(preference)
-              : localValue ?? false,
+              ? firstValue ?? _getRemoteValue<T>(key)
+              : firstValue ?? implicitValue,
         );
-  final String preference;
-  final bool? localValue;
+  final String key;
   final Ref ref;
+  final T implicitValue;
   final bool? online;
 
-  void _readAndUpdateState(bool value) {
-    ref.read(preferencesProvider).set(preference, value);
+  Preferences get _preferences => ref.read(preferencesProvider);
+
+  void _readAndUpdateState(T value) {
+    _preferences.set(key, value);
     state = value;
   }
 
-  void switcher() {
-    if (state) {
-      _readAndUpdateState(false);
-    } else {
-      _readAndUpdateState(true);
-    }
+  void changeValue(T value) {
+    _readAndUpdateState(value);
   }
 
-  void cleanPreference(BuildContext context) {
-    ref.read(preferencesProvider).remove(preference);
+  void cleanPreference(
+    @Deprecated('No need for context anymore.') BuildContext context,
+  ) {
+    _preferences.remove(key);
     if (online == true) {
-      _readAndUpdateState(FirebaseRemoteConfig.instance.getBool(preference));
+      _readAndUpdateState(_getRemoteValue<T>(key));
     } else {
-      _readAndUpdateState(false);
+      _readAndUpdateState(implicitValue);
     }
     Core.stub.showInfoBar(
-      context: context,
       icon: Icons.info,
       text: S.of(context).preferenceCleared,
     );

@@ -27,40 +27,55 @@ class TabbedNavigator extends HookConsumerWidget {
     final labels = usePreference(ref, navBarLabels);
     final locales = S.of(context);
     final width = MediaQuery.of(context).size.width;
+    NavigationRailLabelType? labelType() {
+      if (width < 1000) {
+        if (!labels.preference) {
+          return NavigationRailLabelType.all;
+        } else {
+          return NavigationRailLabelType.none;
+        }
+      } else {
+        return null;
+      }
+    }
+
     return Scaffold(
       body: Row(
         children: [
           if (width > 700) ...[
-            NavigationRail(
-              labelType: labels.preference == false
-                  ? NavigationRailLabelType.all
-                  : NavigationRailLabelType.none,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.chat_outlined,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+            Container(
+              constraints:
+                  width > 1000 ? const BoxConstraints(maxWidth: 160) : null,
+              child: NavigationRail(
+                extended: width > 1000 ? true : false,
+                labelType: labelType(),
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(
+                      Icons.chat_outlined,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    label: Text(locales.chats),
+                    selectedIcon: Icon(
+                      Icons.chat,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
                   ),
-                  label: Text(locales.chats),
-                  selectedIcon: Icon(
-                    Icons.chat,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.settings_outlined,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  label: Text(locales.settings),
-                  selectedIcon: Icon(
-                    Icons.settings,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
-                )
-              ],
-              selectedIndex: selected.value,
-              onDestinationSelected: (i) => selected.value = i,
+                  NavigationRailDestination(
+                    icon: Icon(
+                      Icons.settings_outlined,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    label: Text(locales.settings),
+                    selectedIcon: Icon(
+                      Icons.settings,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
+                  )
+                ],
+                selectedIndex: selected.value,
+                onDestinationSelected: (i) => selected.value = i,
+              ),
             ),
           ],
           // The page.
@@ -86,7 +101,7 @@ class TabbedNavigator extends HookConsumerWidget {
       bottomNavigationBar: width < 700
           ? NavigationBar(
               height: labels.preference == false ? 70 : 60,
-              labelBehavior: labels.preference == false
+              labelBehavior: !labels.preference
                   ? NavigationDestinationLabelBehavior.alwaysShow
                   : NavigationDestinationLabelBehavior.alwaysHide,
               destinations: [

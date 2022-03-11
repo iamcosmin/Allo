@@ -78,14 +78,11 @@ class Home extends HookConsumerWidget {
             context.locale.chats + (kReleaseMode == false ? ' (Debug)' : '')),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: createChat.preference == false
+        onPressed: !createChat.preference
             ? null
             : () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const CreateChat())),
-        label: Text(
-          context.locale.createNewChat,
-          style: const TextStyle(fontFamily: 'GS-Text', letterSpacing: 0),
-        ),
+        label: Text(context.locale.createNewChat),
         icon: const Icon(Icons.create),
         tooltip: context.locale.createNewChat,
       ),

@@ -62,7 +62,8 @@ class InnerApp extends HookConsumerWidget {
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
-      navigatorKey: Core.navigatorKey,
+      navigatorKey: Core.navigation.key,
+      scaffoldMessengerKey: Core.scaffoldMessengerKey,
       themeMode: darkState.preference ? ThemeMode.dark : ThemeMode.light,
       theme: theme(Brightness.light, ref, context),
       darkTheme: theme(Brightness.dark, ref, context),

@@ -21,7 +21,7 @@ class SetupPersonalize extends HookConsumerWidget {
         SwitchListTile(
           title: Text(locales.darkMode),
           value: dark.preference,
-          onChanged: (value) => dark.switcher(),
+          onChanged: dark.changeValue,
         )
       ],
       action: () async => true,

@@ -73,10 +73,9 @@ class Authentication {
       final List instance =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (instance.toString() == '[]') {
-        Core.navigation.push(context: context, route: SetupName(email));
+        Core.navigation.push(route: SetupName(email));
       } else if (instance.toString() == '[password]') {
-        Core.navigation
-            .push(context: context, route: EnterPassword(email: email));
+        Core.navigation.push(route: EnterPassword(email: email));
       }
       return true;
     } catch (e) {
@@ -199,8 +198,7 @@ class Authentication {
     if (username != '') {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
-          await navigation.push(
-            context: context,
+          navigation.push(
             route: SetupPassword(
               displayName: displayName,
               username: username,
@@ -320,8 +318,8 @@ class Authentication {
     FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     final locales = S.of(context);
     Core.stub.showInfoBar(
-        context: context,
-        icon: Icons.mail_outline,
-        text: locales.resetLinkSent);
+      icon: Icons.mail_outline,
+      text: locales.resetLinkSent,
+    );
   }
 }

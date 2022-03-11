@@ -76,10 +76,9 @@ class ChatScreen extends HookConsumerWidget {
           ],
           title: InkWell(
             onTap: () => Core.navigation.push(
-                context: context,
                 route: ChatDetails(
-                  chat: chat,
-                )),
+              chat: chat,
+            )),
             child: Text(
               chat.title,
               style: const TextStyle(

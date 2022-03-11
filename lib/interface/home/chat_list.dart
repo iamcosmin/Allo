@@ -54,7 +54,6 @@ class ChatList extends HookConsumerWidget {
                   ),
                 ),
                 onTap: () => Core.navigation.push(
-                  context: context,
                   route: ChatScreen(
                     chat: chat,
                   ),

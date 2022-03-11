@@ -163,8 +163,7 @@ class _NotificationController {
         ],
       );
     } else {
-      await Core.navigation.push(
-        context: Core.navigatorKey.currentState!.context,
+      Core.navigation.push(
         route: ChatScreen(
           chat: _getChat(action.payload!),
         ),
