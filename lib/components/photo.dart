@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:allo/components/builders.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_image/firebase_image.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -68,37 +66,12 @@ class Photo extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isGS = url.startsWith('gs://');
     final isHTTP = url.startsWith('http://') || url.startsWith('https://');
-    final color = backgroundColor ?? Theme.of(context).colorScheme.primary;
     if (isGS) {
-      if (kIsWeb) {
-        return FutureView<String>(
-          key: key,
-          future: FirebaseStorage.instance.refFromURL(url).getDownloadURL(),
-          success: (context, data) {
-            return Image.network(
-              data,
-              errorBuilder: _errorBuilder,
-            );
-          },
-          loading: Container(
-            color: color,
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-          isAnimated: false,
-        );
-      } else if (Platform.isAndroid) {
-        return Image(
-          image: FirebaseImage(url),
-          key: key,
-          errorBuilder: _errorBuilder,
-        );
-      } else {
-        throw Exception(
-          'The platform that the app is being ran on is not currently supported by this widget. Please migrate the widget if, somehow, this app will be available on other platforms than Web and Android.',
-        );
-      }
+      return Image(
+        image: FirebaseImage(url),
+        key: key,
+        errorBuilder: _errorBuilder,
+      );
     } else if (isHTTP) {
       if (kIsWeb) {
         return Image.network(
@@ -118,7 +91,7 @@ class Photo extends HookConsumerWidget {
       }
     } else {
       throw Exception(
-        'The provided url scheme is not supported. Please make sure that you are using gs:// or http(s):// as your url schemes.',
+        'The provided url scheme is not supported. Your scheme is ${url.split('//')[0]}. Make sure that you are using gs:// or http(s):// as your url schemes.',
       );
     }
   }

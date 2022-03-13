@@ -133,5 +133,9 @@
   "accountChangeNameDescription": "Enter your new name.",
   "unsupportedMessage": "Unsupported message.",
   "appInfo": "App Info",
-  "deviceInfo": "Device Info"
+  "deviceInfo": "Device Info",
+  "themeColorDisabledExplanation": "To enable this option, please disable the system accent.",
+  "themeColor": "Accent Color",
+  "useSystemColor": "Use System Color",
+  "animations": "Animations"
 }

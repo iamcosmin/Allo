@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:allo/components/appbar.dart';
 import 'package:allo/components/builders.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/debug.dart';
@@ -44,7 +45,7 @@ class AboutPage extends HookConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: NAppBar(
         title: Text(locales.about),
       ),
       body: FutureView<AppInfo>(

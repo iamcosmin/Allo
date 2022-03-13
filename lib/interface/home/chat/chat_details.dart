@@ -1,3 +1,4 @@
+import 'package:allo/components/appbar.dart';
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
@@ -137,7 +138,7 @@ class ChatDetails extends HookConsumerWidget {
         chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
         isGroup: chat is GroupChat ? true : false);
     return Scaffold(
-      appBar: AppBar(
+      appBar: NAppBar(
         title: Text(locales.chatInfo),
       ),
       body: ListView(

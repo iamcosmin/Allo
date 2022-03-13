@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'package:allo/components/space.dart';
+import 'package:allo/components/appbar.dart';
+import 'package:allo/components/settings_tile.dart';
+import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/foundation.dart';
@@ -10,9 +12,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../logic/client/hooks.dart';
 import '../../../logic/client/preferences/manager.dart';
 
+const colors = Colors.accents;
+
 /// Personalisation preferences
 final navBarLabels = createPreference('personalisation_nav_bar_labels', false);
-final turnOffDynamicColor = createPreference('turn_off_dynamic_color', false);
+final dynamicColor = createPreference('dynamic_color', true);
+final preferredColor =
+    createPreference('accent_color', Colors.blueAccent.value);
+final animations = createPreference('animations', !kIsWeb);
 
 class PersonalisePage extends HookConsumerWidget {
   const PersonalisePage({Key? key}) : super(key: key);
@@ -22,34 +29,88 @@ class PersonalisePage extends HookConsumerWidget {
     final dark = usePreference(ref, darkMode);
     final locales = S.of(context);
     final labels = usePreference(ref, navBarLabels);
-    final dynamicColors = usePreference(ref, turnOffDynamicColor);
+    final _dynamicColor = usePreference(ref, dynamicColor);
+    final themeColor = usePreference(ref, preferredColor);
+    final _animations = usePreference(ref, animations);
     int? sdkInt;
     if (!kIsWeb && Platform.isAndroid) {
       sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
     }
     final dynamic12 = (sdkInt != null && sdkInt >= 31);
     return Scaffold(
-      appBar: AppBar(
+      appBar: NAppBar(
         title: Text(locales.personalise),
       ),
       body: ListView(
         children: [
-          SwitchListTile.adaptive(
-            title: Text(locales.darkMode),
-            value: dark.preference,
-            onChanged: dark.changeValue,
+          Setting(
+            title: locales.darkMode,
+            preference: dark,
           ),
-          SwitchListTile.adaptive(
-            title: Text(locales.personaliseHideNavigationHints),
-            value: labels.preference,
-            onChanged: labels.changeValue,
+          Setting(
+            title: locales.personaliseHideNavigationHints,
+            preference: labels,
           ),
-          const Space(1),
+          Setting(
+            enabled: !_dynamicColor.preference,
+            disabledExplanation: locales.themeColorDisabledExplanation,
+            title: locales.themeColor,
+            onTap: () => showMagicBottomSheet(
+              context: context,
+              title: locales.themeColor,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    alignment: WrapAlignment.start,
+                    children: [
+                      for (var color in colors) ...[
+                        ClipOval(
+                          child: InkWell(
+                            onTap: () {
+                              themeColor.changeValue(color.value);
+                              Navigator.of(context).pop();
+                            },
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  color: color,
+                                ),
+                                if (color.value == themeColor.preference) ...[
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    color: Colors.black.withOpacity(0.5),
+                                    child: const Icon(
+                                      Icons.check,
+                                      size: 40,
+                                    ),
+                                  )
+                                ],
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          Setting(
+            title: locales.animations,
+            preference: _animations,
+          ),
           if (dynamic12) ...[
-            SwitchListTile.adaptive(
-              title: const Text('Turn off system accent'),
-              value: dynamicColors.preference,
-              onChanged: dynamicColors.changeValue,
+            Setting(
+              title: locales.useSystemColor,
+              preference: _dynamicColor,
             ),
           ],
         ],

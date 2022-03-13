@@ -29,7 +29,7 @@ class Core {
   static final General general = General();
   static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();
-  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+  static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
   static Future<List<Override>> getOverrides() async {

@@ -1,3 +1,4 @@
+import 'package:allo/components/appbar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class AccountInfo extends HookWidget {
       return;
     }, const []);
     return Scaffold(
-      appBar: AppBar(
+      appBar: NAppBar(
         title: Text(locales.internalAccountInfo),
       ),
       body: Padding(

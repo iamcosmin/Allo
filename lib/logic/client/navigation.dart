@@ -2,7 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 class Navigation {
-  final key = GlobalKey<NavigatorState>();
+  var key = GlobalKey<NavigatorState>();
 
   void push({
     @Deprecated('BuildContext should not be specified as it is handled by the NavigatorState key.')

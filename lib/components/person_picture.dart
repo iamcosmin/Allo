@@ -24,7 +24,6 @@ class PersonPicture extends HookConsumerWidget {
           height: radius,
           width: radius,
           alignment: Alignment.center,
-          color: Theme.of(context).colorScheme.primary,
           child: Center(
             child: _child(context),
           )),

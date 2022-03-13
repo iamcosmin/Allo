@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Change Name"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("An error occurred."),
+        "animations": MessageLookupByLibrary.simpleMessage("Animations"),
         "appInfo": MessageLookupByLibrary.simpleMessage("App Info"),
         "attach": MessageLookupByLibrary.simpleMessage("Attach"),
         "buildNumber": MessageLookupByLibrary.simpleMessage("Build Number"),
@@ -213,6 +214,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "theme": MessageLookupByLibrary.simpleMessage("Theme"),
         "themeBlue": MessageLookupByLibrary.simpleMessage("Blue"),
         "themeBurgundy": MessageLookupByLibrary.simpleMessage("Burgundy"),
+        "themeColor": MessageLookupByLibrary.simpleMessage("Accent Color"),
+        "themeColorDisabledExplanation": MessageLookupByLibrary.simpleMessage(
+            "To enable this option, please disable the system accent."),
         "themeCyan": MessageLookupByLibrary.simpleMessage("Cyan"),
         "themeEmerald": MessageLookupByLibrary.simpleMessage("Emerald"),
         "themeNotAvailable": MessageLookupByLibrary.simpleMessage(
@@ -226,6 +230,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unsupportedMessage":
             MessageLookupByLibrary.simpleMessage("Unsupported message."),
         "uploadPicture": MessageLookupByLibrary.simpleMessage("Upload Picture"),
+        "useSystemColor":
+            MessageLookupByLibrary.simpleMessage("Use System Color"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "version": MessageLookupByLibrary.simpleMessage("Version"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Welcome back")

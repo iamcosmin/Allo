@@ -13,6 +13,19 @@ import 'package:material_color_utilities/palettes/core_palette.dart';
 
 import 'hooks.dart';
 
+class NoPageTransitionsBuilder extends PageTransitionsBuilder {
+  const NoPageTransitionsBuilder();
+  @override
+  Widget buildTransitions<T>(
+      PageRoute<T> route,
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
+    return child;
+  }
+}
+
 ColorScheme _getColorSchemeFromCorePalette(
     CorePalette palette, Brightness brightness) {
   if (brightness == Brightness.light) {
@@ -91,10 +104,12 @@ ThemeData theme(
     sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
   }
   final dynamic12 = (sdkInt != null && sdkInt >= 31);
+  final themeColor = usePreference(ref, preferredColor);
+  final _animations = usePreference(ref, animations);
 
   ColorScheme getColorScheme() {
     final defaultColorScheme = ColorScheme.fromSeed(
-      seedColor: Colors.blue,
+      seedColor: Color(themeColor.preference),
       brightness: brightness,
     );
     if (colorScheme != null) {
@@ -103,9 +118,8 @@ ThemeData theme(
       if (kIsWeb) {
         return defaultColorScheme;
       } else if (Platform.isAndroid) {
-        final turnOffDynamicPreference =
-            usePreference(ref, turnOffDynamicColor);
-        if (dynamic12 && !turnOffDynamicPreference.preference) {
+        final _dynamicColor = usePreference(ref, dynamicColor);
+        if (dynamic12 && _dynamicColor.preference) {
           final rawColorScheme = ref.read(dynamicColorsProvider);
           if (rawColorScheme != null) {
             return _getColorSchemeFromCorePalette(rawColorScheme, brightness);
@@ -146,7 +160,7 @@ ThemeData theme(
   }
 
   InteractiveInkFeatureFactory getSplashFactory() {
-    if (kIsWeb) {
+    if (kIsWeb || !_animations.preference) {
       // Unfortunately, the web versions of Flutter apps are not so performant,
       // so we will use a [NoSplash.splashFactory].
       return NoSplash.splashFactory;
@@ -181,19 +195,32 @@ ThemeData theme(
       }
     }
 
-    return PageTransitionsTheme(
-      builders: {
-        TargetPlatform.android: getAndroid(),
-        TargetPlatform.fuchsia: const FadeUpwardsPageTransitionsBuilder(),
-        TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
-        TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
-        TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
-        TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
-          transitionType: SharedAxisTransitionType.horizontal,
-          fillColor: scheme.surface,
-        ),
-      },
-    );
+    if (_animations.preference) {
+      return PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: getAndroid(),
+          TargetPlatform.fuchsia: const FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
+          TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
+            transitionType: SharedAxisTransitionType.horizontal,
+            fillColor: scheme.surface,
+          ),
+        },
+      );
+    } else {
+      return const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: NoPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: NoPageTransitionsBuilder(),
+          TargetPlatform.iOS: NoPageTransitionsBuilder(),
+          TargetPlatform.linux: NoPageTransitionsBuilder(),
+          TargetPlatform.macOS: NoPageTransitionsBuilder(),
+          TargetPlatform.windows: NoPageTransitionsBuilder(),
+        },
+      );
+    }
   }
 
   return ThemeData(
@@ -261,6 +288,7 @@ ThemeData theme(
         splashFactory: getSplashFactory(),
       ),
     ),
+    splashColor: scheme.onSurface.withOpacity(0.3),
     colorScheme: scheme,
     brightness: brightness,
     appBarTheme: AppBarTheme(

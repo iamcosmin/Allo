@@ -1,3 +1,4 @@
+import 'package:allo/components/appbar.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/chat/chat_messages_list.dart';
 import 'package:allo/logic/core.dart';
@@ -53,9 +54,9 @@ class ChatScreen extends HookConsumerWidget {
     return Theme(
       data: theme(brightness, ref, context, colorScheme: scheme.value),
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 1,
-          toolbarHeight: 60,
+        extendBodyBehindAppBar: true,
+        appBar: NAppBar(
+          elevation: 0,
           actions: [
             Container(
               alignment: Alignment.bottomLeft,
@@ -69,7 +70,7 @@ class ChatScreen extends HookConsumerWidget {
                           : '',
                   isGroup: chat is GroupChat ? true : false,
                 ),
-                radius: 40,
+                radius: 35,
                 initials: Core.auth.returnNameInitials(chat.title),
               ),
             ),
@@ -88,43 +89,24 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 10,
-                      child: ChatMessagesList(
-                        chatId: chat.id,
-                        chatType: chat is PrivateChat
-                            ? ChatType.private
-                            : ChatType.group,
-                        inputModifiers: inputModifiers,
-                      ),
-                    ),
-                  ],
-                ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ChatMessagesList(
+                chatId: chat.id,
+                chatType:
+                    chat is PrivateChat ? ChatType.private : ChatType.group,
+                inputModifiers: inputModifiers,
               ),
-              Expanded(
-                flex: 0,
-                child: Container(
-                  color: Colors.transparent,
-                  alignment: Alignment.bottomCenter,
-                  child: MessageInput(
-                    modifier: inputModifiers,
-                    chatId: chat.id,
-                    chatName: chat.title,
-                    chatType:
-                        chat is PrivateChat ? ChatType.private : ChatType.group,
-                    theme: scheme.value,
-                  ),
-                ),
-              )
-            ],
-          ),
+            ),
+            MessageInput(
+              modifier: inputModifiers,
+              chatId: chat.id,
+              chatName: chat.title,
+              chatType: chat is PrivateChat ? ChatType.private : ChatType.group,
+              theme: scheme.value,
+            ),
+          ],
         ),
       ),
     );

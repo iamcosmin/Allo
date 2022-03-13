@@ -1,4 +1,6 @@
+import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/extensions.dart';
+import 'package:allo/logic/client/hooks.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,8 +30,8 @@ class StreamView<T> extends HookConsumerWidget {
     return StreamBuilder<T>(
       stream: stream,
       builder: (context, snapshot) {
-        return _switcher<T>(
-            context, snapshot, success, error, loading, failed, isAnimated);
+        return _switcher<T>(context, snapshot, ref, success, error, loading,
+            failed, isAnimated);
       },
     );
   }
@@ -57,8 +59,8 @@ class FutureView<T> extends HookConsumerWidget {
     return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) {
-        return _switcher<T>(
-            context, snapshot, success, error, loading, failed, isAnimated);
+        return _switcher<T>(context, snapshot, ref, success, error, loading,
+            failed, isAnimated);
       },
     );
   }
@@ -67,30 +69,27 @@ class FutureView<T> extends HookConsumerWidget {
 PageTransitionSwitcher _switcher<T>(
     BuildContext context,
     AsyncSnapshot snapshot,
+    WidgetRef ref,
     AsyncSuccessData<T> success,
     AsyncErrorData error,
     Widget? loading,
     Widget? failed,
     bool? isAnimated) {
+  final _animations = usePreference(ref, animations);
   return PageTransitionSwitcher(
-    duration: const Duration(milliseconds: 300),
+    duration: _animations.preference
+        ? ((isAnimated ?? true)
+            ? const Duration(milliseconds: 300)
+            : Duration.zero)
+        : Duration.zero,
     transitionBuilder: (child, animation, secondaryAnimation) {
-      if (isAnimated == null || isAnimated == true) {
-        return SharedAxisTransition(
-          fillColor: Theme.of(context).colorScheme.surface,
-          animation: animation,
-          secondaryAnimation: secondaryAnimation,
-          transitionType: SharedAxisTransitionType.vertical,
-          child: child,
-        );
-      } else {
-        return FadeThroughTransition(
-          animation: animation,
-          secondaryAnimation: secondaryAnimation,
-          fillColor: Theme.of(context).colorScheme.surface,
-          child: child,
-        );
-      }
+      return SharedAxisTransition(
+        fillColor: Theme.of(context).colorScheme.surface,
+        animation: animation,
+        secondaryAnimation: secondaryAnimation,
+        transitionType: SharedAxisTransitionType.vertical,
+        child: child,
+      );
     },
     child: _child<T>(snapshot, context, success, error, loading, failed),
   );

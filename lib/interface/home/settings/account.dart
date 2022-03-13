@@ -1,3 +1,4 @@
+import 'package:allo/components/appbar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/account/name.dart';
 import 'package:allo/interface/home/settings/profile_picture.dart';
@@ -11,7 +12,7 @@ class AccountSettings extends HookWidget {
   Widget build(BuildContext context) {
     final locales = S.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: NAppBar(
         title: Text(locales.account),
       ),
       body: ListView(
@@ -39,7 +40,8 @@ class AccountSettings extends HookWidget {
               locales.profilePicture,
               style: const TextStyle(fontSize: 18),
             ),
-            onTap: () => Core.navigation.push(route: ProfilePictureSettings()),
+            onTap: () =>
+                Core.navigation.push(route: const ProfilePictureSettings()),
           )
         ],
       ),

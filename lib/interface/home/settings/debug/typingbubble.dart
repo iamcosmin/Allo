@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:allo/components/appbar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
     final locales = S.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
+      appBar: NAppBar(
         title: Text(locales.internalTypingIndicatorDemo),
       ),
       body: Column(

@@ -25,6 +25,7 @@ class TabbedNavigator extends HookConsumerWidget {
     final selected = useState(0);
     final previousSelected = usePrevious(selected.value);
     final labels = usePreference(ref, navBarLabels);
+    final _animations = usePreference(ref, animations);
     final locales = S.of(context);
     final width = MediaQuery.of(context).size.width;
     NavigationRailLabelType? labelType() {
@@ -84,15 +85,19 @@ class TabbedNavigator extends HookConsumerWidget {
               reverse: (previousSelected ?? 0) > selected.value ? true : false,
               child: pages[selected.value],
               transitionBuilder: (child, animation, secondaryAnimation) {
-                return SharedAxisTransition(
-                  transitionType: width > 700
-                      ? SharedAxisTransitionType.vertical
-                      : SharedAxisTransitionType.horizontal,
-                  fillColor: Theme.of(context).colorScheme.surface,
-                  animation: animation,
-                  secondaryAnimation: secondaryAnimation,
-                  child: child,
-                );
+                if (_animations.preference) {
+                  return SharedAxisTransition(
+                    transitionType: width > 700
+                        ? SharedAxisTransitionType.vertical
+                        : SharedAxisTransitionType.horizontal,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    animation: animation,
+                    secondaryAnimation: secondaryAnimation,
+                    child: child,
+                  );
+                } else {
+                  return child;
+                }
               },
             ),
           ),

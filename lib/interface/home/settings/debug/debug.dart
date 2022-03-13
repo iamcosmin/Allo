@@ -1,3 +1,4 @@
+import 'package:allo/components/appbar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
@@ -18,7 +19,7 @@ class C extends HookConsumerWidget {
     final members = usePreference(ref, membersDebug);
     final iOSMode = usePreference(ref, emulateIOSBehaviour);
     return Scaffold(
-      appBar: AppBar(
+      appBar: NAppBar(
         title: Text(locales.internalMenu),
       ),
       body: ListView(

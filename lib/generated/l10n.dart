@@ -1399,6 +1399,46 @@ class S {
       args: [],
     );
   }
+
+  /// `To enable this option, please disable the system accent.`
+  String get themeColorDisabledExplanation {
+    return Intl.message(
+      'To enable this option, please disable the system accent.',
+      name: 'themeColorDisabledExplanation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accent Color`
+  String get themeColor {
+    return Intl.message(
+      'Accent Color',
+      name: 'themeColor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use System Color`
+  String get useSystemColor {
+    return Intl.message(
+      'Use System Color',
+      name: 'useSystemColor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Animations`
+  String get animations {
+    return Intl.message(
+      'Animations',
+      name: 'animations',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

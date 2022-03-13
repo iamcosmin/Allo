@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Schimbare nume"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("A apărut o eroare."),
+        "animations": MessageLookupByLibrary.simpleMessage("Animații"),
         "appInfo": MessageLookupByLibrary.simpleMessage("Informații aplicație"),
         "attach": MessageLookupByLibrary.simpleMessage("Atașează"),
         "buildNumber": MessageLookupByLibrary.simpleMessage("Număr versiune"),
@@ -212,6 +213,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "theme": MessageLookupByLibrary.simpleMessage("Temă"),
         "themeBlue": MessageLookupByLibrary.simpleMessage("Albastru"),
         "themeBurgundy": MessageLookupByLibrary.simpleMessage("Vișiniu"),
+        "themeColor": MessageLookupByLibrary.simpleMessage("Culoare de accent"),
+        "themeColorDisabledExplanation": MessageLookupByLibrary.simpleMessage(
+            "Pentru a activa această opțiune, dezactivează accentul de sistem."),
         "themeCyan": MessageLookupByLibrary.simpleMessage("Turcoaz"),
         "themeEmerald": MessageLookupByLibrary.simpleMessage("Smarald"),
         "themeNotAvailable": MessageLookupByLibrary.simpleMessage(
@@ -226,6 +230,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unsupported message."),
         "uploadPicture":
             MessageLookupByLibrary.simpleMessage("Încarcă imagine"),
+        "useSystemColor": MessageLookupByLibrary.simpleMessage(
+            "Folosește culoarea de sistem"),
         "username": MessageLookupByLibrary.simpleMessage("Nume de utilizator"),
         "version": MessageLookupByLibrary.simpleMessage("Versiune"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Bine ai revenit")
