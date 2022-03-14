@@ -48,7 +48,7 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
         packageName: com.relays.messenger
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
-        track: stable
+        track: production
         whatsNewDirectory: distribution
     - name: Publish Release Notes
       uses: appleboy/telegram-action@master
