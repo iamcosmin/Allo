@@ -9,6 +9,7 @@ import 'package:allo/logic/client/notifications.dart';
 import 'package:allo/logic/client/validators.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -23,7 +24,15 @@ export 'client/extensions.dart';
 class Core {
   static final Authentication auth = Authentication();
   static final Navigation navigation = Navigation();
-
+  static const FirebaseOptions firebaseOptions = FirebaseOptions(
+    apiKey: "AIzaSyAyLt2_FAHc0I2c1iBLH_MxWzo2kllSvA8",
+    authDomain: "allo-ms.firebaseapp.com",
+    projectId: "allo-ms",
+    storageBucket: "allo-ms.appspot.com",
+    messagingSenderId: "1049075385887",
+    appId: "1:1049075385887:web:89f4887e574f8b93f2372a",
+    measurementId: "G-N5D9CRB413",
+  );
   static Validators validators(BuildContext context) => Validators(context);
   static final Notifications notifications = Notifications();
   static final General general = General();
