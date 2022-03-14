@@ -3,7 +3,3 @@ include: package:flutter_lints/flutter.yaml
 linter: 
   rules:
    - omit_local_variable_types
-
-analyzer:
-  errors:
-    invalid_use_of_protected_member: ignore 

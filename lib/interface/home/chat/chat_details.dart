@@ -187,7 +187,6 @@ class ChatDetails extends HookConsumerWidget {
               child: PersonPicture.determine(
                 profilePicture: profilepic,
                 radius: 100,
-                color: Colors.green,
                 initials: Core.auth.returnNameInitials(name),
               ),
             ),

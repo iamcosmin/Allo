@@ -1,7 +1,7 @@
-import 'package:allo/components/settings_list.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/logic/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,16 +11,11 @@ class C extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
-    final conversations = ref.watch(privateConversations);
-    final conversationsMethod = ref.watch(privateConversations.notifier);
-    final reactions = ref.watch(reactionsDebug);
-    final reactionsMethod = ref.watch(reactionsDebug.notifier);
-    final replies = ref.watch(repliesDebug);
-    final repliesMethod = ref.watch(repliesDebug.notifier);
-    final editMessage = ref.watch(editMessageDebug);
-    final editMessageMethod = ref.watch(editMessageDebug.notifier);
-    final members = ref.watch(membersDebug);
-    final membersMethod = ref.watch(membersDebug.notifier);
+    final conversations = usePreference(ref, privateConversations);
+    final reactions = usePreference(ref, reactionsDebug);
+    final editMessage = usePreference(ref, editMessageDebug);
+    final members = usePreference(ref, membersDebug);
+    final iOSMode = usePreference(ref, emulateIOSBehaviour);
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.internalMenu),
@@ -28,7 +23,13 @@ class C extends HookConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(10),
         children: [
-          SettingsListHeader(locales.internalMenuDisclamer),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 7, left: 10, top: 7),
+            child: Text(
+              locales.internalMenuDisclamer,
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ),
           ListTile(
             title: Text(locales.internalTypingIndicatorDemo),
             onTap: () => Navigator.of(context).push(
@@ -45,30 +46,45 @@ class C extends HookConsumerWidget {
               ),
             ),
           ),
-          SwitchListTile(
-            title: Text(locales.reactions),
-            value: reactions,
-            onChanged: (value) => reactionsMethod.switcher(ref, context),
+          InkWell(
+            onLongPress: () => reactions.clear(ref, context),
+            child: SwitchListTile.adaptive(
+              title: Text(locales.reactions),
+              value: reactions.preference,
+              onChanged: (value) => reactions.switcher(ref, context),
+            ),
           ),
-          SwitchListTile(
-            title: Text(locales.replyToMessage),
-            value: replies,
-            onChanged: (value) => repliesMethod.switcher(ref, context),
+          InkWell(
+            onLongPress: () => editMessage.clear(ref, context),
+            child: SwitchListTile.adaptive(
+              title: Text(locales.editMessages),
+              value: editMessage.preference,
+              onChanged: (value) => editMessage.switcher(ref, context),
+            ),
           ),
-          SwitchListTile(
-            title: Text(locales.editMessages),
-            value: editMessage,
-            onChanged: (value) => editMessageMethod.switcher(ref, context),
+          InkWell(
+            onLongPress: () => conversations.clear(ref, context),
+            child: SwitchListTile.adaptive(
+              title: Text(locales.createNewChats),
+              value: conversations.preference,
+              onChanged: (value) => conversations.switcher(ref, context),
+            ),
           ),
-          SwitchListTile(
-            title: Text(locales.createNewChats),
-            value: conversations,
-            onChanged: (value) => conversationsMethod.switcher(ref, context),
+          InkWell(
+            onLongPress: () => members.clear(ref, context),
+            child: SwitchListTile.adaptive(
+              title: Text(locales.enableParticipantsList),
+              value: members.preference,
+              onChanged: (value) => members.switcher(ref, context),
+            ),
           ),
-          SwitchListTile(
-            title: Text(locales.enableParticipantsList),
-            value: members,
-            onChanged: (value) => membersMethod.switcher(ref, context),
+          InkWell(
+            onLongPress: () => iOSMode.clear(ref, context),
+            child: SwitchListTile.adaptive(
+              title: const Text('Cupertino behaviour'),
+              value: iOSMode.preference,
+              onChanged: (value) => iOSMode.switcher(ref, context),
+            ),
           ),
         ],
       ),

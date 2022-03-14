@@ -24,10 +24,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "about": MessageLookupByLibrary.simpleMessage("About"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "anErrorOccurred":
+            MessageLookupByLibrary.simpleMessage("An error occurred."),
         "attach": MessageLookupByLibrary.simpleMessage("Attach"),
+        "buildNumber": MessageLookupByLibrary.simpleMessage("Build Number"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "canceledOperation":
+            MessageLookupByLibrary.simpleMessage("The operation was canceled."),
         "change": MessageLookupByLibrary.simpleMessage("Change"),
         "changeName": MessageLookupByLibrary.simpleMessage("Change Name"),
         "changeNameDescription":
@@ -61,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enable Members List"),
         "enterPasswordDescription": MessageLookupByLibrary.simpleMessage(
             "To continue, please enter your password."),
+        "error": MessageLookupByLibrary.simpleMessage("Error"),
         "errorEmailAlreadyInUse": MessageLookupByLibrary.simpleMessage(
             "The email is already in use."),
         "errorEmptyFields": MessageLookupByLibrary.simpleMessage(
@@ -102,6 +109,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gallery": MessageLookupByLibrary.simpleMessage("Gallery"),
         "group": MessageLookupByLibrary.simpleMessage("Group"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "image": MessageLookupByLibrary.simpleMessage("Image"),
         "initials": MessageLookupByLibrary.simpleMessage("Initials"),
         "internalAccountInfo":
             MessageLookupByLibrary.simpleMessage("Account Info"),
@@ -116,6 +124,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "To continue, please enter your email address."),
         "loginScreenTitle":
             MessageLookupByLibrary.simpleMessage("Let\'s sign in..."),
+        "material3App":
+            MessageLookupByLibrary.simpleMessage("Enable Material 3 in app"),
+        "material3Chat":
+            MessageLookupByLibrary.simpleMessage("Enable Material 3 in chats"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
         "members": MessageLookupByLibrary.simpleMessage("Members"),
         "message": MessageLookupByLibrary.simpleMessage("Message"),
@@ -128,13 +140,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "name": MessageLookupByLibrary.simpleMessage("Name"),
         "noCameraAvailable":
             MessageLookupByLibrary.simpleMessage("No camera available."),
+        "noChats":
+            MessageLookupByLibrary.simpleMessage("You don\'t have any chats."),
         "noProfilePicture":
             MessageLookupByLibrary.simpleMessage("No profile picture"),
         "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
         "optional": MessageLookupByLibrary.simpleMessage("Optional"),
+        "packageName": MessageLookupByLibrary.simpleMessage("Package Name"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordCriteria": MessageLookupByLibrary.simpleMessage(
             "Your password must contain a minimum of 8 characters, which include: letters (uppercase and lowercase), digits, symbols."),
+        "personalise": MessageLookupByLibrary.simpleMessage("Personalise"),
+        "personaliseHideNavigationHints":
+            MessageLookupByLibrary.simpleMessage("Hide Navigation Hints"),
         "private": MessageLookupByLibrary.simpleMessage("Private"),
         "profilePicture":
             MessageLookupByLibrary.simpleMessage("Profile Picture"),
@@ -198,6 +216,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
         "uploadPicture": MessageLookupByLibrary.simpleMessage("Upload Picture"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
+        "version": MessageLookupByLibrary.simpleMessage("Version"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Welcome back")
       };
 }

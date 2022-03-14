@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/interface/login/existing/enter_password.dart';
@@ -250,13 +248,6 @@ class Authentication {
 
   Future signOut(BuildContext context) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final keys = prefs.getKeys();
-      for (final key in keys) {
-        if (key != 'isDarkModeEnabled') {
-          await prefs.remove(key);
-        }
-      }
       await FirebaseAuth.instance.signOut();
       Core.navigation.pushPermanent(context: context, route: const InnerApp());
     } catch (e) {
@@ -387,39 +378,51 @@ class CurrentUser {
       required BuildContext context,
       Widget? route}) async {
     PickedFile imageFile;
+    final locales = S.of(context);
     var pickFromGallery =
         await ImagePicker().pickImage(source: ImageSource.gallery);
-    var uneditedImageFile = PickedFile(pickFromGallery!.path);
-    if (kIsWeb) {
-      imageFile = uneditedImageFile;
-      loaded.value = true;
-    } else {
-      var editImageFile = await ImageCropper.cropImage(
-          sourcePath: pickFromGallery.path,
-          aspectRatioPresets: [CropAspectRatioPreset.square]);
-      var convertedEditImageFile = PickedFile(editImageFile!.path);
-      imageFile = convertedEditImageFile;
-      loaded.value = true;
-    }
-    var user = FirebaseAuth.instance.currentUser;
-    var filePath = 'profilePictures/${user?.uid}.png';
-    var uploadTask = FirebaseStorage.instance.ref(filePath).putData(
-        await imageFile.readAsBytes(),
-        SettableMetadata(contentType: 'image/png'));
-    uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) async {
-      percentage.value =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      if (snapshot.state == TaskState.success) {
-        await user!.updatePhotoURL(await FirebaseStorage.instance
-            .ref()
-            .child(filePath)
-            .getDownloadURL());
-        if (route == null) {
-          Navigator.pop(context);
-        } else {
-          Core.navigation.push(context: context, route: route);
-        }
+    var uneditedImageFile = pickFromGallery?.path != null
+        ? PickedFile(pickFromGallery!.path)
+        : null;
+    if (uneditedImageFile != null) {
+      if (kIsWeb) {
+        imageFile = uneditedImageFile;
+        loaded.value = true;
+      } else {
+        var editImageFile = await ImageCropper.cropImage(
+            sourcePath: pickFromGallery!.path,
+            aspectRatioPresets: [CropAspectRatioPreset.square]);
+        var convertedEditImageFile = PickedFile(editImageFile!.path);
+        imageFile = convertedEditImageFile;
+        loaded.value = true;
       }
-    });
+      var user = FirebaseAuth.instance.currentUser;
+      var filePath = 'profilePictures/${user?.uid}.png';
+      var uploadTask = FirebaseStorage.instance.ref(filePath).putData(
+          await imageFile.readAsBytes(),
+          SettableMetadata(contentType: 'image/png'));
+      uploadTask.snapshotEvents.listen(
+        (TaskSnapshot snapshot) async {
+          percentage.value =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          if (snapshot.state == TaskState.success) {
+            await user!.updatePhotoURL(await FirebaseStorage.instance
+                .ref()
+                .child(filePath)
+                .getDownloadURL());
+            if (route == null) {
+              Navigator.pop(context);
+            } else {
+              Core.navigation.push(context: context, route: route);
+            }
+          }
+        },
+      );
+    } else {
+      Core.stub.showInfoBar(
+          context: context,
+          icon: Icons.cancel,
+          text: locales.canceledOperation);
+    }
   }
 }

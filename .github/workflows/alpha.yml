@@ -1,11 +1,20 @@
-name: Build stable
+name: Build alpha
 
 on: 
   push: 
    branches:
-    - main
+    - alpha
 
 jobs:
+  build-web: 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Setup
+      uses: actions/checkout@v1
+    - name: Flutter Setup
+      uses: subosito/flutter-action@v1
+      with:
+        channel: 'beta'
   build-android:
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +45,7 @@ jobs:
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALLO_MS }}'
         projectId: allo-ms
         channelId: live
-        target: stable
+        target: alpha
       env:
         FIREBASE_CLI_PREVIEWS: hostingchannels
     - name: Play Store - Build
@@ -48,7 +57,7 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
         packageName: com.relays.messenger
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
-        track: stable
+        track: alpha
         whatsNewDirectory: distribution
     - name: Publish Release Notes
       uses: appleboy/telegram-action@master
@@ -56,4 +65,4 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
         token: ${{ secrets.TELEGRAM_BOT_ID }}
         format: markdown
-        message: "stable ${{ github.event.head_commit.message }}\n\nActualizarea va fi disponibilă în cca. o oră pentru toți utilizatorii Allo."
+        message: "alpha ${{ github.event.head_commit.message }}\n\n*Actualizarea este disponibilă pe allo-alpha.web.app și va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți participanții canalului alpha din Magazin Play.*"

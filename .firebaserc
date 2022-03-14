@@ -1,5 +1,20 @@
 {
   "projects": {
     "default": "allo-ms"
+  },
+  "targets": {
+    "allo-ms": {
+      "hosting": {
+        "alpha": [
+          "allo-alpha"
+        ],
+        "stable": [
+          "allo-ms"
+        ],
+        "beta": [
+          "allobeta"
+        ]
+      }
+    }
   }
 }

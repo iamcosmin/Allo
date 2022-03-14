@@ -56,12 +56,19 @@ class PersonPicture extends HookWidget {
           duration: const Duration(milliseconds: 250),
           height: radius,
           width: radius,
-          decoration: BoxDecoration(color: color, gradient: gradient),
+          decoration: BoxDecoration(
+              color: (color == null && gradient == null)
+                  ? Theme.of(context).colorScheme.primary
+                  : color,
+              gradient: gradient),
           child: Center(
             child: Text(
               initials!,
               style: TextStyle(
                 fontSize: radius / 2,
+                color: (color == null && gradient == null)
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : null,
               ),
             ),
           ),
@@ -90,12 +97,21 @@ class PersonPicture extends HookWidget {
                     key: key,
                     height: radius,
                     width: radius,
-                    decoration: BoxDecoration(color: color, gradient: gradient),
+                    decoration: BoxDecoration(
+                        color: (color == null && gradient == null)
+                            ? Theme.of(context).colorScheme.primary
+                            : color,
+                        gradient: gradient),
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
                         initials!,
-                        style: TextStyle(fontSize: radius / 2),
+                        style: TextStyle(
+                          fontSize: radius / 2,
+                          color: (color == null && gradient == null)
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : null,
+                        ),
                       ),
                     ),
                   ),
@@ -106,12 +122,20 @@ class PersonPicture extends HookWidget {
                   key: key,
                   height: radius,
                   width: radius,
-                  decoration: BoxDecoration(color: color, gradient: gradient),
+                  decoration: BoxDecoration(
+                      color: (color == null && gradient == null)
+                          ? Theme.of(context).colorScheme.primary
+                          : color,
+                      gradient: gradient),
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
                       initials!,
-                      style: TextStyle(fontSize: radius / 2),
+                      style: TextStyle(
+                          fontSize: radius / 2,
+                          color: (color == null && gradient == null)
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : null),
                     ),
                   ),
                 );
