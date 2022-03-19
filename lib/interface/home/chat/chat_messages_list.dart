@@ -17,8 +17,7 @@ class ChatMessagesList extends HookConsumerWidget {
   final String chatId;
   final ChatType chatType;
   final ValueNotifier<InputModifier?> inputModifiers;
-  static final GlobalKey<AnimatedListState> listKey =
-      GlobalKey<AnimatedListState>();
+  static GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useScrollController();
@@ -35,132 +34,139 @@ class ChatMessagesList extends HookConsumerWidget {
 
     if (streamList.value != null) {
       final data = streamList.value!;
-      return AnimatedList(
-        padding: const EdgeInsets.only(top: 10),
-        key: listKey,
-        reverse: true,
-        initialItemCount: data.length,
-        controller: controller,
-        itemBuilder: (context, i, animation) {
-          final currentMessage = data[i];
-          final senderUid = currentMessage.userId;
-          final Map pastData, nextData;
-          if (i == 0) {
-            nextData = {'senderUID': 'null'};
-          } else {
-            nextData = data[i - 1].documentSnapshot.data() as Map;
-          }
-          if (i == data.length - 1) {
-            pastData = {'senderUID': 'null'};
-          } else {
-            pastData = data[i + 1].documentSnapshot.data() as Map;
-          }
-          // Above, pastData should have been i-1 and nextData i+1.
-          // But, as the list needs to be in reverse order, we need
-          // to consider this workaround.
-          final pastUID = pastData.containsKey('uid')
-              ? pastData['uid']
-              : pastData.containsKey('senderUID')
-                  ? pastData['senderUID']
-                  : 'null';
-          final nextUID = nextData.containsKey('uid')
-              ? nextData['uid']
-              : nextData.containsKey('senderUID')
-                  ? nextData['senderUID']
-                  : 'null';
+      return SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          child: AnimatedList(
+            padding: const EdgeInsets.only(top: 10),
+            key: listKey,
+            reverse: true,
+            initialItemCount: data.length,
+            controller: controller,
+            itemBuilder: (context, i, animation) {
+              final currentMessage = data[i];
+              final senderUid = currentMessage.userId;
+              final Map pastData, nextData;
+              if (i == 0) {
+                nextData = {'senderUID': 'null'};
+              } else {
+                nextData = data[i - 1].documentSnapshot.data() as Map;
+              }
+              if (i == data.length - 1) {
+                pastData = {'senderUID': 'null'};
+              } else {
+                pastData = data[i + 1].documentSnapshot.data() as Map;
+              }
+              // Above, pastData should have been i-1 and nextData i+1.
+              // But, as the list needs to be in reverse order, we need
+              // to consider this workaround.
+              final pastUID = pastData.containsKey('uid')
+                  ? pastData['uid']
+                  : pastData.containsKey('senderUID')
+                      ? pastData['senderUID']
+                      : 'null';
+              final nextUID = nextData.containsKey('uid')
+                  ? nextData['uid']
+                  : nextData.containsKey('senderUID')
+                      ? nextData['senderUID']
+                      : 'null';
 
-          final isNextSenderSame = nextUID == senderUid;
-          final isPrevSenderSame = pastUID == senderUid;
+              final isNextSenderSame = nextUID == senderUid;
+              final isPrevSenderSame = pastUID == senderUid;
 
-          MessageInfo? messageInfo() {
-            final messageValue = data[i];
-            if (messageValue is TextMessage) {
-              return MessageInfo(
-                  id: messageValue.id,
-                  image: null,
-                  isLast: nextUID == 'null',
-                  isNextSenderSame: isNextSenderSame,
-                  isPreviousSenderSame: isPrevSenderSame,
-                  isRead: messageValue.read,
-                  reply: messageValue.reply,
-                  text: messageValue.text,
-                  time: DateTime.fromMillisecondsSinceEpoch(
-                      messageValue.timestamp.millisecondsSinceEpoch),
-                  type: MessageType.text);
-            } else if (messageValue is ImageMessage) {
-              return MessageInfo(
-                  id: messageValue.id,
-                  text: locales.image,
-                  isNextSenderSame: isNextSenderSame,
-                  isPreviousSenderSame: isPrevSenderSame,
-                  type: MessageType.image,
-                  image: messageValue.link,
-                  isRead: messageValue.read,
-                  time: DateTime.fromMillisecondsSinceEpoch(
-                      messageValue.timestamp.millisecondsSinceEpoch),
-                  isLast: nextUID == 'null',
-                  reply: messageValue.reply);
-            } else if (messageValue is UnsupportedMessage) {
-              return MessageInfo(
-                id: messageValue.id,
-                text: context.locale.unsupportedMessage,
-                isNextSenderSame: isNextSenderSame,
-                isPreviousSenderSame: isPrevSenderSame,
-                type: MessageType.unsupported,
-                image: null,
-                isRead: messageValue.read,
-                time: DateTime.fromMillisecondsSinceEpoch(
-                    messageValue.timestamp.millisecondsSinceEpoch),
-                isLast: nextUID == 'null',
-                reply: null,
-              );
-            } else {
-              return null;
-            }
-          }
+              MessageInfo? messageInfo() {
+                final messageValue = data[i];
+                if (messageValue is TextMessage) {
+                  return MessageInfo(
+                      id: messageValue.id,
+                      image: null,
+                      isLast: nextUID == 'null',
+                      isNextSenderSame: isNextSenderSame,
+                      isPreviousSenderSame: isPrevSenderSame,
+                      isRead: messageValue.read,
+                      reply: messageValue.reply,
+                      text: messageValue.text,
+                      time: DateTime.fromMillisecondsSinceEpoch(
+                          messageValue.timestamp.millisecondsSinceEpoch),
+                      type: MessageType.text);
+                } else if (messageValue is ImageMessage) {
+                  return MessageInfo(
+                      id: messageValue.id,
+                      text: locales.image,
+                      isNextSenderSame: isNextSenderSame,
+                      isPreviousSenderSame: isPrevSenderSame,
+                      type: MessageType.image,
+                      image: messageValue.link,
+                      isRead: messageValue.read,
+                      time: DateTime.fromMillisecondsSinceEpoch(
+                          messageValue.timestamp.millisecondsSinceEpoch),
+                      isLast: nextUID == 'null',
+                      reply: messageValue.reply);
+                } else if (messageValue is UnsupportedMessage) {
+                  return MessageInfo(
+                    id: messageValue.id,
+                    text: context.locale.unsupportedMessage,
+                    isNextSenderSame: isNextSenderSame,
+                    isPreviousSenderSame: isPrevSenderSame,
+                    type: MessageType.unsupported,
+                    image: null,
+                    isRead: messageValue.read,
+                    time: DateTime.fromMillisecondsSinceEpoch(
+                        messageValue.timestamp.millisecondsSinceEpoch),
+                    isLast: nextUID == 'null',
+                    reply: null,
+                  );
+                } else {
+                  return null;
+                }
+              }
 
-          return Column(
-            children: [
-              if (i == data.length - 1) ...[
-                const Padding(padding: EdgeInsets.only(top: 20)),
-                ElevatedButton(
-                  onPressed: () {
-                    Core.chat(chatId)
-                        .streamChatMessages(
-                            listKey: listKey,
-                            limit: 20,
-                            context: context,
-                            lastIndex: data.length - 1,
-                            startAfter: data.last.documentSnapshot)
-                        .listen((event) {
-                      streamList.value!.addAll(event);
-                    });
-                  },
-                  child: Text(
-                    locales.showPastMessages,
+              return Column(
+                children: [
+                  if (i == data.length - 1) ...[
+                    const Padding(padding: EdgeInsets.only(top: 20)),
+                    ElevatedButton(
+                      onPressed: () {
+                        Core.chat(chatId)
+                            .streamChatMessages(
+                                listKey: listKey,
+                                limit: 20,
+                                context: context,
+                                lastIndex: data.length - 1,
+                                startAfter: data.last.documentSnapshot)
+                            .listen((event) {
+                          streamList.value!.addAll(event);
+                        });
+                      },
+                      child: Text(
+                        locales.showPastMessages,
+                      ),
+                    ),
+                  ],
+                  SizeTransition(
+                    axisAlignment: -1,
+                    sizeFactor: CurvedAnimation(
+                        curve: Curves.easeInOutCirc, parent: animation),
+                    child: Bubble(
+                      colorScheme: Theme.of(context).colorScheme,
+                      chat: ChatInfo(id: chatId, type: chatType),
+                      message: messageInfo()!,
+                      user: UserInfo(
+                          name: data[i].name,
+                          userId: data[i].userId,
+                          profilePhoto:
+                              'gs://allo-ms.appspot.com/profilePictures/${data[i].userId}.png'),
+                      key: Key(data[i].id),
+                      modifiers: inputModifiers,
+                    ),
                   ),
-                ),
-              ],
-              SizeTransition(
-                axisAlignment: -1,
-                sizeFactor: CurvedAnimation(
-                    curve: Curves.easeInOutCirc, parent: animation),
-                child: Bubble(
-                  colorScheme: Theme.of(context).colorScheme,
-                  chat: ChatInfo(id: chatId, type: chatType),
-                  message: messageInfo()!,
-                  user: UserInfo(
-                      name: data[i].name,
-                      userId: data[i].userId,
-                      profilePhoto:
-                          'gs://allo-ms.appspot.com/profilePictures/${data[i].userId}.png'),
-                  key: Key(data[i].id),
-                  modifiers: inputModifiers,
-                ),
-              ),
-            ],
-          );
-        },
+                ],
+              );
+            },
+          ),
+        ),
       );
     } else if (streamList.value == null) {
       return const Center(

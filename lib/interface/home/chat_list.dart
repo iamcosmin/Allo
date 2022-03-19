@@ -1,4 +1,5 @@
 import 'package:allo/components/builders.dart';
+import 'package:allo/components/material3/elevation_overlay.dart';
 import 'package:allo/interface/home/home.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
@@ -23,43 +24,46 @@ class ChatList extends HookConsumerWidget {
       child: FutureView<List<Chat>?>(
         future: loadChats.value,
         success: (context, data) {
-          return ListView.builder(
-            padding: const EdgeInsets.all(5),
-            itemCount: data!.length,
-            itemBuilder: (BuildContext context, int index) {
-              final chat = data[index];
-              return ChatTile(
-                title: Text(
-                  chat.title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
-                ),
-                subtitle: Text(
-                  type(chat, context) + ' (${chat.id})',
-                  style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSecondaryContainer
-                        .withAlpha(200),
-                  ),
-                ),
-                leading: PersonPicture(
-                  profilePicture: chat.picture,
-                  radius: 50,
-                  initials: Core.auth.returnNameInitials(
+          return Container(
+            color: Theme.of(context).backgroundColor,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(5),
+              itemCount: data!.length,
+              itemBuilder: (BuildContext context, int index) {
+                final chat = data[index];
+                return ChatTile(
+                  title: Text(
                     chat.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
                   ),
-                ),
-                onTap: () => Core.navigation.push(
-                  route: ChatScreen(
-                    chat: chat,
+                  subtitle: Text(
+                    type(chat, context) + ' (${chat.id})',
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSecondaryContainer
+                          .withAlpha(200),
+                    ),
                   ),
-                ),
-              );
-            },
+                  leading: PersonPicture(
+                    profilePicture: chat.picture,
+                    radius: 55,
+                    initials: Core.auth.returnNameInitials(
+                      chat.title,
+                    ),
+                  ),
+                  onTap: () => Core.navigation.push(
+                    route: ChatScreen(
+                      chat: chat,
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         },
         error: (context, error) {

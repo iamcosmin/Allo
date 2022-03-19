@@ -90,7 +90,7 @@ class TabbedNavigator extends HookConsumerWidget {
                     transitionType: width > 700
                         ? SharedAxisTransitionType.vertical
                         : SharedAxisTransitionType.horizontal,
-                    fillColor: Theme.of(context).colorScheme.surface,
+                    fillColor: Theme.of(context).backgroundColor,
                     animation: animation,
                     secondaryAnimation: secondaryAnimation,
                     child: child,

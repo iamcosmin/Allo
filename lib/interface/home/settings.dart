@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/about.dart';
 import 'package:allo/interface/home/settings/account.dart';
@@ -17,7 +16,7 @@ class Settings extends HookConsumerWidget {
     final name = FirebaseAuth.instance.currentUser!.displayName!;
 
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(locales.settings),
       ),
       body: ListView(

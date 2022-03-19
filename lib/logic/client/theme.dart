@@ -1,15 +1,16 @@
 import 'dart:io';
 
+import 'package:allo/components/material3/elevation_overlay.dart';
 import 'package:allo/components/material3/ink_sparkle.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:animations/animations.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:material_color_utilities/palettes/core_palette.dart';
 
 import 'hooks.dart';
 
@@ -23,73 +24,6 @@ class NoPageTransitionsBuilder extends PageTransitionsBuilder {
       Animation<double> secondaryAnimation,
       Widget child) {
     return child;
-  }
-}
-
-ColorScheme _getColorSchemeFromCorePalette(
-    CorePalette palette, Brightness brightness) {
-  if (brightness == Brightness.light) {
-    return ColorScheme(
-        brightness: brightness,
-        primary: Color(palette.primary.get(40)),
-        onPrimary: Color(palette.primary.get(100)),
-        primaryContainer: Color(palette.primary.get(90)),
-        onPrimaryContainer: Color(palette.primary.get(10)),
-        secondary: Color(palette.secondary.get(40)),
-        onSecondary: Color(palette.secondary.get(100)),
-        secondaryContainer: Color(palette.secondary.get(90)),
-        onSecondaryContainer: Color(palette.secondary.get(10)),
-        tertiary: Color(palette.tertiary.get(40)),
-        onTertiary: Color(palette.tertiary.get(100)),
-        tertiaryContainer: Color(palette.tertiary.get(90)),
-        onTertiaryContainer: Color(palette.tertiary.get(10)),
-        error: Color(palette.error.get(40)),
-        onError: Color(palette.error.get(100)),
-        errorContainer: Color(palette.error.get(90)),
-        onErrorContainer: Color(palette.error.get(10)),
-        background: Color(palette.neutral.get(99)),
-        onBackground: Color(palette.neutral.get(10)),
-        surface: Color(palette.neutral.get(99)),
-        onSurface: Color(palette.neutral.get(10)),
-        surfaceVariant: Color(palette.neutralVariant.get(90)),
-        onSurfaceVariant: Color(palette.neutralVariant.get(30)),
-        outline: Color(palette.neutralVariant.get(50)),
-        inversePrimary: Color(palette.primary.get(80)),
-        inverseSurface: Color(palette.neutral.get(20)),
-        onInverseSurface: Color(palette.neutral.get(95)),
-        shadow: Color(palette.neutral.get(0)));
-  } else if (brightness == Brightness.dark) {
-    return ColorScheme(
-        brightness: brightness,
-        primary: Color(palette.primary.get(80)),
-        onPrimary: Color(palette.primary.get(20)),
-        primaryContainer: Color(palette.primary.get(30)),
-        onPrimaryContainer: Color(palette.primary.get(90)),
-        secondary: Color(palette.secondary.get(80)),
-        onSecondary: Color(palette.secondary.get(20)),
-        secondaryContainer: Color(palette.secondary.get(30)),
-        onSecondaryContainer: Color(palette.secondary.get(90)),
-        tertiary: Color(palette.tertiary.get(80)),
-        onTertiary: Color(palette.tertiary.get(20)),
-        tertiaryContainer: Color(palette.tertiary.get(30)),
-        onTertiaryContainer: Color(palette.tertiary.get(90)),
-        error: Color(palette.error.get(80)),
-        onError: Color(palette.error.get(20)),
-        errorContainer: Color(palette.error.get(30)),
-        onErrorContainer: Color(palette.error.get(90)),
-        background: Color(palette.neutral.get(10)),
-        onBackground: Color(palette.neutral.get(90)),
-        surface: Color(palette.neutral.get(10)),
-        onSurface: Color(palette.neutral.get(90)),
-        surfaceVariant: Color(palette.neutralVariant.get(30)),
-        onSurfaceVariant: Color(palette.neutralVariant.get(80)),
-        outline: Color(palette.neutralVariant.get(60)),
-        inversePrimary: Color(palette.primary.get(40)),
-        inverseSurface: Color(palette.neutral.get(90)),
-        onInverseSurface: Color(palette.neutral.get(20)),
-        shadow: Color(palette.neutral.get(0)));
-  } else {
-    throw Exception('This brightness value is not implemented by the method.');
   }
 }
 
@@ -109,35 +43,32 @@ ThemeData theme(
 
   ColorScheme getColorScheme() {
     final defaultColorScheme = ColorScheme.fromSeed(
-      seedColor: Color(themeColor.preference),
-      brightness: brightness,
-    );
+        seedColor: Color(themeColor.preference), brightness: brightness);
     if (colorScheme != null) {
       return colorScheme;
     } else {
-      if (kIsWeb) {
-        return defaultColorScheme;
-      } else if (Platform.isAndroid) {
+      if (!kIsWeb && Platform.isAndroid) {
         final _dynamicColor = usePreference(ref, dynamicColor);
         if (dynamic12 && _dynamicColor.preference) {
-          final rawColorScheme = ref.read(dynamicColorsProvider);
-          if (rawColorScheme != null) {
-            return _getColorSchemeFromCorePalette(rawColorScheme, brightness);
-          } else {
-            return defaultColorScheme;
-          }
+          final deviceColorScheme = ref
+              .read(dynamicColorsProvider)
+              ?.toColorScheme(brightness: brightness);
+          return deviceColorScheme ?? defaultColorScheme;
         } else {
           return defaultColorScheme;
         }
       } else {
-        throw Exception(
-          'The operating system the app is running on is incompatible with this feature. Please make changes in the source code to include custom implementations for the platform you are trying to support.',
-        );
+        return defaultColorScheme;
       }
     }
   }
 
   final scheme = getColorScheme();
+
+  Color tint(double elevation) {
+    return M3ElevationOverlay.applySurfaceTint(
+        scheme.surface, scheme.primary, elevation);
+  }
 
   final platform = ThemeData().platform;
   final iOS = usePreference(ref, emulateIOSBehaviour).preference == true ||
@@ -181,7 +112,7 @@ ThemeData theme(
         if (sdkInt >= 31) {
           return SharedAxisPageTransitionsBuilder(
             transitionType: SharedAxisTransitionType.horizontal,
-            fillColor: scheme.surface,
+            fillColor: tint(1),
           );
         } else if (sdkInt == 29 || sdkInt == 30) {
           return const ZoomPageTransitionsBuilder();
@@ -230,7 +161,8 @@ ThemeData theme(
     useMaterial3: true,
     splashFactory: getSplashFactory(),
     shadowColor: scheme.shadow,
-    scaffoldBackgroundColor: scheme.background,
+    scaffoldBackgroundColor: tint(1),
+    backgroundColor: tint(1),
     // Backward compatibility
     navigationBarTheme: NavigationBarThemeData(
       labelTextStyle: MaterialStateProperty.all(
@@ -243,6 +175,7 @@ ThemeData theme(
         ),
       ),
     ),
+    applyElevationOverlayColor: true,
     navigationRailTheme: NavigationRailThemeData(
       selectedLabelTextStyle: TextStyle(
           fontFamily: iOS ? null : 'GS-Text',
@@ -253,16 +186,10 @@ ThemeData theme(
           fontSize: 12.5,
           color: scheme.onSurface),
     ),
-    dialogTheme: DialogTheme(
-      backgroundColor: scheme.surface,
-      alignment: Alignment.center,
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-    ),
     listTileTheme: ListTileThemeData(
       textColor: scheme.onSurface,
       iconColor: scheme.onSurface,
-      tileColor: scheme.surface,
+      tileColor: tint(1),
     ),
 
     // TODO: All the button themes below should be removed when Material 3 button
@@ -288,7 +215,7 @@ ThemeData theme(
         splashFactory: getSplashFactory(),
       ),
     ),
-    splashColor: scheme.onSurface.withOpacity(0.3),
+    splashColor: scheme.onSurface.withOpacity(0.2),
     colorScheme: scheme,
     brightness: brightness,
     appBarTheme: AppBarTheme(
@@ -299,8 +226,8 @@ ThemeData theme(
         statusBarColor: const Color(0x00000000),
       ),
       foregroundColor: scheme.onSurface,
-      backgroundColor: scheme.surface,
-      elevation: 2,
+      backgroundColor: tint(3),
+      elevation: 0,
       iconTheme: IconThemeData(
         color: scheme.onSurface,
       ),

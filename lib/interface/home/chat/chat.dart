@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/chat/chat_messages_list.dart';
 import 'package:allo/logic/core.dart';
@@ -39,12 +38,8 @@ class ChatScreen extends HookConsumerWidget {
           .snapshots()
           .listen(
         (event) {
-          typing.value = event.data()!['typing'] ?? false;
-          var dbThemeId = event.data()!['theme'] ?? 'blue';
-          var themeIndex = themesId(context).indexOf(dbThemeId);
           scheme.value = ColorScheme.fromSeed(
-            seedColor: themes(context)[themeIndex]['color'],
-            primary: themes(context)[themeIndex]['color'],
+            seedColor: Color(event.data()?['theme'] ?? Colors.blue.value),
             brightness: Theme.of(context).brightness,
           );
         },
@@ -54,9 +49,7 @@ class ChatScreen extends HookConsumerWidget {
     return Theme(
       data: theme(brightness, ref, context, colorScheme: scheme.value),
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: NAppBar(
-          elevation: 0,
+        appBar: AppBar(
           actions: [
             Container(
               alignment: Alignment.bottomLeft,
@@ -89,24 +82,27 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ChatMessagesList(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ChatMessagesList(
+                  chatId: chat.id,
+                  chatType:
+                      chat is PrivateChat ? ChatType.private : ChatType.group,
+                  inputModifiers: inputModifiers,
+                ),
+              ),
+              MessageInput(
+                modifier: inputModifiers,
                 chatId: chat.id,
+                chatName: chat.title,
                 chatType:
                     chat is PrivateChat ? ChatType.private : ChatType.group,
-                inputModifiers: inputModifiers,
+                theme: scheme.value,
               ),
-            ),
-            MessageInput(
-              modifier: inputModifiers,
-              chatId: chat.id,
-              chatName: chat.title,
-              chatType: chat is PrivateChat ? ChatType.private : ChatType.group,
-              theme: scheme.value,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

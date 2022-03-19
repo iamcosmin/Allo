@@ -84,7 +84,7 @@ class CurrentUser {
         imageFile = uneditedImageFile;
         loaded.value = true;
       } else {
-        var editImageFile = await ImageCropper.cropImage(
+        var editImageFile = await ImageCropper().cropImage(
             sourcePath: pickFromGallery!.path,
             aspectRatioPresets: [CropAspectRatioPreset.square]);
         var convertedEditImageFile = PickedFile(editImageFile!.path);

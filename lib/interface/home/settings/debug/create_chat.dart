@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/components/builders.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
@@ -17,7 +16,7 @@ class CreateChat extends HookWidget {
     final error = useState<String?>(null);
     final usernameController = useTextEditingController();
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(locales.createNewChat),
       ),
       body: FutureView<Map<String, dynamic>?>(

@@ -121,7 +121,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   Future<Codec> _fetchImageCodec() async {
-    return await PaintingBinding.instance!
+    return await PaintingBinding.instance
         .instantiateImageCodec(await _fetchImageOrDefault());
   }
 

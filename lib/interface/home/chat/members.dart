@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/interface/home/chat/chat_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +18,7 @@ class ChatMembersPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(context.locale.members),
       ),
       body: FutureView<DocumentSnapshot<Map<String, dynamic>>>(

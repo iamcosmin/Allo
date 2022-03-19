@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/account/name.dart';
 import 'package:allo/interface/home/settings/profile_picture.dart';
@@ -12,7 +11,7 @@ class AccountSettings extends HookWidget {
   Widget build(BuildContext context) {
     final locales = S.of(context);
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(locales.account),
       ),
       body: ListView(

@@ -4,8 +4,6 @@ import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../../components/appbar.dart';
-
 class ProfilePictureSettings extends HookWidget {
   const ProfilePictureSettings({Key? key}) : super(key: key);
   static bool loaded = false;
@@ -18,7 +16,7 @@ class ProfilePictureSettings extends HookWidget {
     var percentage = useState(0.0);
 
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(locales.profilePicture),
       ),
       body: ListView(

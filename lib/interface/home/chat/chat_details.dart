@@ -1,4 +1,3 @@
-import 'package:allo/components/appbar.dart';
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
@@ -13,59 +12,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-List<Map> themes(BuildContext context) {
-  final locales = S.of(context);
-  return [
-    {
-      'name': locales.themeBlue,
-      'color': Colors.blue,
-      'id': 'blue',
-    },
-    {
-      'name': locales.themePurple,
-      'color': Colors.purple,
-      'id': 'purple',
-    },
-    {
-      'name': locales.themeRed,
-      'color': Colors.red,
-      'id': 'red',
-    },
-    {
-      'name': locales.themeCyan,
-      'color': Colors.cyan,
-      'id': 'cyan',
-    },
-    {
-      'name': locales.themePink,
-      'color': Colors.pink,
-      'id': 'pink',
-    },
-    {
-      'name': locales.themeEmerald,
-      'color': const Color(0xFF1a521f),
-      'id': 'smarald_green'
-    },
-    {
-      'name': locales.themeBurgundy,
-      'color': const Color(0xFF571047),
-      'id': 'burgundy',
-    },
-    {
-      'name': 'Special: Gina',
-      'color': const Color(0xFF4f5a8f),
-      'id': 'special_gina'
-    }
-  ];
-}
-
-List themesId(BuildContext context) {
-  var list = [];
-  for (var theme in themes(context)) {
-    list.add(theme['id']);
-  }
-  return list;
-}
+final colors = <int>[
+  for (var color in Colors.accents) ...[color.value]
+];
 
 void _changeTheme({
   required BuildContext context,
@@ -77,46 +26,57 @@ void _changeTheme({
   showMagicBottomSheet(
     context: context,
     title: locales.theme,
-    insets: const ScrollableInsets(
-        initialChildSize: 0.5, minChildSize: 0.5, maxChildSize: 0.8),
     children: [
-      if (!themesId(context).contains(currentTheme)) ...[
+      if (!colors.contains(currentTheme)) ...[
         Padding(
           padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
           child: Text(locales.themeNotAvailable),
         )
       ],
-      for (var theme in themes(context)) ...[
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 10,
-            bottom: 10,
-          ),
-          child: ListTile(
-            title: Text(theme['name']),
-            leading: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                color: theme['color'],
-                borderRadius: BorderRadius.circular(100),
+      Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        alignment: WrapAlignment.start,
+        children: [
+          for (var color in colors) ...[
+            ClipOval(
+              child: InkWell(
+                onTap: () async {
+                  await FirebaseFirestore.instance
+                      .collection('chats')
+                      .doc(id)
+                      .update({
+                    'theme': color,
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      height: 60,
+                      width: 60,
+                      color: Color(color),
+                    ),
+                    if (currentTheme == color) ...[
+                      Container(
+                        height: 60,
+                        width: 60,
+                        color: Colors.black.withOpacity(0.5),
+                        child: const Icon(
+                          Icons.check,
+                          size: 40,
+                        ),
+                      )
+                    ],
+                  ],
+                ),
               ),
-            ),
-            trailing: currentTheme == theme['id']
-                ? const Icon(Icons.check_rounded)
-                : null,
-            onTap: () async {
-              await FirebaseFirestore.instance
-                  .collection('chats')
-                  .doc(id)
-                  .update({
-                'theme': theme['id'],
-              });
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-      ]
+            )
+          ],
+        ],
+      ),
+      const Space(2)
     ],
   );
 }
@@ -138,7 +98,7 @@ class ChatDetails extends HookConsumerWidget {
         chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
         isGroup: chat is GroupChat ? true : false);
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(locales.chatInfo),
       ),
       body: ListView(

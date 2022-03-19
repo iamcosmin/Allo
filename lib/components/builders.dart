@@ -84,7 +84,7 @@ PageTransitionSwitcher _switcher<T>(
         : Duration.zero,
     transitionBuilder: (child, animation, secondaryAnimation) {
       return SharedAxisTransition(
-        fillColor: Theme.of(context).colorScheme.surface,
+        fillColor: Theme.of(context).backgroundColor,
         animation: animation,
         secondaryAnimation: secondaryAnimation,
         transitionType: SharedAxisTransitionType.vertical,

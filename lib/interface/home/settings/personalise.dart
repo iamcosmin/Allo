@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:allo/components/appbar.dart';
 import 'package:allo/components/settings_tile.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/generated/l10n.dart';
@@ -38,7 +37,7 @@ class PersonalisePage extends HookConsumerWidget {
     }
     final dynamic12 = (sdkInt != null && sdkInt >= 31);
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(locales.personalise),
       ),
       body: ListView(

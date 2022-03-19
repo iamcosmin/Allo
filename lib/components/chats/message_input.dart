@@ -119,7 +119,6 @@ class InputModifier {
 }
 
 /// Provides input actions for the Chat object.
-// ignore: must_be_immutable
 class MessageInput extends HookConsumerWidget {
   final String chatId;
   final String chatName;

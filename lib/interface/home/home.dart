@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../components/appbar.dart';
 import '../../logic/models/chat.dart';
 
 String type(Chat chat, BuildContext context) {
@@ -37,7 +36,7 @@ class ChatTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      height: 70,
+      height: 75,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
@@ -74,7 +73,7 @@ class Home extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final createChat = usePreference(ref, privateConversations);
     return Scaffold(
-      appBar: NAppBar(
+      appBar: AppBar(
         title: Text(
             context.locale.chats + (kReleaseMode == false ? ' (Debug)' : '')),
       ),
