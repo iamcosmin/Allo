@@ -19,7 +19,6 @@ class ChatScreen extends HookConsumerWidget {
   const ChatScreen({required this.chat, Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final typing = useState(false);
     final scheme = useState<ColorScheme>(
       ColorScheme.fromSeed(
         seedColor: Colors.blue,
@@ -28,24 +27,31 @@ class ChatScreen extends HookConsumerWidget {
     );
     final inputModifiers = useState<InputModifier?>(null);
     final brightness = Theme.of(context).brightness;
-    useEffect(() {
-      if (!kIsWeb) {
-        FirebaseMessaging.instance.subscribeToTopic(chat.id);
-      }
-      FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chat.id)
-          .snapshots()
-          .listen(
-        (event) {
-          scheme.value = ColorScheme.fromSeed(
-            seedColor: Color(event.data()?['theme'] ?? Colors.blue.value),
-            brightness: Theme.of(context).brightness,
-          );
-        },
-      );
-      return;
-    }, const []);
+    useEffect(
+      () {
+        if (!kIsWeb) {
+          FirebaseMessaging.instance.subscribeToTopic(chat.id);
+        }
+        FirebaseFirestore.instance
+            .collection('chats')
+            .doc(chat.id)
+            .snapshots()
+            .listen(
+          (event) {
+            scheme.value = ColorScheme.fromSeed(
+              seedColor: Color(
+                event.data()?['theme'] is int
+                    ? event.data()!['theme']
+                    : Colors.blue.value,
+              ),
+              brightness: Theme.of(context).brightness,
+            );
+          },
+        );
+        return;
+      },
+      const [],
+    );
     return Theme(
       data: theme(brightness, ref, context, colorScheme: scheme.value),
       child: Scaffold(
@@ -70,9 +76,10 @@ class ChatScreen extends HookConsumerWidget {
           ],
           title: InkWell(
             onTap: () => Core.navigation.push(
-                route: ChatDetails(
-              chat: chat,
-            )),
+              route: ChatDetails(
+                chat: chat,
+              ),
+            ),
             child: Text(
               chat.title,
               style: const TextStyle(

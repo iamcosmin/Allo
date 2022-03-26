@@ -4,10 +4,10 @@ import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/swipe_to.dart';
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/logic/models/messages.dart';
 import 'package:allo/logic/client/hooks.dart';
-import 'package:allo/logic/core.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:allo/logic/core.dart';
+import 'package:allo/logic/models/messages.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +20,15 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void _messageOptions(
-    BuildContext context,
-    String messageId,
-    String chatId,
-    String messageText,
-    WidgetRef ref,
-    bool isSentByUser,
-    bool isImage,
-    ColorScheme colorScheme) {
+  BuildContext context,
+  String messageId,
+  String chatId,
+  String messageText,
+  WidgetRef ref,
+  bool isSentByUser,
+  bool isImage,
+  ColorScheme colorScheme,
+) {
   final editMessage = usePreference(ref, editMessageDebug);
   final locales = S.of(context);
   showMagicBottomSheet(
@@ -69,11 +70,12 @@ void _messageOptions(
           onTap: () {
             Navigator.of(context).pop();
             _deleteMessage(
-                context: context,
-                chatId: chatId,
-                messageId: messageId,
-                colorScheme: colorScheme,
-                ref: ref);
+              context: context,
+              chatId: chatId,
+              messageId: messageId,
+              colorScheme: colorScheme,
+              ref: ref,
+            );
           },
         ),
       ],
@@ -81,12 +83,13 @@ void _messageOptions(
   );
 }
 
-void _deleteMessage(
-    {required BuildContext context,
-    required String chatId,
-    required String messageId,
-    required ColorScheme colorScheme,
-    required WidgetRef ref}) {
+void _deleteMessage({
+  required BuildContext context,
+  required String chatId,
+  required String messageId,
+  required ColorScheme colorScheme,
+  required WidgetRef ref,
+}) {
   final locales = S.of(context);
   showPlatformDialog(
     context: context,
@@ -119,7 +122,8 @@ void _deleteMessage(
           width: MediaQuery.of(context).size.width / 1.5,
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(colorScheme.error)),
+              backgroundColor: MaterialStateProperty.all(colorScheme.error),
+            ),
             onPressed: () {
               Navigator.pop(context);
               Future.delayed(
@@ -129,7 +133,9 @@ void _deleteMessage(
                       .messages
                       .deleteMessage(messageId: messageId);
                   Core.stub.showInfoBar(
-                      icon: Icons.delete_outline, text: locales.messageDeleted);
+                    icon: Icons.delete_outline,
+                    text: locales.messageDeleted,
+                  );
                 },
               );
             },
@@ -218,7 +224,8 @@ class Bubble extends HookConsumerWidget {
     final theme = Theme.of(context);
     final selected = useState(false);
     final regexEmoji = RegExp(
-        r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$');
+      r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$',
+    );
     final showNameConditionsMet = isNotCurrentUser &&
         chat.type == ChatType.group &&
         message.isPreviousSenderSame == false;
@@ -229,10 +236,11 @@ class Bubble extends HookConsumerWidget {
         !isNotCurrentUser && message.isLast && message.isRead;
     // Paddings
     final betweenBubblesPadding = EdgeInsets.only(
-        top: message.isPreviousSenderSame ? 1 : 10,
-        bottom: message.isNextSenderSame ? 1 : 10,
-        left: 10,
-        right: 10);
+      top: message.isPreviousSenderSame ? 1 : 10,
+      bottom: message.isNextSenderSame ? 1 : 10,
+      left: 10,
+      right: 10,
+    );
     // Radius
     final receivedMessageRadius = BorderRadius.only(
       topLeft: Radius.circular(message.isPreviousSenderSame ? 5 : 20),
@@ -249,12 +257,15 @@ class Bubble extends HookConsumerWidget {
     final messageRadius =
         isNotCurrentUser ? receivedMessageRadius : sentMessageRadius;
 
-    useEffect(() {
-      if (isNotCurrentUser && message.isRead == false) {
-        Core.chat(chat.id).messages.markAsRead(messageId: message.id);
-      }
-      return;
-    }, const []);
+    useEffect(
+      () {
+        if (isNotCurrentUser && message.isRead == false) {
+          Core.chat(chat.id).messages.markAsRead(messageId: message.id);
+        }
+        return;
+      },
+      const [],
+    );
 
     return Padding(
       padding: betweenBubblesPadding,
@@ -298,7 +309,6 @@ class Bubble extends HookConsumerWidget {
             },
             child: InkWell(
               child: Row(
-                mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: isNotCurrentUser
                     ? MainAxisAlignment.start
@@ -319,19 +329,22 @@ class Bubble extends HookConsumerWidget {
                   InkWell(
                     onTap: message.type == MessageType.image
                         ? () => Core.navigation.push(
-                              route: ImageView(message.image!,
-                                  colorScheme: colorScheme),
+                              route: ImageView(
+                                message.image!,
+                                colorScheme: colorScheme,
+                              ),
                             )
                         : () => selected.value = !selected.value,
                     onLongPress: () => _messageOptions(
-                        context,
-                        message.id,
-                        chat.id,
-                        message.text,
-                        ref,
-                        !isNotCurrentUser,
-                        message.type == MessageType.image,
-                        colorScheme),
+                      context,
+                      message.id,
+                      chat.id,
+                      message.text,
+                      ref,
+                      !isNotCurrentUser,
+                      message.type == MessageType.image,
+                      colorScheme,
+                    ),
                     borderRadius: messageRadius,
                     child: AnimatedContainer(
                       decoration: BoxDecoration(
@@ -341,7 +354,6 @@ class Bubble extends HookConsumerWidget {
                             : colorScheme.primary,
                       ),
                       constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
-                      height: null,
                       padding: message.type != MessageType.image
                           ? const EdgeInsets.only(
                               top: 8,
@@ -378,10 +390,11 @@ class Bubble extends HookConsumerWidget {
                                         ? null
                                         : Padding(
                                             padding: const EdgeInsets.only(
-                                                top: 5,
-                                                bottom: 5,
-                                                left: 5,
-                                                right: 5),
+                                              top: 5,
+                                              bottom: 5,
+                                              left: 5,
+                                              right: 5,
+                                            ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -401,33 +414,34 @@ class Bubble extends HookConsumerWidget {
                                                 ),
                                                 const Padding(
                                                   padding: EdgeInsets.only(
-                                                      right: 10),
+                                                    right: 10,
+                                                  ),
                                                 ),
                                                 Flexible(
                                                   child: Container(
                                                     height: 40,
                                                     constraints: BoxConstraints(
-                                                        maxWidth:
-                                                            screenWidth / 1.8,
-                                                        minWidth: 1),
-                                                    width:
-                                                        ((message.reply!.description
-                                                                        .length
-                                                                        .toDouble() >=
-                                                                    message
-                                                                        .reply!
-                                                                        .name
-                                                                        .length
-                                                                        .toDouble()
-                                                                ? message
+                                                      maxWidth:
+                                                          screenWidth / 1.8,
+                                                      minWidth: 1,
+                                                    ),
+                                                    width: (message
                                                                     .reply!
                                                                     .description
                                                                     .length
-                                                                    .toDouble()
-                                                                : message.reply!
+                                                                    .toDouble() >=
+                                                                message.reply!
                                                                     .name.length
-                                                                    .toDouble()) *
-                                                            9),
+                                                                    .toDouble()
+                                                            ? message
+                                                                .reply!
+                                                                .description
+                                                                .length
+                                                                .toDouble()
+                                                            : message.reply!
+                                                                .name.length
+                                                                .toDouble()) *
+                                                        9,
                                                     child: Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -436,26 +450,30 @@ class Bubble extends HookConsumerWidget {
                                                         Text(
                                                           message.reply?.name ??
                                                               '',
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
                                                         ),
                                                         ClipRect(
                                                           child: Text(
                                                             message.reply
                                                                     ?.description
                                                                     .replaceAll(
-                                                                        '\n',
-                                                                        ' ') ??
+                                                                  '\n',
+                                                                  ' ',
+                                                                ) ??
                                                                 '',
-                                                            style: const TextStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis),
+                                                            style:
+                                                                const TextStyle(
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
                                                           ),
                                                         ),
                                                       ],
@@ -518,9 +536,10 @@ class Bubble extends HookConsumerWidget {
                       ? (message.isRead ? locales.read : locales.sent)
                       : locales.received,
                   style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold),
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Padding(padding: EdgeInsets.only(left: 3)),
                 Text(

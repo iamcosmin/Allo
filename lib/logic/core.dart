@@ -10,6 +10,7 @@ import 'package:allo/logic/client/validators.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -18,6 +19,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'client/preferences/manager.dart';
+import 'backend/chat/chats.dart';
 
 export 'client/extensions.dart';
 
@@ -35,7 +37,9 @@ class Core {
   );
   static Validators validators(BuildContext context) => Validators(context);
   static final Notifications notifications = Notifications();
-  static final General general = General();
+  static const General general = General();
+  static const ChatsLogic chats = ChatsLogic();
+  // TODO(iamcosmin): Move this in ChatsLogic
   static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();
   static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
@@ -70,33 +74,34 @@ class DialogBuilder {
   const DialogBuilder({
     required this.icon,
     required this.title,
-    this.body,
     required this.actions,
+    this.body,
   });
 }
 
 class Stub {
   void showInfoBar({
-    @Deprecated('This function does not require context anymore, as it relies on ScaffoldMessengerState key.')
-        BuildContext? context,
     required IconData icon,
     required String text,
+    @Deprecated('This function does not require context anymore, as it relies on ScaffoldMessengerState key.')
+        BuildContext? context,
   }) {
     final key = Core.scaffoldMessengerKey.currentState;
     if (key != null) {
-      key.hideCurrentSnackBar();
-      key.showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Row(
-            children: [
-              Icon(icon),
-              const Padding(padding: EdgeInsets.only(left: 20)),
-              Text(text),
-            ],
+      key
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Row(
+              children: [
+                Icon(icon),
+                const Padding(padding: EdgeInsets.only(left: 20)),
+                Text(text),
+              ],
+            ),
           ),
-        ),
-      );
+        );
     } else {
       throw Exception('The scaffoldMessengerKey is null.');
     }

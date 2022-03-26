@@ -31,7 +31,10 @@ class Login extends HookConsumerWidget {
       isNavigationHandled: true,
       action: () async {
         return await Core.auth.checkAuthenticationAbility(
-            email: controller.text.trim(), error: error, context: context);
+          email: controller.text.trim(),
+          error: error,
+          context: context,
+        );
       },
     );
   }

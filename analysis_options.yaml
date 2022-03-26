@@ -3,3 +3,41 @@ include: package:flutter_lints/flutter.yaml
 linter: 
   rules:
    - omit_local_variable_types
+   - always_declare_return_types
+   - always_put_required_named_parameters_first
+   - avoid_annotating_with_dynamic
+   - avoid_escaping_inner_quotes
+   - avoid_redundant_argument_values
+   - avoid_positional_boolean_parameters
+   - avoid_returning_null
+   - avoid_returning_this
+   - avoid_types_on_closure_parameters
+   - avoid_unused_constructor_parameters
+   - cascade_invocations
+   - cast_nullable_to_non_nullable
+   - implementation_imports
+   - no_leading_underscores_for_local_identifiers
+   - prefer_asserts_with_message
+   - prefer_constructors_over_static_methods
+   - prefer_final_in_for_each
+   - prefer_final_locals
+   - prefer_if_elements_to_conditional_expressions
+   - prefer_interpolation_to_compose_strings 
+   - prefer_null_aware_method_calls
+   - require_trailing_commas
+   - unawaited_futures
+   - unnecessary_null_checks
+   - unnecessary_nullable_for_final_variable_declarations
+   - unnecessary_parenthesis
+   - use_decorated_box
+   - use_named_constants
+   - use_to_and_as_if_applicable
+  #  - use_super_parameters implement after upgrading to flutter lints 2
+  #  - use_colored_box implement after upgrading to flutter lints 2
+  #  - use_enums implement after upgrading to flutter lints 2
+  #  - unnecessary_await_in_return - problems with Future<void>
+  #  - prefer_expression_function_bodies
+
+analyzer:
+  exclude: 
+    - 'lib/generated/*'

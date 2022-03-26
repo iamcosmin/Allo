@@ -5,9 +5,9 @@ class Navigation {
   var key = GlobalKey<NavigatorState>();
 
   void push({
+    required Widget route,
     @Deprecated('BuildContext should not be specified as it is handled by the NavigatorState key.')
         BuildContext? context,
-    required Widget route,
     @Deprecated('Whether this is true or false, the same transition will be used.')
         bool login = false,
   }) {
@@ -20,8 +20,10 @@ class Navigation {
   }
 
   @Deprecated('Use pushPermanent.')
-  Future pushAndRemoveUntilHome(
-      {required BuildContext context, required Widget route}) {
+  Future pushAndRemoveUntilHome({
+    required BuildContext context,
+    required Widget route,
+  }) {
     return Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => route),
       (_) => false,

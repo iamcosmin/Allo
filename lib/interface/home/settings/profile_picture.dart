@@ -12,8 +12,8 @@ class ProfilePictureSettings extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final locales = S.of(context);
-    var loaded = useState(false);
-    var percentage = useState(0.0);
+    final loaded = useState(false);
+    final percentage = useState(0.0);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,9 +36,10 @@ class ProfilePictureSettings extends HookWidget {
                   ),
                 ),
                 PersonPicture(
-                    radius: 150,
-                    profilePicture: Core.auth.user.profilePicture,
-                    initials: Core.auth.user.nameInitials),
+                  radius: 150,
+                  profilePicture: Core.auth.user.profilePicture,
+                  initials: Core.auth.user.nameInitials,
+                ),
               ],
             ),
           ),
@@ -47,13 +48,15 @@ class ProfilePictureSettings extends HookWidget {
             leading: const Icon(Icons.upgrade_outlined),
             title: Text(locales.changeProfilePicture),
             onTap: () => Core.auth.user.updateProfilePicture(
-                loaded: loaded, percentage: percentage, context: context),
+              loaded: loaded,
+              percentage: percentage,
+              context: context,
+            ),
           ),
           const Padding(padding: EdgeInsets.only(bottom: 2)),
           ListTile(
             leading: const Icon(Icons.delete_outline),
             title: Text(locales.deleteProfilePicture),
-            onTap: null,
           ),
         ],
       ),

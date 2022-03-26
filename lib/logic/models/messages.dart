@@ -8,11 +8,16 @@ import 'package:flutter/cupertino.dart';
 /// [ImageMessage] if the type is [MessageType.image],
 /// [UnsupportedMessage] if the type of the message on the remote server does
 /// not have a match on the client.
-Message convertToMessage(
-    {required DocumentSnapshot documentSnapshot,
-    required ReplyMessageData? replyData,
-    required BuildContext context}) {
-  final data = documentSnapshot.data() as Map<String, dynamic>;
+Message convertToMessage({
+  required DocumentSnapshot documentSnapshot,
+  required ReplyMessageData? replyData,
+  required BuildContext context,
+}) {
+  final data = (documentSnapshot.data() != null
+      ? documentSnapshot.data()!
+      : throw Exception(
+          'The provided documentSnapshot does not have any data.',
+        )) as Map<String, dynamic>;
   final messageType = getMessageType(data['type']);
 
   if (messageType == MessageType.text) {
@@ -28,18 +33,22 @@ Message convertToMessage(
   } else {
     return UnsupportedMessage.fromDocumentSnapshot(
       documentSnapshot: documentSnapshot,
-      replyData: replyData,
     );
   }
 }
 
 /// Retreives a [ReplyMessageData] if [initialDocumentSnapshot] contains
 /// a replied message's id, otherwise returns null.
-Future<ReplyMessageData?> returnReplyMessageData(
-    {required DocumentSnapshot initialDocumentSnapshot,
-    required String chatId,
-    required BuildContext context}) async {
-  final data = initialDocumentSnapshot.data() as Map<String, dynamic>;
+Future<ReplyMessageData?> returnReplyMessageData({
+  required DocumentSnapshot initialDocumentSnapshot,
+  required String chatId,
+  required BuildContext context,
+}) async {
+  final data = (initialDocumentSnapshot.data() != null
+      ? initialDocumentSnapshot.data()!
+      : throw Exception(
+          'The provided initialDocumentSnapshot does not have any data.',
+        )) as Map<String, dynamic>;
   if (data['reply_to_message'] != null) {
     final replySnapshot = await FirebaseFirestore.instance
         .collection('chats')
@@ -48,7 +57,10 @@ Future<ReplyMessageData?> returnReplyMessageData(
         .doc(data['reply_to_message'])
         .get();
     final replyMessage = convertToMessage(
-        documentSnapshot: replySnapshot, context: context, replyData: null);
+      documentSnapshot: replySnapshot,
+      context: context,
+      replyData: null,
+    );
     return ReplyMessageData.fromMessage(
       message: replyMessage,
       context: context,
@@ -82,8 +94,10 @@ class ReplyMessageData {
   final String name;
   final String description;
 
-  factory ReplyMessageData.fromMessage(
-      {required Message message, required BuildContext context}) {
+  factory ReplyMessageData.fromMessage({
+    required Message message,
+    required BuildContext context,
+  }) {
     if (message is TextMessage) {
       return ReplyMessageData(
         name: message.name,
@@ -104,32 +118,34 @@ class ReplyMessageData {
 }
 
 class TextMessage extends Message {
-  const TextMessage(
-      {required String name,
-      required String userId,
-      required String username,
-      required String id,
-      required Timestamp timestamp,
-      required DocumentSnapshot documentSnapshot,
-      required bool read,
-      required this.text,
-      this.reply})
-      : super(
-            id: id,
-            name: name,
-            timestamp: timestamp,
-            userId: userId,
-            username: username,
-            documentSnapshot: documentSnapshot,
-            read: read);
+  const TextMessage({
+    required String name,
+    required String userId,
+    required String username,
+    required String id,
+    required Timestamp timestamp,
+    required DocumentSnapshot documentSnapshot,
+    required bool read,
+    required this.text,
+    this.reply,
+  }) : super(
+          id: id,
+          name: name,
+          timestamp: timestamp,
+          userId: userId,
+          username: username,
+          documentSnapshot: documentSnapshot,
+          read: read,
+        );
   final String text;
   final ReplyMessageData? reply;
-
   factory TextMessage.fromDocumentSnapshot({
     required DocumentSnapshot documentSnapshot,
     ReplyMessageData? replyData,
   }) {
-    final data = documentSnapshot.data() as Map<String, dynamic>;
+    final data = (documentSnapshot.data() != null
+        ? documentSnapshot.data()!
+        : throw Exception('This cannot be null')) as Map<String, dynamic>;
     return TextMessage(
       name: data['name'],
       userId: data['uid'],
@@ -156,13 +172,14 @@ class ImageMessage extends Message {
     required this.link,
     this.reply,
   }) : super(
-            id: id,
-            name: name,
-            timestamp: timestamp,
-            userId: userId,
-            username: username,
-            documentSnapshot: documentSnapshot,
-            read: read);
+          id: id,
+          name: name,
+          timestamp: timestamp,
+          userId: userId,
+          username: username,
+          documentSnapshot: documentSnapshot,
+          read: read,
+        );
   final String link;
   final ReplyMessageData? reply;
 
@@ -170,7 +187,11 @@ class ImageMessage extends Message {
     required DocumentSnapshot documentSnapshot,
     ReplyMessageData? replyData,
   }) {
-    final data = documentSnapshot.data() as Map<String, dynamic>;
+    final data = (documentSnapshot.data() != null
+        ? documentSnapshot.data()!
+        : throw Exception(
+            'The provided documentSnapshot does not have any data.',
+          )) as Map<String, dynamic>;
     return ImageMessage(
       name: data['name'],
       userId: data['uid'],
@@ -206,7 +227,6 @@ class UnsupportedMessage extends Message {
 
   factory UnsupportedMessage.fromDocumentSnapshot({
     required DocumentSnapshot documentSnapshot,
-    ReplyMessageData? replyData,
   }) {
     final data = documentSnapshot.data() as Map<String, dynamic>;
     return UnsupportedMessage(

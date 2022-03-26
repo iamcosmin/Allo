@@ -1,5 +1,4 @@
 import 'package:allo/components/builders.dart';
-import 'package:allo/components/material3/elevation_overlay.dart';
 import 'package:allo/interface/home/home.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
@@ -17,10 +16,10 @@ class ChatList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loadChats = useState<Future<List<Chat>?>>(
-      Core.chat('').getChatsList(),
+      Core.chats.getChatsList(),
     );
     return RefreshIndicator(
-      onRefresh: () => loadChats.value = Core.chat('').getChatsList(),
+      onRefresh: () => loadChats.value = Core.chats.getChatsList(),
       child: FutureView<List<Chat>?>(
         future: loadChats.value,
         success: (context, data) {
@@ -29,7 +28,7 @@ class ChatList extends HookConsumerWidget {
             child: ListView.builder(
               padding: const EdgeInsets.all(5),
               itemCount: data!.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (context, index) {
                 final chat = data[index];
                 return ChatTile(
                   title: Text(
@@ -41,7 +40,7 @@ class ChatList extends HookConsumerWidget {
                     ),
                   ),
                   subtitle: Text(
-                    type(chat, context) + ' (${chat.id})',
+                    '${type(chat, context)} (${chat.id})',
                     style: TextStyle(
                       color: Theme.of(context)
                           .colorScheme
@@ -67,15 +66,12 @@ class ChatList extends HookConsumerWidget {
           );
         },
         error: (context, error) {
-          final errorMessage = context.locale.anErrorOccurred +
-              '\n' +
-              ((error is FirebaseException)
-                  ? 'Code: ${error.code}'
-                      '\n'
-                      'Element: ${error.plugin}'
-                      '\n\n'
-                      '${error.message}'
-                  : error.toString());
+          final errorMessage =
+              '${context.locale.anErrorOccurred}\n${(error is FirebaseException) ? 'Code: ${error.code}'
+                  '\n'
+                  'Element: ${error.plugin}'
+                  '\n\n'
+                  '${error.message}' : error.toString()}';
           return Padding(
             padding: const EdgeInsets.only(left: 30, right: 30),
             child: Center(

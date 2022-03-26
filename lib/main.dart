@@ -1,28 +1,34 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/client/hooks.dart';
-import 'package:allo/logic/core.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/client/theme.dart';
+import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'interface/home/tabbed_navigator.dart';
 import 'logic/client/notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(systemNavigationBarColor: Colors.transparent),
+  );
   await Firebase.initializeApp(options: Core.firebaseOptions);
   if (!kIsWeb) {
     await Core.notifications.setupNotifications();
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
-  FirebaseRemoteConfig.instance.fetchAndActivate();
+  await FirebaseRemoteConfig.instance.fetchAndActivate();
   // await FirebaseMessaging.instance.requestPermission(
   //   alert: true,
   //   announcement: false,

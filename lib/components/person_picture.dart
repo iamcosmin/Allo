@@ -8,25 +8,26 @@ class PersonPicture extends HookConsumerWidget {
   final String initials;
   final String? profilePicture;
 
-  const PersonPicture(
-      {required this.initials,
-      required this.profilePicture,
-      required this.radius,
-      Key? key})
-      : super(key: key);
+  const PersonPicture({
+    required this.initials,
+    required this.profilePicture,
+    required this.radius,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ClipOval(
       child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          key: key,
-          height: radius,
-          width: radius,
-          alignment: Alignment.center,
-          child: Center(
-            child: _child(context),
-          )),
+        duration: const Duration(milliseconds: 250),
+        key: key,
+        height: radius,
+        width: radius,
+        alignment: Alignment.center,
+        child: Center(
+          child: _child(context),
+        ),
+      ),
     );
   }
 

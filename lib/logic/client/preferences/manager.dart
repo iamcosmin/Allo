@@ -54,6 +54,7 @@ class Preferences {
   /// This is a helper method for getting a value stored on the device,
   /// without specifying a exact function of [SharedPreferences].
   T? get<T>(String key) {
+    // ignore: no_leading_underscores_for_local_identifiers
     final _ = sharedPreferences.get(key);
     if (_ is T?) {
       return _;
@@ -64,17 +65,17 @@ class Preferences {
 
   /// This is a helper method for setting a value and assigning automatically
   /// the value type in storage.
-  void set(String key, dynamic value) async {
+  void set(String key, value) async {
     if (value is String) {
-      sharedPreferences.setString(key, value);
+      await sharedPreferences.setString(key, value);
     } else if (value is bool) {
-      sharedPreferences.setBool(key, value);
+      await sharedPreferences.setBool(key, value);
     } else if (value is double) {
-      sharedPreferences.setDouble(key, value);
+      await sharedPreferences.setDouble(key, value);
     } else if (value is int) {
-      sharedPreferences.setInt(key, value);
+      await sharedPreferences.setInt(key, value);
     } else if (value is List<String>) {
-      sharedPreferences.setStringList(key, value);
+      await sharedPreferences.setStringList(key, value);
     } else {
       throw Exception('The type specified is not compatible with this module.');
     }
@@ -88,7 +89,7 @@ class Preferences {
   void removeAll({List<String>? exception}) {
     if (exception != null) {
       final keys = sharedPreferences.getKeys();
-      for (var key in keys) {
+      for (final key in keys) {
         if (!exception.contains(key)) {
           sharedPreferences.remove(key);
         }
@@ -105,6 +106,7 @@ class Preferences {
   Future setString(String parameter, String setter) async =>
       await sharedPreferences.setString(parameter, setter);
   @Deprecated('Please use the simple set method for compatibility.')
+  // ignore: avoid_positional_boolean_parameters
   Future setBool(String parameter, bool setter) async =>
       await sharedPreferences.setBool(parameter, setter);
 }
@@ -121,7 +123,8 @@ T _getRemoteValue<T>(String key) {
     return rConfig.getDouble(key) as T;
   } else {
     throw Exception(
-        'The type specified cannot be returned from online source FirebaseRemoteConfig.');
+      'The type specified cannot be returned from online source FirebaseRemoteConfig.',
+    );
   }
 }
 

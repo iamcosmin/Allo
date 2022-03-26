@@ -34,12 +34,13 @@ class Messages {
     });
   }
 
-  Future sendTextMessage(
-      {required String text,
-      required String chatName,
-      TextEditingController? controller,
-      ValueNotifier<InputModifier?>? modifier,
-      required String chatType}) async {
+  Future sendTextMessage({
+    required String text,
+    required String chatName,
+    required String chatType,
+    TextEditingController? controller,
+    ValueNotifier<InputModifier?>? modifier,
+  }) async {
     if (controller != null) {
       controller.clear();
     }
@@ -72,28 +73,32 @@ class Messages {
       });
     }
     await _sendNotification(
-        profilePicture: Core.auth.user.profilePicture,
-        chatName: chatName,
-        name: auth.user.name,
-        content: text,
-        uid: auth.user.uid,
-        chatType: chatType);
+      profilePicture: Core.auth.user.profilePicture,
+      chatName: chatName,
+      name: auth.user.name,
+      content: text,
+      uid: auth.user.uid,
+      chatType: chatType,
+    );
   }
 
-  Future sendImageMessage(
-      {required String chatName,
-      required XFile imageFile,
-      String? description,
-      required ValueNotifier<double> progress,
-      required BuildContext context,
-      required String chatType}) async {
+  Future sendImageMessage({
+    required String chatName,
+    required XFile imageFile,
+    required ValueNotifier<double> progress,
+    required BuildContext context,
+    required String chatType,
+    String? description,
+  }) async {
     final auth = Core.auth;
     final path = 'chats/$chatId/${DateTime.now()}_${await auth.user.username}';
     final storage = FirebaseStorage.instance;
     final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
 
-    final task = storage.ref(path).putData(await imageFile.readAsBytes(),
-        SettableMetadata(contentType: 'image/png'));
+    final task = storage.ref(path).putData(
+          await imageFile.readAsBytes(),
+          SettableMetadata(contentType: 'image/png'),
+        );
     task.snapshotEvents.listen((event) async {
       progress.value = event.bytesTransferred / event.totalBytes;
       if (event.state == TaskState.success) {
@@ -109,13 +114,14 @@ class Messages {
           'time': DateTime.now(),
         });
         await _sendNotification(
-            chatName: chatName,
-            name: auth.user.name,
-            content: 'Imagine' + (description != null ? ' - $description' : ''),
-            uid: auth.user.uid,
-            chatType: chatType,
-            profilePicture: Core.auth.user.profilePicture,
-            photo: link);
+          chatName: chatName,
+          name: auth.user.name,
+          content: 'Imagine ${description != null ? ' - $description' : ''}',
+          uid: auth.user.uid,
+          chatType: chatType,
+          profilePicture: Core.auth.user.profilePicture,
+          photo: link,
+        );
         Navigator.of(context).pop();
       }
     });

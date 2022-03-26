@@ -47,8 +47,8 @@ class SwipeTo extends StatefulWidget {
   final VoidCallback? onLeftSwipe;
 
   const SwipeTo({
-    Key? key,
     required this.child,
+    Key? key,
     this.onRightSwipe,
     this.onLeftSwipe,
     this.iconOnRightSwipe = Icons.reply,
@@ -72,15 +72,15 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
   late Animation<double> _rightIconAnimation;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: widget.animationDuration,
     );
     _animation = Tween<Offset>(
-      begin: const Offset(0.0, 0.0),
-      end: const Offset(0.0, 0.0),
+      begin: Offset.zero,
+      end: Offset.zero,
     ).animate(
       CurvedAnimation(curve: Curves.decelerate, parent: _controller),
     );
@@ -96,7 +96,7 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
   }
 
   @override
-  dispose() {
+  void dispose() {
     _controller.dispose();
     super.dispose();
   }
@@ -106,7 +106,7 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
   void _runAnimation({required bool onRight}) {
     //set child animation
     _animation = Tween(
-      begin: const Offset(0.0, 0.0),
+      begin: Offset.zero,
       end: Offset(onRight ? widget.offsetDx : -widget.offsetDx, 0.0),
     ).animate(
       CurvedAnimation(curve: Curves.decelerate, parent: _controller),
@@ -127,11 +127,11 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
         if (onRight) {
           //keep left icon visibility to 0.0 until onRightSwipe triggers again
           _leftIconAnimation = _controller.drive(Tween(begin: 0.0, end: 0.0));
-          widget.onRightSwipe != null ? widget.onRightSwipe!() : null;
+          widget.onRightSwipe?.call();
         } else {
           //keep right icon visibility to 0.0 until onLeftSwipe triggers again
           _rightIconAnimation = _controller.drive(Tween(begin: 0.0, end: 0.0));
-          widget.onLeftSwipe != null ? widget.onLeftSwipe!() : null;
+          widget.onLeftSwipe?.call();
         }
       });
     });

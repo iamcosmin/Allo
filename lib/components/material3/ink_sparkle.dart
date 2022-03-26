@@ -105,15 +105,20 @@ class InkSparkle extends InteractiveInkFeature {
         _textDirection = textDirection,
         _targetRadius = (radius ??
                 _getTargetRadius(
-                    referenceBox, containedInkWell, rectCallback, position)) *
+                  referenceBox,
+                  containedInkWell,
+                  rectCallback,
+                  position,
+                )) *
             _targetRadiusMultiplier,
         _clipCallback =
             _getClipCallback(referenceBox, containedInkWell, rectCallback),
         super(
-            controller: controller,
-            referenceBox: referenceBox,
-            color: color,
-            onRemoved: onRemoved) {
+          controller: controller,
+          referenceBox: referenceBox,
+          color: color,
+          onRemoved: onRemoved,
+        ) {
     // InkSparkle will not be painted until the async compilation completes.
     _InkSparkleFactory.compileShaderIfNeccessary();
     controller.addInkFeature(this);
@@ -149,7 +154,8 @@ class InkSparkle extends InteractiveInkFeature {
     final Tween<Vector2> centerTween = Tween<Vector2>(
       begin: Vector2.array(<double>[_position.dx, _position.dy]),
       end: Vector2.array(
-          <double>[referenceBox.size.width / 2, referenceBox.size.height / 2]),
+        <double>[referenceBox.size.width / 2, referenceBox.size.height / 2],
+      ),
     );
     final Animation<double> centerProgress = TweenSequence<double>(
       <TweenSequenceItem<double>>[
@@ -250,8 +256,9 @@ class InkSparkle extends InteractiveInkFeature {
 
   @override
   void dispose() {
-    _animationController.stop();
-    _animationController.dispose();
+    _animationController
+      ..stop()
+      ..dispose();
     super.dispose();
   }
 
@@ -259,10 +266,12 @@ class InkSparkle extends InteractiveInkFeature {
   void paintFeature(Canvas canvas, Matrix4 transform) {
     // InkSparkle can only paint if its shader has been compiled.
     if (_InkSparkleFactory._shaderManager == null) {
-      debugPrint('''
+      debugPrint(
+        '''
        Skipping InkSparkle.paintFeature because the shader it relies on is not ready to be used.
        Please allow [InkSparkleFactory.compileShaderIfNeccessary] to complete before painting InkSparkle features.
-       ''');
+       ''',
+      );
       return;
     }
 
@@ -413,15 +422,18 @@ class InkSparkle extends InteractiveInkFeature {
     final Rect rect = clipCallback();
     if (customBorder != null) {
       canvas.clipPath(
-          customBorder.getOuterPath(rect, textDirection: textDirection));
+        customBorder.getOuterPath(rect, textDirection: textDirection),
+      );
     } else if (borderRadius != BorderRadius.zero) {
-      canvas.clipRRect(RRect.fromRectAndCorners(
-        rect,
-        topLeft: borderRadius.topLeft,
-        topRight: borderRadius.topRight,
-        bottomLeft: borderRadius.bottomLeft,
-        bottomRight: borderRadius.bottomRight,
-      ));
+      canvas.clipRRect(
+        RRect.fromRectAndCorners(
+          rect,
+          topLeft: borderRadius.topLeft,
+          topRight: borderRadius.topRight,
+          bottomLeft: borderRadius.bottomLeft,
+          bottomRight: borderRadius.bottomRight,
+        ),
+      );
     } else {
       canvas.clipRect(rect);
     }
@@ -436,7 +448,7 @@ class _InkSparkleFactory extends InteractiveInkFeatureFactory {
   // TODO(clocksmith): Update this once shaders are precompiled.
   static void compileShaderIfNeccessary() {
     if (!_initCalled) {
-      FragmentShaderManager.inkSparkle().then((FragmentShaderManager manager) {
+      FragmentShaderManager.inkSparkle().then((manager) {
         _shaderManager = manager;
       });
       _initCalled = true;
@@ -485,7 +497,7 @@ RectCallback? _getClipCallback(
   RectCallback? rectCallback,
 ) {
   if (rectCallback != null) {
-    assert(containedInkWell);
+    assert(containedInkWell, '');
     return rectCallback;
   }
   if (containedInkWell) {

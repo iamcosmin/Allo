@@ -18,6 +18,10 @@ class Settings extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.settings),
+        flexibleSpace: Hero(
+          tag: 'SYSTEM_NAV_BAR_KEY',
+          child: Container(),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(10),
@@ -27,15 +31,15 @@ class Settings extends HookConsumerWidget {
               Core.navigation.push(route: const AccountSettings());
             },
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),
                   child: PersonPicture(
-                      radius: 60,
-                      profilePicture: Core.auth.user.profilePicture,
-                      initials: Core.auth.user.nameInitials),
+                    radius: 60,
+                    profilePicture: Core.auth.user.profilePicture,
+                    initials: Core.auth.user.nameInitials,
+                  ),
                 ),
                 const Padding(padding: EdgeInsets.only(left: 15)),
                 Column(

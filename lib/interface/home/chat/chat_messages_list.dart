@@ -8,12 +8,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChatMessagesList extends HookConsumerWidget {
-  const ChatMessagesList(
-      {required this.chatId,
-      required this.chatType,
-      required this.inputModifiers,
-      Key? key})
-      : super(key: key);
+  const ChatMessagesList({
+    required this.chatId,
+    required this.chatType,
+    required this.inputModifiers,
+    Key? key,
+  }) : super(key: key);
   final String chatId;
   final ChatType chatType;
   final ValueNotifier<InputModifier?> inputModifiers;
@@ -23,19 +23,22 @@ class ChatMessagesList extends HookConsumerWidget {
     final controller = useScrollController();
     final locales = context.locale;
     final streamList = useState<List<Message>?>(null);
-    useEffect(() {
-      Core.chat(chatId)
-          .streamChatMessages(listKey: listKey, limit: 30, context: context)
-          .listen((event) {
-        streamList.value = event;
-      });
-      return;
-    }, const []);
+    useEffect(
+      () {
+        Core.chat(chatId)
+            .streamChatMessages(listKey: listKey, limit: 30, context: context)
+            .listen((event) {
+          streamList.value = event;
+        });
+        return;
+      },
+      const [],
+    );
 
     if (streamList.value != null) {
       final data = streamList.value!;
       return SafeArea(
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
           ),
@@ -73,6 +76,8 @@ class ChatMessagesList extends HookConsumerWidget {
                       ? nextData['senderUID']
                       : 'null';
 
+              // if senderUid is null, return exception
+
               final isNextSenderSame = nextUID == senderUid;
               final isPrevSenderSame = pastUID == senderUid;
 
@@ -80,30 +85,34 @@ class ChatMessagesList extends HookConsumerWidget {
                 final messageValue = data[i];
                 if (messageValue is TextMessage) {
                   return MessageInfo(
-                      id: messageValue.id,
-                      image: null,
-                      isLast: nextUID == 'null',
-                      isNextSenderSame: isNextSenderSame,
-                      isPreviousSenderSame: isPrevSenderSame,
-                      isRead: messageValue.read,
-                      reply: messageValue.reply,
-                      text: messageValue.text,
-                      time: DateTime.fromMillisecondsSinceEpoch(
-                          messageValue.timestamp.millisecondsSinceEpoch),
-                      type: MessageType.text);
+                    id: messageValue.id,
+                    image: null,
+                    isLast: nextUID == 'null',
+                    isNextSenderSame: isNextSenderSame,
+                    isPreviousSenderSame: isPrevSenderSame,
+                    isRead: messageValue.read,
+                    reply: messageValue.reply,
+                    text: messageValue.text,
+                    time: DateTime.fromMillisecondsSinceEpoch(
+                      messageValue.timestamp.millisecondsSinceEpoch,
+                    ),
+                    type: MessageType.text,
+                  );
                 } else if (messageValue is ImageMessage) {
                   return MessageInfo(
-                      id: messageValue.id,
-                      text: locales.image,
-                      isNextSenderSame: isNextSenderSame,
-                      isPreviousSenderSame: isPrevSenderSame,
-                      type: MessageType.image,
-                      image: messageValue.link,
-                      isRead: messageValue.read,
-                      time: DateTime.fromMillisecondsSinceEpoch(
-                          messageValue.timestamp.millisecondsSinceEpoch),
-                      isLast: nextUID == 'null',
-                      reply: messageValue.reply);
+                    id: messageValue.id,
+                    text: locales.image,
+                    isNextSenderSame: isNextSenderSame,
+                    isPreviousSenderSame: isPrevSenderSame,
+                    type: MessageType.image,
+                    image: messageValue.link,
+                    isRead: messageValue.read,
+                    time: DateTime.fromMillisecondsSinceEpoch(
+                      messageValue.timestamp.millisecondsSinceEpoch,
+                    ),
+                    isLast: nextUID == 'null',
+                    reply: messageValue.reply,
+                  );
                 } else if (messageValue is UnsupportedMessage) {
                   return MessageInfo(
                     id: messageValue.id,
@@ -114,7 +123,8 @@ class ChatMessagesList extends HookConsumerWidget {
                     image: null,
                     isRead: messageValue.read,
                     time: DateTime.fromMillisecondsSinceEpoch(
-                        messageValue.timestamp.millisecondsSinceEpoch),
+                      messageValue.timestamp.millisecondsSinceEpoch,
+                    ),
                     isLast: nextUID == 'null',
                     reply: null,
                   );
@@ -131,11 +141,12 @@ class ChatMessagesList extends HookConsumerWidget {
                       onPressed: () {
                         Core.chat(chatId)
                             .streamChatMessages(
-                                listKey: listKey,
-                                limit: 20,
-                                context: context,
-                                lastIndex: data.length - 1,
-                                startAfter: data.last.documentSnapshot)
+                          listKey: listKey,
+                          limit: 20,
+                          context: context,
+                          lastIndex: data.length - 1,
+                          startAfter: data.last.documentSnapshot,
+                        )
                             .listen((event) {
                           streamList.value!.addAll(event);
                         });
@@ -148,16 +159,19 @@ class ChatMessagesList extends HookConsumerWidget {
                   SizeTransition(
                     axisAlignment: -1,
                     sizeFactor: CurvedAnimation(
-                        curve: Curves.easeInOutCirc, parent: animation),
+                      curve: Curves.easeInOutCirc,
+                      parent: animation,
+                    ),
                     child: Bubble(
                       colorScheme: Theme.of(context).colorScheme,
                       chat: ChatInfo(id: chatId, type: chatType),
                       message: messageInfo()!,
                       user: UserInfo(
-                          name: data[i].name,
-                          userId: data[i].userId,
-                          profilePhoto:
-                              'gs://allo-ms.appspot.com/profilePictures/${data[i].userId}.png'),
+                        name: data[i].name,
+                        userId: data[i].userId,
+                        profilePhoto:
+                            'gs://allo-ms.appspot.com/profilePictures/${data[i].userId}.png',
+                      ),
                       key: Key(data[i].id),
                       modifiers: inputModifiers,
                     ),

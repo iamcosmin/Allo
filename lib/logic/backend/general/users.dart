@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserMethods {
+  const UserMethods();
   Future<Map<String, dynamic>?> getUsernamePairs() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('users')

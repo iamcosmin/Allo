@@ -14,8 +14,10 @@ class SetupVerification extends HookWidget {
     final locales = S.of(context);
 
     useEffect(() {
-      Future.microtask(() async =>
-          await FirebaseAuth.instance.currentUser!.sendEmailVerification());
+      Future.microtask(
+        () async =>
+            await FirebaseAuth.instance.currentUser!.sendEmailVerification(),
+      );
       return;
     });
     return SetupPage(
@@ -29,7 +31,7 @@ class SetupVerification extends HookWidget {
         if (verified) {
           return true;
         } else {
-          showPlatformDialog(
+          await showPlatformDialog(
             context: context,
             builder: (context) => AlertDialog(
               title: Text(context.locale.error),

@@ -25,11 +25,15 @@ class M3ElevationOverlay {
   /// [color] with the [surfaceTint] of the appropriate opacity applies to it.
   /// Otherwise it will just return [color] unmodified.
   static Color applySurfaceTint(
-      Color color, Color? surfaceTint, double elevation) {
+    Color color,
+    Color? surfaceTint,
+    double elevation,
+  ) {
     if (surfaceTint != null) {
       return Color.alphaBlend(
-          surfaceTint.withOpacity(_surfaceTintOpacityForElevation(elevation)),
-          color);
+        surfaceTint.withOpacity(_surfaceTintOpacityForElevation(elevation)),
+        color,
+      );
     }
     return color;
   }
@@ -94,7 +98,10 @@ class M3ElevationOverlay {
   ///  * <https://material.io/design/color/dark-theme.html>, which specifies how
   ///    the overlay should be applied.
   static Color applyOverlay(
-      BuildContext context, Color color, double elevation) {
+    BuildContext context,
+    Color color,
+    double elevation,
+  ) {
     final theme = Theme.of(context);
     if (elevation > 0.0 &&
         theme.applyElevationOverlayColor &&
@@ -133,7 +140,10 @@ class M3ElevationOverlay {
   ///
   /// See https://material.io/design/color/dark-theme.html#properties.
   static Color colorWithOverlay(
-      Color surface, Color overlay, double elevation) {
+    Color surface,
+    Color overlay,
+    double elevation,
+  ) {
     return Color.alphaBlend(_overlayColor(overlay, elevation), surface);
   }
 

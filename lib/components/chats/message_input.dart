@@ -10,14 +10,15 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-void _attachMenu(
-    {required BuildContext context,
-    required ValueNotifier<double> uploadProgressValue,
-    required ChatType chatType,
-    required String chatName,
-    required String chatId,
-    required ColorScheme colorScheme,
-    required WidgetRef ref}) {
+void _attachMenu({
+  required BuildContext context,
+  required ValueNotifier<double> uploadProgressValue,
+  required ChatType chatType,
+  required String chatName,
+  required String chatId,
+  required ColorScheme colorScheme,
+  required WidgetRef ref,
+}) {
   final locales = S.of(context);
   XFile? file;
   showMagicBottomSheet(
@@ -48,10 +49,11 @@ void _attachMenu(
                 behavior: SnackBarBehavior.floating,
                 content: Text(locales.noCameraAvailable),
                 action: SnackBarAction(
-                    label: 'OK',
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    }),
+                  label: 'OK',
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  },
+                ),
               ),
             );
           }
@@ -84,7 +86,8 @@ void _attachMenu(
 enum ModifierType {
   reply,
   @Deprecated(
-      'DO NOT USE THIS VALUE, THIS IS NOT IMPLEMENTED IN LOGIC/CHAT.DART.')
+    'DO NOT USE THIS VALUE, THIS IS NOT IMPLEMENTED IN LOGIC/CHAT.DART.',
+  )
   edit
 }
 
@@ -95,11 +98,14 @@ class ModifierAction {
   ModifierAction({required this.type, this.replyMessageId, this.editMessageId})
 // Translation: If it is a reply modifier, assert that the replyMessageId is not null, else if it is a edit modifier,
 // assert that editMessageId is not null, else, trigger an exception.
-      : assert(type == ModifierType.reply
-            ? replyMessageId != null
-            : type == ModifierType.edit
-                ? editMessageId != null
-                : false);
+      : assert(
+          type == ModifierType.reply
+              ? replyMessageId != null
+              : type == ModifierType.edit
+                  ? editMessageId != null
+                  : false,
+          'Please provide a proper messageId for your provided type.',
+        );
   final ModifierType type;
   String? replyMessageId;
   String? editMessageId;
@@ -137,8 +143,8 @@ class MessageInput extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final empty = useState(true);
-    final _messageController = useTextEditingController();
-    final _node = useFocusNode(descendantsAreFocusable: false);
+    final messageController = useTextEditingController();
+    final node = useFocusNode(descendantsAreFocusable: false);
     final progress = useState<double>(0);
     final locales = S.of(context);
     return AnimatedContainer(
@@ -146,15 +152,17 @@ class MessageInput extends HookConsumerWidget {
       alignment: Alignment.bottomCenter,
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: theme.secondaryContainer),
+        borderRadius: BorderRadius.circular(10),
+        color: theme.secondaryContainer,
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedContainer(
             decoration: BoxDecoration(
-                color: theme.secondaryContainer,
-                borderRadius: BorderRadius.circular(10)),
+              color: theme.secondaryContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
             duration: const Duration(milliseconds: 120),
             height: modifier.value != null ? 50 : 0,
             child: AnimatedSwitcher(
@@ -163,7 +171,8 @@ class MessageInput extends HookConsumerWidget {
                   ? null
                   : Container(
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       padding: const EdgeInsets.only(left: 15, right: 10),
                       height: 50,
                       width: MediaQuery.of(context).size.width,
@@ -215,7 +224,6 @@ class MessageInput extends HookConsumerWidget {
                     SizeTransition(
                       sizeFactor: animation,
                       child: child,
-                      axis: Axis.vertical,
                       axisAlignment: -1,
                       key: key,
                     ),
@@ -225,11 +233,9 @@ class MessageInput extends HookConsumerWidget {
             ),
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                alignment: Alignment.center,
                 iconSize: 25,
                 color: theme.onSecondaryContainer,
                 icon: empty.value
@@ -238,13 +244,14 @@ class MessageInput extends HookConsumerWidget {
                 onPressed: empty.value == false || modifier.value != null
                     ? null
                     : () => _attachMenu(
-                        chatId: chatId,
-                        chatName: chatName,
-                        chatType: chatType,
-                        context: context,
-                        uploadProgressValue: progress,
-                        colorScheme: theme,
-                        ref: ref),
+                          chatId: chatId,
+                          chatName: chatName,
+                          chatType: chatType,
+                          context: context,
+                          uploadProgressValue: progress,
+                          colorScheme: theme,
+                          ref: ref,
+                        ),
               ),
               Container(
                 constraints: BoxConstraints(
@@ -256,8 +263,7 @@ class MessageInput extends HookConsumerWidget {
                 child: TextFormField(
                   cursorColor: Theme.of(context).colorScheme.outline,
                   minLines: 1,
-                  autofocus: false,
-                  focusNode: _node,
+                  focusNode: node,
                   textCapitalization: TextCapitalization.sentences,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
@@ -268,7 +274,7 @@ class MessageInput extends HookConsumerWidget {
                   ),
                   onChanged: (value) =>
                       value == '' ? empty.value = true : empty.value = false,
-                  controller: _messageController,
+                  controller: messageController,
                 ),
               ),
               Stack(
@@ -292,11 +298,12 @@ class MessageInput extends HookConsumerWidget {
                         : () {
                             empty.value = true;
                             Core.chat(chatId).messages.sendTextMessage(
-                                chatType: getStringFromChatType(chatType),
-                                text: _messageController.text,
-                                chatName: chatName,
-                                controller: _messageController,
-                                modifier: modifier);
+                                  chatType: getStringFromChatType(chatType),
+                                  text: messageController.text,
+                                  chatName: chatName,
+                                  controller: messageController,
+                                  modifier: modifier,
+                                );
                           },
                   ),
                 ],
@@ -310,13 +317,15 @@ class MessageInput extends HookConsumerWidget {
 }
 
 class UploadImage extends HookWidget {
-  const UploadImage(this.imageFile, this.imageFileBytes,
-      {required this.chatId,
-      required this.chatName,
-      required this.chatType,
-      required this.progress,
-      Key? key})
-      : super(key: key);
+  const UploadImage(
+    this.imageFile,
+    this.imageFileBytes, {
+    required this.chatId,
+    required this.chatName,
+    required this.chatType,
+    required this.progress,
+    Key? key,
+  }) : super(key: key);
   final XFile? imageFile;
   final Uint8List imageFileBytes;
   final String chatName;
@@ -335,12 +344,13 @@ class UploadImage extends HookWidget {
           Navigator.pop(context);
           progress.value = 0.1;
           await Core.chat(chatId).messages.sendImageMessage(
-              chatName: chatName,
-              imageFile: imageFile!,
-              description: 'Imagine',
-              progress: progress,
-              context: context,
-              chatType: chatType);
+                chatName: chatName,
+                imageFile: imageFile!,
+                description: 'Imagine',
+                progress: progress,
+                context: context,
+                chatType: chatType,
+              );
         },
         child: const Icon(Icons.check_rounded),
       ),

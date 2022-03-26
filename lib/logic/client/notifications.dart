@@ -12,11 +12,12 @@ import '../../interface/home/chat/chat.dart';
 import '../core.dart';
 
 /// Returns the title of the conversation (distinguish from group and private)
-String _title(
-    {required String? type,
-    required String chatName,
-    required String senderName}) {
-  if (getChatTypeFromString((type ?? 'group')) == ChatType.private) {
+String _title({
+  required String? type,
+  required String chatName,
+  required String senderName,
+}) {
+  if (getChatTypeFromString(type ?? 'group') == ChatType.private) {
     return senderName;
   } else {
     return chatName;
@@ -25,7 +26,7 @@ String _title(
 
 /// Creates an unique ID for notifications, requires the max value.
 int _createUniqueID(int maxValue) {
-  var random = Random();
+  final random = Random();
   return random.nextInt(maxValue);
 }
 
@@ -61,47 +62,48 @@ class Notifications {
 /// This function sets up the notification system.
 Future<void> onBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
-  String? _uid = message.data['uid'];
-  String? _senderName = message.data['senderName'];
-  String? _text = message.data['text'];
-  String? _profilePicture = message.data['profilePicture'];
-  String? _sentPicture = message.data['photo'];
-  String? _chatId = message.data['toChat'];
-  String _smallNotificationText =
+  final String? uid = message.data['uid'];
+  final String? senderName = message.data['senderName'];
+  final String? text = message.data['text'];
+  final String? profilePicture = message.data['profilePicture'];
+  final String? sentPicture = message.data['photo'];
+  final String? chatId = message.data['toChat'];
+  final String smallNotificationText =
       getChatTypeFromString(message.data['type']) == ChatType.group
           ? message.data['chatName']
           : 'Privat';
-  final _notificationLayout =
+  final notificationLayout =
       getChatTypeFromString(message.data['type']) == ChatType.group
           ? NotificationLayout.MessagingGroup
           : NotificationLayout.Messaging;
   // ignore: omit_local_variable_types
-  final Map<String, String> _suplimentaryInfo = {
-    'profilePicture': _profilePicture ?? '',
-    'chatId': _chatId ?? '',
+  final Map<String, String> suplimentaryInfo = {
+    'profilePicture': profilePicture ?? '',
+    'chatId': chatId ?? '',
     'chatName': _title(
-        type: message.data['type'],
-        chatName: message.data['chatName'],
-        senderName: message.data['senderName']),
+      type: message.data['type'],
+      chatName: message.data['chatName'],
+      senderName: message.data['senderName'],
+    ),
     'chatType': message.data['type'] ?? 'group',
-    'uid': _uid ?? 'no-uid'
+    'uid': uid ?? 'no-uid'
   };
-  if (_uid != Core.auth.user.uid) {
+  if (uid != Core.auth.user.uid) {
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: _createUniqueID(AwesomeNotifications.maxID),
-        title: _senderName,
-        body: _sentPicture != null ? 'Imagine' : _text,
+        title: senderName,
+        body: sentPicture != null ? 'Imagine' : text,
         channelKey: 'conversations',
         roundedLargeIcon: true,
-        largeIcon: _profilePicture,
-        notificationLayout: _notificationLayout,
+        largeIcon: profilePicture,
+        notificationLayout: notificationLayout,
         category: NotificationCategory.Message,
         roundedBigPicture: true,
-        bigPicture: _sentPicture,
-        groupKey: _chatId,
-        summary: _smallNotificationText,
-        payload: _suplimentaryInfo,
+        bigPicture: sentPicture,
+        groupKey: chatId,
+        summary: smallNotificationText,
+        payload: suplimentaryInfo,
       ),
       actionButtons: [
         NotificationActionButton(
@@ -118,24 +120,25 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
 class _NotificationController {
   static Future<void> onActionReceivedMethod(ReceivedAction action) async {
     final payload = action.payload!;
-    final _notificationLayout =
+    final notificationLayout =
         getChatTypeFromString(payload['chatType']!) == ChatType.group
             ? NotificationLayout.MessagingGroup
             : NotificationLayout.Messaging;
-    final _smallNotificationText =
+    final smallNotificationText =
         getChatTypeFromString(payload['chatType']!) == ChatType.group
             ? payload['chatName']!
             : 'Privat';
     if (action.actionType == ActionType.SilentBackgroundAction &&
         action.buttonKeyInput.isNotEmpty) {
-      // TODO: TEST: This aims to fix the infinite loading indicator in alpha when replying from the notification tray.
-      Firebase.initializeApp(options: Core.firebaseOptions);
+      // TODO(iamcosmin): TEST: This aims to fix the infinite loading indicator in alpha when replying from the notification tray.
+      await Firebase.initializeApp(options: Core.firebaseOptions);
       await Core.chat(payload['chatId']).messages.sendTextMessage(
-          text: action.buttonKeyInput,
-          chatName: payload['chatName']!,
-          chatType: payload['chatType']!);
+            text: action.buttonKeyInput,
+            chatName: payload['chatName']!,
+            chatType: payload['chatType']!,
+          );
       // ignore: omit_local_variable_types
-      final Map<String, String> _suplimentaryInfo = {
+      final Map<String, String> suplimentaryInfo = {
         'chatId': payload['chatId'] ?? '',
         'chatName': payload['chatName']!,
         'chatType': payload['chatType']!,
@@ -147,12 +150,12 @@ class _NotificationController {
           body: action.buttonKeyInput,
           channelKey: 'conversations',
           roundedLargeIcon: true,
-          notificationLayout: _notificationLayout,
+          notificationLayout: notificationLayout,
           category: NotificationCategory.Message,
           roundedBigPicture: true,
           groupKey: payload['chatId'],
-          summary: _smallNotificationText,
-          payload: _suplimentaryInfo,
+          summary: smallNotificationText,
+          payload: suplimentaryInfo,
         ),
         actionButtons: [
           NotificationActionButton(

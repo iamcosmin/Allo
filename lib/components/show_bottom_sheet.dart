@@ -57,9 +57,10 @@ Future<dynamic> showMagicBottomSheet({
                   child: Text(
                     title,
                     style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSurface),
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSurface,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -95,9 +96,10 @@ Future<dynamic> showMagicBottomSheet({
               child: Text(
                 title,
                 style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSurface),
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
               ),
             ),
             Padding(

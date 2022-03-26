@@ -61,9 +61,8 @@ class SetupName extends HookWidget {
               if (nameReg.hasMatch(secondNameController.text)) {
                 Core.navigation.push(
                   route: SetupUsername(
-                    displayName: firstNameController.text +
-                        ' ' +
-                        secondNameController.text,
+                    displayName:
+                        '${firstNameController.text} ${secondNameController.text}',
                     email: email,
                   ),
                 );

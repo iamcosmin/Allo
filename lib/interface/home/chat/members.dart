@@ -7,8 +7,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../components/builders.dart';
 import '../../../logic/core.dart';
 
-Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo(
-    {required String id}) async {
+Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo({
+  required String id,
+}) async {
   return await FirebaseFirestore.instance.collection('chats').doc(id).get();
 }
 
@@ -30,11 +31,17 @@ class ChatMembersPage extends HookConsumerWidget {
             itemBuilder: (context, i) {
               final member = members[i];
               return ListTile(
-                title: Text(member['uid'] != Core.auth.user.uid
-                    ? member['name']
-                    : context.locale.me),
+                title: Text(
+                  member['uid'] != Core.auth.user.uid
+                      ? member['name']
+                      : context.locale.me,
+                ),
                 contentPadding: const EdgeInsets.only(
-                    top: 5, bottom: 5, left: 10, right: 10),
+                  top: 5,
+                  bottom: 5,
+                  left: 10,
+                  right: 10,
+                ),
                 leading: PersonPicture(
                   radius: 50,
                   profilePicture: Core.auth.getProfilePicture(

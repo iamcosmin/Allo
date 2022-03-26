@@ -27,15 +27,21 @@ class Photo extends HookConsumerWidget {
   /// This widget is the most useful if you have 'gs://' links in you app,
   /// but you do not want to fill your app with [FutureBuilder] to await
   /// the download URL of the Firebase Storage bucket.
-  const Photo(
-      {required this.url, this.placeholder, this.backgroundColor, Key? key})
-      : super(key: key);
+  const Photo({
+    required this.url,
+    this.placeholder,
+    this.backgroundColor,
+    Key? key,
+  }) : super(key: key);
   final String url;
   final Widget? placeholder;
   final Color? backgroundColor;
 
   Widget _errorBuilder(
-      BuildContext context, Object error, StackTrace? stackTrace) {
+    BuildContext context,
+    Object error,
+    StackTrace? stackTrace,
+  ) {
     return InkWell(
       onLongPress: () => Core.stub.alert(
         context: context,
@@ -45,8 +51,9 @@ class Photo extends HookConsumerWidget {
           body: SelectableText(error.toString()),
           actions: [
             TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'))
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            )
           ],
         ),
       ),

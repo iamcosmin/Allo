@@ -4,18 +4,21 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Setting extends HookConsumerWidget {
   const Setting({
-    Key? key,
     required this.title,
+    Key? key,
     this.enabled = true,
     this.disabledExplanation,
     this.onTap,
     this.preference,
-  })  : assert(onTap != null || preference != null,
-            'You should provide an onTap callback or a preference'),
+  })  : assert(
+          onTap != null || preference != null,
+          'You should provide an onTap callback or a preference',
+        ),
         assert(
-            (onTap != null && preference == null) ||
-                (onTap == null && preference != null),
-            'You cannot provide both an onTap callback and a preference. Please choose one.'),
+          (onTap != null && preference == null) ||
+              (onTap == null && preference != null),
+          'You cannot provide both an onTap callback and a preference. Please choose one.',
+        ),
         super(key: key);
   final String title;
   final bool enabled;
@@ -59,8 +62,9 @@ class Setting extends HookConsumerWidget {
                   SizedBox(
                     height: 25,
                     child: Switch.adaptive(
-                        value: preference!.preference,
-                        onChanged: preference!.changeValue),
+                      value: preference!.preference,
+                      onChanged: preference!.changeValue,
+                    ),
                   )
                 ] else ...[
                   SizedBox(

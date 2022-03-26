@@ -38,8 +38,8 @@ class ChangeNamePage extends HookConsumerWidget {
             errorText:
                 secondNameError.value == '' ? null : secondNameError.value,
             errorStyle: const TextStyle(fontSize: 14),
-            labelText: context.locale.lastName +
-                ' (${context.locale.optional.toLowerCase()})',
+            labelText:
+                '${context.locale.lastName} (${context.locale.optional.toLowerCase()})',
             border: const OutlineInputBorder(),
           ),
           controller: secondNameController,
@@ -54,8 +54,8 @@ class ChangeNamePage extends HookConsumerWidget {
           if (nameReg.hasMatch(firstNameController.text)) {
             if (secondNameController.text != '') {
               if (nameReg.hasMatch(secondNameController.text)) {
-                FirebaseAuth.instance.currentUser?.updateDisplayName(
-                  firstNameController.text + ' ' + secondNameController.text,
+                await FirebaseAuth.instance.currentUser?.updateDisplayName(
+                  '${firstNameController.text} ${secondNameController.text}',
                 );
                 Navigator.of(context).pop();
                 return true;
@@ -64,7 +64,7 @@ class ChangeNamePage extends HookConsumerWidget {
                 return false;
               }
             } else {
-              FirebaseAuth.instance.currentUser
+              await FirebaseAuth.instance.currentUser
                   ?.updateDisplayName(firstNameController.text);
               Navigator.of(context).pop();
               return true;

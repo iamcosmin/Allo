@@ -31,14 +31,14 @@ class AboutPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
     // DO NOT REMOVE
-    final _a = useState(0);
+    final a = useState(0);
     void _b() {
       if (Core.auth.user.email == 'i.am.cosmin.bicc@gmail.com') {
-        _a.value++;
-        if (_a.value == 10) {
+        a.value++;
+        if (a.value == 10) {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => const C()));
-          _a.value = 0;
+          a.value = 0;
         }
       }
     }

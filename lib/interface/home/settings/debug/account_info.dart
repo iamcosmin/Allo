@@ -10,12 +10,15 @@ class AccountInfo extends HookWidget {
   Widget build(BuildContext context) {
     final username = useState('');
     final locales = S.of(context);
-    useEffect(() {
-      Future.microtask(() async {
-        username.value = await Core.auth.user.username;
-      });
-      return;
-    }, const []);
+    useEffect(
+      () {
+        Future.microtask(() async {
+          username.value = await Core.auth.user.username;
+        });
+        return;
+      },
+      const [],
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.internalAccountInfo),
@@ -26,28 +29,27 @@ class AccountInfo extends HookWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SelectableText(
-              '${locales.name}: ' + Core.auth.user.name,
+              '${locales.name}: ${Core.auth.user.name}',
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              '${locales.initials}: ' + Core.auth.user.nameInitials,
+              '${locales.initials}: ${Core.auth.user.nameInitials}',
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              '${locales.uid}: ' + Core.auth.user.uid,
+              '${locales.uid}: ${Core.auth.user.uid}',
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              '${locales.username}: ' + username.value,
+              '${locales.username}: ${username.value}',
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
             SelectableText(
-              '${locales.profilePicture} ' +
-                  (Core.auth.user.profilePicture ?? locales.noProfilePicture),
+              '${locales.profilePicture} ${Core.auth.user.profilePicture ?? locales.noProfilePicture}',
               style: const TextStyle(fontSize: 17),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),

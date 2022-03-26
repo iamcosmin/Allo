@@ -21,9 +21,9 @@ void _changeTheme({
   required String id,
 }) async {
   final info = await returnChatInfo(id: id);
-  var currentTheme = info.data()!['theme'];
+  final currentTheme = info.data()!['theme'];
   final locales = S.of(context);
-  showMagicBottomSheet(
+  await showMagicBottomSheet(
     context: context,
     title: locales.theme,
     children: [
@@ -36,7 +36,6 @@ void _changeTheme({
       Wrap(
         spacing: 10,
         runSpacing: 10,
-        alignment: WrapAlignment.start,
         children: [
           for (var color in colors) ...[
             ClipOval(
@@ -81,13 +80,17 @@ void _changeTheme({
   );
 }
 
-Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo(
-    {required String id}) async {
+Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo({
+  required String id,
+}) async {
   return await FirebaseFirestore.instance.collection('chats').doc(id).get();
 }
 
 class ChatDetails extends HookConsumerWidget {
-  const ChatDetails({Key? key, required this.chat}) : super(key: key);
+  const ChatDetails({
+    required this.chat,
+    Key? key,
+  }) : super(key: key);
   final Chat chat;
 
   @override
@@ -95,8 +98,9 @@ class ChatDetails extends HookConsumerWidget {
     final locales = S.of(context);
     final members = usePreference(ref, membersDebug);
     final profilePicture = Core.auth.getProfilePicture(
-        chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
-        isGroup: chat is GroupChat ? true : false);
+      chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
+      isGroup: chat is GroupChat ? true : false,
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(locales.chatInfo),

@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class SetupPassword extends HookWidget {
-  const SetupPassword(
-      {required this.displayName,
-      required this.username,
-      required this.email,
-      Key? key})
-      : super(key: key);
+  const SetupPassword({
+    required this.displayName,
+    required this.username,
+    required this.email,
+    Key? key,
+  }) : super(key: key);
   final String displayName;
   final String username;
   final String email;

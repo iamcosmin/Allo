@@ -9,25 +9,26 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 //TODO: Handle big font sizes on small screens.
 //TODO: Handle big screen size split
 class SetupPage extends HookConsumerWidget {
-  const SetupPage(
-      {this.icon = Icons.warning,
-      required this.title,
-      this.subtitle,
-      this.customButtonText,
-      @Deprecated('Handle title using [title] parameter and any other subtitles with the [subtitle] parameter.')
-          this.header,
-      required this.body,
-      required this.action,
-      this.nextRoute,
-      this.isRoutePermanent = false,
-      this.isNavigationHandled = false,
-      this.alignment = CrossAxisAlignment.center,
-      this.debug,
-      Key? key})
-      : assert(
-            (nextRoute != null && isNavigationHandled == false) ||
-                (nextRoute == null && isNavigationHandled == true),
-            'You cannot provide nextRoute if navigation is handled by your own library.'),
+  const SetupPage({
+    required this.title,
+    required this.body,
+    required this.action,
+    this.icon = Icons.warning,
+    this.subtitle,
+    this.customButtonText,
+    @Deprecated('Handle title using [title] parameter and any other subtitles with the [subtitle] parameter.')
+        this.header,
+    this.nextRoute,
+    this.isRoutePermanent = false,
+    this.isNavigationHandled = false,
+    this.alignment = CrossAxisAlignment.center,
+    this.debug,
+    Key? key,
+  })  : assert(
+          (nextRoute != null && isNavigationHandled == false) ||
+              (nextRoute == null && isNavigationHandled == true),
+          'You cannot provide nextRoute if navigation is handled by your own library.',
+        ),
         super(key: key);
 
   final String title;
@@ -54,7 +55,11 @@ class SetupPage extends HookConsumerWidget {
           builder: (context, constraints) {
             return Padding(
               padding: const EdgeInsets.only(
-                  top: 40, bottom: 15, left: 40, right: 40),
+                top: 40,
+                bottom: 15,
+                left: 40,
+                right: 40,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -71,16 +76,18 @@ class SetupPage extends HookConsumerWidget {
                       Text(
                         title,
                         style: TextStyle(
-                            fontSize: body.isNotEmpty ? 30 : 45,
-                            color: Theme.of(context).colorScheme.onSurface),
+                          fontSize: body.isNotEmpty ? 30 : 45,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                       if (subtitle != null) ...[
                         const Space(3),
                         Text(
                           subtitle!,
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 16),
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                       Space(body.isNotEmpty ? 5 : 5),
@@ -106,7 +113,6 @@ class SetupPage extends HookConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
-                          flex: 1,
                           child: Visibility(
                             visible: Navigator.of(context).canPop(),
                             child: OutlinedButton.icon(
@@ -122,7 +128,6 @@ class SetupPage extends HookConsumerWidget {
                         ),
                         const Padding(padding: EdgeInsets.only(left: 10)),
                         Expanded(
-                          flex: 1,
                           child: ElevatedButton(
                             style: const ButtonStyle(
                               visualDensity: VisualDensity.standard,
@@ -154,10 +159,11 @@ class SetupPage extends HookConsumerWidget {
                                   : Text(
                                       buttonText,
                                       style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary,
-                                          backgroundColor: Colors.transparent),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                        backgroundColor: Colors.transparent,
+                                      ),
                                     ),
                             ),
                             onPressed: () async {
@@ -167,7 +173,7 @@ class SetupPage extends HookConsumerWidget {
                                 loading.value = false;
                                 if (!isNavigationHandled) {
                                   if (isRoutePermanent) {
-                                    Core.navigation.pushPermanent(
+                                    await Core.navigation.pushPermanent(
                                       context: context,
                                       route: nextRoute!,
                                     );

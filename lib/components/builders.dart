@@ -9,15 +9,15 @@ typedef AsyncSuccessData<T> = Widget Function(BuildContext context, T data);
 typedef AsyncErrorData = Widget? Function(BuildContext context, Object? error)?;
 
 class StreamView<T> extends HookConsumerWidget {
-  const StreamView(
-      {required this.stream,
-      required this.success,
-      this.failed,
-      this.error,
-      this.loading,
-      this.isAnimated,
-      Key? key})
-      : super(key: key);
+  const StreamView({
+    required this.stream,
+    required this.success,
+    this.failed,
+    this.error,
+    this.loading,
+    this.isAnimated,
+    Key? key,
+  }) : super(key: key);
   final Stream<T> stream;
   final AsyncSuccessData success;
   final Widget? loading;
@@ -30,23 +30,31 @@ class StreamView<T> extends HookConsumerWidget {
     return StreamBuilder<T>(
       stream: stream,
       builder: (context, snapshot) {
-        return _switcher<T>(context, snapshot, ref, success, error, loading,
-            failed, isAnimated);
+        return _switcher<T>(
+          context,
+          snapshot,
+          ref,
+          success,
+          error,
+          loading,
+          failed,
+          isAnimated,
+        );
       },
     );
   }
 }
 
 class FutureView<T> extends HookConsumerWidget {
-  const FutureView(
-      {required this.future,
-      required this.success,
-      this.failed,
-      this.error,
-      this.loading,
-      this.isAnimated,
-      Key? key})
-      : super(key: key);
+  const FutureView({
+    required this.future,
+    required this.success,
+    this.failed,
+    this.error,
+    this.loading,
+    this.isAnimated,
+    Key? key,
+  }) : super(key: key);
   final Future<T> future;
   final AsyncSuccessData<T> success;
   final Widget? loading;
@@ -59,25 +67,34 @@ class FutureView<T> extends HookConsumerWidget {
     return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) {
-        return _switcher<T>(context, snapshot, ref, success, error, loading,
-            failed, isAnimated);
+        return _switcher<T>(
+          context,
+          snapshot,
+          ref,
+          success,
+          error,
+          loading,
+          failed,
+          isAnimated,
+        );
       },
     );
   }
 }
 
 PageTransitionSwitcher _switcher<T>(
-    BuildContext context,
-    AsyncSnapshot snapshot,
-    WidgetRef ref,
-    AsyncSuccessData<T> success,
-    AsyncErrorData error,
-    Widget? loading,
-    Widget? failed,
-    bool? isAnimated) {
-  final _animations = usePreference(ref, animations);
+  BuildContext context,
+  AsyncSnapshot snapshot,
+  WidgetRef ref,
+  AsyncSuccessData<T> success,
+  AsyncErrorData error,
+  Widget? loading,
+  Widget? failed,
+  bool? isAnimated,
+) {
+  final animations = usePreference(ref, animationsPreference);
   return PageTransitionSwitcher(
-    duration: _animations.preference
+    duration: animations.preference
         ? ((isAnimated ?? true)
             ? const Duration(milliseconds: 300)
             : Duration.zero)

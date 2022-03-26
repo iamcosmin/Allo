@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:allo/components/material3/elevation_overlay.dart';
 import 'package:allo/components/material3/ink_sparkle.dart';
+import 'package:allo/components/page_route.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
@@ -18,11 +19,12 @@ class NoPageTransitionsBuilder extends PageTransitionsBuilder {
   const NoPageTransitionsBuilder();
   @override
   Widget buildTransitions<T>(
-      PageRoute<T> route,
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child) {
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return child;
   }
 }
@@ -37,19 +39,21 @@ ThemeData theme(
   if (!kIsWeb && Platform.isAndroid) {
     sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
   }
-  final dynamic12 = (sdkInt != null && sdkInt >= 31);
-  final themeColor = usePreference(ref, preferredColor);
-  final _animations = usePreference(ref, animations);
+  final dynamic12 = sdkInt != null && sdkInt >= 31;
+  final themeColor = usePreference(ref, preferredColorPreference);
+  final animations = usePreference(ref, animationsPreference);
 
   ColorScheme getColorScheme() {
     final defaultColorScheme = ColorScheme.fromSeed(
-        seedColor: Color(themeColor.preference), brightness: brightness);
+      seedColor: Color(themeColor.preference),
+      brightness: brightness,
+    );
     if (colorScheme != null) {
       return colorScheme;
     } else {
       if (!kIsWeb && Platform.isAndroid) {
-        final _dynamicColor = usePreference(ref, dynamicColor);
-        if (dynamic12 && _dynamicColor.preference) {
+        final dynamicColor = usePreference(ref, dynamicColorPreference);
+        if (dynamic12 && dynamicColor.preference) {
           final deviceColorScheme = ref
               .read(dynamicColorsProvider)
               ?.toColorScheme(brightness: brightness);
@@ -67,7 +71,10 @@ ThemeData theme(
 
   Color tint(double elevation) {
     return M3ElevationOverlay.applySurfaceTint(
-        scheme.surface, scheme.primary, elevation);
+      scheme.surface,
+      scheme.primary,
+      elevation,
+    );
   }
 
   final platform = ThemeData().platform;
@@ -91,7 +98,7 @@ ThemeData theme(
   }
 
   InteractiveInkFeatureFactory getSplashFactory() {
-    if (kIsWeb || !_animations.preference) {
+    if (kIsWeb || !animations.preference) {
       // Unfortunately, the web versions of Flutter apps are not so performant,
       // so we will use a [NoSplash.splashFactory].
       return NoSplash.splashFactory;
@@ -110,10 +117,11 @@ ThemeData theme(
     PageTransitionsBuilder getAndroid() {
       if (sdkInt != null) {
         if (sdkInt >= 31) {
-          return SharedAxisPageTransitionsBuilder(
-            transitionType: SharedAxisTransitionType.horizontal,
-            fillColor: tint(1),
-          );
+          return const SwipeablePageTransitionsBuilder();
+          // return SharedAxisPageTransitionsBuilder(
+          //   transitionType: SharedAxisTransitionType.horizontal,
+          //   fillColor: tint(1),
+          // );
         } else if (sdkInt == 29 || sdkInt == 30) {
           return const ZoomPageTransitionsBuilder();
         } else if (sdkInt == 28) {
@@ -126,12 +134,12 @@ ThemeData theme(
       }
     }
 
-    if (_animations.preference) {
+    if (animations.preference) {
       return PageTransitionsTheme(
         builders: {
           TargetPlatform.android: getAndroid(),
           TargetPlatform.fuchsia: const FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: const SwipeablePageTransitionsBuilder(),
           TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
           TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
           TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
@@ -156,7 +164,7 @@ ThemeData theme(
 
   return ThemeData(
     platform: iOS ? TargetPlatform.iOS : null,
-    // TODO: Remove once changes land in beta
+    // TODO(iamcosmin): Remove once changes land in beta
     errorColor: scheme.error,
     useMaterial3: true,
     splashFactory: getSplashFactory(),
@@ -171,20 +179,21 @@ ThemeData theme(
           fontSize: 12,
           letterSpacing: 0.6,
           color: scheme.onSurface,
-          inherit: true,
         ),
       ),
     ),
     applyElevationOverlayColor: true,
     navigationRailTheme: NavigationRailThemeData(
       selectedLabelTextStyle: TextStyle(
-          fontFamily: iOS ? null : 'GS-Text',
-          fontSize: 12.5,
-          color: scheme.onSurface),
+        fontFamily: iOS ? null : 'GS-Text',
+        fontSize: 12.5,
+        color: scheme.onSurface,
+      ),
       unselectedLabelTextStyle: TextStyle(
-          fontFamily: iOS ? null : 'GS-Text',
-          fontSize: 12.5,
-          color: scheme.onSurface),
+        fontFamily: iOS ? null : 'GS-Text',
+        fontSize: 12.5,
+        color: scheme.onSurface,
+      ),
     ),
     listTileTheme: ListTileThemeData(
       textColor: scheme.onSurface,
@@ -192,7 +201,7 @@ ThemeData theme(
       tileColor: tint(1),
     ),
 
-    // TODO: All the button themes below should be removed when Material 3 button
+    // TODO(iamcosmin): All the button themes below should be removed when Material 3 button
     // changes land in the beta branch.
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
@@ -235,7 +244,7 @@ ThemeData theme(
     androidOverscrollIndicator: getOverscrollIndicator(),
     pageTransitionsTheme: pageTransitionsTheme(),
     fontFamily: iOS ? null : 'GS-Text',
-    //! TODO: These fields should be replaced when Material changes land,
+    //! TODO(iamcosmin): These fields should be replaced when Material changes land
     // as these are just emulations of the Material3 behaviour.
     snackBarTheme: SnackBarThemeData(
       backgroundColor: scheme.primaryContainer,

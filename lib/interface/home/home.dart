@@ -22,13 +22,13 @@ String type(Chat chat, BuildContext context) {
 }
 
 class ChatTile extends HookConsumerWidget {
-  const ChatTile(
-      {required this.leading,
-      required this.title,
-      required this.subtitle,
-      required this.onTap,
-      Key? key})
-      : super(key: key);
+  const ChatTile({
+    required this.leading,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    Key? key,
+  }) : super(key: key);
   final Widget leading;
   final Widget title;
   final Widget subtitle;
@@ -40,13 +40,13 @@ class ChatTile extends HookConsumerWidget {
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(10)),
+        color: Theme.of(context).colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
               child: leading,
@@ -55,7 +55,6 @@ class ChatTile extends HookConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [title, subtitle],
               ),
@@ -75,18 +74,25 @@ class Home extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            context.locale.chats + (kReleaseMode == false ? ' (Debug)' : '')),
+          context.locale.chats + (kReleaseMode == false ? ' (Debug)' : ''),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: !createChat.preference
             ? null
-            : () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const CreateChat())),
+            : () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreateChat()),
+                ),
         label: Text(context.locale.createNewChat),
         icon: const Icon(Icons.create),
         tooltip: context.locale.createNewChat,
       ),
-      body: const ChatList(),
+      body: Column(
+        children: [
+          const Expanded(child: ChatList()),
+        ],
+      ),
     );
   }
 }

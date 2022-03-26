@@ -18,7 +18,7 @@ class EnterPassword extends HookWidget {
     return SetupPage(
       alignment: CrossAxisAlignment.start,
       icon: Icons.password,
-      title: locales.welcomeBack + '.',
+      title: '${locales.welcomeBack}.',
       subtitle: locales.enterPasswordDescription,
       body: [
         TextFormField(

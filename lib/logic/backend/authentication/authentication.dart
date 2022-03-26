@@ -37,8 +37,11 @@ Future<dynamic> _getType(Type type, String key) async {
 /// Returns a key from storage if exists, otherwise fetches the data using the fetch function.
 /// Please remember that you need to return a value of the same type as the type parameter,
 /// otherwise the function will fail.
-Future cache(
-    {required String key, required Function fetch, required Type type}) async {
+Future cache({
+  required String key,
+  required Function fetch,
+  required Type type,
+}) async {
   final prefs = await SharedPreferences.getInstance();
   if (await _getType(type, key) == null) {
     type == bool
@@ -62,10 +65,11 @@ class Authentication {
   }
 
   /// Checks if the user is eligible for login or signup.
-  Future<bool> checkAuthenticationAbility(
-      {required String email,
-      required ValueNotifier<String> error,
-      required BuildContext context}) async {
+  Future<bool> checkAuthenticationAbility({
+    required String email,
+    required ValueNotifier<String> error,
+    required BuildContext context,
+  }) async {
     final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
@@ -86,11 +90,12 @@ class Authentication {
 
   //? [Login]
   /// Signs in an Allo user by email and password.
-  Future<bool> signIn(
-      {required String email,
-      required String password,
-      required BuildContext context,
-      required ValueNotifier<String> error}) async {
+  Future<bool> signIn({
+    required String email,
+    required String password,
+    required BuildContext context,
+    required ValueNotifier<String> error,
+  }) async {
     final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
@@ -118,33 +123,36 @@ class Authentication {
 
   //? Signup
   /// Signs up the user by email and password.
-  Future<bool> signUp(
-      {required String email,
-      required String password,
-      required String confirmPassword,
-      required String displayName,
-      required String username,
-      required ValueNotifier<String> error,
-      required BuildContext context}) async {
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required String displayName,
+    required String username,
+    required ValueNotifier<String> error,
+    required BuildContext context,
+  }) async {
     final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
       if (password != '' && confirmPassword != '') {
         if (password == confirmPassword) {
-          var hasUppercase = password.contains(RegExp(r'[A-Z]'));
-          var hasDigits = password.contains(RegExp(r'[0-9]'));
-          var hasLowercase = password.contains(RegExp(r'[a-z]'));
-          var hasSpecialCharacters =
+          final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+          final hasDigits = password.contains(RegExp(r'[0-9]'));
+          final hasLowercase = password.contains(RegExp(r'[a-z]'));
+          final hasSpecialCharacters =
               password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-          var hasMinLength = password.length >= 8;
+          final hasMinLength = password.length >= 8;
           if (hasUppercase &&
               hasDigits &&
               hasLowercase &&
               hasSpecialCharacters &&
               hasMinLength) {
-            final user = await FirebaseAuth.instance
-                .createUserWithEmailAndPassword(
-                    email: email, password: password);
+            final user =
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
             await user.user!.updateDisplayName(displayName);
             final db = FirebaseFirestore.instance;
             await db.collection('users').doc(username).set({
@@ -180,12 +188,13 @@ class Authentication {
 
   /// Checks if the provided username is available and is compliant with
   /// the guidelines.
-  Future<bool> isUsernameCompliant(
-      {required String username,
-      required ValueNotifier<String> error,
-      required BuildContext context,
-      required String displayName,
-      required String email}) async {
+  Future<bool> isUsernameCompliant({
+    required String username,
+    required ValueNotifier<String> error,
+    required BuildContext context,
+    required String displayName,
+    required String email,
+  }) async {
     final locales = S.of(context);
     final usernameReg = RegExp(r'^[a-zA-Z0-9_\.]+$');
     final navigation = Core.navigation;
@@ -193,7 +202,9 @@ class Authentication {
         .collection('users')
         .doc('usernames')
         .get();
-    final usernames = usernamesDoc.data() as Map;
+    final usernames = usernamesDoc.data() != null
+        ? usernamesDoc.data()!
+        : throw Exception('The database could not return the usernames data.');
     FocusScope.of(context).unfocus();
     if (username != '') {
       if (usernameReg.hasMatch(username)) {
@@ -220,10 +231,11 @@ class Authentication {
     }
   }
 
-  Future changeName(
-      {required String name,
-      required BuildContext context,
-      required ValueNotifier<String> error}) async {
+  Future changeName({
+    required String name,
+    required BuildContext context,
+    required ValueNotifier<String> error,
+  }) async {
     FocusScope.of(context).unfocus();
     try {
       final auth = FirebaseAuth.instance.currentUser;
@@ -242,24 +254,29 @@ class Authentication {
   Future signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      Core.navigation.pushPermanent(context: context, route: const InnerApp());
+      await Core.navigation
+          .pushPermanent(context: context, route: const InnerApp());
     } catch (e) {
       throw Exception('Something is wrong...');
     }
   }
 
-  Future changeUsername(
-      {required String username,
-      required BuildContext context,
-      required ValueNotifier error}) async {
+  Future changeUsername({
+    required String username,
+    required BuildContext context,
+    required ValueNotifier error,
+  }) async {
     FocusScope.of(context).unfocus();
     try {
       final db = FirebaseFirestore.instance.collection('users');
       final prefs = await SharedPreferences.getInstance();
-      final data = await db
-          .doc(await user.username)
-          .get()
-          .then((value) => value.data() as Map<String, Object>);
+      final data = await db.doc(await user.username).get().then(
+            (value) => (value.data() != null
+                ? value.data()!
+                : throw Exception(
+                    'The database returned a null username list.',
+                  )) as Map<String, Object>,
+          );
       await db.doc(await user.username).delete();
       await db.doc(username).set(data);
       await prefs.setString('username', username);
@@ -280,18 +297,19 @@ class Authentication {
     if (splitedName.isEmpty) {
       initials = splitedName[0].substring(0, 1);
     } else {
-      for (var strings in splitedName) {
+      for (final strings in splitedName) {
         if (strings.isNotEmpty) {
           arrayOfInitials.add(strings.substring(0, 1));
         }
       }
-      initials = arrayOfInitials.join('');
+      initials = arrayOfInitials.join();
     }
     return initials;
   }
 
   @Deprecated(
-      'Please use the getProfilePicture method, which returns a String to use with FirebaseImage. (gs://)')
+    'Please use the getProfilePicture method, which returns a String to use with FirebaseImage. (gs://)',
+  )
   Future<String?> getUserProfilePicture(String uid) async {
     String? url;
     try {
@@ -313,9 +331,11 @@ class Authentication {
     }
   }
 
-  Future sendPasswordResetEmail(
-      {required String email, required BuildContext context}) async {
-    FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  Future sendPasswordResetEmail({
+    required String email,
+    required BuildContext context,
+  }) async {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     final locales = S.of(context);
     Core.stub.showInfoBar(
       icon: Icons.mail_outline,

@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class SetupUsername extends HookWidget {
-  const SetupUsername(
-      {required this.displayName, required this.email, Key? key})
-      : super(key: key);
+  const SetupUsername({
+    required this.displayName,
+    required this.email,
+    Key? key,
+  }) : super(key: key);
   final String displayName;
   final String email;
 
