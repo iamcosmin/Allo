@@ -1,33 +1,19 @@
 import 'dart:io';
 
 import 'package:allo/components/material3/elevation_overlay.dart';
-import 'package:allo/components/material3/ink_sparkle.dart';
-import 'package:allo/components/page_route.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
-import 'package:animations/animations.dart';
+import 'package:allo/logic/client/theme/ink.dart';
+import 'package:allo/logic/client/theme/page_transitions.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'typography.dart';
 
-import 'hooks.dart';
-
-class NoPageTransitionsBuilder extends PageTransitionsBuilder {
-  const NoPageTransitionsBuilder();
-  @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return child;
-  }
-}
+import '../hooks.dart';
 
 ThemeData theme(
   Brightness brightness,
@@ -42,6 +28,7 @@ ThemeData theme(
   final dynamic12 = sdkInt != null && sdkInt >= 31;
   final themeColor = usePreference(ref, preferredColorPreference);
   final animations = usePreference(ref, animationsPreference);
+  final platform = ThemeData().platform;
 
   ColorScheme getColorScheme() {
     final defaultColorScheme = ColorScheme.fromSeed(
@@ -77,100 +64,28 @@ ThemeData theme(
     );
   }
 
-  final platform = ThemeData().platform;
   final iOS = usePreference(ref, emulateIOSBehaviour).preference == true ||
       platform == TargetPlatform.iOS;
 
-  AndroidOverscrollIndicator getOverscrollIndicator() {
-    if (kIsWeb) {
-      return AndroidOverscrollIndicator.glow;
-    } else if (Platform.isAndroid) {
-      if (dynamic12) {
-        return AndroidOverscrollIndicator.stretch;
-      } else {
-        return AndroidOverscrollIndicator.glow;
-      }
-    } else {
-      throw Exception(
-        'The operating system the app is running on is incompatible with this feature. Please make changes in the source code to include custom implementations for the platform you are trying to support.',
-      );
-    }
-  }
-
-  InteractiveInkFeatureFactory getSplashFactory() {
-    if (kIsWeb || !animations.preference) {
-      // Unfortunately, the web versions of Flutter apps are not so performant,
-      // so we will use a [NoSplash.splashFactory].
-      return NoSplash.splashFactory;
-    } else if (Platform.isAndroid) {
-      if (dynamic12) {
-        return InkSparkle.splashFactory;
-      } else {
-        return InkRipple.splashFactory;
-      }
-    } else {
-      return NoSplash.splashFactory;
-    }
-  }
-
-  PageTransitionsTheme pageTransitionsTheme() {
-    PageTransitionsBuilder getAndroid() {
-      if (sdkInt != null) {
-        if (sdkInt >= 31) {
-          return const SwipeablePageTransitionsBuilder();
-          // return SharedAxisPageTransitionsBuilder(
-          //   transitionType: SharedAxisTransitionType.horizontal,
-          //   fillColor: tint(1),
-          // );
-        } else if (sdkInt == 29 || sdkInt == 30) {
-          return const ZoomPageTransitionsBuilder();
-        } else if (sdkInt == 28) {
-          return const OpenUpwardsPageTransitionsBuilder();
-        } else {
-          return const FadeUpwardsPageTransitionsBuilder();
-        }
-      } else {
-        return const FadeUpwardsPageTransitionsBuilder();
-      }
-    }
-
-    if (animations.preference) {
-      return PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: getAndroid(),
-          TargetPlatform.fuchsia: const FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.iOS: const SwipeablePageTransitionsBuilder(),
-          TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
-          TargetPlatform.windows: SharedAxisPageTransitionsBuilder(
-            transitionType: SharedAxisTransitionType.horizontal,
-            fillColor: scheme.surface,
-          ),
-        },
-      );
-    } else {
-      return const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: NoPageTransitionsBuilder(),
-          TargetPlatform.fuchsia: NoPageTransitionsBuilder(),
-          TargetPlatform.iOS: NoPageTransitionsBuilder(),
-          TargetPlatform.linux: NoPageTransitionsBuilder(),
-          TargetPlatform.macOS: NoPageTransitionsBuilder(),
-          TargetPlatform.windows: NoPageTransitionsBuilder(),
-        },
-      );
-    }
-  }
-
+  // TODO(iamcosmin): Once all Material3 changes land in beta, we should remove all emulations.
   return ThemeData(
+    // These parameters will remain even after Material 3 lands.
     platform: iOS ? TargetPlatform.iOS : null,
-    // TODO(iamcosmin): Remove once changes land in beta
-    errorColor: scheme.error,
+    typography: getTypography(),
+    pageTransitionsTheme: getPageTransitionsTheme(
+      reducedMotion: !animations.preference,
+    ),
     useMaterial3: true,
-    splashFactory: getSplashFactory(),
+    colorScheme: scheme,
+    brightness: brightness,
+    // TODO: Check if change has landed.
+    errorColor: scheme.error,
+    // These parameters are here just to emulate some of the Material 3 changes that haven't landed yet into the framework.
+    splashFactory: inkFeatureHolder,
     shadowColor: scheme.shadow,
     scaffoldBackgroundColor: tint(1),
     backgroundColor: tint(1),
+    androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
     // Backward compatibility
     navigationBarTheme: NavigationBarThemeData(
       labelTextStyle: MaterialStateProperty.all(
@@ -200,33 +115,27 @@ ThemeData theme(
       iconColor: scheme.onSurface,
       tileColor: tint(1),
     ),
-
-    // TODO(iamcosmin): All the button themes below should be removed when Material 3 button
-    // changes land in the beta branch.
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         shape: MaterialStateProperty.all(const StadiumBorder()),
         backgroundColor: MaterialStateProperty.all(scheme.primary),
         foregroundColor: MaterialStateProperty.all(scheme.onPrimary),
-        splashFactory: getSplashFactory(),
+        splashFactory: inkFeatureHolder,
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
         shape: MaterialStateProperty.all(const StadiumBorder()),
         foregroundColor: MaterialStateProperty.all(scheme.primary),
-        splashFactory: getSplashFactory(),
+        splashFactory: inkFeatureHolder,
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.all(scheme.primary),
-        splashFactory: getSplashFactory(),
+        splashFactory: inkFeatureHolder,
       ),
     ),
-    splashColor: scheme.onSurface.withOpacity(0.2),
-    colorScheme: scheme,
-    brightness: brightness,
     appBarTheme: AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarBrightness: brightness,
@@ -241,19 +150,14 @@ ThemeData theme(
         color: scheme.onSurface,
       ),
     ),
-    androidOverscrollIndicator: getOverscrollIndicator(),
-    pageTransitionsTheme: pageTransitionsTheme(),
-    fontFamily: iOS ? null : 'GS-Text',
-    //! TODO(iamcosmin): These fields should be replaced when Material changes land
-    // as these are just emulations of the Material3 behaviour.
     snackBarTheme: SnackBarThemeData(
       backgroundColor: scheme.primaryContainer,
       actionTextColor: scheme.onPrimaryContainer,
       behavior: SnackBarBehavior.floating,
       contentTextStyle: TextStyle(
         color: scheme.onPrimaryContainer,
-        fontFamily: iOS ? null : 'GS-Text',
       ),
+      shape: const StadiumBorder(),
     ),
     toggleableActiveColor: scheme.primary,
   );

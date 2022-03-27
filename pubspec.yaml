@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.3.4+227
+version: 1.3.4+228
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
@@ -49,20 +49,35 @@ flutter:
   uses-material-design: true
   generate: true
   fonts:
-    - family: GS-Text
+    - family: Text
       fonts:
-        - asset: fonts/GS-Text-Regular.ttf
-        - asset: fonts/GS-Text-Bold.ttf
+        - asset: fonts/text/regular.ttf
+        - asset: fonts/text/italic.ttf
+          style: italic
+        - asset: fonts/text/bold.ttf
           weight: 700
-        - asset: fonts/GS-Text-Bold-Italic.ttf
+        - asset: fonts/text/bold-italic.ttf
           weight: 700
           style: italic
-        - asset: fonts/GS-Text-Medium.ttf
+        - asset: fonts/text/medium.ttf
           weight: 500
-        - asset: fonts/GS-Text-Medium-Italic.ttf
+        - asset: fonts/text/medium-italic.ttf
           weight: 500
           style: italic
-        - asset: fonts/GS-Text-Italic.ttf
+    - family: Display
+      fonts:
+        - asset: fonts/display/regular.ttf
+        - asset: fonts/display/italic.ttf
+          style: italic
+        - asset: fonts/display/bold.ttf
+          weight: 700
+        - asset: fonts/display/bold-italic.ttf
+          weight: 700
+          style: italic
+        - asset: fonts/display/medium.ttf
+          weight: 500
+        - asset: fonts/display/medium-italic.ttf
+          weight: 500
           style: italic
 flutter_intl:
   enabled: true

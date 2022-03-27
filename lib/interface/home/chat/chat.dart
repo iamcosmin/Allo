@@ -12,7 +12,7 @@ import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../logic/client/theme.dart';
+import '../../../logic/client/theme/theme.dart';
 
 class ChatScreen extends HookConsumerWidget {
   final Chat chat;
