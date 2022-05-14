@@ -1,8 +1,11 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
-extension Locale on BuildContext {
+extension EnhancedContext on BuildContext {
   S get locale => S.of(this);
+  ThemeData get theme => Theme.of(this);
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
+  NavigatorState get navigator => Navigator.of(this);
 }
 
 extension E on int {

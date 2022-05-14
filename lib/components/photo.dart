@@ -31,8 +31,8 @@ class Photo extends HookConsumerWidget {
     required this.url,
     this.placeholder,
     this.backgroundColor,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final String url;
   final Widget? placeholder;
   final Color? backgroundColor;
@@ -58,7 +58,7 @@ class Photo extends HookConsumerWidget {
         ),
       ),
       child: Center(
-        child: Container(
+        child: ColoredBox(
           color: Theme.of(context).colorScheme.primary,
           child: Icon(
             Icons.error,

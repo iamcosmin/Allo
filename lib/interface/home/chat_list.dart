@@ -1,4 +1,5 @@
 import 'package:allo/components/builders.dart';
+import 'package:allo/components/chats/chat_tile.dart';
 import 'package:allo/interface/home/home.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
@@ -11,7 +12,7 @@ import '../../components/person_picture.dart';
 import 'chat/chat.dart';
 
 class ChatList extends HookConsumerWidget {
-  const ChatList({Key? key}) : super(key: key);
+  const ChatList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +24,7 @@ class ChatList extends HookConsumerWidget {
       child: FutureView<List<Chat>?>(
         future: loadChats.value,
         success: (context, data) {
-          return Container(
+          return ColoredBox(
             color: Theme.of(context).backgroundColor,
             child: ListView.builder(
               padding: const EdgeInsets.all(5),
@@ -50,7 +51,7 @@ class ChatList extends HookConsumerWidget {
                   ),
                   leading: PersonPicture(
                     profilePicture: chat.picture,
-                    radius: 55,
+                    radius: 60,
                     initials: Core.auth.returnNameInitials(
                       chat.title,
                     ),

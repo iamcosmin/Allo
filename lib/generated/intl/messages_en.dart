@@ -35,6 +35,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "animations": MessageLookupByLibrary.simpleMessage("Animations"),
         "appInfo": MessageLookupByLibrary.simpleMessage("App Info"),
         "attach": MessageLookupByLibrary.simpleMessage("Attach"),
+        "back": MessageLookupByLibrary.simpleMessage("Back"),
         "buildNumber": MessageLookupByLibrary.simpleMessage("Build Number"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -106,6 +107,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("The password is too weak."),
         "errorWrongPassword":
             MessageLookupByLibrary.simpleMessage("The password is incorrect."),
+        "finish": MessageLookupByLibrary.simpleMessage("Finish"),
         "finishScreenDescription":
             MessageLookupByLibrary.simpleMessage("Enjoy Allo."),
         "finishScreenTitle":

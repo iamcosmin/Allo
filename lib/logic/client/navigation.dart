@@ -1,59 +1,42 @@
-import 'package:animations/animations.dart';
+import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 
-class Navigation {
-  var key = GlobalKey<NavigatorState>();
+var navigatorKey = GlobalKey<NavigatorState>();
+const _kDefaultNavigatorError =
+    '''There is neither a BuildContext, not a GlobalKey<NavigatorState>.
+    This can happen if you did not pass a BuildContext, or you haven't initialized the key in 
+    MaterialApp.''';
 
+class Navigation {
   void push({
     required Widget route,
-    @Deprecated('BuildContext should not be specified as it is handled by the NavigatorState key.')
-        BuildContext? context,
-    @Deprecated('Whether this is true or false, the same transition will be used.')
-        bool login = false,
+    BuildContext? context,
   }) {
     final pageRoute = MaterialPageRoute(builder: (_) => route);
-    if (key.currentState != null) {
-      key.currentState!.push(pageRoute);
+    if (context != null) {
+      context.navigator.push(pageRoute);
+    } else if (navigatorKey.currentState != null) {
+      navigatorKey.currentState!.push(pageRoute);
     } else {
-      throw Exception('The navigatorKey is null.');
+      throw Exception(_kDefaultNavigatorError);
     }
   }
 
-  @Deprecated('Use pushPermanent.')
-  Future pushAndRemoveUntilHome({
-    required BuildContext context,
+  void pushPermanent({
     required Widget route,
+    BuildContext? context,
   }) {
-    return Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => route),
-      (_) => false,
-    );
-  }
-
-  Future pushPermanent({
-    required BuildContext context,
-    required Widget route,
-    bool login = false,
-  }) {
-    Route? pageRoute;
-    if (login) {
-      pageRoute = PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return SharedAxisTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            transitionType: SharedAxisTransitionType.horizontal,
-            child: route,
-            fillColor: Theme.of(context).colorScheme.surface,
-          );
-        },
+    final pageRoute = MaterialPageRoute(builder: (_) => route);
+    if (context != null) {
+      Navigator.of(context).pushAndRemoveUntil(
+        pageRoute,
+        (route) => false,
       );
+    } else if (navigatorKey.currentState != null) {
+      navigatorKey.currentState
+          ?.pushAndRemoveUntil(pageRoute, (route) => false);
     } else {
-      pageRoute = MaterialPageRoute(builder: (_) => route);
+      throw Exception(_kDefaultNavigatorError);
     }
-    return Navigator.of(context).pushAndRemoveUntil(
-      pageRoute,
-      (route) => false,
-    );
   }
 }

@@ -25,7 +25,7 @@ Future<AppInfo> getInfo() async {
 }
 
 class AboutPage extends HookConsumerWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

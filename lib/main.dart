@@ -1,3 +1,4 @@
+import 'package:allo/firebase_options.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/client/hooks.dart';
@@ -8,10 +9,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -22,9 +23,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(systemNavigationBarColor: Colors.transparent),
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+    ),
   );
-  await Firebase.initializeApp(options: Core.firebaseOptions);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (!kIsWeb) {
     await Core.notifications.setupNotifications();
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
@@ -52,15 +56,22 @@ void main() async {
 }
 
 class InnerApp extends HookConsumerWidget {
-  const InnerApp({Key? key}) : super(key: key);
+  const InnerApp({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final darkState = usePreference(ref, darkMode);
+    useEffect(
+      () {
+        const Notifications().ensureListenersActive();
+        return null;
+      },
+      const [],
+    );
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
-      navigatorKey: Core.navigation.key,
-      scaffoldMessengerKey: Core.scaffoldMessengerKey,
+      navigatorKey: navigatorKey,
+      scaffoldMessengerKey: Keys.scaffoldMessengerKey,
       themeMode: darkState.preference ? ThemeMode.dark : ThemeMode.light,
       theme: theme(Brightness.light, ref, context),
       darkTheme: theme(Brightness.dark, ref, context),
@@ -75,7 +86,7 @@ class InnerApp extends HookConsumerWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snap) {
           if (snap.hasData) {
-            return TabbedNavigator();
+            return const TabbedNavigator();
           } else if (snap.connectionState == ConnectionState.waiting) {
             return const Scaffold(
               body: Center(

@@ -1,28 +1,21 @@
+import 'package:allo/components/person_picture.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/about.dart';
 import 'package:allo/interface/home/settings/account.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:allo/components/person_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Settings extends HookConsumerWidget {
-  const Settings({Key? key}) : super(key: key);
+  const Settings({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
     final name = FirebaseAuth.instance.currentUser!.displayName!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(locales.settings),
-        flexibleSpace: Hero(
-          tag: 'SYSTEM_NAV_BAR_KEY',
-          child: Container(),
-        ),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(10),
         children: [

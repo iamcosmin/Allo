@@ -1,0 +1,3 @@
+@echo off
+echo Deleting splash screen...
+flutter pub run flutter_native_splash:remove

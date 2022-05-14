@@ -12,8 +12,8 @@ class ChatMessagesList extends HookConsumerWidget {
     required this.chatId,
     required this.chatType,
     required this.inputModifiers,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final String chatId;
   final ChatType chatType;
   final ValueNotifier<InputModifier?> inputModifiers;
@@ -55,12 +55,14 @@ class ChatMessagesList extends HookConsumerWidget {
               if (i == 0) {
                 nextData = {'senderUID': 'null'};
               } else {
-                nextData = data[i - 1].documentSnapshot.data() as Map;
+                nextData = data[i - 1].documentSnapshot.data() as Map? ??
+                    (throw Exception('nextData is null.'));
               }
               if (i == data.length - 1) {
                 pastData = {'senderUID': 'null'};
               } else {
-                pastData = data[i + 1].documentSnapshot.data() as Map;
+                pastData = data[i + 1].documentSnapshot.data() as Map? ??
+                    (throw Exception('pastData is null'));
               }
               // Above, pastData should have been i-1 and nextData i+1.
               // But, as the list needs to be in reverse order, we need

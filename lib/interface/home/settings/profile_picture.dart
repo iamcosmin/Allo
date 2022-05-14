@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class ProfilePictureSettings extends HookWidget {
-  const ProfilePictureSettings({Key? key}) : super(key: key);
+  const ProfilePictureSettings({super.key});
   static bool loaded = false;
   static bool loading = false;
 

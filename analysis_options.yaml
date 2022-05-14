@@ -12,7 +12,6 @@ linter:
    - avoid_returning_null
    - avoid_returning_this
    - avoid_types_on_closure_parameters
-   - avoid_unused_constructor_parameters
    - cascade_invocations
    - cast_nullable_to_non_nullable
    - implementation_imports
@@ -32,9 +31,9 @@ linter:
    - use_decorated_box
    - use_named_constants
    - use_to_and_as_if_applicable
-  #  - use_super_parameters implement after upgrading to flutter lints 2
-  #  - use_colored_box implement after upgrading to flutter lints 2
-  #  - use_enums implement after upgrading to flutter lints 2
+   - use_super_parameters
+   - use_colored_box
+   - use_enums
   #  - unnecessary_await_in_return - problems with Future<void>
   #  - prefer_expression_function_bodies
 

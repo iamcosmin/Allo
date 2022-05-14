@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class Setting extends HookConsumerWidget {
   const Setting({
     required this.title,
-    Key? key,
+    super.key,
     this.enabled = true,
     this.disabledExplanation,
     this.onTap,
@@ -18,8 +18,7 @@ class Setting extends HookConsumerWidget {
           (onTap != null && preference == null) ||
               (onTap == null && preference != null),
           'You cannot provide both an onTap callback and a preference. Please choose one.',
-        ),
-        super(key: key);
+        );
   final String title;
   final bool enabled;
   final String? disabledExplanation;

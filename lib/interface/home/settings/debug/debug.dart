@@ -8,7 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../logic/client/hooks.dart';
 
 class C extends HookConsumerWidget {
-  const C({Key? key}) : super(key: key);
+  const C({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);

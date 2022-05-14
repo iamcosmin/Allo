@@ -350,8 +350,8 @@ class Bubble extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         borderRadius: messageRadius,
                         color: isNotCurrentUser
-                            ? colorScheme.secondaryContainer
-                            : colorScheme.primary,
+                            ? colorScheme.onSecondary
+                            : colorScheme.primaryContainer,
                       ),
                       constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
                       padding: message.type != MessageType.image

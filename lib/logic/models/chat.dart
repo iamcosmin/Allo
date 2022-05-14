@@ -57,10 +57,9 @@ class PrivateChat extends Chat {
 
 class GroupChat extends Chat {
   const GroupChat({
-    required String title,
+    required super.title,
     required String chatId,
   }) : super(
-          title: title,
           id: chatId,
           picture: 'gs://allo-ms.appspot.com/chats/$chatId.png',
         );

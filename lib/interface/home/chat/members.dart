@@ -10,11 +10,11 @@ import '../../../logic/core.dart';
 Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo({
   required String id,
 }) async {
-  return await FirebaseFirestore.instance.collection('chats').doc(id).get();
+  return await Database.storage.collection('chats').doc(id).get();
 }
 
 class ChatMembersPage extends HookConsumerWidget {
-  const ChatMembersPage({required this.chatId, Key? key}) : super(key: key);
+  const ChatMembersPage({required this.chatId, super.key});
   final String chatId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

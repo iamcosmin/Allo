@@ -31,11 +31,14 @@ int _createUniqueID(int maxValue) {
 }
 
 class Notifications {
-  final notifications = AwesomeNotifications();
-  final notificationController = _NotificationController();
+  const Notifications();
 
   /// Sets up all notification channels.
+  ///! This method does not handle setting listeners anymore, as
+  ///! the setListeners method should be only used in the first render
+  ///! of the widget.
   Future setupNotifications() async {
+    final notifications = AwesomeNotifications();
     await notifications.initialize(
       'resource://drawable/res_notification',
       [
@@ -53,6 +56,10 @@ class Notifications {
         )
       ],
     );
+  }
+
+  Future<void> ensureListenersActive() async {
+    final notifications = AwesomeNotifications();
     await notifications.setListeners(
       onActionReceivedMethod: _NotificationController.onActionReceivedMethod,
     );
@@ -97,7 +104,7 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
         channelKey: 'conversations',
         roundedLargeIcon: true,
         largeIcon: profilePicture,
-        notificationLayout: notificationLayout,
+        notificationLayout: NotificationLayout.MessagingGroup,
         category: NotificationCategory.Message,
         roundedBigPicture: true,
         bigPicture: sentPicture,
@@ -131,7 +138,6 @@ class _NotificationController {
     if (action.actionType == ActionType.SilentBackgroundAction &&
         action.buttonKeyInput.isNotEmpty) {
       // TODO(iamcosmin): TEST: This aims to fix the infinite loading indicator in alpha when replying from the notification tray.
-      await Firebase.initializeApp(options: Core.firebaseOptions);
       await Core.chat(payload['chatId']).messages.sendTextMessage(
             text: action.buttonKeyInput,
             chatName: payload['chatName']!,
@@ -150,7 +156,7 @@ class _NotificationController {
           body: action.buttonKeyInput,
           channelKey: 'conversations',
           roundedLargeIcon: true,
-          notificationLayout: notificationLayout,
+          notificationLayout: NotificationLayout.MessagingGroup,
           category: NotificationCategory.Message,
           roundedBigPicture: true,
           groupKey: payload['chatId'],

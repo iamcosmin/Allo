@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +15,7 @@ class CurrentUser {
     return await cache(
       key: 'username',
       fetch: () async {
-        final db = FirebaseFirestore.instance;
+        final db = Database.storage;
         final usernames = await db.collection('users').doc('usernames').get();
         final usernamesMap = usernames.data();
         final username = usernamesMap?.keys

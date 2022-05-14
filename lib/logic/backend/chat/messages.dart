@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../../components/chats/message_input.dart';
 
 class Messages {
@@ -14,7 +15,7 @@ class Messages {
   final String chatId;
 
   Future deleteMessage({required String messageId}) async {
-    await FirebaseFirestore.instance
+    await Database.storage
         .collection('chats')
         .doc(chatId)
         .collection('messages')
@@ -24,7 +25,7 @@ class Messages {
 
   Future markAsRead({required String messageId}) async {
     // This will mark the message as read.
-    await FirebaseFirestore.instance
+    await Database.storage
         .collection('chats')
         .doc(chatId)
         .collection('messages')
@@ -44,12 +45,12 @@ class Messages {
     if (controller != null) {
       controller.clear();
     }
-    // FirebaseFirestore.instance
+    // Database.storage
     //     .collection('chats')
     //     .doc(chatId)
     //     .update({'typing': false});
-    final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
-    final auth = Core.auth;
+    final db = Database.storage.collection('chats').doc(chatId);
+    const auth = Core.auth;
     final replyMessageId = modifier?.value?.action.replyMessageId;
     if (modifier?.value == null) {
       await db.collection('messages').add({
@@ -90,10 +91,10 @@ class Messages {
     required String chatType,
     String? description,
   }) async {
-    final auth = Core.auth;
+    const auth = Core.auth;
     final path = 'chats/$chatId/${DateTime.now()}_${await auth.user.username}';
     final storage = FirebaseStorage.instance;
-    final db = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    final db = Database.storage.collection('chats').doc(chatId);
 
     final task = storage.ref(path).putData(
           await imageFile.readAsBytes(),

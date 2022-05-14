@@ -1,4 +1,5 @@
 import 'package:allo/logic/backend/chat/messages.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,7 +29,7 @@ class Chats {
   }) async* {
     final messages = <Message>[];
     Stream<QuerySnapshot> query;
-    final collection = FirebaseFirestore.instance
+    final collection = Database.storage
         .collection('chats')
         .doc(chatId)
         .collection('messages')

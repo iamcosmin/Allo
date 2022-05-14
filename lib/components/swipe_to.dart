@@ -48,7 +48,7 @@ class SwipeTo extends StatefulWidget {
 
   const SwipeTo({
     required this.child,
-    Key? key,
+    super.key,
     this.onRightSwipe,
     this.onLeftSwipe,
     this.iconOnRightSwipe = Icons.reply,
@@ -59,10 +59,10 @@ class SwipeTo extends StatefulWidget {
     this.iconColor,
     this.animationDuration = const Duration(milliseconds: 150),
     this.offsetDx = 0.3,
-  }) : super(key: key);
+  });
 
   @override
-  _SwipeToState createState() => _SwipeToState();
+  State<SwipeTo> createState() => _SwipeToState();
 }
 
 class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {

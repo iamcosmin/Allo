@@ -12,8 +12,8 @@ class PersonPicture extends HookConsumerWidget {
     required this.initials,
     required this.profilePicture,
     required this.radius,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

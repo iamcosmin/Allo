@@ -16,8 +16,8 @@ class StreamView<T> extends HookConsumerWidget {
     this.error,
     this.loading,
     this.isAnimated,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final Stream<T> stream;
   final AsyncSuccessData success;
   final Widget? loading;
@@ -53,8 +53,8 @@ class FutureView<T> extends HookConsumerWidget {
     this.error,
     this.loading,
     this.isAnimated,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final Future<T> future;
   final AsyncSuccessData<T> success;
   final Widget? loading;

@@ -5,8 +5,8 @@ import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/members.dart';
 import 'package:allo/logic/client/hooks.dart';
-import 'package:allo/logic/core.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -22,15 +22,14 @@ void _changeTheme({
 }) async {
   final info = await returnChatInfo(id: id);
   final currentTheme = info.data()!['theme'];
-  final locales = S.of(context);
   await showMagicBottomSheet(
     context: context,
-    title: locales.theme,
+    title: context.locale.theme,
     children: [
       if (!colors.contains(currentTheme)) ...[
         Padding(
           padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-          child: Text(locales.themeNotAvailable),
+          child: Text(context.locale.themeNotAvailable),
         )
       ],
       Wrap(
@@ -41,10 +40,7 @@ void _changeTheme({
             ClipOval(
               child: InkWell(
                 onTap: () async {
-                  await FirebaseFirestore.instance
-                      .collection('chats')
-                      .doc(id)
-                      .update({
+                  await Database.storage.collection('chats').doc(id).update({
                     'theme': color,
                   });
                   Navigator.of(context).pop();
@@ -83,14 +79,14 @@ void _changeTheme({
 Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo({
   required String id,
 }) async {
-  return await FirebaseFirestore.instance.collection('chats').doc(id).get();
+  return await Database.storage.collection('chats').doc(id).get();
 }
 
 class ChatDetails extends HookConsumerWidget {
   const ChatDetails({
     required this.chat,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final Chat chat;
 
   @override

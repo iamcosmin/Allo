@@ -1,14 +1,13 @@
+import 'package:allo/components/chats/message_input.dart';
+import 'package:allo/components/person_picture.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/interface/home/chat/chat_messages_list.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:allo/components/chats/message_input.dart';
-import 'package:allo/components/person_picture.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -16,7 +15,7 @@ import '../../../logic/client/theme/theme.dart';
 
 class ChatScreen extends HookConsumerWidget {
   final Chat chat;
-  const ChatScreen({required this.chat, Key? key}) : super(key: key);
+  const ChatScreen({required this.chat, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = useState<ColorScheme>(
@@ -32,11 +31,7 @@ class ChatScreen extends HookConsumerWidget {
         if (!kIsWeb) {
           FirebaseMessaging.instance.subscribeToTopic(chat.id);
         }
-        FirebaseFirestore.instance
-            .collection('chats')
-            .doc(chat.id)
-            .snapshots()
-            .listen(
+        Database.storage.collection('chats').doc(chat.id).snapshots().listen(
           (event) {
             scheme.value = ColorScheme.fromSeed(
               seedColor: Color(

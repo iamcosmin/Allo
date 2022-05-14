@@ -46,18 +46,12 @@ class SwipeablePageTransitionsBuilder extends PageTransitionsBuilder {
 /// the page unless `canOnlySwipeFromEdge` is `true`.
 class SwipeablePageRoute<T> extends CupertinoPageRoute<T> {
   SwipeablePageRoute({
-    required WidgetBuilder builder,
-    String? title,
-    RouteSettings? settings,
-    bool maintainState = true,
-    bool fullscreenDialog = false,
-  }) : super(
-          builder: builder,
-          title: title,
-          settings: settings,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
-        );
+    required super.builder,
+    super.title,
+    super.settings,
+    super.maintainState,
+    super.fullscreenDialog,
+  });
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 200);
@@ -215,8 +209,8 @@ class _FancyBackGestureDetector<T> extends StatefulWidget {
   const _FancyBackGestureDetector({
     required this.onStartPopGesture,
     required this.child,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Widget child;
   final ValueGetter<_CupertinoBackGestureController<T>> onStartPopGesture;
@@ -410,8 +404,8 @@ class _DirectionDependentDragGestureRecognizer
     required this.canDragToLeft,
     required this.canDragToRight,
     required this.checkStartedCallback,
-    Object? debugOwner,
-  }) : super(debugOwner: debugOwner);
+    super.debugOwner,
+  });
 
   final bool canDragToLeft;
   final bool canDragToRight;

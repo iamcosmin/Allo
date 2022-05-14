@@ -135,5 +135,7 @@
   "themeColorDisabledExplanation": "Pentru a activa această opțiune, dezactivează accentul de sistem.",
   "themeColor": "Culoare de accent",
   "useSystemColor": "Folosește culoarea de sistem",
-  "animations": "Animații"
+  "animations": "Animații",
+  "back": "Înapoi",
+  "finish": "Terminare"
 }

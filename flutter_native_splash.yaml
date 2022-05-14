@@ -1,0 +1,37 @@
+flutter_native_splash:
+
+  # Customize the parameters below, and run the following command in the terminal:
+  # flutter pub run flutter_native_splash:create
+  # To restore Flutter's default white splash screen, run the following command in the terminal:
+  # flutter pub run flutter_native_splash:remove
+
+  # Light
+  color: "#ffffff"
+  image: assets/splash/light.png
+  # Dark
+  color_dark: "#000000"
+  image_dark: assets/splash/dark.png
+
+  # The branding property allows you to specify an image used as branding in the splash screen.
+  # It must be a png file. Currently, it is only supported for Android < v12 and iOS.
+  #branding: assets/dart.png
+
+  # To position the branding image at the bottom of the screen you can use bottom, bottomRight,
+  # and bottomLeft. The default values is bottom if not specified or specified something else.
+  #branding_mode: bottom
+
+  # Android 12 handles the splash screen differently than previous versions.  Please visit
+  # https://developer.android.com/guide/topics/ui/splash-screen
+  # Following are Android 12 specific parameter.
+  android_12:
+    # The image parameter sets the splash screen icon image.  If this parameter is not specified,
+    # the app's launcher icon will be used instead.
+    # Please note that the splash screen will be clipped to a circle on the center of the screen.
+    # App icon with an icon background: This should be 960×960 pixels, and fit within a circle
+    # 640 pixels in diameter.
+    # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
+    # 768 pixels in diameter.
+    # Light
+    image: assets/splash/android12/light.png
+    # Dark
+    image_dark: assets/splash/android12/dark.png

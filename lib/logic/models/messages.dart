@@ -1,4 +1,5 @@
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/logic/backend/database.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -50,7 +51,7 @@ Future<ReplyMessageData?> returnReplyMessageData({
           'The provided initialDocumentSnapshot does not have any data.',
         )) as Map<String, dynamic>;
   if (data['reply_to_message'] != null) {
-    final replySnapshot = await FirebaseFirestore.instance
+    final replySnapshot = await Database.storage
         .collection('chats')
         .doc(chatId)
         .collection('messages')
@@ -119,24 +120,16 @@ class ReplyMessageData {
 
 class TextMessage extends Message {
   const TextMessage({
-    required String name,
-    required String userId,
-    required String username,
-    required String id,
-    required Timestamp timestamp,
-    required DocumentSnapshot documentSnapshot,
-    required bool read,
+    required super.name,
+    required super.userId,
+    required super.username,
+    required super.id,
+    required super.timestamp,
+    required super.documentSnapshot,
+    required super.read,
     required this.text,
     this.reply,
-  }) : super(
-          id: id,
-          name: name,
-          timestamp: timestamp,
-          userId: userId,
-          username: username,
-          documentSnapshot: documentSnapshot,
-          read: read,
-        );
+  });
   final String text;
   final ReplyMessageData? reply;
   factory TextMessage.fromDocumentSnapshot({
@@ -162,24 +155,16 @@ class TextMessage extends Message {
 
 class ImageMessage extends Message {
   const ImageMessage({
-    required String name,
-    required String userId,
-    required String username,
-    required String id,
-    required Timestamp timestamp,
-    required DocumentSnapshot documentSnapshot,
-    required bool read,
+    required super.name,
+    required super.userId,
+    required super.username,
+    required super.id,
+    required super.timestamp,
+    required super.documentSnapshot,
+    required super.read,
     required this.link,
     this.reply,
-  }) : super(
-          id: id,
-          name: name,
-          timestamp: timestamp,
-          userId: userId,
-          username: username,
-          documentSnapshot: documentSnapshot,
-          read: read,
-        );
+  });
   final String link;
   final ReplyMessageData? reply;
 
@@ -208,27 +193,20 @@ class ImageMessage extends Message {
 
 class UnsupportedMessage extends Message {
   UnsupportedMessage({
-    required String name,
-    required String userId,
-    required String username,
-    required String id,
-    required Timestamp timestamp,
-    required DocumentSnapshot documentSnapshot,
-    required bool read,
-  }) : super(
-          name: name,
-          userId: userId,
-          username: username,
-          id: id,
-          timestamp: timestamp,
-          documentSnapshot: documentSnapshot,
-          read: read,
-        );
+    required super.name,
+    required super.userId,
+    required super.username,
+    required super.id,
+    required super.timestamp,
+    required super.documentSnapshot,
+    required super.read,
+  });
 
   factory UnsupportedMessage.fromDocumentSnapshot({
     required DocumentSnapshot documentSnapshot,
   }) {
-    final data = documentSnapshot.data() as Map<String, dynamic>;
+    final data =
+        documentSnapshot.data() as Map<String, dynamic>? ?? (throw Exception());
     return UnsupportedMessage(
       name: data['name'],
       userId: data['uid'],

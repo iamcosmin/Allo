@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 class ExampleIsTyping extends StatefulWidget {
   const ExampleIsTyping({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _ExampleIsTypingState createState() => _ExampleIsTypingState();
+  State<ExampleIsTyping> createState() => _ExampleIsTypingState();
 }
 
 class _ExampleIsTypingState extends State<ExampleIsTyping> {
@@ -75,12 +75,12 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
 
 class TypingIndicator extends StatefulWidget {
   const TypingIndicator({
-    Key? key,
+    super.key,
     this.showIndicator = false,
     this.bubbleColor = const Color(0xFF646b7f),
     this.flashingCircleDarkColor = const Color(0xFF333333),
     this.flashingCircleBrightColor = const Color(0xFFaec1dd),
-  }) : super(key: key);
+  });
 
   final bool showIndicator;
   final Color bubbleColor;
@@ -88,7 +88,7 @@ class TypingIndicator extends StatefulWidget {
   final Color flashingCircleBrightColor;
 
   @override
-  _TypingIndicatorState createState() => _TypingIndicatorState();
+  State<TypingIndicator> createState() => _TypingIndicatorState();
 }
 
 class _TypingIndicatorState extends State<TypingIndicator>
@@ -307,8 +307,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
 class FakeMessage extends StatelessWidget {
   const FakeMessage({
     required this.isBig,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final bool isBig;
 

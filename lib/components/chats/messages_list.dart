@@ -7,8 +7,8 @@ class MessageList extends HookConsumerWidget {
   MessageList({
     required this.chatId,
     required this.builder,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final String chatId;
   final MessageListBuilder builder;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();

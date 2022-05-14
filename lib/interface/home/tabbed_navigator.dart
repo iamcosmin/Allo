@@ -1,5 +1,6 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
+import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/client/hooks.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -9,16 +10,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'home.dart';
 import 'settings.dart';
 
+const _kPages = [
+  Home(
+    key: ValueKey('home'),
+  ),
+  Settings(
+    key: ValueKey('settings'),
+  )
+];
+
 class TabbedNavigator extends HookConsumerWidget {
-  TabbedNavigator({Key? key}) : super(key: key);
-  final List<Widget> pages = [
-    const Home(
-      key: Key('home'),
-    ),
-    const Settings(
-      key: Key('settings'),
-    )
-  ];
+  const TabbedNavigator({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,14 +43,37 @@ class TabbedNavigator extends HookConsumerWidget {
     }
 
     return Scaffold(
+      appBar: width < 700
+          ? AppBar(
+              title: PageTransitionSwitcher(
+                reverse:
+                    selected.value < (previousSelected ?? 0) ? true : false,
+                transitionBuilder: (child, animation, secondary) {
+                  return SharedAxisTransition(
+                    animation: animation,
+                    secondaryAnimation: secondary,
+                    transitionType: SharedAxisTransitionType.vertical,
+                    fillColor: Colors.transparent,
+                    child: child,
+                  );
+                },
+                child: Text(
+                  selected.value == 0
+                      ? context.locale.home
+                      : context.locale.settings,
+                ),
+              ),
+            )
+          : null,
       body: Row(
         children: [
           if (width > 700) ...[
             Container(
-              constraints:
-                  width > 1000 ? const BoxConstraints(maxWidth: 160) : null,
+              constraints: width > 1300
+                  ? const BoxConstraints(maxWidth: 256)
+                  : const BoxConstraints(maxWidth: 80),
               child: NavigationRail(
-                extended: width > 1000 ? true : false,
+                extended: width > 1300 ? true : false,
                 labelType: labelType(),
                 destinations: [
                   NavigationRailDestination(
@@ -79,11 +104,12 @@ class TabbedNavigator extends HookConsumerWidget {
               ),
             ),
           ],
+
           // The page.
           Expanded(
             child: PageTransitionSwitcher(
               reverse: (previousSelected ?? 0) > selected.value ? true : false,
-              child: pages[selected.value],
+              child: _kPages[selected.value],
               transitionBuilder: (child, animation, secondaryAnimation) {
                 if (animations.preference) {
                   return SharedAxisTransition(

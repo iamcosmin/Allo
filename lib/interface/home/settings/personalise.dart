@@ -22,7 +22,7 @@ final preferredColorPreference =
 final animationsPreference = createPreference('animations', !kIsWeb);
 
 class PersonalisePage extends HookConsumerWidget {
-  const PersonalisePage({Key? key}) : super(key: key);
+  const PersonalisePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

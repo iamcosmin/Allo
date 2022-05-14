@@ -35,6 +35,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "animations": MessageLookupByLibrary.simpleMessage("Animații"),
         "appInfo": MessageLookupByLibrary.simpleMessage("Informații aplicație"),
         "attach": MessageLookupByLibrary.simpleMessage("Atașează"),
+        "back": MessageLookupByLibrary.simpleMessage("Înapoi"),
         "buildNumber": MessageLookupByLibrary.simpleMessage("Număr versiune"),
         "camera": MessageLookupByLibrary.simpleMessage("Cameră"),
         "cancel": MessageLookupByLibrary.simpleMessage("Anulare"),
@@ -110,6 +111,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Parola e prea slabă."),
         "errorWrongPassword":
             MessageLookupByLibrary.simpleMessage("Parola este incorectă."),
+        "finish": MessageLookupByLibrary.simpleMessage("Terminare"),
         "finishScreenDescription":
             MessageLookupByLibrary.simpleMessage("Bucură-te de Allo!"),
         "finishScreenTitle":

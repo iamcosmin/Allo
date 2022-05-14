@@ -137,8 +137,8 @@ class MessageInput extends HookConsumerWidget {
     required this.chatType,
     required this.theme,
     required this.modifier,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -223,9 +223,9 @@ class MessageInput extends HookConsumerWidget {
                   children: [
                     SizeTransition(
                       sizeFactor: animation,
-                      child: child,
                       axisAlignment: -1,
                       key: key,
+                      child: child,
                     ),
                   ],
                 );
@@ -324,8 +324,8 @@ class UploadImage extends HookWidget {
     required this.chatName,
     required this.chatType,
     required this.progress,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final XFile? imageFile;
   final Uint8List imageFileBytes;
   final String chatName;

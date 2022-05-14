@@ -10,7 +10,6 @@ import 'package:allo/logic/client/validators.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -18,32 +17,24 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'client/preferences/manager.dart';
 import 'backend/chat/chats.dart';
+import 'client/preferences/manager.dart';
 
+export 'backend/database.dart';
 export 'client/extensions.dart';
+export 'client/navigation.dart';
 
+// TODO: Migrate some of the items from Core to their own things.
 class Core {
-  static final Authentication auth = Authentication();
+  static const Authentication auth = Authentication();
   static final Navigation navigation = Navigation();
-  static const FirebaseOptions firebaseOptions = FirebaseOptions(
-    apiKey: "AIzaSyAyLt2_FAHc0I2c1iBLH_MxWzo2kllSvA8",
-    authDomain: "allo-ms.firebaseapp.com",
-    projectId: "allo-ms",
-    storageBucket: "allo-ms.appspot.com",
-    messagingSenderId: "1049075385887",
-    appId: "1:1049075385887:web:89f4887e574f8b93f2372a",
-    measurementId: "G-N5D9CRB413",
-  );
   static Validators validators(BuildContext context) => Validators(context);
-  static final Notifications notifications = Notifications();
-  static const General general = General();
+  static const Notifications notifications = Notifications();
+  static final General general = General();
   static const ChatsLogic chats = ChatsLogic();
   // TODO(iamcosmin): Move this in ChatsLogic
   static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();
-  static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
 
   static Future<List<Override>> getOverrides() async {
     return [
@@ -63,6 +54,24 @@ class Core {
       ]
     ];
   }
+}
+
+class Keys {
+  const Keys();
+  @Deprecated(
+    'These API keys are deprecated. Please use DefaultFirebaseOptions.currentPlatform.',
+  )
+  static const FirebaseOptions firebaseOptions = FirebaseOptions(
+    apiKey: "AIzaSyAyLt2_FAHc0I2c1iBLH_MxWzo2kllSvA8",
+    authDomain: "allo-ms.firebaseapp.com",
+    projectId: "allo-ms",
+    storageBucket: "allo-ms.appspot.com",
+    messagingSenderId: "1049075385887",
+    appId: "1:1049075385887:web:89f4887e574f8b93f2372a",
+    measurementId: "G-N5D9CRB413",
+  );
+  static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 }
 
 class DialogBuilder {
@@ -86,7 +95,7 @@ class Stub {
     @Deprecated('This function does not require context anymore, as it relies on ScaffoldMessengerState key.')
         BuildContext? context,
   }) {
-    final key = Core.scaffoldMessengerKey.currentState;
+    final key = Keys.scaffoldMessengerKey.currentState;
     if (key != null) {
       key
         ..hideCurrentSnackBar()

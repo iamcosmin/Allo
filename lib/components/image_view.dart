@@ -6,8 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class ImageView extends HookConsumerWidget {
   final String imageUrl;
   final ColorScheme? colorScheme;
-  const ImageView(this.imageUrl, {this.colorScheme, Key? key})
-      : super(key: key);
+  const ImageView(this.imageUrl, {this.colorScheme, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = colorScheme ?? Theme.of(context).colorScheme;

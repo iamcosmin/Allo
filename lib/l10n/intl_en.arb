@@ -137,5 +137,7 @@
   "themeColorDisabledExplanation": "To enable this option, please disable the system accent.",
   "themeColor": "Accent Color",
   "useSystemColor": "Use System Color",
-  "animations": "Animations"
+  "animations": "Animations",
+  "back": "Back",
+  "finish": "Finish"
 }

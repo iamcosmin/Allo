@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 
 /// A utility class for dealing with the overlay color needed
 /// to indicate elevation of surfaces.
+@Deprecated(
+    'This is deprecated. Please use the provided framework ElevationOverlay class.')
 class M3ElevationOverlay {
   // This class is not meant to be instantiated or extended; this constructor
   // prevents instantiation and extension.

@@ -1,10 +1,8 @@
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/login/existing/enter_password.dart';
-import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
+import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/backend/authentication/user.dart';
 import 'package:allo/logic/core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -58,34 +56,13 @@ Future cache({
 }
 
 class Authentication {
-  final CurrentUser user = CurrentUser();
+  const Authentication();
+  CurrentUser get user {
+    return CurrentUser();
+  }
 
   Future<User?> returnUserDetails() async {
     return FirebaseAuth.instance.currentUser;
-  }
-
-  /// Checks if the user is eligible for login or signup.
-  Future<bool> checkAuthenticationAbility({
-    required String email,
-    required ValueNotifier<String> error,
-    required BuildContext context,
-  }) async {
-    final locales = S.of(context);
-    try {
-      FocusScope.of(context).unfocus();
-      error.value = '';
-      final List instance =
-          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-      if (instance.toString() == '[]') {
-        Core.navigation.push(route: SetupName(email));
-      } else if (instance.toString() == '[password]') {
-        Core.navigation.push(route: EnterPassword(email: email));
-      }
-      return true;
-    } catch (e) {
-      error.value = locales.errorThisIsInvalid(locales.email);
-      return false;
-    }
   }
 
   //? [Login]
@@ -123,15 +100,16 @@ class Authentication {
 
   //? Signup
   /// Signs up the user by email and password.
-  Future<bool> signUp({
+  void signUp({
     required String email,
     required String password,
     required String confirmPassword,
     required String displayName,
     required String username,
-    required ValueNotifier<String> error,
+    required ValueNotifier<String?> error,
     required BuildContext context,
   }) async {
+    error.value = null;
     final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
@@ -154,7 +132,7 @@ class Authentication {
               password: password,
             );
             await user.user!.updateDisplayName(displayName);
-            final db = FirebaseFirestore.instance;
+            final db = Database.storage;
             await db.collection('users').doc(username).set({
               'name': displayName,
               'email': email,
@@ -164,44 +142,39 @@ class Authentication {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            return true;
+            Core.navigation.push(route: const SetupVerification());
           } else {
             error.value = locales.errorPasswordRequirements;
-            return false;
           }
         } else {
           error.value = locales.errorPasswordMismatch;
-          return false;
         }
       } else {
         error.value = locales.errorEmptyFields;
-        return false;
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'operation-not-allowed':
           error.value = locales.errorOperationNotAllowed;
       }
-      return false;
     }
   }
 
   /// Checks if the provided username is available and is compliant with
   /// the guidelines.
-  Future<bool> isUsernameCompliant({
+  void isUsernameCompliant({
     required String username,
-    required ValueNotifier<String> error,
+    required ValueNotifier<String?> error,
     required BuildContext context,
     required String displayName,
     required String email,
+    required FocusNode focusNode,
   }) async {
-    final locales = S.of(context);
+    error.value = null;
     final usernameReg = RegExp(r'^[a-zA-Z0-9_\.]+$');
     final navigation = Core.navigation;
-    final usernamesDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc('usernames')
-        .get();
+    final usernamesDoc =
+        await Database.storage.collection('users').doc('usernames').get();
     final usernames = usernamesDoc.data() != null
         ? usernamesDoc.data()!
         : throw Exception('The database could not return the usernames data.');
@@ -216,18 +189,18 @@ class Authentication {
               email: email,
             ),
           );
-          return true;
         } else {
-          error.value = locales.errorUsernameTaken;
-          return false;
+          error.value = context.locale.errorUsernameTaken;
+          focusNode.requestFocus();
         }
       } else {
-        error.value = locales.errorThisIsInvalid(locales.username);
-        return false;
+        error.value =
+            context.locale.errorThisIsInvalid(context.locale.username);
+        focusNode.requestFocus();
       }
     } else {
-      error.value = locales.errorFieldEmpty;
-      return false;
+      error.value = context.locale.errorFieldEmpty;
+      focusNode.requestFocus();
     }
   }
 
@@ -239,9 +212,7 @@ class Authentication {
     FocusScope.of(context).unfocus();
     try {
       final auth = FirebaseAuth.instance.currentUser;
-      final db = FirebaseFirestore.instance
-          .collection('users')
-          .doc(await user.username);
+      final db = Database.storage.collection('users').doc(await user.username);
       await db.update({
         'name': name,
       });
@@ -254,8 +225,7 @@ class Authentication {
   Future signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      await Core.navigation
-          .pushPermanent(context: context, route: const InnerApp());
+      Core.navigation.pushPermanent(context: context, route: const InnerApp());
     } catch (e) {
       throw Exception('Something is wrong...');
     }
@@ -268,7 +238,7 @@ class Authentication {
   }) async {
     FocusScope.of(context).unfocus();
     try {
-      final db = FirebaseFirestore.instance.collection('users');
+      final db = Database.storage.collection('users');
       final prefs = await SharedPreferences.getInstance();
       final data = await db.doc(await user.username).get().then(
             (value) => (value.data() != null
@@ -336,10 +306,9 @@ class Authentication {
     required BuildContext context,
   }) async {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    final locales = S.of(context);
     Core.stub.showInfoBar(
       icon: Icons.mail_outline,
-      text: locales.resetLinkSent,
+      text: context.locale.resetLinkSent,
     );
   }
 }
