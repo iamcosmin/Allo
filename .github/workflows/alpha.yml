@@ -4,7 +4,6 @@ on:
   push: 
    branches:
     - alpha
-
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -18,7 +17,7 @@ jobs:
     - name: Flutter Setup
       uses: subosito/flutter-action@v1
       with:
-        channel: 'beta'
+        channel: 'stable' #! Temporary, once a new beta version is released, go back.
     - name: Expand keystore
       run: |
            cd android/
