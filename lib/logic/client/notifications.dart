@@ -144,7 +144,7 @@ class _NotificationController {
             chatType: payload['chatType']!,
           );
       // ignore: omit_local_variable_types
-      final Map<String, String> suplimentaryInfo = {
+      final Map<String, String?> suplimentaryInfo = {
         'chatId': payload['chatId'] ?? '',
         'chatName': payload['chatName']!,
         'chatType': payload['chatType']!,
@@ -181,7 +181,7 @@ class _NotificationController {
     }
   }
 
-  static Chat _getChat(Map<String, String> payload) {
+  static Chat _getChat(Map<String, String?> payload) {
     final chatType = getChatTypeFromString(payload['chatType'] ?? '???');
     if (chatType == ChatType.private) {
       return PrivateChat(

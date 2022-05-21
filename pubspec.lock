@@ -33,11 +33,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "94854e8"
-      resolved-ref: "94854e815958682827f81012e1465a8a0d4d0a68"
+      ref: "05ffe54"
+      resolved-ref: "05ffe541109813d4edc6b44f32382e9f48adf869"
       url: "https://github.com/rafaelsetragni/awesome_notifications"
     source: git
-    version: "0.7.0-beta.2"
+    version: "0.7.0-beta.3+2"
   boolean_selector:
     dependency: transitive
     description:
@@ -51,7 +51,7 @@ packages:
       name: cached_network_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "3.2.1"
   cached_network_image_platform_interface:
     dependency: transitive
     description:
