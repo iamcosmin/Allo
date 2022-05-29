@@ -12,6 +12,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../components/sliver_scaffold.dart';
+import '../../../components/top_app_bar.dart';
+
 final colors = <int>[
   for (var color in Colors.accents) ...[color.value]
 ];
@@ -97,63 +100,66 @@ class ChatDetails extends HookConsumerWidget {
       chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
       isGroup: chat is GroupChat ? true : false,
     );
-    return Scaffold(
-      appBar: AppBar(
+    return SScaffold(
+      topAppBar: LargeTopAppBar(
         title: Text(locales.chatInfo),
       ),
-      body: ListView(
-        children: [
-          const Space(3),
-          Container(
-            alignment: Alignment.topCenter,
-            child: InkWell(
-              highlightColor: const Color(0x00000000),
-              focusColor: const Color(0x00000000),
-              hoverColor: const Color(0x00000000),
-              splashColor: const Color(0x00000000),
-              onTap: profilePicture == null
-                  ? null
-                  : () =>
-                      Core.navigation.push(route: ImageView(profilePicture)),
-              child: PersonPicture(
-                profilePicture: profilePicture,
-                radius: 150,
-                initials: Core.auth.returnNameInitials(chat.title),
+      slivers: [
+        SliverList(
+          delegate: SliverChildListDelegate.fixed([
+            const Space(3),
+            Container(
+              alignment: Alignment.topCenter,
+              child: InkWell(
+                highlightColor: const Color(0x00000000),
+                focusColor: const Color(0x00000000),
+                hoverColor: const Color(0x00000000),
+                splashColor: const Color(0x00000000),
+                onTap: profilePicture == null
+                    ? null
+                    : () =>
+                        Core.navigation.push(route: ImageView(profilePicture)),
+                child: PersonPicture(
+                  profilePicture: profilePicture,
+                  radius: 150,
+                  initials: Core.auth.returnNameInitials(chat.title),
+                ),
               ),
             ),
-          ),
-          const Space(3),
-          Container(
-            alignment: Alignment.topCenter,
-            child: Text(
-              chat.title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const Space(3),
+            Container(
+              alignment: Alignment.topCenter,
+              child: Text(
+                chat.title,
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          const Space(4),
-          Container(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.brush_outlined),
-                  title: Text(locales.theme),
-                  onTap: () async =>
-                      _changeTheme(context: context, id: chat.id),
-                ),
-                if (members.preference == true) ...[
+            const Space(4),
+            Container(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Column(
+                children: [
                   ListTile(
-                    leading: const Icon(Icons.people_alt_outlined),
-                    title: Text(locales.members),
-                    onTap: () => Core.navigation
-                        .push(route: ChatMembersPage(chatId: chat.id)),
+                    leading: const Icon(Icons.brush_outlined),
+                    title: Text(locales.theme),
+                    onTap: () async =>
+                        _changeTheme(context: context, id: chat.id),
                   ),
-                ]
-              ],
-            ),
-          )
-        ],
-      ),
+                  if (members.preference == true) ...[
+                    ListTile(
+                      leading: const Icon(Icons.people_alt_outlined),
+                      title: Text(locales.members),
+                      onTap: () => Core.navigation
+                          .push(route: ChatMembersPage(chatId: chat.id)),
+                    ),
+                  ]
+                ],
+              ),
+            )
+          ]),
+        )
+      ],
     );
   }
 }

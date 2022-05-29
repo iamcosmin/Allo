@@ -13,7 +13,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -121,7 +120,7 @@ class Stub {
     required DialogBuilder dialogBuilder,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    showPlatformDialog(
+    showDialog(
       context: context,
       builder: (context) => AlertDialog(
         alignment: Alignment.center,

@@ -100,8 +100,18 @@ class CurrentUser {
           );
       uploadTask.snapshotEvents.listen(
         (snapshot) async {
-          percentage.value =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          if (kDebugMode) {
+            print(
+              '${snapshot.bytesTransferred} / ${snapshot.totalBytes} = ${snapshot.bytesTransferred / snapshot.totalBytes}',
+            );
+          }
+          if (snapshot.bytesTransferred / snapshot.totalBytes <= 1.0) {
+            percentage.value = snapshot.bytesTransferred / snapshot.totalBytes;
+          }
+          if (snapshot.bytesTransferred / snapshot.totalBytes == 1.0) {
+            await Future.delayed(const Duration(seconds: 1));
+          }
+
           if (snapshot.state == TaskState.success) {
             await user!.updatePhotoURL(
               await FirebaseStorage.instance

@@ -1,6 +1,5 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
-import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/client/hooks.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -43,28 +42,6 @@ class TabbedNavigator extends HookConsumerWidget {
     }
 
     return Scaffold(
-      appBar: width < 700
-          ? AppBar(
-              title: PageTransitionSwitcher(
-                reverse:
-                    selected.value < (previousSelected ?? 0) ? true : false,
-                transitionBuilder: (child, animation, secondary) {
-                  return SharedAxisTransition(
-                    animation: animation,
-                    secondaryAnimation: secondary,
-                    transitionType: SharedAxisTransitionType.vertical,
-                    fillColor: Colors.transparent,
-                    child: child,
-                  );
-                },
-                child: Text(
-                  selected.value == 0
-                      ? context.locale.home
-                      : context.locale.settings,
-                ),
-              ),
-            )
-          : null,
       body: Row(
         children: [
           if (width > 700) ...[

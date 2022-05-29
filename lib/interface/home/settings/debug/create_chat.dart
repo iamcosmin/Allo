@@ -4,7 +4,6 @@ import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class CreateChat extends HookWidget {
   const CreateChat({super.key});
@@ -20,7 +19,7 @@ class CreateChat extends HookWidget {
       appBar: AppBar(
         title: Text(locales.createNewChat),
       ),
-      body: FutureView<Map<String, String>>(
+      body: FutureView<Map<String, String>?>(
         future: Core.general.user.getUsernamePairs(),
         success: (context, data) {
           return Padding(
@@ -37,7 +36,7 @@ class CreateChat extends HookWidget {
                   ),
                   onChanged: (value) {
                     final prov = <String>[];
-                    for (final element in data.keys) {
+                    for (final element in data!.keys) {
                       if (element.toString().contains(value)) {
                         prov.add(element);
                       }
@@ -110,10 +109,10 @@ class CreateChat extends HookWidget {
                         if (usernameController.text.isEmpty) {
                           error.value = context.locale.errorFieldEmpty;
                         }
-                        if (!data.containsKey(usernameController.text)) {
+                        if (!data!.containsKey(usernameController.text)) {
                           error.value = 'This username does not exist.';
                         } else {
-                          showPlatformDialog(
+                          showDialog(
                             context: context,
                             builder: (context) {
                               return AlertDialog(

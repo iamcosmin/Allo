@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:allo/components/settings_tile.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
+import 'package:allo/components/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../components/sliver_scaffold.dart';
 import '../../../logic/client/hooks.dart';
 import '../../../logic/client/preferences/manager.dart';
 
@@ -37,87 +39,85 @@ class PersonalisePage extends HookConsumerWidget {
       sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
     }
     final dynamic12 = sdkInt != null && sdkInt >= 31;
-    return Scaffold(
-      appBar: AppBar(
+    return SScaffold(
+      topAppBar: LargeTopAppBar(
         title: Text(locales.personalise),
-        flexibleSpace: Hero(
-          tag: 'SYSTEM_NAV_BAR_KEY',
-          child: Container(),
-        ),
       ),
-      body: ListView(
-        children: [
-          Setting(
-            title: locales.darkMode,
-            preference: dark,
-          ),
-          Setting(
-            title: locales.personaliseHideNavigationHints,
-            preference: labels,
-          ),
-          Setting(
-            enabled: !dynamicColor.preference,
-            disabledExplanation: locales.themeColorDisabledExplanation,
-            title: locales.themeColor,
-            onTap: () => showMagicBottomSheet(
-              context: context,
+      slivers: [
+        SliverList(
+          delegate: SliverChildListDelegate.fixed([
+            Setting(
+              title: locales.darkMode,
+              preference: dark,
+            ),
+            Setting(
+              title: locales.personaliseHideNavigationHints,
+              preference: labels,
+            ),
+            Setting(
+              enabled: !dynamicColor.preference,
+              disabledExplanation: locales.themeColorDisabledExplanation,
               title: locales.themeColor,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      for (var color in colors) ...[
-                        ClipOval(
-                          child: InkWell(
-                            onTap: () {
-                              themeColor.changeValue(color.value);
-                              Navigator.of(context).pop();
-                            },
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Container(
-                                  height: 60,
-                                  width: 60,
-                                  color: color,
-                                ),
-                                if (color.value == themeColor.preference) ...[
+              onTap: () => showMagicBottomSheet(
+                context: context,
+                title: locales.themeColor,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        for (var color in colors) ...[
+                          ClipOval(
+                            child: InkWell(
+                              onTap: () {
+                                themeColor.changeValue(color.value);
+                                Navigator.of(context).pop();
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
                                   Container(
                                     height: 60,
                                     width: 60,
-                                    color: Colors.black.withOpacity(0.5),
-                                    child: const Icon(
-                                      Icons.check,
-                                      size: 40,
-                                    ),
-                                  )
+                                    color: color,
+                                  ),
+                                  if (color.value == themeColor.preference) ...[
+                                    Container(
+                                      height: 60,
+                                      width: 60,
+                                      color: Colors.black.withOpacity(0.5),
+                                      child: const Icon(
+                                        Icons.check,
+                                        size: 40,
+                                      ),
+                                    )
+                                  ],
                                 ],
-                              ],
+                              ),
                             ),
-                          ),
-                        )
+                          )
+                        ],
                       ],
-                    ],
-                  ),
-                )
-              ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Setting(
-            title: locales.animations,
-            preference: animations,
-          ),
-          if (dynamic12) ...[
             Setting(
-              title: locales.useSystemColor,
-              preference: dynamicColor,
+              title: locales.animations,
+              preference: animations,
             ),
-          ],
-        ],
-      ),
+            if (dynamic12) ...[
+              Setting(
+                title: locales.useSystemColor,
+                preference: dynamicColor,
+              ),
+            ],
+          ]),
+        )
+      ],
     );
   }
 }

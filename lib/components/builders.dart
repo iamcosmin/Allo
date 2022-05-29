@@ -82,6 +82,50 @@ class FutureView<T> extends HookConsumerWidget {
   }
 }
 
+class SliverFutureView<T> extends HookConsumerWidget {
+  const SliverFutureView({
+    required this.future,
+    required this.success,
+    this.failed,
+    this.error,
+    this.loading,
+    this.isAnimated,
+    super.key,
+  });
+  final Future<T> future;
+  final AsyncSuccessData<T> success;
+  final Widget? loading;
+  final AsyncErrorData error;
+  final Widget? failed;
+  final bool? isAnimated;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final defaultLoading = SliverToBoxAdapter(
+      child: Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+    return FutureBuilder<T>(
+      future: future,
+      builder: (context, snapshot) {
+        return _switcher<T>(
+          context,
+          snapshot,
+          ref,
+          success,
+          error,
+          loading ?? defaultLoading,
+          failed,
+          isAnimated,
+        );
+      },
+    );
+  }
+}
+
 PageTransitionSwitcher _switcher<T>(
   BuildContext context,
   AsyncSnapshot snapshot,

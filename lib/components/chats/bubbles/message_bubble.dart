@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -91,7 +90,7 @@ void _deleteMessage({
   required WidgetRef ref,
 }) {
   final locales = S.of(context);
-  showPlatformDialog(
+  showDialog(
     context: context,
     builder: (context) => AlertDialog(
       alignment: Alignment.center,
@@ -487,8 +486,9 @@ class Bubble extends HookConsumerWidget {
                                   Linkify(
                                     text: message.text,
                                     onOpen: (link) async {
-                                      if (await canLaunch(link.url)) {
-                                        await launch(link.url);
+                                      final uri = Uri.parse(link.url);
+                                      if (await canLaunchUrl(uri)) {
+                                        await launchUrl(uri);
                                       } else {
                                         throw 'Could not launch $link';
                                       }

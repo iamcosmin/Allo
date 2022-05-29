@@ -146,8 +146,8 @@ class _NotificationController {
       // ignore: omit_local_variable_types
       final Map<String, String?> suplimentaryInfo = {
         'chatId': payload['chatId'] ?? '',
-        'chatName': payload['chatName']!,
-        'chatType': payload['chatType']!,
+        'chatName': payload['chatName'],
+        'chatType': payload['chatType'],
       };
       await AwesomeNotifications().createNotification(
         content: NotificationContent(

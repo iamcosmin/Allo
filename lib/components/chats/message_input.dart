@@ -5,6 +5,7 @@ import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
+import 'package:animated_progress/animated_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -283,7 +284,7 @@ class MessageInput extends HookConsumerWidget {
                   SizedBox(
                     height: 30,
                     width: 30,
-                    child: CircularProgressIndicator(
+                    child: AnimatedCircularProgressIndicator(
                       strokeWidth: 3,
                       value: progress.value,
                       color: theme.primary,
