@@ -9,6 +9,7 @@ import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../components/settings_tile.dart';
 import '../../../../components/sliver_scaffold.dart';
 import '../../../../logic/client/hooks.dart';
 
@@ -72,50 +73,45 @@ class C extends HookConsumerWidget {
                 onLongPress: () => reactions.clear(
                   context,
                 ),
-                child: SwitchListTile.adaptive(
-                  title: Text(locales.reactions),
-                  value: reactions.preference,
-                  onChanged: reactions.changeValue,
+                child: Setting(
+                  title: locales.reactions,
+                  preference: reactions,
                 ),
               ),
               InkWell(
                 onLongPress: () => editMessage.clear(
                   context,
                 ),
-                child: SwitchListTile.adaptive(
-                  title: Text(locales.editMessages),
-                  value: editMessage.preference,
-                  onChanged: editMessage.changeValue,
+                child: Setting(
+                  title: locales.editMessages,
+                  preference: editMessage,
                 ),
               ),
               InkWell(
                 onLongPress: () => conversations.clear(
                   context,
                 ),
-                child: SwitchListTile.adaptive(
-                  title: Text(locales.createNewChats),
-                  value: conversations.preference,
-                  onChanged: conversations.changeValue,
+                child: Setting(
+                  title: locales.createNewChats,
+                  preference: conversations,
                 ),
               ),
               InkWell(
                 onLongPress: () => members.clear(
                   context,
                 ),
-                child: SwitchListTile.adaptive(
-                  title: Text(locales.enableParticipantsList),
-                  value: members.preference,
-                  onChanged: members.changeValue,
+                child: Setting(
+                  title: locales.enableParticipantsList,
+                  preference: members,
                 ),
               ),
               InkWell(
                 onLongPress: () => iOSMode.clear(
                   context,
                 ),
-                child: SwitchListTile.adaptive(
-                  title: const Text('Cupertino behaviour'),
-                  value: iOSMode.preference,
-                  onChanged: iOSMode.changeValue,
+                child: Setting(
+                  title: 'Cupertino behaviour',
+                  preference: iOSMode,
                 ),
               ),
             ]),

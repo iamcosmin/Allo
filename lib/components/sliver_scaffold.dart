@@ -36,7 +36,7 @@ class SScaffold extends StatelessWidget {
     this.refreshIndicator,
     super.key,
   });
-  final LargeTopAppBar topAppBar;
+  final TopAppBar topAppBar;
   final List<Widget> slivers;
   final RefreshIndicator? refreshIndicator;
 

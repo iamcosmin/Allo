@@ -6,6 +6,8 @@ import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../components/settings_tile.dart';
+
 class SetupPersonalize extends HookConsumerWidget {
   const SetupPersonalize({super.key});
   @override
@@ -20,10 +22,9 @@ class SetupPersonalize extends HookConsumerWidget {
       title: Text(context.locale.setupPersonalizeScreenTitle),
       subtitle: Text(context.locale.setupPersonalizeScreenDescription),
       body: [
-        SwitchListTile(
-          title: Text(context.locale.darkMode),
-          value: dark.preference,
-          onChanged: dark.changeValue,
+        Setting(
+          title: context.locale.darkMode,
+          preference: dark,
         )
       ],
       action: onSubmit,

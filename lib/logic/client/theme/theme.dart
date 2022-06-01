@@ -63,6 +63,7 @@ ThemeData theme(
     typography: getTypography(),
     pageTransitionsTheme: getPageTransitionsTheme(
       reducedMotion: !animations.preference,
+      fillColor: scheme.surface,
     ),
     useMaterial3: true,
     colorScheme: scheme,

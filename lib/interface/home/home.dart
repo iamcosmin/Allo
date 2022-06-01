@@ -119,7 +119,8 @@ class Home extends HookConsumerWidget {
                   ),
                 );
               } else {
-                return const SliverToBoxAdapter(
+                return const SliverFillRemaining(
+                  hasScrollBody: false,
                   child: Center(
                     child: CircularProgressIndicator(),
                   ),
