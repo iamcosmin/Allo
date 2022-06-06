@@ -4,7 +4,7 @@ import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/chat/members.dart';
-import 'package:allo/logic/client/hooks.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
@@ -95,7 +95,7 @@ class ChatDetails extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
-    final members = usePreference(ref, membersDebug);
+    final members = useSetting(ref, membersDebug);
     final profilePicture = Core.auth.getProfilePicture(
       chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
       isGroup: chat is GroupChat ? true : false,
@@ -146,7 +146,7 @@ class ChatDetails extends HookConsumerWidget {
                     onTap: () async =>
                         _changeTheme(context: context, id: chat.id),
                   ),
-                  if (members.preference == true) ...[
+                  if (members.setting == true) ...[
                     ListTile(
                       leading: const Icon(Icons.people_alt_outlined),
                       title: Text(locales.members),

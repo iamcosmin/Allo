@@ -1,7 +1,7 @@
 import 'package:allo/firebase_options.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
-import 'package:allo/logic/client/hooks.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/client/theme/theme.dart';
 import 'package:allo/logic/core.dart';
@@ -59,7 +59,7 @@ class InnerApp extends HookConsumerWidget {
   const InnerApp({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final darkState = usePreference(ref, darkMode);
+    final darkState = useSetting(ref, darkMode);
     useEffect(
       () {
         const Notifications().ensureListenersActive();
@@ -72,7 +72,9 @@ class InnerApp extends HookConsumerWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       scaffoldMessengerKey: Keys.scaffoldMessengerKey,
-      themeMode: darkState.preference ? ThemeMode.dark : ThemeMode.light,
+      themeMode: ThemeMode.values.firstWhere(
+        (element) => darkState.setting == element.toString(),
+      ),
       theme: theme(Brightness.light, ref, context),
       darkTheme: theme(Brightness.dark, ref, context),
       localizationsDelegates: const [

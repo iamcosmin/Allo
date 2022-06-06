@@ -22,7 +22,7 @@ class SetupPersonalize extends HookConsumerWidget {
       title: Text(context.locale.setupPersonalizeScreenTitle),
       subtitle: Text(context.locale.setupPersonalizeScreenDescription),
       body: [
-        Setting(
+        SettingTile(
           title: context.locale.darkMode,
           preference: dark,
         )

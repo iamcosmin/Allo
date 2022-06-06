@@ -3,7 +3,7 @@ import 'package:allo/components/sliver_scaffold.dart';
 import 'package:allo/components/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/create_chat.dart';
-import 'package:allo/logic/client/hooks.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,13 +30,13 @@ class Home extends HookConsumerWidget {
   const Home({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final createChat = usePreference(ref, privateConversations);
+    final createChat = useSetting(ref, privateConversations);
     final loadChats = useState<Future<List<Chat>?>>(
       Core.chats.getChatsList(),
     );
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: !createChat.preference
+        onPressed: !createChat.setting
             ? null
             : () => Navigator.push(
                   context,

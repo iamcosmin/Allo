@@ -1,0 +1,46 @@
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <path
+                android:name="path_2"
+                android:pathData="M 54 74 C 65.046 74 74 65.046 74 54 C 74 42.954 65.046 34 54 34 C 42.954 34 34 42.954 34 54 C 34 65.046 42.954 74 54 74 Z M 54 70.431 C 63.075 70.431 70.431 63.075 70.431 54 C 70.431 44.925 63.075 37.569 54 37.569 C 44.925 37.569 37.569 44.925 37.569 53.999 C 37.569 63.074 44.925 70.431 54 70.431 Z"
+                android:fillColor="#ffffff"
+                android:strokeWidth="1"
+                android:fillType="evenOdd"/>
+            <path
+                android:name="path_3"
+                android:pathData="M 70.654 34 L 74 34 L 74 74 L 70.654 74 Z"
+                android:fillColor="#ffffff"
+                android:strokeWidth="1"/>
+        </vector>
+    </aapt:attr>
+    <target android:name="path_2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="pathData"
+                android:duration="1000"
+                android:valueFrom="M 54 74 C 65.046 74 74 65.046 74 54 C 74 42.954 65.046 34 54 34 C 42.954 34 34 42.954 34 54 C 34 65.046 42.954 74 54 74 Z M 54 70.431 C 63.075 70.431 70.431 63.075 70.431 54 C 70.431 44.925 63.075 37.569 54 37.569 C 44.925 37.569 37.569 44.925 37.569 53.999 C 37.569 63.074 44.925 70.431 54 70.431 Z"
+                android:valueTo="M 54 75 C 65.598 75 75 65.598 75 54 C 75 42.402 65.598 33 54 33 C 42.402 33 33 42.402 33 54 C 33 65.598 42.402 75 54 75 Z M 54 67.505 C 61.459 67.505 67.505 61.459 67.505 54 C 67.505 46.541 61.459 40.494 54 40.494 C 46.541 40.494 40.494 46.541 40.494 54 C 40.494 61.459 46.541 67.505 54 67.505 Z"
+                android:valueType="pathType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+    <target android:name="path_3">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="pathData"
+                android:duration="1000"
+                android:valueFrom="M 70.654 34 L 74 34 L 74 74 L 70.654 74 Z"
+                android:valueTo="M 67.506 33 L 75 33 L 75 75 L 67.506 75 Z"
+                android:valueType="pathType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+</animated-vector>

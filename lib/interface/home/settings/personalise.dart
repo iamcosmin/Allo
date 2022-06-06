@@ -10,30 +10,30 @@ import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../components/sliver_scaffold.dart';
-import '../../../logic/client/hooks.dart';
 import '../../../logic/client/preferences/manager.dart';
 
 const colors = Colors.accents;
 
 /// Personalisation preferences
 final navBarLabelsPreference =
-    createPreference('personalisation_nav_bar_labels', false);
-final dynamicColorPreference = createPreference('dynamic_color', !kIsWeb);
+    initSetting('personalisation_nav_bar_labels', defaultValue: false);
+final dynamicColorPreference =
+    initSetting('dynamic_color', defaultValue: !kIsWeb);
 final preferredColorPreference =
-    createPreference('accent_color', Colors.blueAccent.value);
-final animationsPreference = createPreference('animations', !kIsWeb);
+    initSetting('accent_color', defaultValue: Colors.blueAccent.value);
+final animationsPreference = initSetting('animations', defaultValue: !kIsWeb);
 
 class PersonalisePage extends HookConsumerWidget {
   const PersonalisePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dark = usePreference(ref, darkMode);
+    final dark = useSetting(ref, darkMode);
     final locales = S.of(context);
-    final labels = usePreference(ref, navBarLabelsPreference);
-    final dynamicColor = usePreference(ref, dynamicColorPreference);
-    final themeColor = usePreference(ref, preferredColorPreference);
-    final animations = usePreference(ref, animationsPreference);
+    final labels = useSetting(ref, navBarLabelsPreference);
+    final dynamicColor = useSetting(ref, dynamicColorPreference);
+    final themeColor = useSetting(ref, preferredColorPreference);
+    final animations = useSetting(ref, animationsPreference);
     int? sdkInt;
     if (!kIsWeb && Platform.isAndroid) {
       sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
@@ -46,16 +46,43 @@ class PersonalisePage extends HookConsumerWidget {
       slivers: [
         SliverList(
           delegate: SliverChildListDelegate.fixed([
-            Setting(
-              title: locales.darkMode,
-              preference: dark,
+            ListTile(
+              title: Text(locales.darkMode),
+              trailing: DropdownButton(
+                isDense: true,
+                borderRadius: BorderRadius.circular(20),
+                elevation: 1,
+                dropdownColor: ElevationOverlay.applySurfaceTint(
+                  Theme.of(context).colorScheme.surface,
+                  Theme.of(context).colorScheme.primary,
+                  1,
+                ),
+                value: dark.setting,
+                onChanged: (value) {
+                  dark.update(value.toString());
+                },
+                items: [
+                  DropdownMenuItem(
+                    value: ThemeMode.light.toString(),
+                    child: const Text('Light'),
+                  ),
+                  DropdownMenuItem(
+                    value: ThemeMode.dark.toString(),
+                    child: const Text('Dark'),
+                  ),
+                  DropdownMenuItem(
+                    value: ThemeMode.system.toString(),
+                    child: const Text('System'),
+                  ),
+                ],
+              ),
             ),
-            Setting(
+            SettingTile(
               title: locales.personaliseHideNavigationHints,
               preference: labels,
             ),
-            Setting(
-              enabled: !dynamicColor.preference,
+            SettingTile(
+              enabled: !dynamicColor.setting,
               disabledExplanation: locales.themeColorDisabledExplanation,
               title: locales.themeColor,
               onTap: () => showMagicBottomSheet(
@@ -72,7 +99,7 @@ class PersonalisePage extends HookConsumerWidget {
                           ClipOval(
                             child: InkWell(
                               onTap: () {
-                                themeColor.changeValue(color.value);
+                                themeColor.update(color.value);
                                 Navigator.of(context).pop();
                               },
                               child: Stack(
@@ -83,7 +110,7 @@ class PersonalisePage extends HookConsumerWidget {
                                     width: 60,
                                     color: color,
                                   ),
-                                  if (color.value == themeColor.preference) ...[
+                                  if (color.value == themeColor.setting) ...[
                                     Container(
                                       height: 60,
                                       width: 60,
@@ -105,12 +132,12 @@ class PersonalisePage extends HookConsumerWidget {
                 ],
               ),
             ),
-            Setting(
+            SettingTile(
               title: locales.animations,
               preference: animations,
             ),
             if (dynamic12) ...[
-              Setting(
+              SettingTile(
                 title: locales.useSystemColor,
                 preference: dynamicColor,
               ),

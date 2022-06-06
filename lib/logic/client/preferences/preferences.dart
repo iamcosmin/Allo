@@ -1,9 +1,28 @@
+import 'package:flutter/material.dart';
+
 import 'manager.dart';
 
-final darkMode = createPreference('isDarkModeEnabled', false);
-final privateConversations = createPreference('privateConversations', false);
-final reactionsDebug = createPreference('alloReactionsDebug', false);
-final editMessageDebug = createPreference('alloEditMessageDebug', false);
-final membersDebug = createPreference('alloParticipantsDebug', false);
-final emulateIOSBehaviour =
-    createPreference('experimentalEmulateIOSBehaviour', false);
+final darkMode = initSetting(
+  'theme_mode',
+  defaultValue: ThemeMode.system.toString(),
+);
+final privateConversations = initSetting(
+  'privateConversations',
+  defaultValue: false,
+);
+final reactionsDebug = initSetting(
+  'alloReactionsDebug',
+  defaultValue: false,
+);
+final editMessageDebug = initSetting(
+  'alloEditMessageDebug',
+  defaultValue: false,
+);
+final membersDebug = initSetting(
+  'alloParticipantsDebug',
+  defaultValue: false,
+);
+final emulateIOSBehaviour = initSetting(
+  'experimentalEmulateIOSBehaviour',
+  defaultValue: false,
+);

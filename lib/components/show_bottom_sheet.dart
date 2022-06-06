@@ -31,7 +31,7 @@ Future<dynamic> showMagicBottomSheet({
         topRight: Radius.circular(30),
       ),
     ),
-    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    backgroundColor: colors.surface,
     context: context,
     builder: (context) {
       if (insets != null) {

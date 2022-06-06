@@ -1,9 +1,8 @@
 import 'dart:math';
 
+import 'package:allo/components/switch.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../components/settings_tile.dart';
 
 class ExampleIsTyping extends StatefulWidget {
   const ExampleIsTyping({
@@ -62,7 +61,7 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
       color: Theme.of(context).canvasColor,
       padding: const EdgeInsets.all(16),
       child: Center(
-        child: CustomSwitch(
+        child: AdaptiveSwitch(
           onChanged: (newValue) {
             setState(() {
               _isSomeoneTyping = newValue;

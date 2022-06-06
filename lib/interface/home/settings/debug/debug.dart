@@ -4,6 +4,7 @@ import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/example.dart';
 import 'package:allo/interface/home/settings/debug/example_sliver.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
@@ -11,18 +12,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../components/settings_tile.dart';
 import '../../../../components/sliver_scaffold.dart';
-import '../../../../logic/client/hooks.dart';
 
 class C extends HookConsumerWidget {
   const C({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
-    final conversations = usePreference(ref, privateConversations);
-    final reactions = usePreference(ref, reactionsDebug);
-    final editMessage = usePreference(ref, editMessageDebug);
-    final members = usePreference(ref, membersDebug);
-    final iOSMode = usePreference(ref, emulateIOSBehaviour);
+    final conversations = useSetting(ref, privateConversations);
+    final reactions = useSetting(ref, reactionsDebug);
+    final editMessage = useSetting(ref, editMessageDebug);
+    final members = useSetting(ref, membersDebug);
+    final iOSMode = useSetting(ref, emulateIOSBehaviour);
     return SScaffold(
       topAppBar: LargeTopAppBar(
         title: Text(locales.internalMenu),
@@ -70,46 +70,46 @@ class C extends HookConsumerWidget {
                 ),
               ),
               InkWell(
-                onLongPress: () => reactions.clear(
+                onLongPress: () => reactions.delete(
                   context,
                 ),
-                child: Setting(
+                child: SettingTile(
                   title: locales.reactions,
                   preference: reactions,
                 ),
               ),
               InkWell(
-                onLongPress: () => editMessage.clear(
+                onLongPress: () => editMessage.delete(
                   context,
                 ),
-                child: Setting(
+                child: SettingTile(
                   title: locales.editMessages,
                   preference: editMessage,
                 ),
               ),
               InkWell(
-                onLongPress: () => conversations.clear(
+                onLongPress: () => conversations.delete(
                   context,
                 ),
-                child: Setting(
+                child: SettingTile(
                   title: locales.createNewChats,
                   preference: conversations,
                 ),
               ),
               InkWell(
-                onLongPress: () => members.clear(
+                onLongPress: () => members.delete(
                   context,
                 ),
-                child: Setting(
+                child: SettingTile(
                   title: locales.enableParticipantsList,
                   preference: members,
                 ),
               ),
               InkWell(
-                onLongPress: () => iOSMode.clear(
+                onLongPress: () => iOSMode.delete(
                   context,
                 ),
-                child: Setting(
+                child: SettingTile(
                   title: 'Cupertino behaviour',
                   preference: iOSMode,
                 ),

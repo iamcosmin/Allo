@@ -9,8 +9,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../hooks.dart';
 import 'typography.dart';
+
+extension ColorString on Color {
+  String toHexString() {
+    return '#${(value & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+  }
+}
 
 ThemeData theme(
   Brightness brightness,
@@ -23,21 +28,21 @@ ThemeData theme(
     sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
   }
   final dynamic12 = sdkInt != null && sdkInt >= 31;
-  final themeColor = usePreference(ref, preferredColorPreference);
-  final animations = usePreference(ref, animationsPreference);
+  final themeColor = useSetting(ref, preferredColorPreference);
+  final animations = useSetting(ref, animationsPreference);
   final platform = ThemeData().platform;
 
   ColorScheme getColorScheme() {
     final defaultColorScheme = ColorScheme.fromSeed(
-      seedColor: Color(themeColor.preference),
+      seedColor: Color(themeColor.setting),
       brightness: brightness,
     );
     if (colorScheme != null) {
       return colorScheme;
     } else {
       if (!kIsWeb && Platform.isAndroid) {
-        final dynamicColor = usePreference(ref, dynamicColorPreference);
-        if (dynamic12 && dynamicColor.preference) {
+        final dynamicColor = useSetting(ref, dynamicColorPreference);
+        if (dynamic12 && dynamicColor.setting) {
           final deviceColorScheme = ref
               .read(dynamicColorsProvider)
               ?.toColorScheme(brightness: brightness);
@@ -52,9 +57,29 @@ ThemeData theme(
   }
 
   final scheme = getColorScheme();
-  final iOS = usePreference(ref, emulateIOSBehaviour).preference == true ||
+  final iOS = useSetting(ref, emulateIOSBehaviour).setting == true ||
       platform == TargetPlatform.iOS;
 
+  // if (kIsWeb) {
+  //   // Injects code directly in JavaScript.
+  //   // Use 'default' for a white status bar, and 'black' for a black status bar.
+  //   // Only for iOS devices.
+  //   const nativeFunction = "setAppleStatusBarType";
+  //   switch (brightness) {
+  //     case Brightness.light:
+  //       js.context.callMethod(nativeFunction, ['default']);
+  //       break;
+  //     case Brightness.dark:
+  //       js.context.callMethod(nativeFunction, ['black']);
+  //   }
+
+  //   // Injects code directly in JavaScript.
+  //   // Sets meta theme color to the surface generated color; makes PWAs more consistent with native.
+  //   js.context.callMethod(
+  //     'setBrowserThemeColor',
+  //     [scheme.surface.toHexString()],
+  //   );
+  // }
   // TODO(iamcosmin): Once all Material3 changes land in beta, we should remove all emulations.
   return ThemeData(
     // These parameters will remain even after Material 3 lands.
@@ -62,7 +87,7 @@ ThemeData theme(
     applyElevationOverlayColor: true,
     typography: getTypography(),
     pageTransitionsTheme: getPageTransitionsTheme(
-      reducedMotion: !animations.preference,
+      reducedMotion: !animations.setting,
       fillColor: scheme.surface,
     ),
     useMaterial3: true,

@@ -4,7 +4,7 @@ import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/swipe_to.dart';
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/logic/client/hooks.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';
@@ -28,7 +28,7 @@ void _messageOptions(
   bool isImage,
   ColorScheme colorScheme,
 ) {
-  final editMessage = usePreference(ref, editMessageDebug);
+  final editMessage = useSetting(ref, editMessageDebug);
   final locales = S.of(context);
   showMagicBottomSheet(
     colorScheme: colorScheme,
@@ -49,7 +49,7 @@ void _messageOptions(
           },
         ),
       ],
-      if (editMessage.preference && isSentByUser) ...[
+      if (editMessage.setting && isSentByUser) ...[
         ListTile(
           leading: const Icon(Icons.edit_outlined),
           title: Text(locales.edit),
@@ -349,8 +349,8 @@ class Bubble extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         borderRadius: messageRadius,
                         color: isNotCurrentUser
-                            ? colorScheme.onSecondary
-                            : colorScheme.primaryContainer,
+                            ? colorScheme.secondaryContainer
+                            : colorScheme.primary,
                       ),
                       constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
                       padding: message.type != MessageType.image

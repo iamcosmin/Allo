@@ -1,6 +1,6 @@
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/extensions.dart';
-import 'package:allo/logic/client/hooks.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -136,9 +136,9 @@ PageTransitionSwitcher _switcher<T>(
   Widget? failed,
   bool? isAnimated,
 ) {
-  final animations = usePreference(ref, animationsPreference);
+  final animations = useSetting(ref, animationsPreference);
   return PageTransitionSwitcher(
-    duration: animations.preference
+    duration: animations.setting
         ? ((isAnimated ?? true)
             ? const Duration(milliseconds: 300)
             : Duration.zero)

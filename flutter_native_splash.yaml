@@ -19,19 +19,3 @@ flutter_native_splash:
   # To position the branding image at the bottom of the screen you can use bottom, bottomRight,
   # and bottomLeft. The default values is bottom if not specified or specified something else.
   #branding_mode: bottom
-
-  # Android 12 handles the splash screen differently than previous versions.  Please visit
-  # https://developer.android.com/guide/topics/ui/splash-screen
-  # Following are Android 12 specific parameter.
-  android_12:
-    # The image parameter sets the splash screen icon image.  If this parameter is not specified,
-    # the app's launcher icon will be used instead.
-    # Please note that the splash screen will be clipped to a circle on the center of the screen.
-    # App icon with an icon background: This should be 960×960 pixels, and fit within a circle
-    # 640 pixels in diameter.
-    # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
-    # 768 pixels in diameter.
-    # Light
-    image: assets/splash/android12/light.png
-    # Dark
-    image_dark: assets/splash/android12/dark.png
