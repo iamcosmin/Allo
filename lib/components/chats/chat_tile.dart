@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../space.dart';
+
 class ChatTile extends StatelessWidget {
   const ChatTile({
     required this.leading,
@@ -11,14 +13,15 @@ class ChatTile extends StatelessWidget {
   final Widget leading;
   final Widget title;
   final Widget subtitle;
-  final void Function() onTap;
+  final void Function()? onTap;
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
-        onTap: () => onTap(),
+        onTap: onTap,
         child: Container(
           height: 65,
           padding: const EdgeInsets.only(left: 5, right: 5),
@@ -34,7 +37,7 @@ class ChatTile extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [title, subtitle],
+                  children: [title, const Space(0.2), subtitle],
                 ),
               )
             ],

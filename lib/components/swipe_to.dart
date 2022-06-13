@@ -1,9 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
-/// [SwipeTo] is a widget that is used for doing an action on a horizontal swipe,
-/// kind of Telegram's reply feature.
+/// SwipeTo is a wrapper widget to other Widget that we can swipe horizontally
+/// to initiate a callback when animation gets end.
+/// It is useful to develop and What's App kind of replay animation for a
+/// component of ongoing chat.
 class SwipeTo extends StatefulWidget {
-  /// This is the [child] that you want to horizontally swipe for an action.
+  /// Child widget for which you want to have horizontal swipe action
+  /// @required parameter
   final Widget child;
 
   /// Duration value to define animation duration
@@ -70,6 +75,8 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
   late Animation<Offset> _animation;
   late Animation<double> _leftIconAnimation;
   late Animation<double> _rightIconAnimation;
+  late VoidCallback _onSwipeLeft;
+  late VoidCallback _onSwipeRight;
 
   @override
   void initState() {
@@ -90,6 +97,15 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
     _rightIconAnimation = _controller.drive(
       Tween<double>(begin: 0.0, end: 0.0),
     );
+    _onSwipeLeft = widget.onLeftSwipe ??
+        () {
+          log("Left Swipe Not Provided");
+        };
+
+    _onSwipeRight = widget.onRightSwipe ??
+        () {
+          log("Right Swipe Not Provided");
+        };
     _controller.addListener(() {
       setState(() {});
     });
@@ -127,11 +143,12 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
         if (onRight) {
           //keep left icon visibility to 0.0 until onRightSwipe triggers again
           _leftIconAnimation = _controller.drive(Tween(begin: 0.0, end: 0.0));
-          widget.onRightSwipe?.call();
+          _onSwipeRight();
         } else {
           //keep right icon visibility to 0.0 until onLeftSwipe triggers again
           _rightIconAnimation = _controller.drive(Tween(begin: 0.0, end: 0.0));
-          widget.onLeftSwipe?.call();
+
+          _onSwipeLeft();
         }
       });
     });
@@ -141,10 +158,10 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return GestureDetector(
       onHorizontalDragUpdate: (details) {
-        if (widget.onRightSwipe != null && details.delta.dx > 2) {
+        if (details.delta.dx > 1 && widget.onRightSwipe != null) {
           _runAnimation(onRight: true);
         }
-        if (widget.onLeftSwipe != null && details.delta.dx < -2) {
+        if (details.delta.dx < -1 && widget.onLeftSwipe != null) {
           _runAnimation(onRight: false);
         }
       },
@@ -155,35 +172,29 @@ class _SwipeToState extends State<SwipeTo> with SingleTickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Visibility(
-                visible: widget.onRightSwipe != null,
-                child: AnimatedOpacity(
-                  opacity: _leftIconAnimation.value,
-                  duration: widget.animationDuration,
-                  curve: Curves.decelerate,
-                  child: widget.rightSwipeWidget ??
-                      Icon(
-                        widget.iconOnRightSwipe,
-                        size: widget.iconSize,
-                        color: widget.iconColor ??
-                            Theme.of(context).iconTheme.color,
-                      ),
-                ),
+              AnimatedOpacity(
+                opacity: _leftIconAnimation.value,
+                duration: widget.animationDuration,
+                curve: Curves.decelerate,
+                child: widget.rightSwipeWidget ??
+                    Icon(
+                      widget.iconOnRightSwipe,
+                      size: widget.iconSize,
+                      color:
+                          widget.iconColor ?? Theme.of(context).iconTheme.color,
+                    ),
               ),
-              Visibility(
-                visible: widget.onLeftSwipe != null,
-                child: AnimatedOpacity(
-                  opacity: _rightIconAnimation.value,
-                  duration: widget.animationDuration,
-                  curve: Curves.decelerate,
-                  child: widget.leftSwipeWidget ??
-                      Icon(
-                        widget.iconOnLeftSwipe,
-                        size: widget.iconSize,
-                        color: widget.iconColor ??
-                            Theme.of(context).iconTheme.color,
-                      ),
-                ),
+              AnimatedOpacity(
+                opacity: _rightIconAnimation.value,
+                duration: widget.animationDuration,
+                curve: Curves.decelerate,
+                child: widget.leftSwipeWidget ??
+                    Icon(
+                      widget.iconOnLeftSwipe,
+                      size: widget.iconSize,
+                      color:
+                          widget.iconColor ?? Theme.of(context).iconTheme.color,
+                    ),
               ),
             ],
           ),

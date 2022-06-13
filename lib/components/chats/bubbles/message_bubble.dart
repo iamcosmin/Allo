@@ -367,8 +367,9 @@ class Bubble extends HookConsumerWidget {
                         builder: (context) {
                           if (message.type == MessageType.image) {
                             return Container(
-                              constraints:
-                                  BoxConstraints(maxWidth: screenWidth / 1.5),
+                              constraints: BoxConstraints(
+                                maxWidth: screenWidth / 1.5,
+                              ),
                               child: ClipRRect(
                                 borderRadius: messageRadius,
                                 child: CachedNetworkImage(
@@ -378,8 +379,9 @@ class Bubble extends HookConsumerWidget {
                             );
                           } else {
                             return Container(
-                              constraints:
-                                  BoxConstraints(maxWidth: screenWidth / 1.5),
+                              constraints: BoxConstraints(
+                                maxWidth: screenWidth / 1.5,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

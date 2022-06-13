@@ -46,6 +46,7 @@ class ChatMessagesList extends HookConsumerWidget {
             padding: const EdgeInsets.only(top: 10),
             key: listKey,
             reverse: true,
+            shrinkWrap: true,
             initialItemCount: data.length,
             controller: controller,
             itemBuilder: (context, i, animation) {

@@ -29,6 +29,8 @@ class OldSliverScaffold extends StatelessWidget {
   }
 }
 
+const _kNewDesign = true;
+
 class SScaffold extends StatelessWidget {
   const SScaffold({
     required this.topAppBar,
@@ -47,8 +49,16 @@ class SScaffold extends StatelessWidget {
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: topAppBar,
-          )
+            sliver: _kNewDesign
+                ? topAppBar
+                : SmallTopAppBar(
+                    title: topAppBar is LargeTopAppBar
+                        ? (topAppBar as LargeTopAppBar).title
+                        : topAppBar is MediumTopAppBar
+                            ? (topAppBar as MediumTopAppBar).title
+                            : (topAppBar as SmallTopAppBar).title,
+                  ),
+          ),
         ],
         body: Builder(
           builder: (context) {

@@ -10,6 +10,22 @@ extension on BuildContext {
   }
 }
 
+class SmallTopAppBar extends StatelessWidget with TopAppBar {
+  const SmallTopAppBar({required this.title, this.leading, super.key});
+
+  final Widget title;
+  final Widget? leading;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBar(
+      pinned: true,
+      leading: leading,
+      title: title,
+    );
+  }
+}
+
 class MediumTopAppBar extends StatelessWidget with TopAppBar {
   const MediumTopAppBar({
     required this.title,

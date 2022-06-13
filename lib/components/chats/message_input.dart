@@ -113,6 +113,10 @@ class ModifierAction {
 }
 
 class InputModifier {
+  /// [InputModifier].
+  ///
+  /// This is the most complicated piece of code I've created. Ever.
+  /// Though, it is mostly simple to use.
   const InputModifier({
     required this.title,
     required this.body,
@@ -152,86 +156,71 @@ class MessageInput extends HookConsumerWidget {
       duration: const Duration(milliseconds: 150),
       alignment: Alignment.bottomCenter,
       margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+      decoration: ShapeDecoration(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         color: theme.secondaryContainer,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AnimatedContainer(
-            decoration: BoxDecoration(
-              color: theme.secondaryContainer,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            duration: const Duration(milliseconds: 120),
-            height: modifier.value != null ? 50 : 0,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 120),
-              child: !(modifier.value != null)
-                  ? null
-                  : Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.only(left: 15, right: 10),
-                      height: 50,
-                      width: MediaQuery.of(context).size.width,
-                      child: Row(
-                        children: [
-                          Icon(modifier.value?.icon),
-                          const Padding(padding: EdgeInsets.only(left: 15)),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 1.5,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  modifier.value?.title ?? '',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
+          AnimatedSize(
+            curve: Curves.fastOutSlowIn,
+            duration: const Duration(milliseconds: 450),
+            child: modifier.value == null
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 0,
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.only(left: 15, right: 10),
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      children: [
+                        Icon(modifier.value?.icon),
+                        const Padding(padding: EdgeInsets.only(left: 15)),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 1.5,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                modifier.value?.title ?? '',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                Text(
-                                  modifier.value?.body.replaceAll('\n', ' ') ??
-                                      '',
-                                  overflow: TextOverflow.ellipsis,
-                                )
-                              ],
-                            ),
-                          ),
-                          if (modifier.value != null) ...[
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                  icon: const Icon(Icons.close_rounded),
-                                  onPressed: () {
-                                    modifier.value = null;
-                                  },
-                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            )
-                          ]
-                        ],
-                      ),
+                              Text(
+                                modifier.value?.body.replaceAll('\n', ' ') ??
+                                    '',
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            ],
+                          ),
+                        ),
+                        if (modifier.value != null) ...[
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: IconButton(
+                                icon: const Icon(Icons.close_rounded),
+                                onPressed: () {
+                                  modifier.value = null;
+                                },
+                              ),
+                            ),
+                          )
+                        ]
+                      ],
                     ),
-              transitionBuilder: (child, animation) {
-                return Column(
-                  children: [
-                    SizeTransition(
-                      sizeFactor: animation,
-                      axisAlignment: -1,
-                      key: key,
-                      child: child,
-                    ),
-                  ],
-                );
-              },
-            ),
+                  ),
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -255,12 +244,11 @@ class MessageInput extends HookConsumerWidget {
                         ),
               ),
               Container(
-                constraints: BoxConstraints(
+                constraints: const BoxConstraints(
                   maxHeight: 120,
                   minHeight: 20,
-                  minWidth: MediaQuery.of(context).size.width - 110,
-                  maxWidth: MediaQuery.of(context).size.width - 110,
                 ),
+                width: MediaQuery.of(context).size.width - 110,
                 child: TextFormField(
                   cursorColor: Theme.of(context).colorScheme.outline,
                   minLines: 1,
@@ -343,7 +331,6 @@ class UploadImage extends HookWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           Navigator.pop(context);
-          progress.value = 0.1;
           await Core.chat(chatId).messages.sendImageMessage(
                 chatName: chatName,
                 imageFile: imageFile!,

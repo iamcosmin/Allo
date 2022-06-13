@@ -18,7 +18,7 @@ const colors = Colors.accents;
 final navBarLabelsPreference =
     initSetting('personalisation_nav_bar_labels', defaultValue: false);
 final dynamicColorPreference =
-    initSetting('dynamic_color', defaultValue: !kIsWeb);
+    initSetting('dynamic_color', defaultValue: false);
 final preferredColorPreference =
     initSetting('accent_color', defaultValue: Colors.blueAccent.value);
 final animationsPreference = initSetting('animations', defaultValue: !kIsWeb);

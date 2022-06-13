@@ -22,73 +22,67 @@ class Settings extends HookConsumerWidget {
         title: Text(context.locale.settings),
       ),
       slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.all(8.0),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate([
-              InkWell(
-                onTap: () {
-                  Core.navigation.push(route: const AccountSettings());
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      padding:
-                          const EdgeInsets.only(top: 10, bottom: 10, left: 10),
-                      child: PersonPicture(
-                        radius: 60,
-                        profilePicture: Core.auth.user.profilePicture,
-                        initials: Core.auth.user.nameInitials,
-                      ),
+        SliverList(
+          delegate: SliverChildListDelegate([
+            InkWell(
+              onTap: () {
+                Core.navigation.push(route: const AccountSettings());
+              },
+              child: Row(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(top: 10, bottom: 10, left: 10),
+                    child: PersonPicture(
+                      radius: 60,
+                      profilePicture: Core.auth.user.profilePicture,
+                      initials: Core.auth.user.nameInitials,
                     ),
-                    const Padding(padding: EdgeInsets.only(left: 15)),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: const TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  ),
+                  const Padding(padding: EdgeInsets.only(left: 15)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const Padding(padding: EdgeInsets.only(top: 5)),
-                        Text(
-                          locales.customizeYourAccount,
-                          style: const TextStyle(color: Colors.grey),
-                        )
-                      ],
-                    ),
-                    const Padding(padding: EdgeInsets.only(bottom: 10))
-                  ],
-                ),
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 5)),
+                      Text(
+                        locales.customizeYourAccount,
+                        style: const TextStyle(color: Colors.grey),
+                      )
+                    ],
+                  ),
+                  const Padding(padding: EdgeInsets.only(bottom: 10))
+                ],
               ),
-              const Padding(padding: EdgeInsets.only(top: 20)),
-              ListTile(
-                leading: const Icon(Icons.brush),
-                title: Text(
-                  locales.personalise,
-                  style: const TextStyle(fontSize: 18),
-                ),
-                onTap: () =>
-                    Core.navigation.push(route: const PersonalisePage()),
+            ),
+            const Padding(padding: EdgeInsets.only(top: 20)),
+            ListTile(
+              leading: const Icon(Icons.brush),
+              title: Text(
+                locales.personalise,
+                style: const TextStyle(fontSize: 18),
               ),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title:
-                    Text(locales.about, style: const TextStyle(fontSize: 18)),
-                onTap: () => Core.navigation.push(route: const AboutPage()),
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout, size: 27),
-                minLeadingWidth: 40,
-                title:
-                    Text(locales.logOut, style: const TextStyle(fontSize: 18)),
-                onTap: () async => await Core.auth.signOut(context),
-              ),
-            ]),
-          ),
+              onTap: () => Core.navigation.push(route: const PersonalisePage()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: Text(locales.about, style: const TextStyle(fontSize: 18)),
+              onTap: () => Core.navigation.push(route: const AboutPage()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout, size: 27),
+              minLeadingWidth: 40,
+              title: Text(locales.logOut, style: const TextStyle(fontSize: 18)),
+              onTap: () async => await Core.auth.signOut(context),
+            ),
+          ]),
         )
       ],
     );

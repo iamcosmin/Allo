@@ -53,6 +53,8 @@ class EnterPassword extends HookConsumerWidget {
       subtitle: Text(locales.enterPasswordDescription),
       body: [
         TextFormField(
+          autofillHints: const [AutofillHints.password],
+          keyboardType: TextInputType.visiblePassword,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             errorText: error.value,

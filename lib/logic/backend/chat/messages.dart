@@ -103,6 +103,8 @@ class Messages {
     task.snapshotEvents.listen((event) async {
       progress.value = event.bytesTransferred / event.totalBytes;
       if (event.state == TaskState.success) {
+        progress.value = 1.0;
+        await Future.delayed(const Duration(seconds: 1));
         progress.value = 0.0;
         final link = await event.ref.getDownloadURL();
         await db.collection('messages').add({

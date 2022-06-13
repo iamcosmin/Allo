@@ -37,6 +37,8 @@ class Login extends HookConsumerWidget {
       subtitle: Text(locales.loginScreenDescription),
       body: [
         TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          autofillHints: const [AutofillHints.email],
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             errorText: error.value,
