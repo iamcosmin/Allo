@@ -1,4 +1,4 @@
-import 'package:allo/components/top_app_bar.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/example.dart';
@@ -11,7 +11,7 @@ import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../components/settings_tile.dart';
-import '../../../../components/sliver_scaffold.dart';
+import '../../../../components/slivers/sliver_scaffold.dart';
 
 class C extends HookConsumerWidget {
   const C({super.key});

@@ -14,15 +14,9 @@ class UserMethods {
   @Deprecated(
     'This function is deprecated. Please use the new getAllUserIdentification.',
   )
-  Future<Map<String, String>?> getUsernamePairs() async {
+  Future<Map<String, dynamic>?> getUsernamePairs() async {
     final snapshot =
         await Database.storage.collection('users').doc('usernames').get();
-    if (snapshot.data() is Map<String, String>?) {
-      return snapshot.data as Map<String, String>?;
-    } else {
-      throw Exception(
-        'The username document should only have strings. Please contact the app administrator.',
-      );
-    }
+    return snapshot.data();
   }
 }

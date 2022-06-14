@@ -1,7 +1,8 @@
 import 'package:allo/components/chats/chat_tile.dart';
+import 'package:allo/components/info.dart';
 import 'package:allo/components/shimmer.dart';
-import 'package:allo/components/sliver_scaffold.dart';
-import 'package:allo/components/top_app_bar.dart';
+import 'package:allo/components/slivers/sliver_scaffold.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/create_chat.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
@@ -49,7 +50,7 @@ class Home extends HookConsumerWidget {
       ),
       body: SScaffold(
         topAppBar: LargeTopAppBar(
-          title: Text(context.locale.home),
+          title: Text(context.locale.chats),
         ),
         slivers: [
           SliverPadding(
@@ -60,7 +61,14 @@ class Home extends HookConsumerWidget {
                 if (snapshot.data != null) {
                   final data = snapshot.data!;
                   // If the list is not empty.
-                  if (data.isNotEmpty) {
+                  if (data.isEmpty) {
+                    // If the list is empty
+                    return SliverFillRemaining(
+                      child: InfoWidget(
+                        text: context.locale.noChats,
+                      ),
+                    );
+                  } else {
                     return SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
@@ -100,19 +108,6 @@ class Home extends HookConsumerWidget {
                           );
                         },
                         childCount: data.length,
-                      ),
-                    );
-                  } else {
-                    // If the list is empty
-                    return SliverFillRemaining(
-                      child: Center(
-                        child: Text(
-                          context.locale.noChats,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.bold),
-                        ),
                       ),
                     );
                   }

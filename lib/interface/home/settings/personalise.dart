@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:allo/components/settings_tile.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
-import 'package:allo/components/top_app_bar.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../components/sliver_scaffold.dart';
+import '../../../components/slivers/sliver_scaffold.dart';
 import '../../../logic/client/preferences/manager.dart';
 
 const colors = Colors.accents;

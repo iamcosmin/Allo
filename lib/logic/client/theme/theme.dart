@@ -85,7 +85,8 @@ ThemeData theme(
     // These parameters will remain even after Material 3 lands.
     platform: iOS ? TargetPlatform.iOS : null,
     applyElevationOverlayColor: true,
-    typography: getTypography(),
+    typography: getTypography(scheme),
+    iconTheme: IconThemeData(color: scheme.onSurface),
     pageTransitionsTheme: getPageTransitionsTheme(
       reducedMotion: !animations.setting,
       fillColor: scheme.surface,

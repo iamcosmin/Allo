@@ -3,8 +3,8 @@ import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../../../components/sliver_scaffold.dart';
-import '../../../../components/top_app_bar.dart';
+import '../../../../components/slivers/sliver_scaffold.dart';
+import '../../../../components/slivers/top_app_bar.dart';
 
 class AccountInfo extends HookWidget {
   const AccountInfo({super.key});

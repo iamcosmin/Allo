@@ -151,9 +151,8 @@ class MessageInput extends HookConsumerWidget {
     final messageController = useTextEditingController();
     final node = useFocusNode(descendantsAreFocusable: false);
     final progress = useState<double>(0);
-    final locales = S.of(context);
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 250),
       alignment: Alignment.bottomCenter,
       margin: const EdgeInsets.all(5),
       decoration: ShapeDecoration(
@@ -167,7 +166,7 @@ class MessageInput extends HookConsumerWidget {
         children: [
           AnimatedSize(
             curve: Curves.fastOutSlowIn,
-            duration: const Duration(milliseconds: 450),
+            duration: const Duration(milliseconds: 250),
             child: modifier.value == null
                 ? SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -258,7 +257,7 @@ class MessageInput extends HookConsumerWidget {
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: locales.message,
+                    hintText: context.locale.message,
                     hintStyle: TextStyle(color: theme.onSecondaryContainer),
                   ),
                   onChanged: (value) =>

@@ -1,5 +1,5 @@
-import 'package:allo/components/sliver_scaffold.dart';
-import 'package:allo/components/top_app_bar.dart';
+import 'package:allo/components/slivers/sliver_scaffold.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

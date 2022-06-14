@@ -1,6 +1,6 @@
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/sliver_scaffold.dart';
-import 'package:allo/components/top_app_bar.dart';
+import 'package:allo/components/slivers/sliver_scaffold.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/about.dart';
 import 'package:allo/interface/home/settings/account.dart';

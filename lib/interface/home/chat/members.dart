@@ -1,4 +1,7 @@
 import 'package:allo/components/person_picture.dart';
+import 'package:allo/components/slivers/sliver_center.dart';
+import 'package:allo/components/slivers/sliver_scaffold.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/interface/home/chat/chat_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +21,63 @@ class ChatMembersPage extends HookConsumerWidget {
   final String chatId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return SScaffold(
+      topAppBar: LargeTopAppBar(title: Text(context.locale.members)),
+      slivers: [
+        FutureWidget<DocumentSnapshot<Map<String, dynamic>>>(
+          future: returnChatInfo(id: chatId),
+          loading: () {
+            return const SliverCenter(
+              child: CircularProgressIndicator(),
+            );
+          },
+          error: (error) {
+            return SliverCenter(
+              child: SliverCenter(
+                child: Text(error.toString()),
+              ),
+            );
+          },
+          success: (data) {
+            final List members = data.data()!['members'];
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final member = members[index];
+                  return ListTile(
+                    title: Text(
+                      member['uid'] != Core.auth.user.uid
+                          ? member['name']
+                          : context.locale.me,
+                    ),
+                    contentPadding: const EdgeInsets.only(
+                      top: 5,
+                      bottom: 5,
+                      left: 10,
+                      right: 10,
+                    ),
+                    leading: PersonPicture(
+                      radius: 50,
+                      profilePicture: Core.auth.getProfilePicture(
+                        member['uid'],
+                      ),
+                      initials: Core.auth.returnNameInitials(
+                        member['name'],
+                      ),
+                    ),
+                    onTap: () => Core.navigation.push(
+                      route: const UserPreviewPage(),
+                    ),
+                  );
+                },
+                childCount: members.length,
+              ),
+            );
+          },
+        )
+      ],
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.locale.members),

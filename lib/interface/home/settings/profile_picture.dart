@@ -1,12 +1,12 @@
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/components/top_app_bar.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:animated_progress/animated_progress.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../../components/sliver_scaffold.dart';
+import '../../../components/slivers/sliver_scaffold.dart';
 
 class ProfilePictureSettings extends HookWidget {
   const ProfilePictureSettings({super.key});
@@ -24,48 +24,47 @@ class ProfilePictureSettings extends HookWidget {
         title: Text(locales.profilePicture),
       ),
       slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate.fixed([
-              Container(
+        SliverList(
+          delegate: SliverChildListDelegate.fixed([
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Stack(
                 alignment: Alignment.center,
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      height: 160,
-                      width: 160,
-                      child: AnimatedCircularProgressIndicator(
-                        value: percentage.value,
-                      ),
+                children: [
+                  SizedBox(
+                    height: 160,
+                    width: 160,
+                    child: AnimatedCircularProgressIndicator(
+                      value: percentage.value,
                     ),
-                    PersonPicture(
-                      radius: 150,
-                      profilePicture: Core.auth.user.profilePicture,
-                      initials: Core.auth.user.nameInitials,
-                    ),
-                  ],
-                ),
+                  ),
+                  PersonPicture(
+                    radius: 150,
+                    profilePicture: Core.auth.user.profilePicture,
+                    initials: Core.auth.user.nameInitials,
+                  ),
+                ],
               ),
-              const Padding(padding: EdgeInsets.only(top: 30)),
-              ListTile(
-                leading: const Icon(Icons.upgrade_outlined),
-                title: Text(locales.changeProfilePicture),
-                onTap: () => Core.auth.user.updateProfilePicture(
-                  loaded: loaded,
-                  percentage: percentage,
-                  context: context,
-                ),
+            ),
+            const Padding(padding: EdgeInsets.only(top: 30)),
+            ListTile(
+              leading: const Icon(Icons.upgrade_outlined),
+              title: Text(locales.changeProfilePicture),
+              onTap: () => Core.auth.user.updateProfilePicture(
+                loaded: loaded,
+                percentage: percentage,
+                context: context,
               ),
-              const Padding(padding: EdgeInsets.only(bottom: 2)),
-              ListTile(
-                leading: const Icon(Icons.delete_outline),
-                title: Text(locales.deleteProfilePicture),
-              ),
-            ]),
-          ),
+            ),
+            const Padding(padding: EdgeInsets.only(bottom: 2)),
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: Text(locales.deleteProfilePicture),
+              onTap: () async =>
+                  await Core.auth.user.deleteProfilePicture(context: context),
+            ),
+          ]),
         )
       ],
     );

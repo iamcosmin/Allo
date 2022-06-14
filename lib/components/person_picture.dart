@@ -19,6 +19,7 @@ class PersonPicture extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ClipOval(
       child: AnimatedContainer(
+        color: Theme.of(context).colorScheme.primaryContainer,
         duration: const Duration(milliseconds: 250),
         key: key,
         height: radius,
@@ -42,7 +43,7 @@ class PersonPicture extends HookConsumerWidget {
           child: Text(
             initials,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               fontSize: radius / 2,
             ),
           ),
@@ -52,7 +53,8 @@ class PersonPicture extends HookConsumerWidget {
       return Text(
         initials,
         style: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          fontSize: radius / 2,
         ),
       );
     }

@@ -151,7 +151,7 @@ class _TokenDefaultsM3 {
   ColorScheme get _colors => _theme.colorScheme;
 
   Duration get animationDuration => const Duration(milliseconds: 200);
-  Curve get animationCurve => Curves.linear;
+  Curve get animationCurve => Curves.bounceInOut;
 
   double get outlineWidth => 2;
 

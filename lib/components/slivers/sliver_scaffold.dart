@@ -1,6 +1,7 @@
 import 'package:allo/components/material3/app_bar.dart';
-import 'package:allo/components/top_app_bar.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
+import 'package:sliver_tools/sliver_tools.dart';
 
 extension on SliverAppBar {}
 
@@ -35,11 +36,13 @@ class SScaffold extends StatelessWidget {
   const SScaffold({
     required this.topAppBar,
     required this.slivers,
+    this.pinnedSlivers,
     this.refreshIndicator,
     super.key,
   });
   final TopAppBar topAppBar;
   final List<Widget> slivers;
+  final List<Widget>? pinnedSlivers;
   final RefreshIndicator? refreshIndicator;
 
   @override
@@ -49,15 +52,22 @@ class SScaffold extends StatelessWidget {
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: _kNewDesign
-                ? topAppBar
-                : SmallTopAppBar(
+            sliver: MultiSliver(
+              children: [
+                if (_kNewDesign) ...[
+                  topAppBar
+                ] else ...[
+                  SmallTopAppBar(
                     title: topAppBar is LargeTopAppBar
                         ? (topAppBar as LargeTopAppBar).title
                         : topAppBar is MediumTopAppBar
                             ? (topAppBar as MediumTopAppBar).title
                             : (topAppBar as SmallTopAppBar).title,
                   ),
+                ],
+                ...?pinnedSlivers
+              ],
+            ),
           ),
         ],
         body: Builder(

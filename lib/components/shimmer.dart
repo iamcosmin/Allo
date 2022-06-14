@@ -12,14 +12,14 @@ class LoadingContainer extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final colors = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
-      baseColor: Theme.of(context).colorScheme.onInverseSurface,
-      highlightColor:
-          Theme.of(context).colorScheme.inverseSurface.withOpacity(0.5),
+      baseColor: colors.onInverseSurface,
+      highlightColor: colors.inverseSurface.withOpacity(0.5),
       child: Container(
         height: height,
         width: width,
-        color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.5),
+        color: colors.inverseSurface.withOpacity(0.5),
       ),
     );
   }

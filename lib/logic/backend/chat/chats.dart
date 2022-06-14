@@ -65,7 +65,7 @@ class ChatsLogic {
     }
   }
 
-  Future<List<Chat>?> getChatsList() async {
+  Future<List<Chat>> getChatsList() async {
     final uid = Core.auth.user.uid;
     final documents = await Database.storage
         .collection('chats')
@@ -101,6 +101,6 @@ class ChatsLogic {
         }
       }
     }
-    return chats.isNotEmpty ? chats : null;
+    return chats;
   }
 }

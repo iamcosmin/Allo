@@ -132,4 +132,13 @@ class CurrentUser {
           .showInfoBar(icon: Icons.cancel, text: locales.canceledOperation);
     }
   }
+
+  Future deleteProfilePicture({required BuildContext context}) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final filePath = 'profilePictures/${user?.uid}.png';
+    await FirebaseAuth.instance.currentUser?.updatePhotoURL(null);
+    await FirebaseStorage.instance.ref().child(filePath).delete();
+    Core.stub
+        .showInfoBar(icon: Icons.info, text: 'Picture deleted successfully.');
+  }
 }

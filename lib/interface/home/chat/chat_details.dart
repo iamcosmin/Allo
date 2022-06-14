@@ -12,8 +12,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../components/sliver_scaffold.dart';
-import '../../../components/top_app_bar.dart';
+import '../../../components/slivers/sliver_scaffold.dart';
+import '../../../components/slivers/top_app_bar.dart';
 
 final colors = <int>[
   for (var color in Colors.accents) ...[color.value]

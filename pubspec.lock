@@ -42,11 +42,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "05ffe54"
-      resolved-ref: "05ffe541109813d4edc6b44f32382e9f48adf869"
+      ref: bd5dfeb
+      resolved-ref: bd5dfebcf9761112d20b4ce660306d34cc7143fa
       url: "https://github.com/rafaelsetragni/awesome_notifications"
     source: git
-    version: "0.7.0-beta.3+2"
+    version: "0.7.0-beta.4"
   boolean_selector:
     dependency: transitive
     description:
@@ -758,6 +758,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliver_tools:
+    dependency: "direct main"
+    description:
+      name: sliver_tools
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.7"
   source_span:
     dependency: transitive
     description:
