@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:allo/logic/core.dart';
@@ -42,6 +43,7 @@ class Photo extends HookConsumerWidget {
     Object error,
     StackTrace? stackTrace,
   ) {
+    log(stackTrace: stackTrace, error: error, '');
     return InkWell(
       onLongPress: () => Core.stub.alert(
         context: context,

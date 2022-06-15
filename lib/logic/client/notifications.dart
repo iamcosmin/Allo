@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
+import '../../firebase_options.dart';
 import '../../interface/home/chat/chat.dart';
 import '../core.dart';
 
@@ -67,8 +68,10 @@ class Notifications {
 }
 
 /// This function sets up the notification system.
+/// TODO (iamcosmin): Refactor this function, this is very cluttered.
+/// TODO: Probably with a data class.
 Future<void> onBackgroundMessage(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final String? uid = message.data['uid'];
   final String? senderName = message.data['senderName'];
   final String? text = message.data['text'];
@@ -127,6 +130,7 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
 class _NotificationController {
   static Future<void> onActionReceivedMethod(ReceivedAction action) async {
     final payload = action.payload!;
+
     final notificationLayout =
         getChatTypeFromString(payload['chatType']!) == ChatType.group
             ? NotificationLayout.MessagingGroup
@@ -138,6 +142,9 @@ class _NotificationController {
     if (action.actionType == ActionType.SilentBackgroundAction &&
         action.buttonKeyInput.isNotEmpty) {
       // TODO(iamcosmin): TEST: This aims to fix the infinite loading indicator in alpha when replying from the notification tray.
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
       await Core.chat(payload['chatId']).messages.sendTextMessage(
             text: action.buttonKeyInput,
             chatName: payload['chatName']!,

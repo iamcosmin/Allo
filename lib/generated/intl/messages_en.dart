@@ -175,6 +175,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Reply to Message"),
         "resetLinkSent":
             MessageLookupByLibrary.simpleMessage("You will receive an email."),
+        "search": MessageLookupByLibrary.simpleMessage("Search"),
         "sent": MessageLookupByLibrary.simpleMessage("Sent"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "setupNameScreenDescription": MessageLookupByLibrary.simpleMessage(

@@ -39,30 +39,42 @@ class CreateChat extends HookWidget {
             ),
             pinnedSlivers: [
               SliverPinnedHeader(
-                child: Container(
-                  color: context.theme.colorScheme.surface,
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.all(10),
-                      errorText: error.value,
-                      errorStyle: const TextStyle(fontSize: 14),
-                      labelText: locales.username,
-                      border: const OutlineInputBorder(),
+                child: ColoredBox(
+                  color: context.colorScheme.surface,
+                  child: Container(
+                    padding: const EdgeInsets.all(1),
+                    margin: const EdgeInsets.all(5),
+                    decoration: ShapeDecoration(
+                      color: context.theme.colorScheme.secondaryContainer,
+                      shape: const StadiumBorder(),
                     ),
-                    onChanged: (value) {
-                      final prov = <_User>[];
-                      for (final key in data!.keys) {
-                        if (key.contains(value)) {
-                          final uid = data.entries
-                              .firstWhere((element) => element.key == key)
-                              .value;
-                          prov.add(_User(key, uid));
+                    child: TextFormField(
+                      style: TextStyle(
+                        color: context.colorScheme.onSecondaryContainer,
+                      ),
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: context.colorScheme.onSecondaryContainer,
+                        ),
+                        errorText: error.value,
+                        hintText: context.locale.search,
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        final prov = <_User>[];
+                        for (final key in data!.keys) {
+                          if (key.contains(value)) {
+                            final uid = data.entries
+                                .firstWhere((element) => element.key == key)
+                                .value;
+                            prov.add(_User(key, uid));
+                          }
                         }
-                      }
-                      found.value = prov;
-                    },
-                    controller: usernameController,
+                        found.value = prov;
+                      },
+                      controller: usernameController,
+                    ),
                   ),
                 ),
               )
@@ -78,9 +90,13 @@ class CreateChat extends HookWidget {
                               found.value[index].username.characters.first,
                           profilePicture: Core.auth
                               .getProfilePicture(found.value[index].uid),
-                          radius: 50,
+                          radius: 55,
                         ),
                         title: Text(found.value[index].username),
+                        subtitle: Text(
+                          found.value[index].uid,
+                          style: TextStyle(color: context.colorScheme.outline),
+                        ),
                       );
                     },
                     childCount: found.value.length,

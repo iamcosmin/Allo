@@ -1,6 +1,18 @@
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 
+class Material3PageRoute extends MaterialPageRoute {
+  Material3PageRoute({
+    required super.builder,
+    super.settings,
+    super.maintainState,
+    super.fullscreenDialog,
+  });
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 250);
+}
+
 var navigatorKey = GlobalKey<NavigatorState>();
 const _kDefaultNavigatorError =
     '''There is neither a BuildContext, not a GlobalKey<NavigatorState>.
@@ -12,7 +24,7 @@ class Navigation {
     required Widget route,
     BuildContext? context,
   }) {
-    final pageRoute = MaterialPageRoute(builder: (_) => route);
+    final pageRoute = Material3PageRoute(builder: (_) => route);
     if (context != null) {
       context.navigator.push(pageRoute);
     } else if (navigatorKey.currentState != null) {

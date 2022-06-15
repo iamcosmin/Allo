@@ -1,4 +1,4 @@
-import 'package:animations/animations.dart';
+import 'package:allo/logic/client/theme/slide_page_transition.dart';
 import 'package:flutter/material.dart';
 
 /// A [PageTransitionsBuilder] that does not have any animation.
@@ -28,18 +28,15 @@ PageTransitionsTheme getPageTransitionsTheme({
   required bool reducedMotion,
   required Color fillColor,
 }) {
-  final sharedAxisTransition = SharedAxisPageTransitionsBuilder(
-    transitionType: SharedAxisTransitionType.horizontal,
-    fillColor: fillColor,
-  );
+  const sharedAxisTransition = SlidePageTransitionsBuilder();
   if (!reducedMotion) {
-    return PageTransitionsTheme(
+    return const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: sharedAxisTransition,
-        TargetPlatform.fuchsia: const ZoomPageTransitionsBuilder(),
-        TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+        TargetPlatform.fuchsia: ZoomPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
         TargetPlatform.linux: sharedAxisTransition,
-        TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
         TargetPlatform.windows: sharedAxisTransition,
       },
     );

@@ -36,6 +36,7 @@ class SScaffold extends StatelessWidget {
   const SScaffold({
     required this.topAppBar,
     required this.slivers,
+    this.floatingActionButton,
     this.pinnedSlivers,
     this.refreshIndicator,
     super.key,
@@ -44,10 +45,12 @@ class SScaffold extends StatelessWidget {
   final List<Widget> slivers;
   final List<Widget>? pinnedSlivers;
   final RefreshIndicator? refreshIndicator;
+  final FloatingActionButton? floatingActionButton;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: floatingActionButton,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverOverlapAbsorber(
