@@ -29,6 +29,7 @@ abstract class _SetupScreen extends StatelessWidget {
   final Widget title;
   final Widget? subtitle;
   final List<Widget>? body;
+
   final FutureOr<void> Function() action;
   final String? actionText;
 }
@@ -49,6 +50,58 @@ extension Y on List? {
   }
 }
 
+class SetupPage extends StatelessWidget {
+  const SetupPage({
+    required this.icon,
+    required this.title,
+    required this.action,
+    this.subtitle,
+    this.body,
+    this.actionText,
+    super.key,
+  });
+  final IconData icon;
+  final Widget title;
+  final Widget? subtitle;
+  final List<Widget>? body;
+  final FutureOr<void> Function() action;
+  final String? actionText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 50),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth > 1000) {
+                return _LargeScreen(
+                  icon: icon,
+                  title: title,
+                  subtitle: subtitle,
+                  actionText: actionText,
+                  body: body,
+                  action: action,
+                );
+              } else {
+                return _SmallScreen(
+                  icon: icon,
+                  title: title,
+                  action: action,
+                  body: body,
+                  actionText: actionText,
+                  subtitle: subtitle,
+                );
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _TitleWidget extends StatelessWidget {
   const _TitleWidget({
     required this.icon,
@@ -64,54 +117,37 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return Hero(
-      tag: _kTitleHeroTag,
-      flightShuttleBuilder: (
-        flightContext,
-        animation,
-        flightDirection,
-        fromHeroContext,
-        toHeroContext,
-      ) {
-        // A simple workaround for RenderBox issues.
-        // NeverScrollable should always be there to avoid confusion.
-        return SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: toHeroContext.widget,
-        );
-      },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            color: context.theme.colorScheme.primary,
-            size: 50,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          color: context.theme.colorScheme.primary,
+          size: 50,
+        ),
+        const Space(3),
+        DefaultTextStyle(
+          style: context.theme.textTheme.displaySmall!.copyWith(
+            color: context.theme.colorScheme.onSurface,
           ),
-          const Space(3),
-          DefaultTextStyle(
-            style: context.theme.textTheme.displaySmall!.copyWith(
-              color: context.theme.colorScheme.onSurface,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                title,
-                if (subtitle != null) ...[
-                  const Space(1),
-                  DefaultTextStyle(
-                    style: context.theme.textTheme.bodyMedium!.copyWith(
-                      color: context.theme.colorScheme.onSurfaceVariant,
-                    ),
-                    child: subtitle!,
-                  )
-                ]
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              title,
+              if (subtitle != null) ...[
+                const Space(1),
+                DefaultTextStyle(
+                  style: context.theme.textTheme.bodyMedium!.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                  ),
+                  child: subtitle!,
+                )
+              ]
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -142,7 +178,7 @@ class _ButtonBar extends HookConsumerWidget {
                 style: ButtonStyle(
                   visualDensity: VisualDensity.comfortable,
                   fixedSize: MaterialStateProperty.all(
-                    const Size.fromHeight(35),
+                    const Size.fromHeight(40),
                   ),
                 ),
               ),
@@ -162,7 +198,7 @@ class _ButtonBar extends HookConsumerWidget {
               style: ButtonStyle(
                 visualDensity: VisualDensity.comfortable,
                 fixedSize: MaterialStateProperty.all(
-                  const Size.fromHeight(35),
+                  const Size.fromHeight(40),
                 ),
               ),
               child: PageTransitionSwitcher(
@@ -180,7 +216,7 @@ class _ButtonBar extends HookConsumerWidget {
                         builder: (context, constraints) {
                           if (constraints.maxWidth > 300) {
                             return LinearProgressIndicator(
-                              color: context.colorScheme.onPrimary,
+                              color: context.colorScheme.onSurface,
                               backgroundColor: Colors.transparent,
                               minHeight: 5,
                             );
@@ -188,7 +224,8 @@ class _ButtonBar extends HookConsumerWidget {
                           return SizedBox.fromSize(
                             size: const Size(20, 20),
                             child: CircularProgressIndicator(
-                              color: context.colorScheme.onPrimary,
+                              color: context.colorScheme.primary,
+                              strokeWidth: 3,
                             ),
                           );
                         },
@@ -328,56 +365,6 @@ class _LargeScreen extends _SetupScreen {
           ),
         ),
       ],
-    );
-  }
-}
-
-class SetupPage extends StatelessWidget {
-  const SetupPage({
-    required this.icon,
-    required this.title,
-    required this.action,
-    this.subtitle,
-    this.body,
-    this.actionText,
-    super.key,
-  });
-  final IconData icon;
-  final Widget title;
-  final Widget? subtitle;
-  final List<Widget>? body;
-  final FutureOr<void> Function() action;
-  final String? actionText;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 50, bottom: 10),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth > 1000) {
-              return _LargeScreen(
-                icon: icon,
-                title: title,
-                subtitle: subtitle,
-                actionText: actionText,
-                body: body,
-                action: action,
-              );
-            } else {
-              return _SmallScreen(
-                icon: icon,
-                title: title,
-                action: action,
-                body: body,
-                actionText: actionText,
-                subtitle: subtitle,
-              );
-            }
-          },
-        ),
-      ),
     );
   }
 }

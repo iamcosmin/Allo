@@ -1,8 +1,8 @@
 import 'package:allo/logic/backend/chat/messages.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 int calculateIndex(int index, int? lastIndex) {
   if (lastIndex != null) {
@@ -29,7 +29,7 @@ class Chats {
   }) async* {
     final messages = <Message>[];
     Stream<QuerySnapshot> query;
-    final collection = Database.storage
+    final collection = Database.firestore
         .collection('chats')
         .doc(chatId)
         .collection('messages')
@@ -50,9 +50,8 @@ class Chats {
                 chatId: chatId,
                 context: context,
               );
-              final message = convertToMessage(
+              final message = Message.get(
                 documentSnapshot: docChanges.doc,
-                context: context,
                 replyData: replyData,
               );
 
@@ -70,9 +69,8 @@ class Chats {
                 chatId: chatId,
                 context: context,
               );
-              final message = convertToMessage(
+              final message = Message.get(
                 documentSnapshot: docChanges.doc,
-                context: context,
                 replyData: replyData,
               );
               // ignore: invalid_use_of_protected_member

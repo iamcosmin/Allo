@@ -1,7 +1,6 @@
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
-import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/about.dart';
 import 'package:allo/interface/home/settings/account.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
@@ -10,11 +9,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Settings extends HookConsumerWidget {
+import '../../components/tile.dart';
+
+class Settings extends ConsumerWidget {
   const Settings({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locales = S.of(context);
     final name = FirebaseAuth.instance.currentUser!.displayName!;
 
     return SScaffold(
@@ -24,62 +24,72 @@ class Settings extends HookConsumerWidget {
       slivers: [
         SliverList(
           delegate: SliverChildListDelegate([
-            InkWell(
-              onTap: () {
-                Core.navigation.push(route: const AccountSettings());
-              },
-              child: Row(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    padding:
-                        const EdgeInsets.only(top: 10, bottom: 10, left: 10),
-                    child: PersonPicture(
-                      radius: 60,
-                      profilePicture: Core.auth.user.profilePicture,
-                      initials: Core.auth.user.nameInitials,
-                    ),
-                  ),
-                  const Padding(padding: EdgeInsets.only(left: 15)),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Card(
+              margin: const EdgeInsets.all(10),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  Core.navigation.push(route: const AccountSettings());
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
                     children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          bottom: 10,
+                          left: 10,
+                        ),
+                        child: PersonPicture(
+                          radius: 60,
+                          profilePicture: Core.auth.user.profilePicture,
+                          initials: Core.auth.user.nameInitials,
                         ),
                       ),
-                      const Padding(padding: EdgeInsets.only(top: 5)),
-                      Text(
-                        locales.customizeYourAccount,
-                        style: const TextStyle(color: Colors.grey),
-                      )
+                      const Padding(padding: EdgeInsets.only(left: 15)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: context.theme.textTheme.titleLarge!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const Padding(padding: EdgeInsets.only(top: 5)),
+                          Text(
+                            context.locale.customizeYourAccount,
+                            style: const TextStyle(color: Colors.grey),
+                          )
+                        ],
+                      ),
+                      const Padding(padding: EdgeInsets.only(bottom: 10))
                     ],
                   ),
-                  const Padding(padding: EdgeInsets.only(bottom: 10))
-                ],
+                ),
               ),
             ),
             const Padding(padding: EdgeInsets.only(top: 20)),
-            ListTile(
+            Tile(
               leading: const Icon(Icons.brush),
-              title: Text(
-                locales.personalise,
-                style: const TextStyle(fontSize: 18),
-              ),
+              title: Text(context.locale.personalise),
               onTap: () => Core.navigation.push(route: const PersonalisePage()),
             ),
-            ListTile(
+            Tile(
               leading: const Icon(Icons.info),
-              title: Text(locales.about, style: const TextStyle(fontSize: 18)),
+              title: Text(
+                context.locale.about,
+                style: const TextStyle(fontSize: 18),
+              ),
               onTap: () => Core.navigation.push(route: const AboutPage()),
             ),
-            ListTile(
+            Tile(
               leading: const Icon(Icons.logout, size: 27),
-              minLeadingWidth: 40,
-              title: Text(locales.logOut, style: const TextStyle(fontSize: 18)),
+              title: Text(
+                context.locale.logOut,
+                style: const TextStyle(fontSize: 18),
+              ),
               onTap: () async => await Core.auth.signOut(context),
             ),
           ]),

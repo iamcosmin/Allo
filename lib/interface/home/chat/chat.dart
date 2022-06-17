@@ -31,7 +31,7 @@ class ChatScreen extends HookConsumerWidget {
         if (!kIsWeb) {
           FirebaseMessaging.instance.subscribeToTopic(chat.id);
         }
-        Database.storage.collection('chats').doc(chat.id).snapshots().listen(
+        Database.firestore.collection('chats').doc(chat.id).snapshots().listen(
           (event) {
             scheme.value = ColorScheme.fromSeed(
               seedColor: Color(
@@ -47,6 +47,61 @@ class ChatScreen extends HookConsumerWidget {
       },
       const [],
     );
+
+    // return Theme(
+    //   data: theme(brightness, ref, context, colorScheme: scheme.value),
+    //   child: Builder(
+    //     builder: (context) {
+    //       return Scaffold(
+    //         body: SafeArea(
+    //           child: Column(
+    //             mainAxisSize: MainAxisSize.min,
+    //             children: [
+    //               Expanded(
+    //                 child: SScaffold(
+    //                   reverseScroll: true,
+    //                   topAppBar: SmallTopAppBar(
+    //                     title: InkWell(
+    //                       onTap: () => Core.navigation
+    //                           .push(route: ChatDetails(chat: chat)),
+    //                       child: Text(
+    //                         chat.title,
+    //                         style: const TextStyle(
+    //                           fontSize: 25,
+    //                           fontWeight: FontWeight.w600,
+    //                         ),
+    //                       ),
+    //                     ),
+    //                   ),
+    //                   slivers: [
+    //                     SliverToBoxAdapter(
+    //                       child: ChatMessagesList(
+    //                         chatId: chat.id,
+    //                         chatType: chat is PrivateChat
+    //                             ? ChatType.private
+    //                             : ChatType.group,
+    //                         inputModifiers: inputModifiers,
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //               MessageInput(
+    //                 modifier: inputModifiers,
+    //                 chatId: chat.id,
+    //                 chatName: chat.title,
+    //                 chatType:
+    //                     chat is PrivateChat ? ChatType.private : ChatType.group,
+    //                 theme: scheme.value,
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       );
+    //     },
+    //   ),
+    // );
+
     return Theme(
       data: theme(brightness, ref, context, colorScheme: scheme.value),
       child: Scaffold(
@@ -70,11 +125,7 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ],
           title: InkWell(
-            onTap: () => Core.navigation.push(
-              route: ChatDetails(
-                chat: chat,
-              ),
-            ),
+            onTap: () => Core.navigation.push(route: ChatDetails(chat: chat)),
             child: Text(
               chat.title,
               style: const TextStyle(

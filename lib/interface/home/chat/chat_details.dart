@@ -43,7 +43,7 @@ void _changeTheme({
             ClipOval(
               child: InkWell(
                 onTap: () async {
-                  await Database.storage.collection('chats').doc(id).update({
+                  await Database.firestore.collection('chats').doc(id).update({
                     'theme': color,
                   });
                   Navigator.of(context).pop();
@@ -82,7 +82,7 @@ void _changeTheme({
 Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo({
   required String id,
 }) async {
-  return await Database.storage.collection('chats').doc(id).get();
+  return await Database.firestore.collection('chats').doc(id).get();
 }
 
 class ChatDetails extends HookConsumerWidget {

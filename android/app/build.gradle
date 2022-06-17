@@ -32,7 +32,8 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 31
+    // Android 12L
+    compileSdkVersion 32
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -40,7 +41,9 @@ android {
 
     defaultConfig {
         applicationId "com.relays.messenger"
-        minSdkVersion 22
+        // Marshmallow
+        minSdkVersion 23
+        // Android 12L
         targetSdkVersion 32
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
@@ -84,4 +87,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:1.0.3'
     implementation "com.google.android.play:core:1.10.3"
+    implementation "androidx.core:core-splashscreen:1.0.0-rc01"
 }

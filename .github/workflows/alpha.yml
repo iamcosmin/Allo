@@ -17,7 +17,7 @@ jobs:
     - name: Flutter Setup
       uses: subosito/flutter-action@v1
       with:
-        channel: 'stable' #! Temporary, once a new beta version is released, go back.
+        channel: 'beta'
     - name: Expand keystore
       run: |
            cd android/

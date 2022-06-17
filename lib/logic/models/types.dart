@@ -1,4 +1,14 @@
-enum MessageType { text, image, unsupported }
+enum MessageType {
+  text('text'),
+  image('image'),
+  unsupported('unsupported');
+
+  const MessageType(this.type);
+  final String type;
+
+  @override
+  String toString() => type;
+}
 
 MessageType getMessageType(String type) {
   if (type == 'text') {

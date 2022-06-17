@@ -15,7 +15,7 @@ class CurrentUser {
     return await cache(
       key: 'username',
       fetch: () async {
-        final db = Database.storage;
+        final db = Database.firestore;
         final usernames = await db.collection('users').doc('usernames').get();
         final usernamesMap = usernames.data();
         final username = usernamesMap?.keys

@@ -1,7 +1,7 @@
 import 'package:allo/logic/backend/database.dart';
 
 class UserMethods {
-  final db = Database.storage;
+  final db = Database.firestore;
   Future returnUser({String? uid, String? username}) async {
     if (uid != null) {
       final usernames = await getUsernamePairs();
@@ -16,7 +16,7 @@ class UserMethods {
   )
   Future<Map<String, dynamic>?> getUsernamePairs() async {
     final snapshot =
-        await Database.storage.collection('users').doc('usernames').get();
+        await Database.firestore.collection('users').doc('usernames').get();
     return snapshot.data();
   }
 }

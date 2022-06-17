@@ -1,4 +1,5 @@
 import 'package:allo/components/switch.dart';
+import 'package:allo/components/tile.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -37,6 +38,29 @@ class SettingTile extends HookConsumerWidget {
       }
     }
 
+    if (preference != null && preference is Setting<bool>) {
+      return SwitchTile(
+        title: Text(title),
+        value: preference!.setting,
+        onChanged: preference!.update,
+      );
+    } else {
+      return Tile(
+        title: Text(title),
+        disabled: disabledExplanation != null,
+        subtitle:
+            disabledExplanation != null ? Text(disabledExplanation!) : null,
+        trailing: SizedBox(
+          height: 25,
+          child: Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 19,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          ),
+        ),
+        onTap: enabled ? onTap : null,
+      );
+    }
     return InkWell(
       onTap: enabled ? onTap ?? changePreference : null,
       child: Container(
@@ -59,13 +83,10 @@ class SettingTile extends HookConsumerWidget {
                   ),
                 ),
                 if (preference != null && preference is Setting<bool>) ...[
-                  SizedBox(
-                    height: 32,
-                    child: AdaptiveSwitch(
-                      value: preference!.setting,
-                      // onChanged: null,
-                      onChanged: preference!.update,
-                    ),
+                  AdaptiveSwitch(
+                    value: preference!.setting,
+                    // onChanged: null,
+                    onChanged: preference!.update,
                   )
                 ] else ...[
                   SizedBox(

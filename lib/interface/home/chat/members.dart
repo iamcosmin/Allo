@@ -13,7 +13,7 @@ import '../../../logic/core.dart';
 Future<DocumentSnapshot<Map<String, dynamic>>> returnChatInfo({
   required String id,
 }) async {
-  return await Database.storage.collection('chats').doc(id).get();
+  return await Database.firestore.collection('chats').doc(id).get();
 }
 
 class ChatMembersPage extends HookConsumerWidget {

@@ -4,6 +4,7 @@ import 'package:allo/components/space.dart';
 import 'package:allo/logic/backend/authentication/authentication.dart';
 import 'package:allo/logic/backend/chat/chat.dart';
 import 'package:allo/logic/backend/general/general.dart';
+import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/client/navigation.dart';
 import 'package:allo/logic/client/notifications.dart';
 import 'package:allo/logic/client/validators.dart';
@@ -146,6 +147,23 @@ class Stub {
           child: dialogBuilder.body ?? Container(),
         ),
         actions: dialogBuilder.actions,
+      ),
+    );
+  }
+
+  void error(BuildContext context, String error) {
+    alert(
+      context: context,
+      dialogBuilder: DialogBuilder(
+        icon: Icons.error,
+        title: context.locale.error,
+        body: Text(error),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          )
+        ],
       ),
     );
   }

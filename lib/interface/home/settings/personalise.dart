@@ -10,6 +10,7 @@ import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../components/slivers/sliver_scaffold.dart';
+import '../../../components/tile.dart';
 import '../../../logic/client/preferences/manager.dart';
 
 const colors = Colors.accents;
@@ -46,7 +47,7 @@ class PersonalisePage extends HookConsumerWidget {
       slivers: [
         SliverList(
           delegate: SliverChildListDelegate.fixed([
-            ListTile(
+            Tile(
               title: Text(locales.darkMode),
               trailing: DropdownButton(
                 isDense: true,

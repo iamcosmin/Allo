@@ -104,7 +104,6 @@ ThemeData theme(
     listTileTheme: ListTileThemeData(
       textColor: scheme.onSurface,
       iconColor: scheme.onSurface,
-      tileColor: scheme.surface,
     ),
     //? Implemented in Flutter 2.13.0-0.4.pre
     // appBarTheme: AppBarTheme(

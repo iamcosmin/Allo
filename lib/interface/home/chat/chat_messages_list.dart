@@ -1,11 +1,72 @@
 import 'package:allo/components/chats/bubbles/message_bubble.dart';
 import 'package:allo/components/chats/message_input.dart';
+import 'package:allo/components/info.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';
 import 'package:allo/logic/models/types.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+AutoDisposeStateNotifierProvider<_ChatManager, List<Message>?> useChatList(
+  String chatId,
+  GlobalKey<AnimatedListState> listKey,
+  int limit,
+  BuildContext context,
+) {
+  return StateNotifierProvider.autoDispose<_ChatManager, List<Message>?>((ref) {
+    return _ChatManager(
+      chatId: chatId,
+      listKey: listKey,
+      limit: limit,
+      context: context,
+    );
+  });
+}
+
+class _ChatManager extends StateNotifier<List<Message>?> {
+  _ChatManager({
+    required this.chatId,
+    required this.listKey,
+    required this.limit,
+    required this.context,
+  }) : super(null) {
+    final stream = Core.chat(chatId)
+        .streamChatMessages(listKey: listKey, context: context, limit: 30);
+    stream.listen((event) {
+      state;
+    }).onError((e) => AsyncSnapshot.withError(ConnectionState.none, e));
+  }
+
+  final disposeList = [];
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  final String chatId;
+  final GlobalKey<AnimatedListState> listKey;
+  final int limit;
+  final BuildContext context;
+
+  void stimulate(DocumentSnapshot startAfter) {
+    if (state != null) {
+      final stream = Core.chat(chatId).streamChatMessages(
+        listKey: listKey,
+        context: context,
+        limit: 20,
+        lastIndex: state!.length - 1,
+        startAfter: state!.last.documentSnapshot,
+      );
+
+      stream.listen((event) {
+        state!.addAll(event);
+      }).onError((e) => AsyncSnapshot.withError(ConnectionState.none, e));
+    }
+  }
+}
 
 class ChatMessagesList extends HookConsumerWidget {
   const ChatMessagesList({
@@ -17,25 +78,30 @@ class ChatMessagesList extends HookConsumerWidget {
   final String chatId;
   final ChatType chatType;
   final ValueNotifier<InputModifier?> inputModifiers;
-  static GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  static final GlobalKey<AnimatedListState> listKey =
+      GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useScrollController();
+    final chatList = useChatList(chatId, listKey, 30, context);
     final locales = context.locale;
     final streamList = useState<List<Message>?>(null);
+    final error = useState<Object?>(null);
     useEffect(
       () {
         Core.chat(chatId)
             .streamChatMessages(listKey: listKey, limit: 30, context: context)
             .listen((event) {
           streamList.value = event;
+        }).onError((e) {
+          error.value = e;
         });
         return;
       },
       const [],
     );
 
-    if (streamList.value != null) {
+    if (streamList.value != null && streamList.value!.isNotEmpty) {
       final data = streamList.value!;
       return SafeArea(
         child: DecoratedBox(
@@ -47,8 +113,8 @@ class ChatMessagesList extends HookConsumerWidget {
             key: listKey,
             reverse: true,
             shrinkWrap: true,
-            initialItemCount: data.length,
             controller: controller,
+            initialItemCount: data.length,
             itemBuilder: (context, i, animation) {
               final currentMessage = data[i];
               final senderUid = currentMessage.userId;
@@ -185,28 +251,31 @@ class ChatMessagesList extends HookConsumerWidget {
           ),
         ),
       );
+    } else if (streamList.value != null && streamList.value!.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.only(left: 30, right: 30),
+        child: InfoWidget(
+          text: 'No messages here.',
+        ),
+      );
+    } else if (error.value != null) {
+      final errorMessage =
+          '${locales.anErrorOccurred}\n${(error.value is FirebaseException) ? 'Code: ${(error.value! as FirebaseException).code}'
+              '\n'
+              'Element: ${(error.value! as FirebaseException).plugin}'
+              '\n\n'
+              '${(error.value! as FirebaseException).message}' : error.value.toString()}';
+      return Center(
+        child: SelectableText(
+          errorMessage,
+        ),
+      );
     } else if (streamList.value == null) {
       return const Center(
         child: CircularProgressIndicator(),
       );
       // } else if (snapshot.hasError) {
-      //   final errorMessage = locales.anErrorOccurred +
-      //       '\n' +
-      //       ((snapshot.error is FirebaseException)
-      //           ? 'Code: ${(snapshot.error as FirebaseException).code}'
-      //               '\n'
-      //               'Element: ${(snapshot.error as FirebaseException).plugin}'
-      //               '\n\n'
-      //               '${(snapshot.error as FirebaseException).message}'
-      //           : snapshot.error.toString());
-      //   return Padding(
-      //     padding: const EdgeInsets.only(left: 30, right: 30),
-      //     child: Center(
-      //       child: SelectableText(
-      //         errorMessage,
-      //       ),
-      //     ),
-      //   );
+
     } else {
       return Padding(
         padding: const EdgeInsets.only(left: 30, right: 30),

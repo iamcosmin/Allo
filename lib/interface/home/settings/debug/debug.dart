@@ -12,6 +12,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../components/settings_tile.dart';
 import '../../../../components/slivers/sliver_scaffold.dart';
+import '../../../../components/tile.dart';
 
 class C extends HookConsumerWidget {
   const C({super.key});
@@ -42,13 +43,13 @@ class C extends HookConsumerWidget {
                 style: const TextStyle(color: Colors.grey),
               ),
             ),
-            ListTile(
+            Tile(
               title: const Text(
                 'Example App (example.dart)',
               ),
               onTap: () => Core.navigation.push(route: const TestApp()),
             ),
-            ListTile(
+            Tile(
               title: Text(locales.internalTypingIndicatorDemo),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -56,7 +57,7 @@ class C extends HookConsumerWidget {
                 ),
               ),
             ),
-            ListTile(
+            Tile(
               title: Text(locales.internalAccountInfo),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -64,7 +65,7 @@ class C extends HookConsumerWidget {
                 ),
               ),
             ),
-            ListTile(
+            Tile(
               title: const Text('Example SliverAppBar'),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(

@@ -15,7 +15,7 @@ class Messages {
   final String chatId;
 
   Future deleteMessage({required String messageId}) async {
-    await Database.storage
+    await Database.firestore
         .collection('chats')
         .doc(chatId)
         .collection('messages')
@@ -25,7 +25,7 @@ class Messages {
 
   Future markAsRead({required String messageId}) async {
     // This will mark the message as read.
-    await Database.storage
+    await Database.firestore
         .collection('chats')
         .doc(chatId)
         .collection('messages')
@@ -49,7 +49,7 @@ class Messages {
     //     .collection('chats')
     //     .doc(chatId)
     //     .update({'typing': false});
-    final db = Database.storage.collection('chats').doc(chatId);
+    final db = Database.firestore.collection('chats').doc(chatId);
     const auth = Core.auth;
     final replyMessageId = modifier?.value?.action.replyMessageId;
     if (modifier?.value == null) {
@@ -94,7 +94,7 @@ class Messages {
     const auth = Core.auth;
     final path = 'chats/$chatId/${DateTime.now()}_${await auth.user.username}';
     final storage = FirebaseStorage.instance;
-    final db = Database.storage.collection('chats').doc(chatId);
+    final db = Database.firestore.collection('chats').doc(chatId);
 
     final task = storage.ref(path).putData(
           await imageFile.readAsBytes(),

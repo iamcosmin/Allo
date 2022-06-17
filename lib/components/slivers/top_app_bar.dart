@@ -11,10 +11,16 @@ extension on BuildContext {
 }
 
 class SmallTopAppBar extends StatelessWidget with TopAppBar {
-  const SmallTopAppBar({required this.title, this.leading, super.key});
+  const SmallTopAppBar({
+    required this.title,
+    this.leading,
+    this.actions,
+    super.key,
+  });
 
   final Widget title;
   final Widget? leading;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +28,7 @@ class SmallTopAppBar extends StatelessWidget with TopAppBar {
       pinned: true,
       leading: leading,
       title: title,
+      actions: actions,
     );
   }
 }
@@ -356,7 +363,9 @@ class _LargeScrollUnderFlexibleConfig with _ScrollUnderFlexibleConfig {
   late final ColorScheme _colors = _theme.colorScheme;
   late final TextTheme _textTheme = _theme.textTheme;
 
+  // ignore: unused_field
   static const double collapsedHeight = 64.0;
+  // ignore: unused_field
   static const double expandedHeight = 152.0;
 
   @override

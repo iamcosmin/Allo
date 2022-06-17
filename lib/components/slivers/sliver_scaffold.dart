@@ -36,12 +36,14 @@ class SScaffold extends StatelessWidget {
   const SScaffold({
     required this.topAppBar,
     required this.slivers,
+    this.reverseScroll = false,
     this.floatingActionButton,
     this.pinnedSlivers,
     this.refreshIndicator,
     super.key,
   });
   final TopAppBar topAppBar;
+  final bool reverseScroll;
   final List<Widget> slivers;
   final List<Widget>? pinnedSlivers;
   final RefreshIndicator? refreshIndicator;

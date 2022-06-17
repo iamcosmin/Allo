@@ -23,7 +23,7 @@ class ChatsLogic {
     ChatType type = ChatType.private,
   }) async {
     if (type == ChatType.private) {
-      final query = await Database.storage
+      final query = await Database.firestore
           .collection('chats')
           .where('type', isEqualTo: 'private')
           .where('participants', arrayContains: uid)
@@ -48,7 +48,7 @@ class ChatsLogic {
   }) async {
     if (type == ChatType.private) {
       if (await _checkIfChatAlreadyExists(uid: uid, type: type)) {
-        await Database.storage.collection('chats').add(
+        await Database.firestore.collection('chats').add(
           {
             'type': 'private',
             'participants': [
@@ -67,7 +67,7 @@ class ChatsLogic {
 
   Future<List<Chat>> getChatsList() async {
     final uid = Core.auth.user.uid;
-    final documents = await Database.storage
+    final documents = await Database.firestore
         .collection('chats')
         .where('participants', arrayContains: uid)
         .get();

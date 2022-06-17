@@ -13,6 +13,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../components/builders.dart';
+import '../../../components/tile.dart';
 
 class AppInfo {
   final BaseDeviceInfo deviceInfo;
@@ -66,100 +67,118 @@ class AboutPage extends HookConsumerWidget {
             final deviceInfo = data.deviceInfo.toMap();
             return SliverList(
               delegate: SliverChildListDelegate([
-                Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 15, left: 15, right: 15),
-                  child: Text(
-                    locales.appInfo,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                Card(
+                  margin: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 20,
+                          left: 20,
+                          right: 20,
+                          bottom: 20,
+                        ),
+                        child: Text(
+                          locales.appInfo,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Tile(
+                        title: Text(locales.name),
+                        trailing: Text(packageInfo.appName),
+                      ),
+                      Tile(
+                        title: Text(locales.version),
+                        trailing: Text(packageInfo.version),
+                      ),
+                      Tile(
+                        title: Text(locales.buildNumber),
+                        trailing: Text(packageInfo.buildNumber),
+                        onTap: () => _b(),
+                      ),
+                      if (!kIsWeb) ...[
+                        Tile(
+                          title: Text(locales.packageName),
+                          trailing: Text(packageInfo.packageName),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-                ListTile(
-                  title: Text(locales.name),
-                  trailing: Text(packageInfo.appName),
-                ),
-                ListTile(
-                  title: Text(locales.version),
-                  trailing: Text(packageInfo.version),
-                ),
-                ListTile(
-                  title: Text(locales.buildNumber),
-                  trailing: Text(packageInfo.buildNumber),
-                  onTap: () => _b(),
-                ),
-                if (!kIsWeb) ...[
-                  ListTile(
-                    title: Text(locales.packageName),
-                    trailing: Text(packageInfo.packageName),
+                Card(
+                  margin: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(
+                          locales.deviceInfo,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                      if (kIsWeb) ...[
+                        Tile(
+                          title: const Text('Browser'),
+                          trailing: Text(
+                            deviceInfo['browserName'].toString().split('.')[1],
+                          ),
+                        ),
+                        Tile(
+                          title: const Text('Browser agent'),
+                          subtitle: Text(
+                            deviceInfo['userAgent'].toString(),
+                          ),
+                        ),
+                        Tile(
+                          title: const Text('Platform'),
+                          trailing: Text(
+                            deviceInfo['platform'].toString(),
+                          ),
+                        )
+                      ] else if (Platform.isAndroid) ...[
+                        Tile(
+                          title: const Text('Model'),
+                          trailing: Text(
+                            deviceInfo['model'].toString(),
+                          ),
+                        ),
+                        Tile(
+                          title: const Text('Brand'),
+                          trailing: Text(
+                            deviceInfo['brand'].toString(),
+                          ),
+                        ),
+                        Tile(
+                          title: const Text('Device'),
+                          trailing: Text(
+                            deviceInfo['device'].toString(),
+                          ),
+                        ),
+                        Tile(
+                          title: const Text('Version'),
+                          trailing: Text(
+                            deviceInfo['version']['release'].toString(),
+                          ),
+                        ),
+                        Tile(
+                          title: const Text('SDK'),
+                          trailing: Text(
+                            deviceInfo['version']['sdkInt'].toString(),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                ],
-                const Padding(padding: EdgeInsets.only(top: 20)),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Text(
-                    locales.deviceInfo,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-                if (kIsWeb) ...[
-                  ListTile(
-                    title: const Text('Browser'),
-                    trailing: Text(
-                      deviceInfo['browserName'].toString().split('.')[1],
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Browser agent'),
-                    subtitle: Text(
-                      deviceInfo['userAgent'].toString(),
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Platform'),
-                    trailing: Text(
-                      deviceInfo['platform'].toString(),
-                    ),
-                  )
-                ] else if (Platform.isAndroid) ...[
-                  ListTile(
-                    title: const Text('Model'),
-                    trailing: Text(
-                      deviceInfo['model'].toString(),
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Brand'),
-                    trailing: Text(
-                      deviceInfo['brand'].toString(),
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Device'),
-                    trailing: Text(
-                      deviceInfo['device'].toString(),
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Version'),
-                    trailing: Text(
-                      deviceInfo['version']['release'].toString(),
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('SDK'),
-                    trailing: Text(
-                      deviceInfo['version']['sdkInt'].toString(),
-                    ),
-                  ),
-                ],
+                )
               ]),
             );
           },

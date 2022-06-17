@@ -1,5 +1,5 @@
-import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/backend/database.dart';
+import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,34 +9,6 @@ import 'package:flutter/cupertino.dart';
 /// [ImageMessage] if the type is [MessageType.image],
 /// [UnsupportedMessage] if the type of the message on the remote server does
 /// not have a match on the client.
-Message convertToMessage({
-  required DocumentSnapshot documentSnapshot,
-  required ReplyMessageData? replyData,
-  required BuildContext context,
-}) {
-  final data = (documentSnapshot.data() != null
-      ? documentSnapshot.data()!
-      : throw Exception(
-          'The provided documentSnapshot does not have any data.',
-        )) as Map<String, dynamic>;
-  final messageType = getMessageType(data['type']);
-
-  if (messageType == MessageType.text) {
-    return TextMessage.fromDocumentSnapshot(
-      documentSnapshot: documentSnapshot,
-      replyData: replyData,
-    );
-  } else if (messageType == MessageType.image) {
-    return ImageMessage.fromDocumentSnapshot(
-      documentSnapshot: documentSnapshot,
-      replyData: replyData,
-    );
-  } else {
-    return UnsupportedMessage.fromDocumentSnapshot(
-      documentSnapshot: documentSnapshot,
-    );
-  }
-}
 
 /// Retreives a [ReplyMessageData] if [initialDocumentSnapshot] contains
 /// a replied message's id, otherwise returns null.
@@ -51,15 +23,14 @@ Future<ReplyMessageData?> returnReplyMessageData({
           'The provided initialDocumentSnapshot does not have any data.',
         )) as Map<String, dynamic>;
   if (data['reply_to_message'] != null) {
-    final replySnapshot = await Database.storage
+    final replySnapshot = await Database.firestore
         .collection('chats')
         .doc(chatId)
         .collection('messages')
         .doc(data['reply_to_message'])
         .get();
-    final replyMessage = convertToMessage(
+    final replyMessage = Message.get(
       documentSnapshot: replySnapshot,
-      context: context,
       replyData: null,
     );
     return ReplyMessageData.fromMessage(
@@ -79,6 +50,7 @@ abstract class Message {
   final Timestamp timestamp;
   final DocumentSnapshot documentSnapshot;
   final bool read;
+
   const Message({
     required this.name,
     required this.userId,
@@ -88,6 +60,35 @@ abstract class Message {
     required this.documentSnapshot,
     required this.read,
   });
+
+  factory Message.get({
+    required DocumentSnapshot documentSnapshot,
+    required ReplyMessageData? replyData,
+  }) {
+    if (documentSnapshot.data() == null) {
+      throw Exception(
+        'The provided documentSnapshot does not have any data. ID: ${documentSnapshot.id}',
+      );
+    }
+    final data = documentSnapshot.data()! as Map;
+    final messageType = getMessageType(data['type']);
+
+    if (messageType == MessageType.text) {
+      return TextMessage.fromDocumentSnapshot(
+        documentSnapshot: documentSnapshot,
+        replyData: replyData,
+      );
+    } else if (messageType == MessageType.image) {
+      return ImageMessage.fromDocumentSnapshot(
+        documentSnapshot: documentSnapshot,
+        replyData: replyData,
+      );
+    } else {
+      return UnsupportedMessage.fromDocumentSnapshot(
+        documentSnapshot: documentSnapshot,
+      );
+    }
+  }
 }
 
 class ReplyMessageData {
@@ -107,12 +108,12 @@ class ReplyMessageData {
     } else if (message is ImageMessage) {
       return ReplyMessageData(
         name: message.name,
-        description: S.of(context).image,
+        description: context.locale.image,
       );
     } else {
       return ReplyMessageData(
         name: message.name,
-        description: S.of(context).unsupported,
+        description: context.locale.unsupported,
       );
     }
   }
@@ -132,13 +133,22 @@ class TextMessage extends Message {
   });
   final String text;
   final ReplyMessageData? reply;
+
+  /// Takes a [DocumentSnapshot] and returns [Message].
   factory TextMessage.fromDocumentSnapshot({
     required DocumentSnapshot documentSnapshot,
     ReplyMessageData? replyData,
   }) {
-    final data = (documentSnapshot.data() != null
-        ? documentSnapshot.data()!
-        : throw Exception('This cannot be null')) as Map<String, dynamic>;
+    if (documentSnapshot.data() == null) {
+      throw Exception(
+        'This documentSnapshot data is null. ID: ${documentSnapshot.id}',
+      );
+    } else if (documentSnapshot.data()! is! Map) {
+      throw Exception(
+        'By exceptional matters, the data provided in this documentSnapshot is not a Map. ID: ${documentSnapshot.id}',
+      );
+    }
+    final data = documentSnapshot.data()! as Map;
     return TextMessage(
       name: data['name'],
       userId: data['uid'],

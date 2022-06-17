@@ -11,13 +11,13 @@
             <path
                 android:name="path_2"
                 android:pathData="M 54 74 C 65.046 74 74 65.046 74 54 C 74 42.954 65.046 34 54 34 C 42.954 34 34 42.954 34 54 C 34 65.046 42.954 74 54 74 Z M 54 70.431 C 63.075 70.431 70.431 63.075 70.431 54 C 70.431 44.925 63.075 37.569 54 37.569 C 44.925 37.569 37.569 44.925 37.569 53.999 C 37.569 63.074 44.925 70.431 54 70.431 Z"
-                android:fillColor="#ffffff"
+                android:fillColor="@color/splashScreenForeground"
                 android:strokeWidth="1"
                 android:fillType="evenOdd"/>
             <path
                 android:name="path_3"
                 android:pathData="M 70.654 34 L 74 34 L 74 74 L 70.654 74 Z"
-                android:fillColor="#ffffff"
+                android:fillColor="@color/splashScreenForeground"
                 android:strokeWidth="1"/>
         </vector>
     </aapt:attr>

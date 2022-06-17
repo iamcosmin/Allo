@@ -1,4 +1,5 @@
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/backend/authentication/user.dart';
@@ -7,8 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../main.dart';
 
 Future<dynamic> _getType(Type type, String key) async {
   final prefs = await SharedPreferences.getInstance();
@@ -132,7 +131,7 @@ class Authentication {
               password: password,
             );
             await user.user!.updateDisplayName(displayName);
-            final db = Database.storage;
+            final db = Database.firestore;
             await db.collection('users').doc(username).set({
               'name': displayName,
               'email': email,
@@ -174,7 +173,7 @@ class Authentication {
     final usernameReg = RegExp(r'^[a-zA-Z0-9_\.]+$');
     final navigation = Core.navigation;
     final usernamesDoc =
-        await Database.storage.collection('users').doc('usernames').get();
+        await Database.firestore.collection('users').doc('usernames').get();
     final usernames = usernamesDoc.data() != null
         ? usernamesDoc.data()!
         : throw Exception('The database could not return the usernames data.');
@@ -212,7 +211,8 @@ class Authentication {
     FocusScope.of(context).unfocus();
     try {
       final auth = FirebaseAuth.instance.currentUser;
-      final db = Database.storage.collection('users').doc(await user.username);
+      final db =
+          Database.firestore.collection('users').doc(await user.username);
       await db.update({
         'name': name,
       });
@@ -225,7 +225,7 @@ class Authentication {
   Future signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      Core.navigation.pushPermanent(context: context, route: const InnerApp());
+      Core.navigation.pushPermanent(context: context, route: const Setup());
     } catch (e) {
       throw Exception('Something is wrong...');
     }
@@ -238,7 +238,7 @@ class Authentication {
   }) async {
     FocusScope.of(context).unfocus();
     try {
-      final db = Database.storage.collection('users');
+      final db = Database.firestore.collection('users');
       final prefs = await SharedPreferences.getInstance();
       final data = await db.doc(await user.username).get().then(
             (value) => (value.data() != null
