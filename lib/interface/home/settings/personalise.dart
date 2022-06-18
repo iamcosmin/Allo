@@ -48,6 +48,7 @@ class PersonalisePage extends HookConsumerWidget {
         SliverList(
           delegate: SliverChildListDelegate.fixed([
             Tile(
+              leading: const Icon(Icons.dark_mode_outlined),
               title: Text(locales.darkMode),
               trailing: DropdownButton(
                 isDense: true,
@@ -79,10 +80,12 @@ class PersonalisePage extends HookConsumerWidget {
               ),
             ),
             SettingTile(
+              leading: const Icon(Icons.menu_open_outlined),
               title: locales.personaliseHideNavigationHints,
               preference: labels,
             ),
             SettingTile(
+              leading: const Icon(Icons.format_color_fill_rounded),
               enabled: !dynamicColor.setting,
               disabledExplanation: locales.themeColorDisabledExplanation,
               title: locales.themeColor,
@@ -134,11 +137,13 @@ class PersonalisePage extends HookConsumerWidget {
               ),
             ),
             SettingTile(
+              leading: const Icon(Icons.animation),
               title: locales.animations,
               preference: animations,
             ),
             if (dynamic12) ...[
               SettingTile(
+                leading: const Icon(Icons.palette_outlined),
                 title: locales.useSystemColor,
                 preference: dynamicColor,
               ),

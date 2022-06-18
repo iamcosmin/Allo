@@ -7,6 +7,7 @@ import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../components/slivers/sliver_scaffold.dart';
+import '../../../components/tile.dart';
 
 class AccountSettings extends HookWidget {
   const AccountSettings({super.key});
@@ -20,28 +21,24 @@ class AccountSettings extends HookWidget {
       slivers: [
         SliverList(
           delegate: SliverChildListDelegate([
-            ListTile(
+            Tile(
               title: Text(
                 locales.name,
-                style: const TextStyle(fontSize: 18),
               ),
-              minLeadingWidth: 20,
               onTap: () {
                 Core.navigation.push(
                   route: const ChangeNamePage(),
                 );
               },
             ),
-            ListTile(
+            Tile(
               title: Text(
                 locales.username,
-                style: const TextStyle(fontSize: 18),
               ),
             ),
-            ListTile(
+            Tile(
               title: Text(
                 locales.profilePicture,
-                style: const TextStyle(fontSize: 18),
               ),
               onTap: () =>
                   Core.navigation.push(route: const ProfilePictureSettings()),

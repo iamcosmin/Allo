@@ -5,7 +5,7 @@
 import 'package:allo/logic/client/extensions.dart';
 import 'package:flutter/material.dart';
 
-const _kDefaultCurve = Curves.fastOutSlowIn;
+const _kDefaultCurve = Cubic(0.4, 0.0, 0.2, 1.0);
 const _kDefaultInCurve = _kDefaultCurve;
 const _kDefaultOutCurve = _kDefaultCurve;
 

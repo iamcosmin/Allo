@@ -70,26 +70,20 @@ class Settings extends ConsumerWidget {
                 ),
               ),
             ),
-            const Padding(padding: EdgeInsets.only(top: 20)),
+            const Padding(padding: EdgeInsets.only(top: 10)),
             Tile(
-              leading: const Icon(Icons.brush),
+              leading: const Icon(Icons.palette_outlined),
               title: Text(context.locale.personalise),
               onTap: () => Core.navigation.push(route: const PersonalisePage()),
             ),
             Tile(
-              leading: const Icon(Icons.info),
-              title: Text(
-                context.locale.about,
-                style: const TextStyle(fontSize: 18),
-              ),
+              leading: const Icon(Icons.info_outline),
+              title: Text(context.locale.about),
               onTap: () => Core.navigation.push(route: const AboutPage()),
             ),
             Tile(
-              leading: const Icon(Icons.logout, size: 27),
-              title: Text(
-                context.locale.logOut,
-                style: const TextStyle(fontSize: 18),
-              ),
+              leading: const Icon(Icons.logout_rounded),
+              title: Text(context.locale.logOut),
               onTap: () async => await Core.auth.signOut(context),
             ),
           ]),

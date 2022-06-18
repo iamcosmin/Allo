@@ -9,8 +9,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 const _kDividerHeroTag =
     "SETUP_PAGE_WIDGET_VERTICAL_DIVIDER_HERO_TAG_ansd9fn9w4nfawesf";
-const _kTitleHeroTag =
-    "SETUP_PAGE_WIDGET_TITLEWITHICON_HERO_TAG_nasd9f94nf9aw499w3en";
 const buttonBarHeroTag =
     "SETUP_PAGE_WIDGET_BUTTON_BAR_HERO_TAG_nas94nefa9we934fn9";
 const _kDefaultPadding = EdgeInsets.only(left: 20, right: 20);

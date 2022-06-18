@@ -46,7 +46,7 @@ class ChatTile extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [title, const Space(0.2), subtitle],
+                        children: [title, const Space(0.1), subtitle],
                       ),
                     )
                   ],

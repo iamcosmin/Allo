@@ -106,22 +106,15 @@ class Home extends HookConsumerWidget {
                           index: index,
                           title: Text(
                             chat.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
+                            style: context.theme.textTheme.titleLarge!.copyWith(
+                              fontSize: 20,
+                              color: context.colorScheme.onSurface,
                             ),
                           ),
                           subtitle: Text(
                             '${type(chat, context)} (${chat.id})',
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer
-                                  .withAlpha(200),
-                            ),
+                            style: context.theme.textTheme.labelLarge!
+                                .copyWith(color: context.colorScheme.outline),
                           ),
                           leading: PersonPicture(
                             profilePicture: chat.picture,

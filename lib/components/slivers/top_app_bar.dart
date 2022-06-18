@@ -2,7 +2,21 @@ import 'package:flutter/material.dart';
 
 enum _TopAppBarType { medium, large }
 
-abstract class TopAppBar implements StatelessWidget {}
+abstract class TopAppBar extends StatelessWidget {
+  const TopAppBar({
+    required this.title,
+    required this.collapsedHeight,
+    required this.expandedHeight,
+    super.key,
+  });
+
+  final Widget title;
+  final double collapsedHeight;
+  final double expandedHeight;
+
+  @override
+  SliverAppBar build(BuildContext context);
+}
 
 extension on BuildContext {
   T? inherit<T extends InheritedWidget>() {
@@ -10,21 +24,23 @@ extension on BuildContext {
   }
 }
 
-class SmallTopAppBar extends StatelessWidget with TopAppBar {
+class SmallTopAppBar extends TopAppBar {
   const SmallTopAppBar({
-    required this.title,
+    required super.title,
+    super.collapsedHeight = 64,
+    super.expandedHeight = 64,
     this.leading,
     this.actions,
     super.key,
   });
 
-  final Widget title;
   final Widget? leading;
   final List<Widget>? actions;
 
   @override
-  Widget build(BuildContext context) {
+  SliverAppBar build(BuildContext context) {
     return SliverAppBar(
+      toolbarHeight: 64,
       pinned: true,
       leading: leading,
       title: title,
@@ -33,20 +49,21 @@ class SmallTopAppBar extends StatelessWidget with TopAppBar {
   }
 }
 
-class MediumTopAppBar extends StatelessWidget with TopAppBar {
+class MediumTopAppBar extends TopAppBar {
   const MediumTopAppBar({
-    required this.title,
+    required super.title,
+    super.collapsedHeight = _MediumScrollUnderFlexibleConfig.collapsedHeight,
+    super.expandedHeight = _MediumScrollUnderFlexibleConfig.expandedHeight,
     this.leading,
     super.key,
   });
-  final Widget title;
   final Widget? leading;
 
   @override
-  Widget build(BuildContext context) {
+  SliverAppBar build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: _MediumScrollUnderFlexibleConfig.expandedHeight,
-      collapsedHeight: _MediumScrollUnderFlexibleConfig.collapsedHeight,
+      expandedHeight: expandedHeight,
+      collapsedHeight: collapsedHeight,
       pinned: true,
       leading: leading,
       flexibleSpace: _M3FlexibleSpaceBar(
@@ -58,19 +75,20 @@ class MediumTopAppBar extends StatelessWidget with TopAppBar {
   }
 }
 
-class LargeTopAppBar extends StatelessWidget with TopAppBar {
+class LargeTopAppBar extends TopAppBar {
   const LargeTopAppBar({
-    required this.title,
+    required super.title,
+    super.collapsedHeight = _LargeScrollUnderFlexibleConfig.collapsedHeight,
+    super.expandedHeight = _LargeScrollUnderFlexibleConfig.expandedHeight,
     this.leading,
     super.key,
   });
-  final Widget title;
   final Widget? leading;
   @override
-  Widget build(BuildContext context) {
+  SliverAppBar build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 152,
-      toolbarHeight: 64,
+      expandedHeight: expandedHeight,
+      collapsedHeight: collapsedHeight,
       pinned: true,
       leading: leading,
       flexibleSpace: _M3FlexibleSpaceBar(

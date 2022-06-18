@@ -83,7 +83,6 @@ class ChatMessagesList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useScrollController();
-    final chatList = useChatList(chatId, listKey, 30, context);
     final locales = context.locale;
     final streamList = useState<List<Message>?>(null);
     final error = useState<Object?>(null);

@@ -1,34 +1,7 @@
-import 'package:allo/components/material3/app_bar.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
-import 'package:flutter/material.dart' hide SliverAppBar;
+import 'package:flutter/material.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-
-extension on SliverAppBar {}
-
-@Deprecated('Please use SScaffold.' 'This will be deprecated very soon.')
-class OldSliverScaffold extends StatelessWidget {
-  const OldSliverScaffold({
-    required this.appBar,
-    required this.body,
-    this.slivers,
-    super.key,
-  });
-  final LargeTopAppBar appBar;
-  final Widget body;
-  final List<Widget>? slivers;
-
-  @override
-  Widget build(context) {
-    return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxScrolled) {
-          return [appBar];
-        },
-        body: body,
-      ),
-    );
-  }
-}
+import 'package:snap_scroll_physics/snap_scroll_physics.dart';
 
 const _kNewDesign = true;
 
@@ -54,6 +27,16 @@ class SScaffold extends StatelessWidget {
     return Scaffold(
       floatingActionButton: floatingActionButton,
       body: NestedScrollView(
+        physics: SnapScrollPhysics(
+          snaps: [
+            Snap.avoidZone(
+              0,
+              topAppBar.expandedHeight -
+                  topAppBar.collapsedHeight -
+                  MediaQuery.of(context).viewInsets.top,
+            )
+          ],
+        ),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),

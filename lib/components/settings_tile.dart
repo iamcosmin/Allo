@@ -1,4 +1,3 @@
-import 'package:allo/components/switch.dart';
 import 'package:allo/components/tile.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ class SettingTile extends HookConsumerWidget {
   const SettingTile({
     required this.title,
     super.key,
+    this.leading,
     this.enabled = true,
     this.disabledExplanation,
     this.onTap,
@@ -24,6 +24,7 @@ class SettingTile extends HookConsumerWidget {
   final String title;
   final bool enabled;
   final String? disabledExplanation;
+  final Widget? leading;
   final void Function()? onTap;
   final Setting? preference;
 
@@ -40,16 +41,17 @@ class SettingTile extends HookConsumerWidget {
 
     if (preference != null && preference is Setting<bool>) {
       return SwitchTile(
+        leading: leading,
         title: Text(title),
         value: preference!.setting,
         onChanged: preference!.update,
       );
     } else {
       return Tile(
+        leading: leading,
         title: Text(title),
-        disabled: disabledExplanation != null,
-        subtitle:
-            disabledExplanation != null ? Text(disabledExplanation!) : null,
+        disabled: !enabled,
+        subtitle: !enabled ? Text(disabledExplanation!) : null,
         trailing: SizedBox(
           height: 25,
           child: Icon(
@@ -61,68 +63,5 @@ class SettingTile extends HookConsumerWidget {
         onTap: enabled ? onTap : null,
       );
     }
-    return InkWell(
-      onTap: enabled ? onTap ?? changePreference : null,
-      child: Container(
-        margin: const EdgeInsets.all(15),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(enabled ? 1 : 0.5),
-                        ),
-                  ),
-                ),
-                if (preference != null && preference is Setting<bool>) ...[
-                  AdaptiveSwitch(
-                    value: preference!.setting,
-                    // onChanged: null,
-                    onChanged: preference!.update,
-                  )
-                ] else ...[
-                  SizedBox(
-                    height: 25,
-                    child: Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 19,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.5),
-                    ),
-                  ),
-                ]
-              ],
-            ),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              child: enabled == false && disabledExplanation != null
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: Text(
-                        disabledExplanation!,
-                        style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.5),
-                        ),
-                      ),
-                    )
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -772,6 +772,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.7"
+  snap_scroll_physics:
+    dependency: "direct main"
+    description:
+      name: snap_scroll_physics
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1+3"
   source_span:
     dependency: transitive
     description:

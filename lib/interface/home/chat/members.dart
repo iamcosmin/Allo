@@ -77,48 +77,5 @@ class ChatMembersPage extends HookConsumerWidget {
         )
       ],
     );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.locale.members),
-      ),
-      body: FutureView<DocumentSnapshot<Map<String, dynamic>>>(
-        future: returnChatInfo(id: chatId),
-        success: (context, data) {
-          final List members = data.data()!['members'];
-          return ListView.builder(
-            itemCount: members.length,
-            itemBuilder: (context, i) {
-              final member = members[i];
-              return ListTile(
-                title: Text(
-                  member['uid'] != Core.auth.user.uid
-                      ? member['name']
-                      : context.locale.me,
-                ),
-                contentPadding: const EdgeInsets.only(
-                  top: 5,
-                  bottom: 5,
-                  left: 10,
-                  right: 10,
-                ),
-                leading: PersonPicture(
-                  radius: 50,
-                  profilePicture: Core.auth.getProfilePicture(
-                    member['uid'],
-                  ),
-                  initials: Core.auth.returnNameInitials(
-                    member['name'],
-                  ),
-                ),
-                onTap: () => Core.navigation.push(
-                  route: const UserPreviewPage(),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
   }
 }

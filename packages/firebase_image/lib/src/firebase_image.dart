@@ -147,7 +147,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   }
 
   @override
-  int get hashCode => hashValues(_imageObject.uri, scale);
+  int get hashCode => Object.hash(_imageObject.uri, scale);
 
   @override
   String toString() => '$runtimeType("${_imageObject.uri}", scale: $scale)';
