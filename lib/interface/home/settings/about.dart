@@ -4,29 +4,14 @@ import 'package:allo/components/slivers/sliver_scaffold.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/debug.dart';
+import 'package:allo/logic/backend/info.dart';
 import 'package:allo/logic/core.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../../components/builders.dart';
 import '../../../components/tile.dart';
-
-class AppInfo {
-  final BaseDeviceInfo deviceInfo;
-  final PackageInfo packageInfo;
-
-  const AppInfo({required this.deviceInfo, required this.packageInfo});
-}
-
-Future<AppInfo> getInfo() async {
-  final deviceInfo = await DeviceInfoPlugin().deviceInfo;
-  final packageInfo = await PackageInfo.fromPlatform();
-  return AppInfo(deviceInfo: deviceInfo, packageInfo: packageInfo);
-}
 
 class AboutPage extends HookConsumerWidget {
   const AboutPage({super.key});
@@ -34,9 +19,10 @@ class AboutPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
+    final infoProvider = ref.watch(Info.infoProvider);
     // DO NOT REMOVE
     final a = useState(0);
-    void _b() {
+    void b() {
       if (Core.auth.user.email == 'i.am.cosmin.bicc@gmail.com') {
         a.value++;
         if (a.value == 10) {
@@ -52,8 +38,7 @@ class AboutPage extends HookConsumerWidget {
         title: Text(locales.about),
       ),
       slivers: [
-        FutureWidget(
-          future: getInfo(),
+        infoProvider.when(
           loading: () {
             return const SliverFillRemaining(
               child: Center(
@@ -62,7 +47,7 @@ class AboutPage extends HookConsumerWidget {
             );
           },
           // ignore: avoid_types_on_closure_parameters
-          success: (AppInfo data) {
+          data: (data) {
             final packageInfo = data.packageInfo;
             final deviceInfo = data.deviceInfo.toMap();
             return SliverList(
@@ -98,7 +83,7 @@ class AboutPage extends HookConsumerWidget {
                       Tile(
                         title: Text(locales.buildNumber),
                         trailing: Text(packageInfo.buildNumber),
-                        onTap: () => _b(),
+                        onTap: () => b(),
                       ),
                       if (!kIsWeb) ...[
                         Tile(
@@ -182,7 +167,7 @@ class AboutPage extends HookConsumerWidget {
               ]),
             );
           },
-          error: (error) {
+          error: (error, stackTrace) {
             return SliverFillRemaining(
               child: Center(
                 child: Text(error.toString()),

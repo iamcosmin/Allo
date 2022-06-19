@@ -54,7 +54,7 @@ class Messages {
     final replyMessageId = modifier?.value?.action.replyMessageId;
     if (modifier?.value == null) {
       await db.collection('messages').add({
-        'type': getStringMessageType(MessageType.text),
+        'type': MessageType.text.name,
         'name': auth.user.name,
         'username': await auth.user.username,
         'uid': auth.user.uid,
@@ -64,7 +64,7 @@ class Messages {
     } else if (modifier?.value?.action.type == ModifierType.reply) {
       modifier?.value = null;
       await db.collection('messages').add({
-        'type': getStringMessageType(MessageType.text),
+        'type': MessageType.text.name,
         'name': auth.user.name,
         'username': await auth.user.username,
         'uid': auth.user.uid,
@@ -108,7 +108,7 @@ class Messages {
         progress.value = 0.0;
         final link = await event.ref.getDownloadURL();
         await db.collection('messages').add({
-          'type': getStringMessageType(MessageType.image),
+          'type': MessageType.image.name,
           'name': auth.user.name,
           'username': await auth.user.username,
           'uid': auth.user.uid,

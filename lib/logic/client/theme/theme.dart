@@ -80,7 +80,6 @@ ThemeData theme(
   //     [scheme.surface.toHexString()],
   //   );
   // }
-  // TODO(iamcosmin): Once all Material3 changes land in beta, we should remove all emulations.
   return ThemeData(
     // These parameters will remain even after Material 3 lands.
     platform: iOS ? TargetPlatform.iOS : null,
@@ -94,7 +93,6 @@ ThemeData theme(
     useMaterial3: true,
     colorScheme: scheme,
     brightness: brightness,
-    // TODO: Check if change has landed.
     errorColor: scheme.error,
     // These parameters are here just to emulate some of the Material 3 changes that haven't landed yet into the framework.
     shadowColor: scheme.shadow,
@@ -105,26 +103,6 @@ ThemeData theme(
       textColor: scheme.onSurface,
       iconColor: scheme.onSurface,
     ),
-    //? Implemented in Flutter 2.13.0-0.4.pre
-    // appBarTheme: AppBarTheme(
-    //   systemOverlayStyle: SystemUiOverlayStyle(
-    //     statusBarBrightness: brightness,
-    //     statusBarIconBrightness:
-    //         brightness == Brightness.light ? Brightness.dark : Brightness.light,
-    //     statusBarColor: const Color(0x00000000),
-    //   ),
-    //   foregroundColor: scheme.onSurface,
-    //   // Workaround for blend with surface.
-    //   backgroundColor: ElevationOverlay.applySurfaceTint(
-    //     scheme.surface,
-    //     scheme.primary,
-    //     2,
-    //   ),
-    //   elevation: 0,
-    //   iconTheme: IconThemeData(
-    //     color: scheme.onSurface,
-    //   ),
-    // ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: scheme.primaryContainer,
       actionTextColor: scheme.onPrimaryContainer,

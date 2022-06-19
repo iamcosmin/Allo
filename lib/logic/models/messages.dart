@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:allo/logic/backend/database.dart';
 import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 /// Converts a [DocumentSnapshot] into one of the following:
 /// [TextMessage] if the type is [MessageType.text],
@@ -33,13 +36,16 @@ Future<ReplyMessageData?> returnReplyMessageData({
       documentSnapshot: replySnapshot,
       replyData: null,
     );
-    return ReplyMessageData.fromMessage(
-      message: replyMessage,
-      context: context,
-    );
+    if (replyMessage != null) {
+      return ReplyMessageData.fromMessage(
+        message: replyMessage,
+        context: context,
+      );
+    }
   } else {
     return null;
   }
+  return null;
 }
 
 abstract class Message {
@@ -61,17 +67,23 @@ abstract class Message {
     required this.read,
   });
 
-  factory Message.get({
+  static Message? get({
     required DocumentSnapshot documentSnapshot,
     required ReplyMessageData? replyData,
   }) {
     if (documentSnapshot.data() == null) {
+      if (kDebugMode) {
+        log('The documentSnapshot id ${documentSnapshot.id} does not have any data.');
+      }
+      return null;
+    } else if (documentSnapshot.data()! is! Map) {
       throw Exception(
-        'The provided documentSnapshot does not have any data. ID: ${documentSnapshot.id}',
+        'By exceptional matters, the data provided in this documentSnapshot is not a Map. ID: ${documentSnapshot.id}',
       );
     }
     final data = documentSnapshot.data()! as Map;
-    final messageType = getMessageType(data['type']);
+    final messageType =
+        MessageType.values.firstWhere((e) => e.name == data['type']);
 
     if (messageType == MessageType.text) {
       return TextMessage.fromDocumentSnapshot(
@@ -135,14 +147,12 @@ class TextMessage extends Message {
   final ReplyMessageData? reply;
 
   /// Takes a [DocumentSnapshot] and returns [Message].
-  factory TextMessage.fromDocumentSnapshot({
+  static TextMessage? fromDocumentSnapshot({
     required DocumentSnapshot documentSnapshot,
     ReplyMessageData? replyData,
   }) {
     if (documentSnapshot.data() == null) {
-      throw Exception(
-        'This documentSnapshot data is null. ID: ${documentSnapshot.id}',
-      );
+      return null;
     } else if (documentSnapshot.data()! is! Map) {
       throw Exception(
         'By exceptional matters, the data provided in this documentSnapshot is not a Map. ID: ${documentSnapshot.id}',

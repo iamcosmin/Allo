@@ -65,7 +65,8 @@ class SScaffold extends StatelessWidget {
                 onRefresh: refreshIndicator!.onRefresh,
                 backgroundColor: refreshIndicator!.backgroundColor,
                 color: refreshIndicator!.color,
-                displacement: refreshIndicator!.displacement,
+                displacement: topAppBar.collapsedHeight +
+                    MediaQuery.of(context).viewPadding.top,
                 child: CustomScrollView(
                   slivers: [
                     SliverOverlapInjector(

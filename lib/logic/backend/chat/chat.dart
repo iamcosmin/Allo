@@ -59,7 +59,9 @@ class Chats {
                 calculateIndex(docChanges.newIndex, lastIndex),
                 duration: const Duration(milliseconds: 275),
               );
-              messages.insert(docChanges.newIndex, message);
+              if (message != null) {
+                messages.insert(docChanges.newIndex, message);
+              }
               break;
             }
           case DocumentChangeType.modified:
@@ -73,11 +75,13 @@ class Chats {
                 documentSnapshot: docChanges.doc,
                 replyData: replyData,
               );
-              // ignore: invalid_use_of_protected_member
-              listKey.currentState?.setState(() {
-                final index = calculateIndex(docChanges.newIndex, lastIndex);
-                messages[index] = message;
-              });
+              if (message != null) {
+                // ignore: invalid_use_of_protected_member
+                listKey.currentState?.setState(() {
+                  final index = calculateIndex(docChanges.newIndex, lastIndex);
+                  messages[index] = message;
+                });
+              }
               break;
             }
           case DocumentChangeType.removed:

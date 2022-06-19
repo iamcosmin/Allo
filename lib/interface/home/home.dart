@@ -1,5 +1,5 @@
-import 'package:allo/components/builders.dart';
 import 'package:allo/components/chats/chat_tile.dart';
+import 'package:allo/components/empty.dart';
 import 'package:allo/components/info.dart';
 import 'package:allo/components/shimmer.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
@@ -10,8 +10,8 @@ import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -30,15 +30,17 @@ String type(Chat chat, BuildContext context) {
   }
 }
 
-class Home extends HookConsumerWidget {
+class Home extends ConsumerWidget {
   const Home({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final createChat = useSetting(ref, privateConversations);
-    final loadChats = useState<Future<List<Chat>>>(
-      Core.chats.getChatsList(),
-    );
+    final chatList = ref.watch(Core.chats.chatListProvider);
     return SScaffold(
+      refreshIndicator: RefreshIndicator(
+        onRefresh: () => ref.refresh(Core.chats.chatListProvider.future),
+        child: const Empty(),
+      ),
       topAppBar: LargeTopAppBar(
         title: Text(context.locale.chats),
       ),
@@ -51,10 +53,12 @@ class Home extends HookConsumerWidget {
               tooltip: context.locale.createNewChat,
             ),
       slivers: [
+        CupertinoSliverRefreshControl(
+          onRefresh: () => Future.delayed(const Duration(seconds: 3)),
+        ),
         SliverPadding(
           padding: const EdgeInsets.only(left: 5, right: 5),
-          sliver: FutureWidget<List<Chat>>(
-            future: loadChats.value,
+          sliver: chatList.when(
             loading: () {
               return SliverPadding(
                 padding: const EdgeInsets.all(5.0),
@@ -89,7 +93,7 @@ class Home extends HookConsumerWidget {
                 ),
               );
             },
-            success: (data) {
+            data: (data) {
               if (data.isEmpty) {
                 return SliverFillRemaining(
                   child: InfoWidget(
@@ -136,7 +140,7 @@ class Home extends HookConsumerWidget {
                 );
               }
             },
-            error: (error) {
+            error: (error, stackTrace) {
               final errorMessage =
                   '${context.locale.anErrorOccurred}\n${(error is FirebaseException) ? 'Code: ${error.code}'
                       '\n'

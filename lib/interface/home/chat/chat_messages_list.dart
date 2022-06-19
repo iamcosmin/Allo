@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+// ignore: library_private_types_in_public_api
 AutoDisposeStateNotifierProvider<_ChatManager, List<Message>?> useChatList(
   String chatId,
   GlobalKey<AnimatedListState> listKey,
@@ -265,8 +266,11 @@ class ChatMessagesList extends HookConsumerWidget {
               '\n\n'
               '${(error.value! as FirebaseException).message}' : error.value.toString()}';
       return Center(
-        child: SelectableText(
-          errorMessage,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SelectableText(
+            errorMessage,
+          ),
         ),
       );
     } else if (streamList.value == null) {

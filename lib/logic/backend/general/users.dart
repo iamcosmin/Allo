@@ -11,9 +11,6 @@ class UserMethods {
     }
   }
 
-  @Deprecated(
-    'This function is deprecated. Please use the new getAllUserIdentification.',
-  )
   Future<Map<String, dynamic>?> getUsernamePairs() async {
     final snapshot =
         await Database.firestore.collection('users').doc('usernames').get();

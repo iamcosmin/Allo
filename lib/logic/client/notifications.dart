@@ -141,7 +141,6 @@ class _NotificationController {
             : 'Privat';
     if (action.actionType == ActionType.SilentBackgroundAction &&
         action.buttonKeyInput.isNotEmpty) {
-      // TODO(iamcosmin): TEST: This aims to fix the infinite loading indicator in alpha when replying from the notification tray.
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
@@ -163,7 +162,7 @@ class _NotificationController {
           body: action.buttonKeyInput,
           channelKey: 'conversations',
           roundedLargeIcon: true,
-          notificationLayout: NotificationLayout.MessagingGroup,
+          notificationLayout: notificationLayout,
           category: NotificationCategory.Message,
           roundedBigPicture: true,
           groupKey: payload['chatId'],

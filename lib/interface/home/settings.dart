@@ -84,7 +84,7 @@ class Settings extends ConsumerWidget {
             Tile(
               leading: const Icon(Icons.logout_rounded),
               title: Text(context.locale.logOut),
-              onTap: () async => await Core.auth.signOut(context),
+              onTap: () async => await Core.auth.signOut(context, ref),
             ),
           ]),
         )

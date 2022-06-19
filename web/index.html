@@ -25,7 +25,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Allo">
-  <link rel="apple-touch-icon" href="icons/Icon-512.png">
+  <link rel="apple-touch-icon" href="icons/Icon-maskable-512.png">
 
   <!-- Theme meta tags -->
   <meta name="theme-color" content="#000000">
@@ -55,7 +55,7 @@
       // This ensures that, in a PWA, the browser will have the color that a native app would.
       // Please do not call this function in js code.
       document.querySelector('meta[name="theme-color"]').setAttribute("content", color)
-      console.warn('setBrowserThemeColor with ' + color)
+      console.log('Set the browser theme color with ' + color)
     }
     // Function that needs to be executed from dart native code.
     // It will choose whether meta apple-mobile-web-app-status-bar-style should be default (on light mode),

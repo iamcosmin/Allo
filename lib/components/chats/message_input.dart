@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
-import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:animated_progress/animated_progress.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +39,7 @@ void _attachMenu({
                 await file!.readAsBytes(),
                 chatId: chatId,
                 chatName: chatName,
-                chatType: getStringFromChatType(chatType),
+                chatType: chatType.name,
                 progress: uploadProgressValue,
               ),
             );
@@ -72,7 +71,7 @@ void _attachMenu({
               await file!.readAsBytes(),
               chatId: chatId,
               chatName: chatName,
-              chatType: getStringFromChatType(chatType),
+              chatType: chatType.name,
               progress: uploadProgressValue,
             ),
           );
@@ -286,7 +285,7 @@ class MessageInput extends HookConsumerWidget {
                         : () {
                             empty.value = true;
                             Core.chat(chatId).messages.sendTextMessage(
-                                  chatType: getStringFromChatType(chatType),
+                                  chatType: chatType.name,
                                   text: messageController.text,
                                   chatName: chatName,
                                   controller: messageController,

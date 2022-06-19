@@ -31,7 +31,7 @@ class Core {
   static Validators validators(BuildContext context) => Validators(context);
   static const Notifications notifications = Notifications();
   static final General general = General();
-  static const ChatsLogic chats = ChatsLogic();
+  static ChatsLogic chats = ChatsLogic();
   // TODO(iamcosmin): Move this in ChatsLogic
   static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();

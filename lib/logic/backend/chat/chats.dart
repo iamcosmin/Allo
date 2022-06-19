@@ -1,9 +1,11 @@
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChatsLogic {
-  const ChatsLogic();
+  ChatsLogic();
 
   ///* Explanation of the logic below.
   ///
@@ -65,39 +67,43 @@ class ChatsLogic {
     }
   }
 
+  final chatListProvider = FutureProvider<List<Chat>>((ref) {
+    return Core.chats.getChatsList();
+  });
+
   Future<List<Chat>> getChatsList() async {
-    final uid = Core.auth.user.uid;
-    final documents = await Database.firestore
-        .collection('chats')
-        .where('participants', arrayContains: uid)
-        .get();
+    final currentUid = Core.auth.user.uid;
     final chats = <Chat>[];
-    if (documents.docs.isNotEmpty) {
-      for (final chat in documents.docs) {
-        final chatInfo = chat.data();
-        // Check the chat type to sort accordingly
-        switch (getChatTypeFromString(chatInfo['type'])) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      return [];
+    }
+    final rawChats = await Database.firestore
+        .collection('chats')
+        .where('participants', arrayContains: currentUid)
+        .get();
+    print('HERE!');
+    if (rawChats.docs.isNotEmpty) {
+      for (final rawChat in rawChats.docs) {
+        final rawChatInfo = rawChat.data();
+        final chatType = ChatType.values.firstWhere(
+          (element) => element.name == rawChatInfo['type'],
+        );
+        final chatMembers = rawChatInfo['members'];
+        switch (chatType) {
           case ChatType.private:
-            {
-              for (final member in chatInfo['members']) {
-                if (member['uid'] != null &&
-                    member['uid'] != Core.auth.user.uid) {
-                  chats.add(PrivateChat.fromDocumentSnapshot(chat));
-                }
+            for (final member in chatMembers) {
+              final memberUid = member['uid'];
+
+              if (memberUid != null && memberUid != currentUid) {
+                chats.add(PrivateChat.fromDocumentSnapshot(rawChat));
               }
-              break;
             }
+            break;
           case ChatType.group:
-            {
-              chats.add(
-                GroupChat.fromDocumentSnapshot(chat),
-              );
-              break;
-            }
-          default:
-            {
-              break;
-            }
+            chats.add(GroupChat.fromDocumentSnapshot(rawChat));
+            break;
+          case ChatType.unsupported:
+            break;
         }
       }
     }

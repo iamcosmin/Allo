@@ -30,15 +30,6 @@ class SettingTile extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    void changePreference() {
-      if (preference != null) {
-        if (preference is Setting<bool>) {
-          final value = preference!.setting;
-          preference!.update(!value);
-        }
-      }
-    }
-
     if (preference != null && preference is Setting<bool>) {
       return SwitchTile(
         leading: leading,

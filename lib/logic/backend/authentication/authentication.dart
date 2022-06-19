@@ -7,6 +7,7 @@ import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<dynamic> _getType(Type type, String key) async {
@@ -222,9 +223,10 @@ class Authentication {
     }
   }
 
-  Future signOut(BuildContext context) async {
+  Future signOut(BuildContext context, WidgetRef ref) async {
     try {
       await FirebaseAuth.instance.signOut();
+      ref.invalidate(Core.chats.chatListProvider.future);
       Core.navigation.pushPermanent(context: context, route: const Setup());
     } catch (e) {
       throw Exception('Something is wrong...');

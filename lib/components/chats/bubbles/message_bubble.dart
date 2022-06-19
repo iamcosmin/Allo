@@ -345,213 +345,231 @@ class Bubble extends HookConsumerWidget {
                       colorScheme,
                     ),
                     borderRadius: messageRadius,
-                    child: AnimatedContainer(
-                      decoration: BoxDecoration(
-                        borderRadius: messageRadius,
-                        color: isNotCurrentUser
-                            ? colorScheme.secondaryContainer
-                            : colorScheme.primary,
-                      ),
-                      constraints: BoxConstraints(maxWidth: screenWidth / 1.5),
-                      padding: message.type != MessageType.image
-                          ? const EdgeInsets.only(
-                              top: 8,
-                              bottom: 8,
-                              left: 10,
-                              right: 10,
-                            )
-                          : EdgeInsets.zero,
-                      key: key,
-                      duration: const Duration(milliseconds: 250),
-                      child: Builder(
-                        builder: (context) {
-                          if (message.type == MessageType.image) {
-                            return Container(
-                              constraints: BoxConstraints(
-                                maxWidth: screenWidth / 1.5,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: messageRadius,
-                                child: CachedNetworkImage(
-                                  imageUrl: message.image!,
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Container(
-                              constraints: BoxConstraints(
-                                maxWidth: screenWidth / 1.5,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: message.reply == null ? 0 : 50,
-                                    child: message.reply == null
-                                        ? null
-                                        : Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 5,
-                                              bottom: 5,
-                                              left: 5,
-                                              right: 5,
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    color: isNotCurrentUser
-                                                        ? theme.colorScheme
-                                                            .onSurface
-                                                        : Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                      2,
-                                                    ),
-                                                  ),
-                                                  height: 35,
-                                                  width: 3,
+                    child: Column(
+                      crossAxisAlignment: isNotCurrentUser
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.end,
+                      children: [
+                        AnimatedContainer(
+                          decoration: BoxDecoration(
+                            borderRadius: messageRadius,
+                            color: isNotCurrentUser
+                                ? colorScheme.secondaryContainer
+                                : colorScheme.primary,
+                          ),
+                          constraints:
+                              BoxConstraints(maxWidth: screenWidth / 1.5),
+                          padding: message.type != MessageType.image
+                              ? const EdgeInsets.only(
+                                  top: 8,
+                                  bottom: 8,
+                                  left: 10,
+                                  right: 10,
+                                )
+                              : EdgeInsets.zero,
+                          key: key,
+                          duration: const Duration(milliseconds: 250),
+                          child: Builder(
+                            builder: (context) {
+                              if (message.type == MessageType.image) {
+                                return Container(
+                                  constraints: BoxConstraints(
+                                    maxWidth: screenWidth / 1.5,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: messageRadius,
+                                    child: CachedNetworkImage(
+                                      imageUrl: message.image!,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Container(
+                                  constraints: BoxConstraints(
+                                    maxWidth: screenWidth / 1.5,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: message.reply == null ? 0 : 50,
+                                        child: message.reply == null
+                                            ? null
+                                            : Padding(
+                                                padding: const EdgeInsets.only(
+                                                  top: 5,
+                                                  bottom: 5,
+                                                  left: 5,
+                                                  right: 5,
                                                 ),
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                    right: 10,
-                                                  ),
-                                                ),
-                                                Flexible(
-                                                  child: Container(
-                                                    height: 40,
-                                                    constraints: BoxConstraints(
-                                                      maxWidth:
-                                                          screenWidth / 1.8,
-                                                      minWidth: 1,
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        color: isNotCurrentUser
+                                                            ? theme.colorScheme
+                                                                .onSurface
+                                                            : Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                          2,
+                                                        ),
+                                                      ),
+                                                      height: 35,
+                                                      width: 3,
                                                     ),
-                                                    width: (message
+                                                    const Padding(
+                                                      padding: EdgeInsets.only(
+                                                        right: 10,
+                                                      ),
+                                                    ),
+                                                    Flexible(
+                                                      child: Container(
+                                                        height: 40,
+                                                        constraints:
+                                                            BoxConstraints(
+                                                          maxWidth:
+                                                              screenWidth / 1.8,
+                                                          minWidth: 1,
+                                                        ),
+                                                        width: (message
+                                                                        .reply!
+                                                                        .description
+                                                                        .length
+                                                                        .toDouble() >=
+                                                                    message
+                                                                        .reply!
+                                                                        .name
+                                                                        .length
+                                                                        .toDouble()
+                                                                ? message
                                                                     .reply!
                                                                     .description
                                                                     .length
-                                                                    .toDouble() >=
-                                                                message.reply!
-                                                                    .name.length
                                                                     .toDouble()
-                                                            ? message
-                                                                .reply!
-                                                                .description
-                                                                .length
-                                                                .toDouble()
-                                                            : message.reply!
-                                                                .name.length
-                                                                .toDouble()) *
-                                                        9,
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          message.reply?.name ??
-                                                              '',
-                                                          style:
-                                                              const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                        ClipRect(
-                                                          child: Text(
-                                                            message.reply
-                                                                    ?.description
-                                                                    .replaceAll(
-                                                                  '\n',
-                                                                  ' ',
-                                                                ) ??
-                                                                '',
-                                                            style:
-                                                                const TextStyle(
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
+                                                                : message.reply!
+                                                                    .name.length
+                                                                    .toDouble()) *
+                                                            9,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              message.reply
+                                                                      ?.name ??
+                                                                  '',
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
                                                             ),
-                                                          ),
+                                                            ClipRect(
+                                                              child: Text(
+                                                                message.reply
+                                                                        ?.description
+                                                                        .replaceAll(
+                                                                      '\n',
+                                                                      ' ',
+                                                                    ) ??
+                                                                    '',
+                                                                style:
+                                                                    const TextStyle(
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                      ),
+                                      Linkify(
+                                        text: message.text,
+                                        onOpen: (link) async {
+                                          final uri = Uri.parse(link.url);
+                                          if (await canLaunchUrl(uri)) {
+                                            await launchUrl(uri);
+                                          } else {
+                                            throw 'Could not launch $link';
+                                          }
+                                        },
+                                        style: TextStyle(
+                                          fontSize:
+                                              regexEmoji.hasMatch(message.text)
+                                                  ? 30
+                                                  : 16,
+                                          color: isNotCurrentUser
+                                              ? theme.colorScheme.onSurface
+                                              : Colors.white,
+                                        ),
+                                        linkStyle: TextStyle(
+                                          decoration: TextDecoration.underline,
+                                          color: isNotCurrentUser
+                                              ? theme.colorScheme.onSurface
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Linkify(
-                                    text: message.text,
-                                    onOpen: (link) async {
-                                      final uri = Uri.parse(link.url);
-                                      if (await canLaunchUrl(uri)) {
-                                        await launchUrl(uri);
-                                      } else {
-                                        throw 'Could not launch $link';
-                                      }
-                                    },
-                                    style: TextStyle(
-                                      fontSize:
-                                          regexEmoji.hasMatch(message.text)
-                                              ? 30
-                                              : 16,
-                                      color: isNotCurrentUser
-                                          ? theme.colorScheme.onSurface
-                                          : Colors.white,
-                                    ),
-                                    linkStyle: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: isNotCurrentUser
-                                          ? theme.colorScheme.onSurface
-                                          : Colors.white,
-                                    ),
-                                  ),
-                                ],
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          curve: Curves.ease,
+                          padding: const EdgeInsets.only(left: 10, right: 10),
+                          height: selected.value || showReadIndicator ? 20 : 0,
+                          child: Row(
+                            mainAxisAlignment: isNotCurrentUser
+                                ? MainAxisAlignment.start
+                                : MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                !isNotCurrentUser
+                                    ? (message.isRead
+                                        ? locales.read
+                                        : locales.sent)
+                                    : locales.received,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            );
-                          }
-                        },
-                      ),
+                              const Padding(padding: EdgeInsets.only(left: 3)),
+                              Text(
+                                DateFormat.Hm().format(message.time),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.ease,
-            padding: const EdgeInsets.only(right: 5, left: 55),
-            height: selected.value || showReadIndicator ? 20 : 0,
-            child: Row(
-              mainAxisAlignment: isNotCurrentUser
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.end,
-              children: [
-                Text(
-                  !isNotCurrentUser
-                      ? (message.isRead ? locales.read : locales.sent)
-                      : locales.received,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Padding(padding: EdgeInsets.only(left: 3)),
-                Text(
-                  DateFormat.Hm().format(message.time),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                )
-              ],
             ),
           ),
         ],

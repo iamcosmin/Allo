@@ -8,6 +8,22 @@ abstract class Chat {
   final String title;
   final String id;
   final String picture;
+
+  static ChatType getType(Chat chat) {
+    switch (chat.runtimeType) {
+      case PrivateChat:
+        return ChatType.private;
+      case GroupChat:
+        return ChatType.group;
+      default:
+        return ChatType.unsupported;
+    }
+  }
+}
+
+class UnsupportedChat extends Chat {
+  const UnsupportedChat()
+      : super(title: 'Unsupported Chat', id: '', picture: '');
 }
 
 class PrivateChat extends Chat {
@@ -23,6 +39,7 @@ class PrivateChat extends Chat {
   final String userId;
 
   factory PrivateChat.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+    // TODO: Convert this chunk to support the new log.
     final data = snapshot.data();
     if (data != null && data is Map<String, dynamic>) {
       final List members = data['members'];
@@ -93,21 +110,5 @@ ChatType? getChatTypeFromString(String chatType) {
       {
         return null;
       }
-  }
-}
-
-String getStringFromChatType(ChatType chatType) {
-  if (chatType == ChatType.private) {
-    return 'private';
-  } else {
-    return 'group';
-  }
-}
-
-ChatType getChatTypeFromType(Chat chat) {
-  if (chat is PrivateChat) {
-    return ChatType.private;
-  } else {
-    return ChatType.group;
   }
 }

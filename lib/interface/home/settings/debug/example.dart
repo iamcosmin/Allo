@@ -44,7 +44,7 @@ class TestApp extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.done),
-              onPressed: () => print('Button Pressed'),
+              onPressed: () => {},
             )
           ],
         ),
