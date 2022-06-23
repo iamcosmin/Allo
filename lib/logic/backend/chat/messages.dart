@@ -50,14 +50,14 @@ class Messages {
     //     .doc(chatId)
     //     .update({'typing': false});
     final db = Database.firestore.collection('chats').doc(chatId);
-    const auth = Core.auth;
+    final auth = Core.auth;
     final replyMessageId = modifier?.value?.action.replyMessageId;
     if (modifier?.value == null) {
       await db.collection('messages').add({
         'type': MessageType.text.name,
         'name': auth.user.name,
-        'username': await auth.user.username,
-        'uid': auth.user.uid,
+        'username': await auth.user.getUsername(),
+        'uid': auth.user.userId,
         'text': text,
         'time': Timestamp.now(),
       });
@@ -66,19 +66,19 @@ class Messages {
       await db.collection('messages').add({
         'type': MessageType.text.name,
         'name': auth.user.name,
-        'username': await auth.user.username,
-        'uid': auth.user.uid,
+        'username': auth.user.usernameProvider,
+        'uid': auth.user.userId,
         'reply_to_message': replyMessageId,
         'text': text,
         'time': Timestamp.now(),
       });
     }
     await _sendNotification(
-      profilePicture: Core.auth.user.profilePicture,
+      profilePicture: Core.auth.user.profilePictureUrl,
       chatName: chatName,
-      name: auth.user.name,
+      name: auth.user.name ?? (throw Exception('No name.')),
       content: text,
-      uid: auth.user.uid,
+      uid: auth.user.userId,
       chatType: chatType,
     );
   }
@@ -91,8 +91,9 @@ class Messages {
     required String chatType,
     String? description,
   }) async {
-    const auth = Core.auth;
-    final path = 'chats/$chatId/${DateTime.now()}_${await auth.user.username}';
+    final auth = Core.auth;
+    final path =
+        'chats/$chatId/${DateTime.now()}_${auth.user.usernameProvider}';
     final storage = FirebaseStorage.instance;
     final db = Database.firestore.collection('chats').doc(chatId);
 
@@ -110,22 +111,22 @@ class Messages {
         await db.collection('messages').add({
           'type': MessageType.image.name,
           'name': auth.user.name,
-          'username': await auth.user.username,
-          'uid': auth.user.uid,
+          'username': auth.user.usernameProvider,
+          'uid': auth.user.userId,
           'link': link,
           'description': description,
           'time': DateTime.now(),
         });
         await _sendNotification(
           chatName: chatName,
-          name: auth.user.name,
+          name: auth.user.name ?? (throw Exception('No name.')),
           content: 'Imagine ${description != null ? ' - $description' : ''}',
-          uid: auth.user.uid,
+          uid: auth.user.userId,
           chatType: chatType,
-          profilePicture: Core.auth.user.profilePicture,
+          profilePicture: Core.auth.user.profilePictureUrl,
           photo: link,
         );
-        Navigator.of(context).pop();
+        Navigation.pop();
       }
     });
   }

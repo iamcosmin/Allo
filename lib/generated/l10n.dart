@@ -1469,6 +1469,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Verify your Identity`
+  String get verifyYourIdentity {
+    return Intl.message(
+      'Verify your Identity',
+      name: 'verifyYourIdentity',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

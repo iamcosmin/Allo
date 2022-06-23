@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
-import 'package:allo/logic/client/theme/page_transitions.dart';
+import 'package:allo/logic/client/theme/page_transitions/page_transitions.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

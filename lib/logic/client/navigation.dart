@@ -1,4 +1,6 @@
+import 'package:allo/logic/client/theme/animations.dart';
 import 'package:allo/logic/core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Material3PageRoute extends MaterialPageRoute {
@@ -10,43 +12,83 @@ class Material3PageRoute extends MaterialPageRoute {
   });
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 250);
+  Duration get transitionDuration =>
+      Duration(milliseconds: const Motion().animationDuration.short4Ms.toInt());
 }
 
-var navigatorKey = GlobalKey<NavigatorState>();
-const _kDefaultNavigatorError =
-    '''There is neither a BuildContext, not a GlobalKey<NavigatorState>.
+class Navigation {
+  const Navigation._();
+
+  static final navigatorKey = GlobalKey<NavigatorState>(
+    debugLabel: 'master_navigator_key',
+  );
+  static const _kDefaultNavigatorError =
+      '''There is neither a BuildContext, not a GlobalKey<NavigatorState>.
     This can happen if you did not pass a BuildContext, or you haven't initialized the key in 
     MaterialApp.''';
 
-class Navigation {
-  void push({
-    required Widget route,
-    BuildContext? context,
-  }) {
-    final pageRoute = Material3PageRoute(builder: (_) => route);
+  static PageRoute pageRoute(Widget route) {
+    switch (ThemeData().platform) {
+      case TargetPlatform.android:
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+        return Material3PageRoute(
+          builder: (_) => route,
+        );
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+        return CupertinoPageRoute(
+          builder: (_) => route,
+        );
+    }
+  }
+
+  static void pop({BuildContext? context}) async {
     if (context != null) {
-      context.navigator.push(pageRoute);
+      context.navigator.pop();
     } else if (navigatorKey.currentState != null) {
-      navigatorKey.currentState!.push(pageRoute);
+      navigatorKey.currentState!.pop();
     } else {
       throw Exception(_kDefaultNavigatorError);
     }
   }
 
-  void pushPermanent({
+  static void push({
     required Widget route,
     BuildContext? context,
   }) {
-    final pageRoute = MaterialPageRoute(builder: (_) => route);
+    if (context != null) {
+      context.navigator.push(pageRoute(route));
+    } else if (navigatorKey.currentState != null) {
+      navigatorKey.currentState!.push(pageRoute(route));
+    } else {
+      throw Exception(_kDefaultNavigatorError);
+    }
+  }
+
+  static void pushReplacement(Widget route, {BuildContext? context}) {
+    if (context != null) {
+      context.navigator.pushReplacement(pageRoute(route));
+    } else if (navigatorKey.currentState != null) {
+      navigatorKey.currentState!.pushReplacement(pageRoute(route));
+    } else {
+      throw Exception(_kDefaultNavigatorError);
+    }
+  }
+
+  static void pushPermanent({
+    required Widget route,
+    BuildContext? context,
+  }) {
     if (context != null) {
       Navigator.of(context).pushAndRemoveUntil(
-        pageRoute,
+        pageRoute(route),
         (route) => false,
       );
     } else if (navigatorKey.currentState != null) {
       navigatorKey.currentState
-          ?.pushAndRemoveUntil(pageRoute, (route) => false);
+          ?.pushAndRemoveUntil(pageRoute(route), (route) => false);
     } else {
       throw Exception(_kDefaultNavigatorError);
     }

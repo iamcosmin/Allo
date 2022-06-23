@@ -236,6 +236,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "useSystemColor":
             MessageLookupByLibrary.simpleMessage("Use System Color"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
+        "verifyYourIdentity":
+            MessageLookupByLibrary.simpleMessage("Verify your Identity"),
         "version": MessageLookupByLibrary.simpleMessage("Version"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Welcome back")
       };

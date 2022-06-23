@@ -2,6 +2,8 @@ import 'package:allo/components/photo.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'material3/icon_button.dart';
+
 class ImageView extends HookConsumerWidget {
   final String imageUrl;
   final ColorScheme? colorScheme;
@@ -9,35 +11,41 @@ class ImageView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = colorScheme ?? Theme.of(context).colorScheme;
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: colors.onSurface,
-        leading: ClipOval(
-          child: ColoredBox(
-            color: Theme.of(context).colorScheme.surface,
-            child: BackButton(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ),
-      ),
-      backgroundColor: colors.surface,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: InteractiveViewer(
-              child: Photo(
-                backgroundColor: colors.surface,
-                key: key,
-                url: imageUrl,
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          foregroundColor: colors.onSurface,
+          leading: Padding(
+            padding: const EdgeInsets.all(10),
+            child: ClipOval(
+              child: ColoredBox(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                child: MBackButton(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
           ),
-        ],
+        ),
+        backgroundColor: colors.surface,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: InteractiveViewer(
+                child: Photo(
+                  backgroundColor: colors.surface,
+                  key: key,
+                  url: imageUrl,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

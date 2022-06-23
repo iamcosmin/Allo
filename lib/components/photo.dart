@@ -32,18 +32,20 @@ class Photo extends HookConsumerWidget {
     required this.url,
     this.placeholder,
     this.backgroundColor,
+    this.errorBuilder = _errorBuilder,
     super.key,
   });
   final String url;
   final Widget? placeholder;
   final Color? backgroundColor;
+  final Widget Function(BuildContext, Object, StackTrace?) errorBuilder;
 
-  Widget _errorBuilder(
+  static Widget _errorBuilder(
     BuildContext context,
     Object error,
     StackTrace? stackTrace,
   ) {
-    log(stackTrace: stackTrace, error: error, '');
+    log(stackTrace: stackTrace, error: error, 'Error with Photo');
     return InkWell(
       onLongPress: () => Core.stub.alert(
         context: context,
@@ -89,9 +91,12 @@ class Photo extends HookConsumerWidget {
           errorBuilder: _errorBuilder,
         );
       } else if (Platform.isAndroid) {
-        return CachedNetworkImage(
-          imageUrl: url,
-          key: key,
+        return Image(
+          image: CachedNetworkImageProvider(
+            url,
+            cacheKey: key.toString(),
+          ),
+          errorBuilder: _errorBuilder,
         );
       } else {
         throw Exception(

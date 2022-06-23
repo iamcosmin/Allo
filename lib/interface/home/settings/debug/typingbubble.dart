@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:allo/components/switch.dart';
+import 'package:allo/components/material3/switch.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:flutter/material.dart';
 

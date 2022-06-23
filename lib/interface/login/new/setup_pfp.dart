@@ -11,9 +11,8 @@ class SetupProfilePicture extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final percentage = useState(0.0);
-    final loaded = useState(false);
     void onSubmit() {
-      Core.navigation.push(route: const SetupPersonalize());
+      Navigation.push(route: const SetupPersonalize());
     }
 
     return SetupPage(
@@ -38,7 +37,7 @@ class SetupProfilePicture extends HookWidget {
                   ),
                   PersonPicture(
                     radius: 100,
-                    profilePicture: Core.auth.user.profilePicture,
+                    profilePicture: Core.auth.user.profilePictureUrl,
                     initials: Core.auth.user.nameInitials,
                   ),
                 ],
@@ -47,7 +46,6 @@ class SetupProfilePicture extends HookWidget {
             ListTile(
               title: Text(context.locale.uploadPicture),
               onTap: () async => await Core.auth.user.updateProfilePicture(
-                loaded: loaded,
                 percentage: percentage,
                 context: context,
                 route: const SetupPersonalize(),

@@ -33,9 +33,7 @@ class ChatMembersPage extends HookConsumerWidget {
           },
           error: (error) {
             return SliverCenter(
-              child: SliverCenter(
-                child: Text(error.toString()),
-              ),
+              child: Text(error.toString()),
             );
           },
           success: (data) {
@@ -46,7 +44,7 @@ class ChatMembersPage extends HookConsumerWidget {
                   final member = members[index];
                   return ListTile(
                     title: Text(
-                      member['uid'] != Core.auth.user.uid
+                      member['uid'] != Core.auth.user.userId
                           ? member['name']
                           : context.locale.me,
                     ),
@@ -65,7 +63,7 @@ class ChatMembersPage extends HookConsumerWidget {
                         member['name'],
                       ),
                     ),
-                    onTap: () => Core.navigation.push(
+                    onTap: () => Navigation.push(
                       route: const UserPreviewPage(),
                     ),
                   );

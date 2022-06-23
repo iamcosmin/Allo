@@ -1,6 +1,6 @@
 import 'package:allo/components/empty.dart';
+import 'package:allo/components/material3/switch.dart';
 import 'package:allo/components/space.dart';
-import 'package:allo/components/switch.dart';
 import 'package:allo/logic/client/extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +29,29 @@ class SwitchTile extends StatelessWidget {
       trailing: AdaptiveSwitch(
         value: value,
         onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+class TileHeading extends StatelessWidget {
+  const TileHeading(this.text, {super.key});
+  final String text;
+  @override
+  Widget build(context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 10, 24, 5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            text,
+            style: context.theme.textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.w600,
+              color: context.colorScheme.primary,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -64,17 +87,17 @@ class Tile extends StatelessWidget {
           duration: animationDuration,
           constraints: const BoxConstraints(minHeight: 56),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            padding: const EdgeInsets.fromLTRB(24, 12, 20, 12),
             child: Row(
               children: [
                 IconTheme(
                   data: IconThemeData(
-                    size: 30,
+                    size: 27,
                     color: context.colorScheme.onSurface,
                   ),
                   child: leading != null
                       ? Padding(
-                          padding: const EdgeInsets.only(right: 14),
+                          padding: const EdgeInsets.only(right: 24),
                           child: leading,
                         )
                       : const Empty(),
@@ -89,7 +112,7 @@ class Tile extends StatelessWidget {
                           style:
                               Theme.of(context).textTheme.titleMedium!.copyWith(
                                     fontFamily: 'Display',
-                                    fontSize: 18,
+                                    fontSize: 19,
                                     fontWeight: FontWeight.normal,
                                   ),
                           child: title,
@@ -122,7 +145,7 @@ class Tile extends StatelessWidget {
                   ),
                 ),
                 const Space(
-                  2.6,
+                  1.2,
                   direction: Direction.horizontal,
                 ),
                 Align(

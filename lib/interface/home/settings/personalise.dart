@@ -9,8 +9,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../components/material3/tile.dart';
 import '../../../components/slivers/sliver_scaffold.dart';
-import '../../../components/tile.dart';
 import '../../../logic/client/preferences/manager.dart';
 
 const colors = Colors.accents;

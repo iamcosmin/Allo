@@ -25,10 +25,14 @@ class AdaptiveSwitch extends StatelessWidget {
         );
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
-        return CupertinoSwitch(
-          value: value,
-          onChanged: onChanged,
-          activeColor: Theme.of(context).colorScheme.primary,
+        return SizedBox(
+          height: 32,
+          width: 52,
+          child: CupertinoSwitch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: Theme.of(context).colorScheme.primary,
+          ),
         );
     }
   }
@@ -107,14 +111,14 @@ class _Switch extends HookWidget {
       highlightColor: Colors.transparent,
       child: AnimatedContainer(
         padding: EdgeInsets.zero,
-        curve: tokens.animationCurve,
-        height: 32,
-        width: 52,
+        curve: tokens.trackAnimationCurve,
+        height: tokens.trackHeight,
+        width: tokens.trackWidth,
         alignment: alignment,
         duration: tokens.animationDuration,
         decoration: switchDecoration,
         child: AnimatedContainer(
-          curve: tokens.animationCurve,
+          curve: tokens.thumbAnimationCurve,
           margin: pressed.value
               ? value
                   ? tokens.pressedThumbSelectedMargin
@@ -151,24 +155,25 @@ class _TokenDefaultsM3 {
   ColorScheme get _colors => _theme.colorScheme;
 
   Duration get animationDuration => const Duration(milliseconds: 200);
-  Curve get animationCurve => Curves.bounceInOut;
+  Curve get trackAnimationCurve => Curves.fastOutSlowIn;
+  Curve get thumbAnimationCurve => Curves.bounceInOut;
 
   double get outlineWidth => 2;
 
-  double get trackHeight => 52;
-  double get trackWidth => 32;
+  double get trackHeight => 32;
+  double get trackWidth => 52;
   double get thumbUnselectedRadius => 16;
   double get thumbSelectedRadius => 24;
   EdgeInsets get thumbUnselectedMargin => EdgeInsets.all(
-        ((trackWidth - thumbUnselectedRadius) / 2) - outlineWidth,
+        ((trackHeight - thumbUnselectedRadius) / 2) - outlineWidth,
       );
   EdgeInsets get thumbSelectedMargin =>
-      EdgeInsets.all((trackWidth - thumbSelectedRadius) / 2);
+      EdgeInsets.all((trackHeight - thumbSelectedRadius) / 2);
   double get pressedThumbRadius => 28;
   EdgeInsets get pressedThumbSelectedMargin =>
-      EdgeInsets.all((trackWidth - pressedThumbRadius) / 2);
+      EdgeInsets.all((trackHeight - pressedThumbRadius) / 2);
   EdgeInsets get pressedThumbUnselectedMargin =>
-      EdgeInsets.all(((trackWidth - pressedThumbRadius) / 2) - outlineWidth);
+      EdgeInsets.all(((trackHeight - pressedThumbRadius) / 2) - outlineWidth);
 
   Color get enabledTrackSelectedColor => _colors.primary;
   Color get enabledTrackUnselectedColor => _colors.surfaceVariant;

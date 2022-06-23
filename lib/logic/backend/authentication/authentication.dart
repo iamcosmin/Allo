@@ -2,10 +2,11 @@ import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
+import 'package:allo/logic/backend/authentication/errors.dart';
 import 'package:allo/logic/backend/authentication/user.dart';
 import 'package:allo/logic/core.dart';
+import 'package:allo/logic/models/auth_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,45 +57,58 @@ Future cache({
 }
 
 class Authentication {
-  const Authentication();
-  CurrentUser get user {
-    return CurrentUser();
-  }
+  Authentication();
+  final CurrentUser user = CurrentUser();
 
   Future<User?> returnUserDetails() async {
     return FirebaseAuth.instance.currentUser;
   }
 
+  final stateProvider = StreamProvider<AuthState>((ref) {
+    return FirebaseAuth.instance.userChanges().asyncMap((event) {
+      if (event != null) {
+        if (event.emailVerified) {
+          return AuthState.signedIn;
+        }
+        return AuthState.emailNotVerified;
+      }
+      return AuthState.signedOut;
+    });
+  });
+
   //? [Login]
   /// Signs in an Allo user by email and password.
-  Future<bool> signIn({
+  Future<void> signIn({
     required String email,
     required String password,
     required BuildContext context,
     required ValueNotifier<String> error,
   }) async {
-    final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      return true;
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'user-disabled':
-          error.value = locales.errorUserDisabled;
+      final code = SignInError.fromString(e.code);
+      switch (code) {
+        case SignInError.userDisabled:
+          error.value = context.locale.errorUserDisabled;
           break;
-        case 'wrong-password':
-          error.value = locales.errorWrongPassword;
+        case SignInError.wrongPassword:
+          error.value = context.locale.errorWrongPassword;
           break;
-        case 'too-many-requests':
-          error.value = locales.errorTooManyRequests;
+        case SignInError.tooManyRequests:
+          error.value = context.locale.errorTooManyRequests;
           break;
-        default:
-          error.value = locales.errorUnknown;
+        case SignInError.invalidEmail:
+          error.value = context.locale.errorThisIsInvalid(context.locale.email);
           break;
+        case SignInError.userNotFound:
+          error.value = context.locale.errorUserNotFount;
+          break;
+        case SignInError.unknownError:
+          error.value = context.locale.errorUnknown;
       }
-      return false;
     }
   }
 
@@ -142,7 +156,7 @@ class Authentication {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            Core.navigation.push(route: const SetupVerification());
+            Navigation.push(route: const SetupVerification());
           } else {
             error.value = locales.errorPasswordRequirements;
           }
@@ -153,9 +167,23 @@ class Authentication {
         error.value = locales.errorEmptyFields;
       }
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'operation-not-allowed':
-          error.value = locales.errorOperationNotAllowed;
+      final code = SignUpError.fromString(e.code);
+      switch (code) {
+        case SignUpError.emailAlreadyInUse:
+          error.value = context.locale.errorEmailAlreadyInUse;
+          break;
+        case SignUpError.invalidEmail:
+          error.value = context.locale.errorThisIsInvalid(context.locale.email);
+          break;
+        case SignUpError.operationNotAllowed:
+          error.value = context.locale.errorOperationNotAllowed;
+          break;
+        case SignUpError.weakPassword:
+          error.value = context.locale.errorWeakPassword;
+          break;
+        case SignUpError.unknownError:
+          error.value = context.locale.errorUnknown;
+          break;
       }
     }
   }
@@ -172,17 +200,17 @@ class Authentication {
   }) async {
     error.value = null;
     final usernameReg = RegExp(r'^[a-zA-Z0-9_\.]+$');
-    final navigation = Core.navigation;
     final usernamesDoc =
         await Database.firestore.collection('users').doc('usernames').get();
     final usernames = usernamesDoc.data() != null
         ? usernamesDoc.data()!
         : throw Exception('The database could not return the usernames data.');
-    FocusScope.of(context).unfocus();
+    focusNode.unfocus();
+
     if (username != '') {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
-          navigation.push(
+          Navigation.push(
             route: SetupPassword(
               displayName: displayName,
               username: username,
@@ -213,7 +241,7 @@ class Authentication {
     try {
       final auth = FirebaseAuth.instance.currentUser;
       final db =
-          Database.firestore.collection('users').doc(await user.username);
+          Database.firestore.collection('users').doc(await user.getUsername());
       await db.update({
         'name': name,
       });
@@ -227,12 +255,14 @@ class Authentication {
     try {
       await FirebaseAuth.instance.signOut();
       ref.invalidate(Core.chats.chatListProvider.future);
-      Core.navigation.pushPermanent(context: context, route: const Setup());
+      Navigation.pushPermanent(context: context, route: const Setup());
     } catch (e) {
       throw Exception('Something is wrong...');
     }
   }
 
+  // TODO: Rebuild function but change username from the usernames document as well.
+  @Deprecated('')
   Future changeUsername({
     required String username,
     required BuildContext context,
@@ -242,14 +272,14 @@ class Authentication {
     try {
       final db = Database.firestore.collection('users');
       final prefs = await SharedPreferences.getInstance();
-      final data = await db.doc(await user.username).get().then(
+      final data = await db.doc(await user.getUsername()).get().then(
             (value) => (value.data() != null
                 ? value.data()!
                 : throw Exception(
                     'The database returned a null username list.',
                   )) as Map<String, Object>,
           );
-      await db.doc(await user.username).delete();
+      await db.doc(await user.getUsername()).delete();
       await db.doc(username).set(data);
       await prefs.setString('username', username);
     } catch (e) {
@@ -279,28 +309,17 @@ class Authentication {
     return initials;
   }
 
-  @Deprecated(
-    'Please use the getProfilePicture method, which returns a String to use with FirebaseImage. (gs://)',
-  )
-  Future<String?> getUserProfilePicture(String uid) async {
-    String? url;
-    try {
-      url = await FirebaseStorage.instance
-          .ref()
-          .child('profilePictures/$uid.png')
-          .getDownloadURL();
-    } on FirebaseException catch (_) {}
-    return url;
-  }
-
   /// Attention: This returns a gs:// link.
   /// This should only be used with [FirebaseImage].
-  String? getProfilePicture(String id, {bool? isGroup}) {
-    if (isGroup != null && isGroup) {
-      return 'gs://allo-ms.appspot.com/chats/$id.png';
-    } else {
-      return 'gs://allo-ms.appspot.com/profilePictures/$id.png';
+  String? getProfilePicture(String? id, {bool isGroup = false}) {
+    if (id != null) {
+      if (isGroup) {
+        return 'gs://allo-ms.appspot.com/chats/$id.png';
+      } else {
+        return 'gs://allo-ms.appspot.com/profilePictures/$id.png';
+      }
     }
+    return null;
   }
 
   Future sendPasswordResetEmail({
@@ -312,5 +331,55 @@ class Authentication {
       icon: Icons.mail_outline,
       text: context.locale.resetLinkSent,
     );
+  }
+
+  /// In case the user wants to change sensible information, you need to reauthenticate the user.
+  /// This does just that.
+  ///
+  /// Pairs with [VerifyIdentity]
+  Future reauthenticate(
+    String password,
+    ValueNotifier<String?> error,
+    BuildContext context,
+    Widget nextRoute,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final email = user?.email;
+    try {
+      await user?.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: email!, password: password),
+      );
+      Navigation.pushReplacement(nextRoute);
+    } on FirebaseAuthException catch (e) {
+      final code = ReauthenticationError.fromString(e.code);
+      switch (code) {
+        case ReauthenticationError.userMismatch:
+          error.value = 'Credential mismatch. Contact administrator.';
+          break;
+        case ReauthenticationError.userNotFound:
+          error.value = context.locale.errorUserNotFount;
+          break;
+        case ReauthenticationError.invalidCredential:
+          error.value = 'Invalid Credential';
+          break;
+        case ReauthenticationError.invalidEmail:
+          error.value = context.locale.errorThisIsInvalid(context.locale.email);
+          break;
+        case ReauthenticationError.wrongPassword:
+          error.value = context.locale.errorWrongPassword;
+          break;
+        case ReauthenticationError.invalidVerificationCode:
+          error.value = 'Invalid Verification Code';
+          break;
+        case ReauthenticationError.invalidVerificationId:
+          error.value = 'Invalid Verification Id';
+          break;
+        case ReauthenticationError.tooManyRequests:
+          error.value = context.locale.errorTooManyRequests;
+          break;
+        case ReauthenticationError.unknownError:
+          error.value = context.locale.errorUnknown;
+      }
+    }
   }
 }

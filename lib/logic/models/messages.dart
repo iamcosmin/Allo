@@ -56,6 +56,7 @@ abstract class Message {
   final Timestamp timestamp;
   final DocumentSnapshot documentSnapshot;
   final bool read;
+  final ReplyMessageData? reply;
 
   const Message({
     required this.name,
@@ -65,6 +66,7 @@ abstract class Message {
     required this.timestamp,
     required this.documentSnapshot,
     required this.read,
+    this.reply,
   });
 
   static Message? get({
@@ -82,8 +84,7 @@ abstract class Message {
       );
     }
     final data = documentSnapshot.data()! as Map;
-    final messageType =
-        MessageType.values.firstWhere((e) => e.name == data['type']);
+    final messageType = MessageType.fromString(data['type']);
 
     if (messageType == MessageType.text) {
       return TextMessage.fromDocumentSnapshot(
@@ -141,10 +142,9 @@ class TextMessage extends Message {
     required super.documentSnapshot,
     required super.read,
     required this.text,
-    this.reply,
+    super.reply,
   });
   final String text;
-  final ReplyMessageData? reply;
 
   /// Takes a [DocumentSnapshot] and returns [Message].
   static TextMessage? fromDocumentSnapshot({
@@ -183,10 +183,9 @@ class ImageMessage extends Message {
     required super.documentSnapshot,
     required super.read,
     required this.link,
-    this.reply,
+    super.reply,
   });
   final String link;
-  final ReplyMessageData? reply;
 
   factory ImageMessage.fromDocumentSnapshot({
     required DocumentSnapshot documentSnapshot,
@@ -212,7 +211,7 @@ class ImageMessage extends Message {
 }
 
 class UnsupportedMessage extends Message {
-  UnsupportedMessage({
+  UnsupportedMessage._({
     required super.name,
     required super.userId,
     required super.username,
@@ -227,7 +226,7 @@ class UnsupportedMessage extends Message {
   }) {
     final data =
         documentSnapshot.data() as Map<String, dynamic>? ?? (throw Exception());
-    return UnsupportedMessage(
+    return UnsupportedMessage._(
       name: data['name'],
       userId: data['uid'],
       username: data['username'],

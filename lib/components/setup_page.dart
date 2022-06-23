@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:allo/components/space.dart';
+import 'package:allo/logic/client/theme/page_transitions/slide_page_transition.dart';
 import 'package:allo/logic/core.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ const _kDividerHeroTag =
     "SETUP_PAGE_WIDGET_VERTICAL_DIVIDER_HERO_TAG_ansd9fn9w4nfawesf";
 const buttonBarHeroTag =
     "SETUP_PAGE_WIDGET_BUTTON_BAR_HERO_TAG_nas94nefa9we934fn9";
-const _kDefaultPadding = EdgeInsets.only(left: 20, right: 20);
+const _kDefaultPadding = EdgeInsets.only(left: 15, right: 15);
 
 abstract class _SetupScreen extends StatelessWidget {
   const _SetupScreen({
@@ -69,6 +70,7 @@ class SetupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Padding(
           padding: const EdgeInsets.only(top: 50),
           child: LayoutBuilder(
@@ -126,7 +128,7 @@ class _TitleWidget extends StatelessWidget {
         ),
         const Space(3),
         DefaultTextStyle(
-          style: context.theme.textTheme.displaySmall!.copyWith(
+          style: context.theme.textTheme.headlineLarge!.copyWith(
             color: context.theme.colorScheme.onSurface,
           ),
           child: Column(
@@ -176,7 +178,12 @@ class _ButtonBar extends HookConsumerWidget {
                 style: ButtonStyle(
                   visualDensity: VisualDensity.comfortable,
                   fixedSize: MaterialStateProperty.all(
-                    const Size.fromHeight(40),
+                    const Size.fromHeight(50),
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                 ),
               ),
@@ -196,16 +203,26 @@ class _ButtonBar extends HookConsumerWidget {
               style: ButtonStyle(
                 visualDensity: VisualDensity.comfortable,
                 fixedSize: MaterialStateProperty.all(
-                  const Size.fromHeight(40),
+                  const Size.fromHeight(50),
+                ),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                backgroundColor: MaterialStateProperty.all(
+                  context.theme.colorScheme.primary,
+                ),
+                foregroundColor: MaterialStateProperty.all(
+                  context.theme.colorScheme.onPrimary,
                 ),
               ),
               child: PageTransitionSwitcher(
                 transitionBuilder: (child, animation, secondaryAnimation) {
-                  return SharedAxisTransition(
+                  return SlidePageTransition(
                     animation: animation,
-                    secondaryAnimation: secondaryAnimation,
-                    transitionType: SharedAxisTransitionType.horizontal,
                     fillColor: Colors.transparent,
+                    secondaryAnimation: secondaryAnimation,
                     child: child,
                   );
                 },
@@ -214,7 +231,7 @@ class _ButtonBar extends HookConsumerWidget {
                         builder: (context, constraints) {
                           if (constraints.maxWidth > 300) {
                             return LinearProgressIndicator(
-                              color: context.colorScheme.onSurface,
+                              color: context.colorScheme.onPrimary,
                               backgroundColor: Colors.transparent,
                               minHeight: 5,
                             );
@@ -222,7 +239,7 @@ class _ButtonBar extends HookConsumerWidget {
                           return SizedBox.fromSize(
                             size: const Size(20, 20),
                             child: CircularProgressIndicator(
-                              color: context.colorScheme.primary,
+                              color: context.colorScheme.onPrimary,
                               strokeWidth: 3,
                             ),
                           );
@@ -273,7 +290,6 @@ class _SmallScreen extends _SetupScreen {
               child: Padding(
                 padding: _kDefaultPadding,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: body!,
                 ),
               ),

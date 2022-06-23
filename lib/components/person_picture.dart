@@ -19,6 +19,7 @@ class PersonPicture extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ClipOval(
       child: AnimatedContainer(
+        curve: Curves.fastOutSlowIn,
         color: Theme.of(context).colorScheme.primaryContainer,
         duration: const Duration(milliseconds: 250),
         key: key,
@@ -33,13 +34,14 @@ class PersonPicture extends HookConsumerWidget {
   }
 
   Widget _child(BuildContext context) {
-    if (profilePicture != null) {
+    if (profilePicture != null && profilePicture != '') {
       return Photo(
         key: key,
         url: profilePicture!,
         placeholder: AnimatedContainer(
+          curve: Curves.fastOutSlowIn,
           duration: const Duration(milliseconds: 250),
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.primaryContainer,
           child: Text(
             initials,
             style: TextStyle(
@@ -48,6 +50,20 @@ class PersonPicture extends HookConsumerWidget {
             ),
           ),
         ),
+        errorBuilder: (context, error, stacktrace) {
+          return AnimatedContainer(
+            curve: Curves.fastOutSlowIn,
+            duration: const Duration(milliseconds: 250),
+            color: Theme.of(context).colorScheme.primaryContainer,
+            child: Text(
+              initials,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontSize: radius / 2,
+              ),
+            ),
+          );
+        },
       );
     } else {
       return Text(

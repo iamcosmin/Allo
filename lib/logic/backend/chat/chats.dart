@@ -29,7 +29,7 @@ class ChatsLogic {
           .collection('chats')
           .where('type', isEqualTo: 'private')
           .where('participants', arrayContains: uid)
-          .where('participants', arrayContains: Core.auth.user.uid)
+          .where('participants', arrayContains: Core.auth.user.userId)
           .limit(1)
           .get();
       if (query.docs.isNotEmpty) {
@@ -55,7 +55,7 @@ class ChatsLogic {
             'type': 'private',
             'participants': [
               uid,
-              Core.auth.user.uid,
+              Core.auth.user.userId,
             ],
           },
         );
@@ -72,7 +72,7 @@ class ChatsLogic {
   });
 
   Future<List<Chat>> getChatsList() async {
-    final currentUid = Core.auth.user.uid;
+    final currentUid = Core.auth.user.userId;
     final chats = <Chat>[];
     if (FirebaseAuth.instance.currentUser == null) {
       return [];
@@ -81,7 +81,6 @@ class ChatsLogic {
         .collection('chats')
         .where('participants', arrayContains: currentUid)
         .get();
-    print('HERE!');
     if (rawChats.docs.isNotEmpty) {
       for (final rawChat in rawChats.docs) {
         final rawChatInfo = rawChat.data();

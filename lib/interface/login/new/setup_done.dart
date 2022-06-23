@@ -9,7 +9,7 @@ class SetupDone extends HookWidget {
   @override
   Widget build(BuildContext context) {
     void onSubmit() {
-      Core.navigation.push(route: const TabbedNavigator());
+      Navigation.push(route: const TabbedNavigator());
     }
 
     return SetupPage(

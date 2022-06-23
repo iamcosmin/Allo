@@ -1,11 +1,13 @@
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
+import 'package:allo/logic/client/theme/page_transitions/slide_page_transition.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../logic/client/theme/animations.dart';
 import 'home.dart';
 import 'settings.dart';
 
@@ -85,14 +87,22 @@ class TabbedNavigator extends HookConsumerWidget {
           // The page.
           Expanded(
             child: PageTransitionSwitcher(
+              duration: Duration(
+                milliseconds: const Motion().animationDuration.short4Ms.toInt(),
+              ),
               reverse: (previousSelected ?? 0) > selected.value ? true : false,
               child: _kPages[selected.value],
               transitionBuilder: (child, animation, secondaryAnimation) {
                 if (animations.setting) {
+                  if (width < 700) {
+                    return SlidePageTransition(
+                      secondaryAnimation: secondaryAnimation,
+                      animation: animation,
+                      child: child,
+                    );
+                  }
                   return SharedAxisTransition(
-                    transitionType: width > 700
-                        ? SharedAxisTransitionType.vertical
-                        : SharedAxisTransitionType.horizontal,
+                    transitionType: SharedAxisTransitionType.horizontal,
                     fillColor: Theme.of(context).backgroundColor,
                     animation: animation,
                     secondaryAnimation: secondaryAnimation,

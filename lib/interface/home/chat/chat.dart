@@ -1,7 +1,8 @@
+import 'package:allo/components/chats/chat_messages_list.dart';
 import 'package:allo/components/chats/message_input.dart';
+import 'package:allo/components/empty.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
-import 'package:allo/interface/home/chat/chat_messages_list.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../components/material3/icon_button.dart';
 import '../../../logic/client/theme/theme.dart';
 
 class ChatScreen extends HookConsumerWidget {
@@ -62,7 +64,7 @@ class ChatScreen extends HookConsumerWidget {
     //                   reverseScroll: true,
     //                   topAppBar: SmallTopAppBar(
     //                     title: InkWell(
-    //                       onTap: () => Core.navigation
+    //                       onTap: () => Navigation
     //                           .push(route: ChatDetails(chat: chat)),
     //                       child: Text(
     //                         chat.title,
@@ -106,6 +108,12 @@ class ChatScreen extends HookConsumerWidget {
       data: theme(brightness, ref, context, colorScheme: scheme.value),
       child: Scaffold(
         appBar: AppBar(
+          leading: (ModalRoute.of(context)!.canPop)
+              ? const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: MBackButton(),
+                )
+              : const Empty(),
           actions: [
             Container(
               alignment: Alignment.bottomLeft,
@@ -125,7 +133,7 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ],
           title: InkWell(
-            onTap: () => Core.navigation.push(route: ChatDetails(chat: chat)),
+            onTap: () => Navigation.push(route: ChatDetails(chat: chat)),
             child: Text(
               chat.title,
               style: const TextStyle(
@@ -140,9 +148,8 @@ class ChatScreen extends HookConsumerWidget {
             children: [
               Expanded(
                 child: ChatMessagesList(
-                  chatId: chat.id,
-                  chatType:
-                      chat is PrivateChat ? ChatType.private : ChatType.group,
+                  key: key,
+                  chat: chat,
                   inputModifiers: inputModifiers,
                 ),
               ),

@@ -58,16 +58,30 @@ class SScaffold extends StatelessWidget {
             ),
           ),
         ],
-        body: Builder(
-          builder: (context) {
-            if (refreshIndicator != null) {
-              return RefreshIndicator(
-                onRefresh: refreshIndicator!.onRefresh,
-                backgroundColor: refreshIndicator!.backgroundColor,
-                color: refreshIndicator!.color,
-                displacement: topAppBar.collapsedHeight +
-                    MediaQuery.of(context).viewPadding.top,
-                child: CustomScrollView(
+        body: SafeArea(
+          top: false,
+          child: Builder(
+            builder: (context) {
+              if (refreshIndicator != null) {
+                return RefreshIndicator(
+                  onRefresh: refreshIndicator!.onRefresh,
+                  backgroundColor: refreshIndicator!.backgroundColor,
+                  color: refreshIndicator!.color,
+                  displacement: topAppBar.collapsedHeight +
+                      MediaQuery.of(context).viewPadding.top,
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverOverlapInjector(
+                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                          context,
+                        ),
+                      ),
+                      ...slivers
+                    ],
+                  ),
+                );
+              } else {
+                return CustomScrollView(
                   slivers: [
                     SliverOverlapInjector(
                       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
@@ -76,21 +90,10 @@ class SScaffold extends StatelessWidget {
                     ),
                     ...slivers
                   ],
-                ),
-              );
-            } else {
-              return CustomScrollView(
-                slivers: [
-                  SliverOverlapInjector(
-                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                      context,
-                    ),
-                  ),
-                  ...slivers
-                ],
-              );
-            }
-          },
+                );
+              }
+            },
+          ),
         ),
       ),
     );

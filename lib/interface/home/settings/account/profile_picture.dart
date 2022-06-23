@@ -6,7 +6,7 @@ import 'package:animated_progress/animated_progress.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../../components/slivers/sliver_scaffold.dart';
+import '../../../../components/slivers/sliver_scaffold.dart';
 
 class ProfilePictureSettings extends HookWidget {
   const ProfilePictureSettings({super.key});
@@ -16,7 +16,6 @@ class ProfilePictureSettings extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final locales = S.of(context);
-    final loaded = useState(false);
     final percentage = useState(0.0);
 
     return SScaffold(
@@ -41,7 +40,7 @@ class ProfilePictureSettings extends HookWidget {
                   ),
                   PersonPicture(
                     radius: 150,
-                    profilePicture: Core.auth.user.profilePicture,
+                    profilePicture: Core.auth.user.profilePictureUrl,
                     initials: Core.auth.user.nameInitials,
                   ),
                 ],
@@ -52,7 +51,6 @@ class ProfilePictureSettings extends HookWidget {
               leading: const Icon(Icons.upgrade_outlined),
               title: Text(locales.changeProfilePicture),
               onTap: () => Core.auth.user.updateProfilePicture(
-                loaded: loaded,
                 percentage: percentage,
                 context: context,
               ),

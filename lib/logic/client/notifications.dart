@@ -18,7 +18,7 @@ String _title({
   required String chatName,
   required String senderName,
 }) {
-  if (getChatTypeFromString(type ?? 'group') == ChatType.private) {
+  if (ChatType.fromString(type ?? 'group') == ChatType.private) {
     return senderName;
   } else {
     return chatName;
@@ -26,9 +26,9 @@ String _title({
 }
 
 /// Creates an unique ID for notifications, requires the max value.
-int _createUniqueID(int maxValue) {
+int _createUniqueID() {
   final random = Random();
-  return random.nextInt(maxValue);
+  return random.nextInt(AwesomeNotifications.maxID);
 }
 
 class Notifications {
@@ -38,7 +38,7 @@ class Notifications {
   ///! This method does not handle setting listeners anymore, as
   ///! the setListeners method should be only used in the first render
   ///! of the widget.
-  Future setupNotifications() async {
+  static Future setupNotifications() async {
     final notifications = AwesomeNotifications();
     await notifications.initialize(
       'resource://drawable/res_notification',
@@ -79,11 +79,11 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
   final String? sentPicture = message.data['photo'];
   final String? chatId = message.data['toChat'];
   final String smallNotificationText =
-      getChatTypeFromString(message.data['type']) == ChatType.group
+      ChatType.fromString(message.data['type']) == ChatType.group
           ? message.data['chatName']
           : 'Privat';
   final notificationLayout =
-      getChatTypeFromString(message.data['type']) == ChatType.group
+      ChatType.fromString(message.data['type']) == ChatType.group
           ? NotificationLayout.MessagingGroup
           : NotificationLayout.Messaging;
   // ignore: omit_local_variable_types
@@ -98,16 +98,16 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
     'chatType': message.data['type'] ?? 'group',
     'uid': uid ?? 'no-uid'
   };
-  if (uid != Core.auth.user.uid) {
+  if (uid != Core.auth.user.userId) {
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: _createUniqueID(AwesomeNotifications.maxID),
+        id: _createUniqueID(),
         title: senderName,
         body: sentPicture != null ? 'Imagine' : text,
         channelKey: 'conversations',
         roundedLargeIcon: true,
         largeIcon: profilePicture,
-        notificationLayout: NotificationLayout.MessagingGroup,
+        notificationLayout: notificationLayout,
         category: NotificationCategory.Message,
         roundedBigPicture: true,
         bigPicture: sentPicture,
@@ -132,11 +132,11 @@ class _NotificationController {
     final payload = action.payload!;
 
     final notificationLayout =
-        getChatTypeFromString(payload['chatType']!) == ChatType.group
+        ChatType.fromString(payload['chatType']!) == ChatType.group
             ? NotificationLayout.MessagingGroup
             : NotificationLayout.Messaging;
     final smallNotificationText =
-        getChatTypeFromString(payload['chatType']!) == ChatType.group
+        ChatType.fromString(payload['chatType']!) == ChatType.group
             ? payload['chatName']!
             : 'Privat';
     if (action.actionType == ActionType.SilentBackgroundAction &&
@@ -157,7 +157,7 @@ class _NotificationController {
       };
       await AwesomeNotifications().createNotification(
         content: NotificationContent(
-          id: _createUniqueID(AwesomeNotifications.maxID),
+          id: _createUniqueID(),
           title: 'Eu',
           body: action.buttonKeyInput,
           channelKey: 'conversations',
@@ -179,7 +179,7 @@ class _NotificationController {
         ],
       );
     } else {
-      Core.navigation.push(
+      Navigation.push(
         route: ChatScreen(
           chat: _getChat(action.payload!),
         ),
@@ -188,7 +188,7 @@ class _NotificationController {
   }
 
   static Chat _getChat(Map<String, String?> payload) {
-    final chatType = getChatTypeFromString(payload['chatType'] ?? '???');
+    final chatType = ChatType.fromString(payload['chatType'] ?? '???');
     if (chatType == ChatType.private) {
       return PrivateChat(
         name: payload['chatName'] ?? '???',

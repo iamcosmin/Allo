@@ -1,4 +1,5 @@
 import 'package:allo/components/image_view.dart';
+import 'package:allo/components/material3/tile.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/space.dart';
@@ -46,7 +47,7 @@ void _changeTheme({
                   await Database.firestore.collection('chats').doc(id).update({
                     'theme': color,
                   });
-                  Navigator.of(context).pop();
+                  Navigation.pop();
                 },
                 child: Stack(
                   alignment: Alignment.center,
@@ -117,8 +118,7 @@ class ChatDetails extends HookConsumerWidget {
                 splashColor: const Color(0x00000000),
                 onTap: profilePicture == null
                     ? null
-                    : () =>
-                        Core.navigation.push(route: ImageView(profilePicture)),
+                    : () => Navigation.push(route: ImageView(profilePicture)),
                 child: PersonPicture(
                   profilePicture: profilePicture,
                   radius: 150,
@@ -131,31 +131,29 @@ class ChatDetails extends HookConsumerWidget {
               alignment: Alignment.topCenter,
               child: Text(
                 chat.title,
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: context.theme.textTheme.headlineLarge!
+                    .copyWith(fontWeight: FontWeight.bold),
               ),
             ),
             const Space(4),
-            Container(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.brush_outlined),
-                    title: Text(locales.theme),
-                    onTap: () async =>
-                        _changeTheme(context: context, id: chat.id),
-                  ),
-                  if (members.setting == true) ...[
-                    ListTile(
-                      leading: const Icon(Icons.people_alt_outlined),
-                      title: Text(locales.members),
-                      onTap: () => Core.navigation
-                          .push(route: ChatMembersPage(chatId: chat.id)),
+            Column(
+              children: [
+                Tile(
+                  leading: const Icon(Icons.brush_outlined),
+                  title: Text(locales.theme),
+                  onTap: () async =>
+                      _changeTheme(context: context, id: chat.id),
+                ),
+                if (members.setting == true) ...[
+                  Tile(
+                    leading: const Icon(Icons.people_alt_outlined),
+                    title: Text(locales.members),
+                    onTap: () => Navigation.push(
+                      route: ChatMembersPage(chatId: chat.id),
                     ),
-                  ]
-                ],
-              ),
+                  ),
+                ]
+              ],
             )
           ]),
         )

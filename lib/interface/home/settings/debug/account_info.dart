@@ -16,7 +16,7 @@ class AccountInfo extends HookWidget {
     useEffect(
       () {
         Future.microtask(() async {
-          username.value = await Core.auth.user.username;
+          username.value = await Core.auth.user.getUsername();
         });
         return;
       },
@@ -42,7 +42,7 @@ class AccountInfo extends HookWidget {
               ),
               const Padding(padding: EdgeInsets.only(top: 20)),
               SelectableText(
-                '${locales.uid}: ${Core.auth.user.uid}',
+                '${locales.uid}: ${Core.auth.user.userId}',
                 style: const TextStyle(fontSize: 17),
               ),
               const Padding(padding: EdgeInsets.only(top: 20)),
@@ -52,7 +52,7 @@ class AccountInfo extends HookWidget {
               ),
               const Padding(padding: EdgeInsets.only(top: 20)),
               SelectableText(
-                '${locales.profilePicture} ${Core.auth.user.profilePicture ?? locales.noProfilePicture}',
+                '${locales.profilePicture} ${Core.auth.user.profilePictureUrl ?? locales.noProfilePicture}',
                 style: const TextStyle(fontSize: 17),
               ),
               const Padding(padding: EdgeInsets.only(top: 20)),

@@ -1,3 +1,4 @@
+import 'package:allo/components/empty.dart';
 import 'package:flutter/material.dart';
 
 enum _TopAppBarType { medium, large }
@@ -65,10 +66,9 @@ class MediumTopAppBar extends TopAppBar {
       expandedHeight: expandedHeight,
       collapsedHeight: collapsedHeight,
       pinned: true,
-      leading: leading,
+      leading: const Empty(),
       flexibleSpace: _M3FlexibleSpaceBar(
         title: title,
-        hasLeading: leading != null || Navigator.canPop(context),
         type: _TopAppBarType.medium,
       ),
     );
@@ -90,11 +90,10 @@ class LargeTopAppBar extends TopAppBar {
       expandedHeight: expandedHeight,
       collapsedHeight: collapsedHeight,
       pinned: true,
-      leading: leading,
+      leading: const Empty(),
       flexibleSpace: _M3FlexibleSpaceBar(
         title: title,
         type: _TopAppBarType.large,
-        hasLeading: leading != null || Navigator.canPop(context),
       ),
     );
   }
@@ -128,11 +127,12 @@ class _M3FlexibleSpaceBar extends StatelessWidget {
   const _M3FlexibleSpaceBar({
     required this.title,
     required this.type,
-    required this.hasLeading,
+    // ignore: unused_element
+    this.leading = const BackButton(),
     // ignore: unused_element
     super.key,
   });
-  final bool hasLeading;
+  final Widget leading;
   final Widget title;
   final _TopAppBarType type;
   @override
@@ -250,24 +250,41 @@ class _M3FlexibleSpaceBar extends StatelessWidget {
             size: Size.fromHeight(settings.minExtent),
             child: ColoredBox(
               color: backgroundColor,
-              // NOTE: settings.minExtent includes both toolbarHeight and the top system inset.
-              // This is to ensure that the TopAppBar backgroundColor will be applied to the status bar.
-              child: Align(
-                alignment:
-                    centerTitle() ? Alignment.center : Alignment.centerLeft,
-                child: Opacity(
-                  opacity: collapsedTitleOpacity,
-                  child: Padding(
-                    padding: centerTitle()
-                        ? config.collapsedCenteredTitlePadding!
-                            .add(EdgeInsets.only(top: systemPadding.top))
-                        : config.collapsedTitlePadding!
-                            .add(EdgeInsets.only(top: systemPadding.top)),
-                    child: DefaultTextStyle(
-                      style: config.collapsedTextStyle!,
-                      child: title,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(5, systemPadding.top, 5, 0),
+                child: Row(
+                  children: [
+                    if (ModalRoute.of(context)!.canPop) ...[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: ClipOval(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: leading,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Align(
+                        alignment: centerTitle()
+                            ? Alignment.center
+                            : Alignment.centerLeft,
+                        child: Opacity(
+                          opacity: collapsedTitleOpacity,
+                          child: DefaultTextStyle(
+                            style: config.collapsedTextStyle!,
+                            child: title,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),

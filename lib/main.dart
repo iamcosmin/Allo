@@ -1,24 +1,25 @@
 import 'package:allo/firebase_options.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/email_not_verified.dart';
 import 'package:allo/interface/login/main_setup.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:allo/logic/client/theme/page_transitions/slide_page_transition.dart';
 import 'package:allo/logic/client/theme/theme.dart';
 import 'package:allo/logic/core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:allo/logic/models/auth_state.dart';
+import 'package:animations/animations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'interface/home/tabbed_navigator.dart';
-import 'logic/client/notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,7 @@ void main() async {
   );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (!kIsWeb) {
-    await Core.notifications.setupNotifications();
+    await Notifications.setupNotifications();
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
   await FirebaseRemoteConfig.instance.fetchAndActivate();
@@ -50,7 +51,7 @@ void main() async {
   // );
   runApp(
     ProviderScope(
-      overrides: await Core.getOverrides(),
+      overrides: await Keys.getOverrides(),
       child: const InnerApp(),
     ),
   );
@@ -61,19 +62,18 @@ class InnerApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final darkState = useSetting(ref, darkMode);
+    final authState = ref.watch(Core.auth.stateProvider);
     useEffect(
       () {
         const Notifications().ensureListenersActive();
-        return null;
+        return;
       },
       const [],
     );
-    timeDilation = 1.0;
-
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
+      navigatorKey: Navigation.navigatorKey,
       scaffoldMessengerKey: Keys.scaffoldMessengerKey,
       themeMode: ThemeMode.values.firstWhere(
         (element) => darkState.setting == element.toString(),
@@ -87,26 +87,65 @@ class InnerApp extends HookConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snap) {
-          if (snap.hasData) {
-            return const TabbedNavigator();
-          } else if (snap.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(
-                child: SizedBox(
-                  height: 60,
-                  width: 60,
-                  child: CircularProgressIndicator(),
-                ),
+      home: authState.when(
+        data: (data) {
+          return PageTransitionSwitcher(
+            transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+              return SlidePageTransition(
+                secondaryAnimation: secondaryAnimation,
+                animation: primaryAnimation,
+                child: child,
+              );
+            },
+            child: Builder(
+              builder: (context) {
+                switch (data) {
+                  case AuthState.emailNotVerified:
+                    return const EmailNotVerifiedPage();
+                  case AuthState.signedOut:
+                    return const Setup();
+                  case AuthState.signedIn:
+                    return const TabbedNavigator();
+                }
+              },
+            ),
+          );
+        },
+        error: (_, __) => const Center(
+          child: Text('Error!'),
+        ),
+        loading: () {
+          return const Scaffold(
+            body: Center(
+              child: SizedBox(
+                height: 60,
+                width: 60,
+                child: CircularProgressIndicator(),
               ),
-            );
-          } else {
-            return const Setup();
-          }
+            ),
+          );
         },
       ),
+      // home: StreamBuilder(
+      //   stream: FirebaseAuth.instance.authStateChanges(),
+      //   builder: (context, snap) {
+      //     if (snap.hasData) {
+      //       return const TabbedNavigator();
+      //     } else if (snap.connectionState == ConnectionState.waiting) {
+      //       return const Scaffold(
+      //         body: Center(
+      //           child: SizedBox(
+      //             height: 60,
+      //             width: 60,
+      //             child: CircularProgressIndicator(),
+      //           ),
+      //         ),
+      //       );
+      //     } else {
+      //       return const Setup();
+      //     }
+      //   },
+      // ),
     );
   }
 }

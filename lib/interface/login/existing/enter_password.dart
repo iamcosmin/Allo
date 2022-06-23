@@ -24,7 +24,7 @@ class EnterPassword extends HookConsumerWidget {
     void onSubmit() async {
       try {
         await login.login(controller.text);
-        Core.navigation.pushPermanent(route: const TabbedNavigator());
+        Navigation.pushPermanent(route: const TabbedNavigator());
       } on FirebaseAuthException catch (e) {
         switch (e.code) {
           case 'user-disabled':

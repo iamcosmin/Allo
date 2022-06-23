@@ -3,6 +3,7 @@ import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/example.dart';
 import 'package:allo/interface/home/settings/debug/example_sliver.dart';
+import 'package:allo/interface/home/settings/debug/test_notifications.dart';
 import 'package:allo/interface/home/settings/debug/typingbubble.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
@@ -10,9 +11,9 @@ import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../components/material3/tile.dart';
 import '../../../../components/settings_tile.dart';
 import '../../../../components/slivers/sliver_scaffold.dart';
-import '../../../../components/tile.dart';
 
 class C extends HookConsumerWidget {
   const C({super.key});
@@ -24,6 +25,7 @@ class C extends HookConsumerWidget {
     final editMessage = useSetting(ref, editMessageDebug);
     final members = useSetting(ref, membersDebug);
     final iOSMode = useSetting(ref, emulateIOSBehaviour);
+    final newAccountSettings = useSetting(ref, revampedAccountSettingsDebug);
     return SScaffold(
       topAppBar: LargeTopAppBar(
         title: Text(locales.internalMenu),
@@ -40,14 +42,14 @@ class C extends HookConsumerWidget {
               ),
               child: Text(
                 locales.internalMenuDisclamer,
-                style: const TextStyle(color: Colors.grey),
+                style: TextStyle(color: context.colorScheme.error),
               ),
             ),
             Tile(
               title: const Text(
-                'Example App (example.dart)',
+                'Debug Testing',
               ),
-              onTap: () => Core.navigation.push(route: const TestApp()),
+              onTap: () => Navigation.push(route: const TestApp()),
             ),
             Tile(
               title: Text(locales.internalTypingIndicatorDemo),
@@ -73,51 +75,53 @@ class C extends HookConsumerWidget {
                 ),
               ),
             ),
+            Tile(
+              title: const Text('Test Notifications'),
+              onTap: () =>
+                  Navigation.push(route: const TestNotificationsPage()),
+            ),
             InkWell(
-              onLongPress: () => reactions.delete(
-                context,
-              ),
+              onLongPress: () => reactions.delete(context),
               child: SettingTile(
                 title: locales.reactions,
                 preference: reactions,
               ),
             ),
             InkWell(
-              onLongPress: () => editMessage.delete(
-                context,
-              ),
+              onLongPress: () => editMessage.delete(context),
               child: SettingTile(
                 title: locales.editMessages,
                 preference: editMessage,
               ),
             ),
             InkWell(
-              onLongPress: () => conversations.delete(
-                context,
-              ),
+              onLongPress: () => conversations.delete(context),
               child: SettingTile(
                 title: locales.createNewChats,
                 preference: conversations,
               ),
             ),
             InkWell(
-              onLongPress: () => members.delete(
-                context,
-              ),
+              onLongPress: () => members.delete(context),
               child: SettingTile(
                 title: locales.enableParticipantsList,
                 preference: members,
               ),
             ),
             InkWell(
-              onLongPress: () => iOSMode.delete(
-                context,
-              ),
+              onLongPress: () => iOSMode.delete(context),
               child: SettingTile(
                 title: 'Cupertino behaviour',
                 preference: iOSMode,
               ),
             ),
+            InkWell(
+              onLongPress: () => newAccountSettings.delete(context),
+              child: SettingTile(
+                title: 'New Account Settings',
+                preference: newAccountSettings,
+              ),
+            )
           ]),
         )
       ],

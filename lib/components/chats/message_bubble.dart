@@ -1,8 +1,8 @@
 import 'package:allo/components/chats/message_input.dart';
+import 'package:allo/components/chats/swipe_to.dart';
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
-import 'package:allo/components/swipe_to.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
@@ -17,6 +17,8 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../logic/models/chat.dart';
 
 void _messageOptions(
   BuildContext context,
@@ -161,64 +163,30 @@ void _deleteMessage({
   );
 }
 
-class UserInfo {
-  const UserInfo({required this.name, required this.userId, this.profilePhoto});
-  final String name;
-  final String userId;
-  final String? profilePhoto;
-}
-
-class ChatInfo {
-  const ChatInfo({required this.type, required this.id});
-  final ChatType type;
-  final String id;
-}
-
-class MessageInfo {
-  const MessageInfo({
-    required this.id,
-    required this.text,
-    required this.isNextSenderSame,
-    required this.isPreviousSenderSame,
-    required this.type,
-    required this.image,
-    required this.isRead,
-    required this.time,
-    required this.isLast,
-    required this.reply,
-  });
-  final String id;
-  final String text;
-  final bool isNextSenderSame;
-  final bool isPreviousSenderSame;
-  final bool isLast;
-  final MessageType type;
-  final String? image;
-  final bool isRead;
-  final DateTime time;
-  final ReplyMessageData? reply;
-}
-
 class Bubble extends HookConsumerWidget {
   const Bubble({
     required Key key,
-    required this.user,
     required this.chat,
     required this.message,
     required this.colorScheme,
     required this.modifiers,
+    required this.isNextSenderSame,
+    required this.isPreviousSenderSame,
+    required this.isLast,
   }) : super(key: key);
-  final UserInfo user;
-  final ChatInfo chat;
-  final MessageInfo message;
+  final Chat chat;
+  final Message message;
   final ColorScheme colorScheme;
+  final bool isNextSenderSame;
+  final bool isPreviousSenderSame;
+  final bool isLast;
   final ValueNotifier<InputModifier?> modifiers;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locales = S.of(context);
-    final isNotCurrentUser = Core.auth.user.uid != user.userId;
-    final nameInitials = Core.auth.returnNameInitials(user.name);
+    final isNotCurrentUser = Core.auth.user.userId != message.userId;
+    final nameInitials = Core.auth.returnNameInitials(message.name);
     final screenWidth = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);
     final selected = useState(false);
@@ -226,39 +194,49 @@ class Bubble extends HookConsumerWidget {
       r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$',
     );
     final showNameConditionsMet = isNotCurrentUser &&
-        chat.type == ChatType.group &&
-        message.isPreviousSenderSame == false;
+        Chat.getType(chat) == ChatType.group &&
+        isPreviousSenderSame == false;
     final showProfilePictureConditionsMet = isNotCurrentUser &&
-        chat.type == ChatType.group &&
-        message.isNextSenderSame == false;
-    final showReadIndicator =
-        !isNotCurrentUser && message.isLast && message.isRead;
+        Chat.getType(chat) == ChatType.group &&
+        isNextSenderSame == false;
+    final showReadIndicator = !isNotCurrentUser && isLast && message.read;
     // Paddings
     final betweenBubblesPadding = EdgeInsets.only(
-      top: message.isPreviousSenderSame ? 1 : 10,
-      bottom: message.isNextSenderSame ? 1 : 10,
+      top: isPreviousSenderSame ? 1 : 10,
+      bottom: isNextSenderSame ? 1 : 10,
       left: 10,
       right: 10,
     );
     // Radius
     final receivedMessageRadius = BorderRadius.only(
-      topLeft: Radius.circular(message.isPreviousSenderSame ? 5 : 20),
-      bottomLeft: Radius.circular(message.isNextSenderSame ? 5 : 20),
+      topLeft: Radius.circular(isPreviousSenderSame ? 5 : 20),
+      bottomLeft: Radius.circular(isNextSenderSame ? 5 : 20),
       topRight: const Radius.circular(20),
       bottomRight: const Radius.circular(20),
     );
     final sentMessageRadius = BorderRadius.only(
-      topRight: Radius.circular(message.isPreviousSenderSame ? 5 : 20),
-      bottomRight: Radius.circular(message.isNextSenderSame ? 5 : 20),
+      topRight: Radius.circular(isPreviousSenderSame ? 5 : 20),
+      bottomRight: Radius.circular(isNextSenderSame ? 5 : 20),
       topLeft: const Radius.circular(20),
       bottomLeft: const Radius.circular(20),
     );
     final messageRadius =
         isNotCurrentUser ? receivedMessageRadius : sentMessageRadius;
+    final messageType = MessageType.fromMessage(message);
+    String messageBody() {
+      switch (MessageType.fromMessage(message)) {
+        case MessageType.text:
+          return (message as TextMessage).text;
+        case MessageType.image:
+          return context.locale.image;
+        case MessageType.unsupported:
+          return context.locale.unsupportedMessage;
+      }
+    }
 
     useEffect(
       () {
-        if (isNotCurrentUser && message.isRead == false) {
+        if (isNotCurrentUser && message.read == false) {
           Core.chat(chat.id).messages.markAsRead(messageId: message.id);
         }
         return;
@@ -275,7 +253,7 @@ class Bubble extends HookConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 55, bottom: 2),
               child: Text(
-                user.name,
+                message.name,
                 style: TextStyle(fontSize: 12, color: theme.hintColor),
               ),
             ),
@@ -297,8 +275,8 @@ class Bubble extends HookConsumerWidget {
             ),
             onLeftSwipe: () {
               modifiers.value = InputModifier(
-                title: user.name,
-                body: message.text,
+                title: message.name,
+                body: messageBody(),
                 icon: Icons.reply_rounded,
                 action: ModifierAction(
                   type: ModifierType.reply,
@@ -316,20 +294,21 @@ class Bubble extends HookConsumerWidget {
                   if (showProfilePictureConditionsMet) ...[
                     PersonPicture(
                       radius: 36,
-                      profilePicture: user.profilePhoto,
+                      profilePicture:
+                          Core.auth.getProfilePicture(message.userId),
                       initials: nameInitials,
                     ),
                     const Padding(padding: EdgeInsets.only(left: 10)),
-                  ] else if (chat.type == ChatType.private)
+                  ] else if (Chat.getType(chat) == ChatType.private)
                     ...[]
                   else ...[
                     const Padding(padding: EdgeInsets.only(left: 46)),
                   ],
                   InkWell(
-                    onTap: message.type == MessageType.image
-                        ? () => Core.navigation.push(
+                    onTap: messageType == MessageType.image
+                        ? () => Navigation.push(
                               route: ImageView(
-                                message.image!,
+                                (message as ImageMessage).link,
                                 colorScheme: colorScheme,
                               ),
                             )
@@ -338,10 +317,10 @@ class Bubble extends HookConsumerWidget {
                       context,
                       message.id,
                       chat.id,
-                      message.text,
+                      messageBody(),
                       ref,
                       !isNotCurrentUser,
-                      message.type == MessageType.image,
+                      messageType == MessageType.image,
                       colorScheme,
                     ),
                     borderRadius: messageRadius,
@@ -359,7 +338,7 @@ class Bubble extends HookConsumerWidget {
                           ),
                           constraints:
                               BoxConstraints(maxWidth: screenWidth / 1.5),
-                          padding: message.type != MessageType.image
+                          padding: messageType != MessageType.image
                               ? const EdgeInsets.only(
                                   top: 8,
                                   bottom: 8,
@@ -371,7 +350,7 @@ class Bubble extends HookConsumerWidget {
                           duration: const Duration(milliseconds: 250),
                           child: Builder(
                             builder: (context) {
-                              if (message.type == MessageType.image) {
+                              if (messageType == MessageType.image) {
                                 return Container(
                                   constraints: BoxConstraints(
                                     maxWidth: screenWidth / 1.5,
@@ -379,7 +358,7 @@ class Bubble extends HookConsumerWidget {
                                   child: ClipRRect(
                                     borderRadius: messageRadius,
                                     child: CachedNetworkImage(
-                                      imageUrl: message.image!,
+                                      imageUrl: (message as ImageMessage).link,
                                     ),
                                   ),
                                 );
@@ -500,7 +479,7 @@ class Bubble extends HookConsumerWidget {
                                               ),
                                       ),
                                       Linkify(
-                                        text: message.text,
+                                        text: messageBody(),
                                         onOpen: (link) async {
                                           final uri = Uri.parse(link.url);
                                           if (await canLaunchUrl(uri)) {
@@ -511,7 +490,7 @@ class Bubble extends HookConsumerWidget {
                                         },
                                         style: TextStyle(
                                           fontSize:
-                                              regexEmoji.hasMatch(message.text)
+                                              regexEmoji.hasMatch(messageBody())
                                                   ? 30
                                                   : 16,
                                           color: isNotCurrentUser
@@ -544,7 +523,7 @@ class Bubble extends HookConsumerWidget {
                             children: [
                               Text(
                                 !isNotCurrentUser
-                                    ? (message.isRead
+                                    ? (message.read
                                         ? locales.read
                                         : locales.sent)
                                     : locales.received,
@@ -556,7 +535,8 @@ class Bubble extends HookConsumerWidget {
                               ),
                               const Padding(padding: EdgeInsets.only(left: 3)),
                               Text(
-                                DateFormat.Hm().format(message.time),
+                                DateFormat.Hm()
+                                    .format(message.timestamp.toDate()),
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey,

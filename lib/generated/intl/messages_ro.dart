@@ -236,6 +236,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "useSystemColor": MessageLookupByLibrary.simpleMessage(
             "Folosește culoarea de sistem"),
         "username": MessageLookupByLibrary.simpleMessage("Nume de utilizator"),
+        "verifyYourIdentity":
+            MessageLookupByLibrary.simpleMessage("Verifică-ți identitatea"),
         "version": MessageLookupByLibrary.simpleMessage("Versiune"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Bine ai revenit")
       };

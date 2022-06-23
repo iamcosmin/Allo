@@ -14,7 +14,7 @@ class SetupPersonalize extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dark = useSetting(ref, darkMode);
     void onSubmit() {
-      Core.navigation.push(route: const SetupDone());
+      Navigation.push(route: const SetupDone());
     }
 
     return SetupPage(

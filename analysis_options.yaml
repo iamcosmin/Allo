@@ -40,4 +40,3 @@ linter:
 analyzer:
   exclude: 
     - 'lib/generated/*'
-    - 'lib/components/material3/*'

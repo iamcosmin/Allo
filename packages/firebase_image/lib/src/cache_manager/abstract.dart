@@ -39,10 +39,14 @@ abstract class AbstractFirebaseImageCacheManager {
 
   Future<int> getRemoteVersion(
       FirebaseImageObject object, int defaultValue) async {
-    return (await object.reference.getMetadata())
-            .updated
-            ?.millisecondsSinceEpoch ??
-        defaultValue;
+    try {
+      return (await object.reference.getMetadata())
+              .updated
+              ?.millisecondsSinceEpoch ??
+          defaultValue;
+    } catch (e) {
+      return 0;
+    }
   }
 
   Future<void> checkForUpdate(

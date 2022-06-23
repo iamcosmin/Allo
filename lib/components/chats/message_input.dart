@@ -33,7 +33,7 @@ void _attachMenu({
           try {
             Navigator.of(context).pop();
             file = await ImagePicker().pickImage(source: ImageSource.camera);
-            Core.navigation.push(
+            Navigation.push(
               route: UploadImage(
                 file,
                 await file!.readAsBytes(),
@@ -65,7 +65,7 @@ void _attachMenu({
         onTap: () async {
           Navigator.of(context).pop();
           file = await ImagePicker().pickImage(source: ImageSource.gallery);
-          Core.navigation.push(
+          Navigation.push(
             route: UploadImage(
               file,
               await file!.readAsBytes(),

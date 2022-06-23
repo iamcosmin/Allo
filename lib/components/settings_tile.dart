@@ -1,4 +1,4 @@
-import 'package:allo/components/tile.dart';
+import 'package:allo/components/material3/tile.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

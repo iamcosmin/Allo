@@ -5,7 +5,7 @@
 import 'package:allo/logic/client/extensions.dart';
 import 'package:flutter/material.dart';
 
-const _kDefaultCurve = Cubic(0.4, 0.0, 0.2, 1.0);
+const _kDefaultCurve = Curves.fastOutSlowIn;
 const _kDefaultInCurve = _kDefaultCurve;
 const _kDefaultOutCurve = _kDefaultCurve;
 
@@ -166,6 +166,7 @@ class SlidePageTransition extends StatelessWidget {
   const SlidePageTransition({
     required this.secondaryAnimation,
     required this.animation,
+    this.fillColor,
     super.key,
     this.child,
   });
@@ -193,6 +194,8 @@ class SlidePageTransition extends StatelessWidget {
   /// [secondaryAnimation].
   final Widget? child;
 
+  final Color? fillColor;
+
   @override
   Widget build(BuildContext context) {
     return DualTransitionBuilder(
@@ -214,6 +217,7 @@ class SlidePageTransition extends StatelessWidget {
       ) {
         return _ExitTransition(
           animation: animation,
+          fillColor: fillColor,
           reverse: true,
           child: child,
         );
@@ -238,6 +242,7 @@ class SlidePageTransition extends StatelessWidget {
         ) {
           return _ExitTransition(
             animation: animation,
+            fillColor: fillColor,
             child: child,
           );
         },
@@ -258,47 +263,47 @@ class _EnterTransition extends StatelessWidget {
   final Widget? child;
   final bool reverse;
 
-  static final Animatable<double> _fadeInTransition = CurveTween(
-    curve: decelerateEasing,
-  ).chain(CurveTween(curve: const Interval(0.3, 1.0)));
-
   @override
   Widget build(BuildContext context) {
     final slideInTransition = Tween<Offset>(
       begin: Offset(!reverse ? 30.0 : -30.0, 0.0),
       end: Offset.zero,
     ).chain(CurveTween(curve: _kDefaultInCurve));
+    final fadeTransition = Tween<double>(begin: 0.0, end: 1.0)
+        .chain(CurveTween(curve: _kDefaultCurve))
+        .chain(CurveTween(curve: const Interval(0.2, 0.8)));
 
-    return FadeTransition(
-      opacity: _fadeInTransition.animate(animation),
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, child) {
-          return Transform.translate(
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return FadeTransition(
+          opacity: reverse
+              ? const AlwaysStoppedAnimation(1)
+              : fadeTransition.animate(animation),
+          child: Transform.translate(
             offset: slideInTransition.evaluate(animation),
             child: child,
-          );
-        },
-        child: child,
-      ),
+          ),
+        );
+      },
+      child: child,
     );
   }
 }
 
+// The animation when pressing back.
 class _ExitTransition extends StatelessWidget {
   const _ExitTransition({
     required this.animation,
+    this.fillColor,
     this.reverse = false,
     this.child,
   });
 
   final Animation<double> animation;
+  final Color? fillColor;
   final bool reverse;
   final Widget? child;
-
-  static final Animatable<double> _fadeOutTransition = _FlippedCurveTween(
-    curve: accelerateEasing,
-  ).chain(CurveTween(curve: const Interval(0.0, 0.3)));
 
   @override
   Widget build(BuildContext context) {
@@ -306,39 +311,28 @@ class _ExitTransition extends StatelessWidget {
       begin: Offset.zero,
       end: Offset(!reverse ? -30.0 : 30.0, 0.0),
     ).chain(CurveTween(curve: _kDefaultOutCurve));
+    final fadeTransition = Tween<double>(begin: 1.0, end: 0.0)
+        .chain(CurveTween(curve: _kDefaultCurve))
+        .chain(CurveTween(curve: const Interval(0.2, 0.8)));
 
-    return FadeTransition(
-      opacity: _fadeOutTransition.animate(animation),
-      child: ColoredBox(
-        color: context.colorScheme.surface,
-        child: AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: slideOutTransition.evaluate(animation),
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return FadeTransition(
+          // OPACITY ONE ON ENTER, _FADEOUTTRANSITION ON EXIT
+          opacity: reverse
+              ? fadeTransition.animate(animation)
+              : const AlwaysStoppedAnimation(1),
+          child: Transform.translate(
+            offset: slideOutTransition.evaluate(animation),
+            child: ColoredBox(
+              color: fillColor ?? context.colorScheme.surface,
               child: child,
-            );
-          },
-          child: child,
-        ),
-      ),
+            ),
+          ),
+        );
+      },
+      child: child,
     );
   }
-}
-
-/// Enables creating a flipped [CurveTween].
-///
-/// This creates a [CurveTween] that evaluates to a result that flips the
-/// tween vertically.
-///
-/// This tween sequence assumes that the evaluated result has to be a double
-/// between 0.0 and 1.0.
-class _FlippedCurveTween extends CurveTween {
-  /// Creates a vertically flipped [CurveTween].
-  _FlippedCurveTween({
-    required super.curve,
-  });
-
-  @override
-  double transform(double t) => 1.0 - super.transform(t);
 }

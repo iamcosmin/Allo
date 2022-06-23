@@ -46,11 +46,11 @@ class PrivateChat extends Chat {
       if (members.length == 2) {
         String name, uid;
         if (members[0]['uid'] != null &&
-            members[0]['uid'] != Core.auth.user.uid) {
+            members[0]['uid'] != Core.auth.user.userId) {
           name = members[0]['name'];
           uid = members[0]['uid'];
         } else if (members[1]['uid'] != null &&
-            members[1]['uid'] != Core.auth.user.uid) {
+            members[1]['uid'] != Core.auth.user.userId) {
           name = members[1]['name'];
           uid = members[1]['uid'];
         } else {
@@ -93,22 +93,5 @@ class GroupChat extends Chat {
         "The retreived data is null or it isn't a map.",
       );
     }
-  }
-}
-
-ChatType? getChatTypeFromString(String chatType) {
-  switch (chatType) {
-    case 'private':
-      {
-        return ChatType.private;
-      }
-    case 'group':
-      {
-        return ChatType.group;
-      }
-    default:
-      {
-        return null;
-      }
   }
 }
