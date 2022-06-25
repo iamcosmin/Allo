@@ -90,7 +90,9 @@ class Stub {
               children: [
                 Icon(icon),
                 const Padding(padding: EdgeInsets.only(left: 20)),
-                if (selectableText) SelectableText(text) else Text(text),
+                Flexible(
+                  child: selectableText ? SelectableText(text) : Text(text),
+                ),
               ],
             ),
           ),

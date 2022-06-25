@@ -9,7 +9,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 const _kDebugBypassVerification = kDebugMode ? true : false;
 
 class SetupVerification extends HookWidget {
-  const SetupVerification({super.key});
+  const SetupVerification({
+    super.key,
+  });
   @override
   Widget build(BuildContext context) {
     useEffect(() {

@@ -101,7 +101,9 @@ class InnerApp extends HookConsumerWidget {
               builder: (context) {
                 switch (data) {
                   case AuthState.emailNotVerified:
-                    return const EmailNotVerifiedPage();
+                    return const EmailNotVerifiedPage(
+                      nextRoute: TabbedNavigator(),
+                    );
                   case AuthState.signedOut:
                     return const Setup();
                   case AuthState.signedIn:

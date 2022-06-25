@@ -90,7 +90,6 @@ class ChangeNamePage extends HookConsumerWidget {
           onFieldSubmitted: (_) async => onSubmit(),
         ),
       ],
-      actionText: context.locale.finish,
       action: () async => onSubmit(),
     );
   }

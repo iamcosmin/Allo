@@ -92,7 +92,6 @@ class EnterPassword extends HookConsumerWidget {
         const Space(2),
         TextButton(
           style: const ButtonStyle(
-            visualDensity: VisualDensity.compact,
             alignment: Alignment.topLeft,
           ),
           onPressed: () {

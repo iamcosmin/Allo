@@ -173,8 +173,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "reply": MessageLookupByLibrary.simpleMessage("Reply"),
         "replyToMessage":
             MessageLookupByLibrary.simpleMessage("Reply to Message"),
-        "resetLinkSent":
-            MessageLookupByLibrary.simpleMessage("You will receive an email."),
+        "resetLinkSent": MessageLookupByLibrary.simpleMessage(
+            "You will receive an email with the details necessary for resetting your password.\n\nCheck the spam folder."),
         "search": MessageLookupByLibrary.simpleMessage("Search"),
         "sent": MessageLookupByLibrary.simpleMessage("Sent"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),

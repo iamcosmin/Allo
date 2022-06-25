@@ -860,10 +860,10 @@ class S {
     );
   }
 
-  /// `You will receive an email.`
+  /// `You will receive an email with the details necessary for resetting your password.\n\nCheck the spam folder.`
   String get resetLinkSent {
     return Intl.message(
-      'You will receive an email.',
+      'You will receive an email with the details necessary for resetting your password.\n\nCheck the spam folder.',
       name: 'resetLinkSent',
       desc: '',
       args: [],

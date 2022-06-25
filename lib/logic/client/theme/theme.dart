@@ -104,13 +104,13 @@ ThemeData theme(
       iconColor: scheme.onSurface,
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: scheme.primaryContainer,
-      actionTextColor: scheme.onPrimaryContainer,
+      backgroundColor: scheme.surfaceVariant.withOpacity(0.9),
+      actionTextColor: scheme.onSurfaceVariant,
       behavior: SnackBarBehavior.floating,
       contentTextStyle: TextStyle(
         color: scheme.onPrimaryContainer,
       ),
-      shape: const StadiumBorder(),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ),
     toggleableActiveColor: scheme.primary,
   );

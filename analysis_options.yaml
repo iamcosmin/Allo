@@ -39,4 +39,4 @@ linter:
 
 analyzer:
   exclude: 
-    - 'lib/generated/*'
+    - 'lib/generated/**'

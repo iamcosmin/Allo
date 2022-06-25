@@ -172,8 +172,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "reply": MessageLookupByLibrary.simpleMessage("Răspunde"),
         "replyToMessage":
             MessageLookupByLibrary.simpleMessage("Răspunde la mesaj"),
-        "resetLinkSent":
-            MessageLookupByLibrary.simpleMessage("Vei primi un email."),
+        "resetLinkSent": MessageLookupByLibrary.simpleMessage(
+            "Vei primi un email cu detaliile necesare pentru resetarea parolei.\n\nVerifică folderul spam."),
         "search": MessageLookupByLibrary.simpleMessage("Căutare"),
         "sent": MessageLookupByLibrary.simpleMessage("Trimis"),
         "settings": MessageLookupByLibrary.simpleMessage("Setări"),

@@ -80,7 +80,7 @@
   "received": "Received",
   "reply": "Reply",
   "replyToMessage": "Reply to Message",
-  "resetLinkSent": "You will receive an email.",
+  "resetLinkSent": "You will receive an email with the details necessary for resetting your password.\n\nCheck the spam folder.",
   "sent": "Sent",
   "settings": "Settings",
   "setupNameScreenDescription": "To continue, please type your name.",

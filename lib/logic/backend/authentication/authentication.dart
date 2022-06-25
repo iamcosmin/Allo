@@ -251,7 +251,7 @@ class Authentication {
     }
   }
 
-  Future signOut(BuildContext context, WidgetRef ref) async {
+  Future<void> signOut(BuildContext context, WidgetRef ref) async {
     try {
       await FirebaseAuth.instance.signOut();
       ref.invalidate(Core.chats.chatListProvider.future);
