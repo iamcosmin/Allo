@@ -3,7 +3,7 @@ name: Build stable
 on: 
   push: 
    branches:
-    - main
+    - stable
 
 jobs:
   build-android:

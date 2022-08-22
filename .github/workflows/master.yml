@@ -1,9 +1,9 @@
-name: Build alpha
+name: Build master
 
 on: 
   push: 
    branches:
-    - alpha
+    - master
 
 jobs:
   build-web: 
