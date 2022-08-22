@@ -20,7 +20,7 @@ class PersonPicture extends HookConsumerWidget {
     return ClipOval(
       child: AnimatedContainer(
         curve: Curves.fastOutSlowIn,
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.surfaceVariant,
         duration: const Duration(milliseconds: 250),
         key: key,
         height: radius,

@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../components/material3/icon_button.dart';
 import '../../../logic/client/theme/theme.dart';
 
 class ChatScreen extends HookConsumerWidget {
@@ -106,64 +105,79 @@ class ChatScreen extends HookConsumerWidget {
 
     return Theme(
       data: theme(brightness, ref, context, colorScheme: scheme.value),
-      child: Scaffold(
-        appBar: AppBar(
-          leading: (ModalRoute.of(context)!.canPop)
-              ? const Padding(
-                  padding: EdgeInsets.all(10),
-                  child: MBackButton(),
-                )
-              : const Empty(),
-          actions: [
-            Container(
-              alignment: Alignment.bottomLeft,
-              padding: const EdgeInsets.all(10),
-              child: PersonPicture(
-                profilePicture: Core.auth.getProfilePicture(
-                  chat is GroupChat
-                      ? chat.id
-                      : chat is PrivateChat
-                          ? (chat as PrivateChat).userId
-                          : '',
-                  isGroup: chat is GroupChat ? true : false,
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              leading: (ModalRoute.of(context)!.canPop)
+                  ? const Padding(
+                      padding: EdgeInsets.all(7),
+                      child: BackButton(),
+                    )
+                  : const Empty(),
+              leadingWidth: 40,
+              centerTitle: true,
+              actions: [
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  padding: const EdgeInsets.all(10),
+                  child: PersonPicture(
+                    profilePicture: Core.auth.getProfilePicture(
+                      chat is GroupChat
+                          ? chat.id
+                          : chat is PrivateChat
+                              ? (chat as PrivateChat).userId
+                              : '',
+                      isGroup: chat is GroupChat ? true : false,
+                    ),
+                    radius: 35,
+                    initials: Core.auth.returnNameInitials(chat.title),
+                  ),
                 ),
-                radius: 35,
-                initials: Core.auth.returnNameInitials(chat.title),
+              ],
+              title: InkWell(
+                onTap: () => Navigation.forward(ChatDetails(chat: chat)),
+                child: Column(
+                  children: [
+                    Text(
+                      chat.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    if (chat is GroupChat) ...[
+                      Text(
+                        '${chat.memberUids.length} membri',
+                        style: context.textTheme.labelMedium!.copyWith(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
+                      )
+                    ]
+                  ],
+                ),
               ),
             ),
-          ],
-          title: InkWell(
-            onTap: () => Navigation.push(route: ChatDetails(chat: chat)),
-            child: Text(
-              chat.title,
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w600,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ChatMessagesList(
+                      key: key,
+                      chat: chat,
+                      inputModifiers: inputModifiers,
+                    ),
+                  ),
+                  MessageInput(
+                    modifier: inputModifiers,
+                    chatId: chat.id,
+                    chatName: chat.title,
+                    chatType:
+                        chat is PrivateChat ? ChatType.private : ChatType.group,
+                    theme: scheme.value,
+                  ),
+                ],
               ),
             ),
-          ),
-        ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: ChatMessagesList(
-                  key: key,
-                  chat: chat,
-                  inputModifiers: inputModifiers,
-                ),
-              ),
-              MessageInput(
-                modifier: inputModifiers,
-                chatId: chat.id,
-                chatName: chat.title,
-                chatType:
-                    chat is PrivateChat ? ChatType.private : ChatType.group,
-                theme: scheme.value,
-              ),
-            ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:allo/components/empty.dart';
-import 'package:allo/components/material3/icon_button.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
@@ -115,7 +114,7 @@ class SetupPage extends StatelessWidget {
         leading: ModalRoute.of(context)!.canPop
             ? const Padding(
                 padding: EdgeInsets.all(8.0),
-                child: MBackButton(),
+                child: BackButton(),
               )
             : const Empty(),
       ),

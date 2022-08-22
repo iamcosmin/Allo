@@ -61,7 +61,7 @@ class CurrentUser {
   ) async {
     try {
       await firebaseUser.updateEmail(newEmail);
-      Navigation.pop();
+      Navigation.backward();
     } on FirebaseException catch (e) {
       final code = UpdateEmailError.fromString(e.code);
       switch (code) {
@@ -175,9 +175,9 @@ class CurrentUser {
               }
               await firebaseUser.updatePhotoURL(event.ref.fullPath);
               if (route != null) {
-                Navigation.push(route: route);
+                Navigation.forward(route);
               } else {
-                Navigation.pop();
+                Navigation.backward();
               }
               break;
             case TaskState.canceled:

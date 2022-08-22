@@ -34,7 +34,7 @@ class Settings extends ConsumerWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
-                    Navigation.push(route: const AccountSettingsPage());
+                    Navigation.forward(const AccountSettingsPage());
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(5),
@@ -76,7 +76,7 @@ class Settings extends ConsumerWidget {
             ] else ...[
               InkWell(
                 onTap: () {
-                  Navigation.push(route: const OldAccountSettings());
+                  Navigation.forward(const OldAccountSettings());
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(5),
@@ -121,12 +121,12 @@ class Settings extends ConsumerWidget {
             Tile(
               leading: const Icon(Icons.palette_outlined),
               title: Text(context.locale.personalise),
-              onTap: () => Navigation.push(route: const PersonalisePage()),
+              onTap: () => Navigation.forward(const PersonalisePage()),
             ),
             Tile(
               leading: const Icon(Icons.info_outline),
               title: Text(context.locale.about),
-              onTap: () => Navigation.push(route: const AboutPage()),
+              onTap: () => Navigation.forward(const AboutPage()),
             ),
             Tile(
               leading: const Icon(Icons.logout_rounded),

@@ -33,8 +33,8 @@ void _attachMenu({
           try {
             Navigator.of(context).pop();
             file = await ImagePicker().pickImage(source: ImageSource.camera);
-            Navigation.push(
-              route: UploadImage(
+            Navigation.forward(
+              UploadImage(
                 file,
                 await file!.readAsBytes(),
                 chatId: chatId,
@@ -65,8 +65,8 @@ void _attachMenu({
         onTap: () async {
           Navigator.of(context).pop();
           file = await ImagePicker().pickImage(source: ImageSource.gallery);
-          Navigation.push(
-            route: UploadImage(
+          Navigation.forward(
+            UploadImage(
               file,
               await file!.readAsBytes(),
               chatId: chatId,
@@ -81,51 +81,39 @@ void _attachMenu({
   );
 }
 
-/// [ModifierType] is used to define if a Modifier is for replying to a message
-/// or for editing a message.
-enum ModifierType {
-  reply,
-  @Deprecated(
-    'DO NOT USE THIS VALUE, THIS IS NOT IMPLEMENTED IN LOGIC/CHAT.DART.',
-  )
-  edit
-}
-
-/// [ModifierAction] is used to get suplimentary metadata, such as
-/// if the Modifier is for editing some message, or for replying to a message.
-/// [ModifierAction] will be modified if there will be new scenarios.
-class ModifierAction {
-  ModifierAction({required this.type, this.replyMessageId, this.editMessageId})
-// Translation: If it is a reply modifier, assert that the replyMessageId is not null, else if it is a edit modifier,
-// assert that editMessageId is not null, else, trigger an exception.
-      : assert(
-          type == ModifierType.reply
-              ? replyMessageId != null
-              : type == ModifierType.edit
-                  ? editMessageId != null
-                  : false,
-          'Please provide a proper messageId for your provided type.',
-        );
-  final ModifierType type;
-  String? replyMessageId;
-  String? editMessageId;
-}
-
-class InputModifier {
-  /// [InputModifier].
-  ///
-  /// This is the most complicated piece of code I've created. Ever.
-  /// Though, it is mostly simple to use.
+abstract class InputModifier {
   const InputModifier({
     required this.title,
     required this.body,
     required this.icon,
-    required this.action,
+    this.id,
   });
   final String title;
   final String body;
   final IconData icon;
-  final ModifierAction action;
+  final String? id;
+}
+
+class ReplyInputModifier extends InputModifier {
+  const ReplyInputModifier({
+    required String name,
+    required String message,
+    required super.id,
+  }) : super(
+          title: name,
+          body: message,
+          icon: Icons.reply,
+        );
+}
+
+/// Not ready for production use, abstract.
+abstract class EditInputModifier extends InputModifier {
+  const EditInputModifier({
+    required super.title,
+    required super.body,
+    required super.id,
+    super.icon = Icons.edit,
+  });
 }
 
 /// Provides input actions for the Chat object.
@@ -278,13 +266,13 @@ class MessageInput extends HookConsumerWidget {
                   ),
                   IconButton(
                     iconSize: progress.value == 0 ? 23 : 17,
-                    icon: const Icon(Icons.send_rounded),
+                    icon: const Icon(Icons.send_outlined),
                     color: theme.onSecondaryContainer,
                     onPressed: empty.value
                         ? null
                         : () {
                             empty.value = true;
-                            Core.chat(chatId).messages.sendTextMessage(
+                            Core.chats.chat(chatId).messages.sendTextMessage(
                                   chatType: chatType.name,
                                   text: messageController.text,
                                   chatName: chatName,
@@ -329,7 +317,7 @@ class UploadImage extends HookWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           Navigator.pop(context);
-          await Core.chat(chatId).messages.sendImageMessage(
+          await Core.chats.chat(chatId).messages.sendImageMessage(
                 chatName: chatName,
                 imageFile: imageFile!,
                 description: 'Imagine',

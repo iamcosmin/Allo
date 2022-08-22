@@ -29,7 +29,7 @@ class SetupVerification extends HookWidget {
         await FirebaseAuth.instance.currentUser?.reload();
         final verified = FirebaseAuth.instance.currentUser!.emailVerified;
         if (verified || _kDebugBypassVerification) {
-          Navigation.push(route: const SetupProfilePicture());
+          Navigation.forward(const SetupProfilePicture());
         } else {
           await showDialog(
             context: context,

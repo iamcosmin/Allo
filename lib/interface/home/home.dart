@@ -47,7 +47,7 @@ class Home extends ConsumerWidget {
       floatingActionButton: !createChat.setting
           ? null
           : FloatingActionButton.extended(
-              onPressed: () => Navigation.push(route: const CreateChat()),
+              onPressed: () => Navigation.forward(const CreateChat()),
               label: Text(context.locale.createNewChat),
               icon: const Icon(Icons.create),
               tooltip: context.locale.createNewChat,
@@ -127,8 +127,8 @@ class Home extends ConsumerWidget {
                               chat.title,
                             ),
                           ),
-                          onTap: () => Navigation.push(
-                            route: ChatScreen(
+                          onTap: () => Navigation.forward(
+                            ChatScreen(
                               chat: chat,
                             ),
                           ),

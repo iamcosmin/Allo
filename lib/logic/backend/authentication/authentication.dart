@@ -156,7 +156,7 @@ class Authentication {
             await db.collection('users').doc('usernames').update({
               username: user.user!.uid,
             });
-            Navigation.push(route: const SetupVerification());
+            Navigation.forward(const SetupVerification());
           } else {
             error.value = locales.errorPasswordRequirements;
           }
@@ -210,8 +210,8 @@ class Authentication {
     if (username != '') {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
-          Navigation.push(
-            route: SetupPassword(
+          Navigation.forward(
+            SetupPassword(
               displayName: displayName,
               username: username,
               email: email,
@@ -255,7 +255,7 @@ class Authentication {
     try {
       await FirebaseAuth.instance.signOut();
       ref.invalidate(Core.chats.chatListProvider.future);
-      Navigation.pushPermanent(context: context, route: const Setup());
+      Navigation.replaceStack(context: context, route: const Setup());
     } catch (e) {
       throw Exception('Something is wrong...');
     }
@@ -349,7 +349,7 @@ class Authentication {
       await user?.reauthenticateWithCredential(
         EmailAuthProvider.credential(email: email!, password: password),
       );
-      Navigation.pushReplacement(nextRoute);
+      Navigation.replaceCurrent(nextRoute);
     } on FirebaseAuthException catch (e) {
       final code = ReauthenticationError.fromString(e.code);
       switch (code) {

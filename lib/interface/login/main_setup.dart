@@ -16,7 +16,7 @@ class Setup extends HookWidget {
       title: Text(locales.setupWelcomeScreenTitle),
       subtitle: Text(locales.setupWelcomeScreenDescription),
       action: () async {
-        Navigation.push(route: const Login());
+        Navigation.forward(const Login());
       },
     );
   }

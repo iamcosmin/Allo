@@ -115,7 +115,7 @@ class _Switch extends HookWidget {
         height: tokens.trackHeight,
         width: tokens.trackWidth,
         alignment: alignment,
-        duration: tokens.animationDuration,
+        duration: tokens.trackAnimationDuration,
         decoration: switchDecoration,
         child: AnimatedContainer(
           curve: tokens.thumbAnimationCurve,
@@ -126,7 +126,7 @@ class _Switch extends HookWidget {
               : value
                   ? tokens.thumbSelectedMargin
                   : tokens.thumbUnselectedMargin,
-          duration: tokens.animationDuration,
+          duration: tokens.thumbAnimationDuration,
           height: pressed.value
               ? tokens.pressedThumbRadius
               : value
@@ -154,7 +154,8 @@ class _TokenDefaultsM3 {
   ThemeData get _theme => Theme.of(context);
   ColorScheme get _colors => _theme.colorScheme;
 
-  Duration get animationDuration => const Duration(milliseconds: 200);
+  Duration get trackAnimationDuration => const Duration(milliseconds: 200);
+  Duration get thumbAnimationDuration => const Duration(milliseconds: 50);
   Curve get trackAnimationCurve => Curves.fastOutSlowIn;
   Curve get thumbAnimationCurve => Curves.bounceInOut;
 

@@ -12,7 +12,7 @@ class SetupProfilePicture extends HookWidget {
   Widget build(BuildContext context) {
     final percentage = useState(0.0);
     void onSubmit() {
-      Navigation.push(route: const SetupPersonalize());
+      Navigation.forward(const SetupPersonalize());
     }
 
     return SetupPage(

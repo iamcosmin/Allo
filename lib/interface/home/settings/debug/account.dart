@@ -26,8 +26,8 @@ class OldAccountSettings extends HookWidget {
                 locales.name,
               ),
               onTap: () {
-                Navigation.push(
-                  route: const ChangeNamePage(),
+                Navigation.forward(
+                  const ChangeNamePage(),
                 );
               },
             ),
@@ -40,8 +40,7 @@ class OldAccountSettings extends HookWidget {
               title: Text(
                 locales.profilePicture,
               ),
-              onTap: () =>
-                  Navigation.push(route: const ProfilePictureSettings()),
+              onTap: () => Navigation.forward(const ProfilePictureSettings()),
             ),
           ]),
         )

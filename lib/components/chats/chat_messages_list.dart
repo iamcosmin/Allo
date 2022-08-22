@@ -50,7 +50,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 //   void fetch() {
 //     state = const AsyncValue.loading();
 //     try {
-//       Core.chat(chatId)
+//       Core.chats.chat(chatId)
 //           .streamChatMessages(listKey: listKey, context: context, limit: 20)
 //           .listen((event) {
 //         print('FIRST FETCH');
@@ -64,7 +64,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 //   void fetchMore() {
 //     try {
-//       Core.chat(chatId)
+//       Core.chats.chat(chatId)
 //           .streamChatMessages(
 //         listKey: listKey,
 //         context: context,
@@ -102,7 +102,8 @@ class ChatMessagesList extends HookConsumerWidget {
     final chatId = chat.id;
     useEffect(
       () {
-        Core.chat(chatId)
+        Core.chats
+            .chat(chatId)
             .streamChatMessages(listKey: listKey, limit: 30, context: context)
             .listen((event) {
           streamList.value = event;
@@ -152,14 +153,15 @@ class ChatMessagesList extends HookConsumerWidget {
                     const Padding(padding: EdgeInsets.only(top: 20)),
                     ElevatedButton(
                       onPressed: () {
-                        Core.chat(chatId)
+                        Core.chats
+                            .chat(chatId)
                             .streamChatMessages(
-                          listKey: listKey,
-                          limit: 20,
-                          context: context,
-                          lastIndex: data.length - 1,
-                          startAfter: data.last.documentSnapshot,
-                        )
+                              listKey: listKey,
+                              limit: 20,
+                              context: context,
+                              lastIndex: data.length - 1,
+                              startAfter: data.last.documentSnapshot,
+                            )
                             .listen((event) {
                           streamList.value!.addAll(event);
                         });

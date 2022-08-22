@@ -144,7 +144,7 @@ class _NotificationController {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      await Core.chat(payload['chatId']).messages.sendTextMessage(
+      await Core.chats.chat(payload['chatId']).messages.sendTextMessage(
             text: action.buttonKeyInput,
             chatName: payload['chatName']!,
             chatType: payload['chatType']!,
@@ -179,8 +179,8 @@ class _NotificationController {
         ],
       );
     } else {
-      Navigation.push(
-        route: ChatScreen(
+      Navigation.forward(
+        ChatScreen(
           chat: _getChat(action.payload!),
         ),
       );
@@ -193,12 +193,14 @@ class _NotificationController {
       return PrivateChat(
         name: payload['chatName'] ?? '???',
         userId: payload['uid'] ?? '???',
-        chatId: payload['chatId'] ?? '???',
+        id: payload['chatId'] ?? '???',
+        memberUids: [],
       );
     } else if (chatType == ChatType.group) {
       return GroupChat(
         title: payload['chatName'] ?? '???',
-        chatId: payload['chatId'] ?? '???',
+        id: payload['chatId'] ?? '???',
+        memberUids: [],
       );
     } else {
       throw Exception('This chatType is not defined.');

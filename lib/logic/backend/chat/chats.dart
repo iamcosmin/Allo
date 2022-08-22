@@ -1,3 +1,4 @@
+import 'package:allo/logic/backend/chat/chat.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
@@ -6,6 +7,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChatsLogic {
   ChatsLogic();
+
+  Chats chat(chatId) => Chats(chatId: chatId);
 
   ///* Explanation of the logic below.
   ///

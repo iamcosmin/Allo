@@ -2,8 +2,6 @@ import 'package:allo/components/photo.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'material3/icon_button.dart';
-
 class ImageView extends HookConsumerWidget {
   final String imageUrl;
   final ColorScheme? colorScheme;
@@ -24,7 +22,7 @@ class ImageView extends HookConsumerWidget {
             child: ClipOval(
               child: ColoredBox(
                 color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                child: MBackButton(
+                child: BackButton(
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),

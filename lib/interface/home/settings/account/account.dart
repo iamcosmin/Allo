@@ -76,8 +76,8 @@ class AccountSettingsPage extends ConsumerWidget {
               leading: const Icon(Icons.perm_identity_outlined),
               title: Text(context.locale.name),
               onTap: () {
-                Navigation.push(
-                  route: const ChangeNamePage(),
+                Navigation.forward(
+                  const ChangeNamePage(),
                 );
               },
             ),
@@ -91,8 +91,8 @@ class AccountSettingsPage extends ConsumerWidget {
             Tile(
               leading: const Icon(Icons.image_outlined),
               title: Text(context.locale.profilePicture),
-              onTap: () => Navigation.push(
-                route: const ProfilePictureSettings(),
+              onTap: () => Navigation.forward(
+                const ProfilePictureSettings(),
               ),
             ),
             const TileHeading('Security'),
@@ -104,8 +104,8 @@ class AccountSettingsPage extends ConsumerWidget {
             Tile(
               leading: const Icon(Icons.email_outlined),
               title: const Text('Email'),
-              onTap: () => Navigation.push(
-                route: const VerifyIdentity(
+              onTap: () => Navigation.forward(
+                const VerifyIdentity(
                   UpdateEmailPage(),
                 ),
               ),

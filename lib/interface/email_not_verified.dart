@@ -20,7 +20,7 @@ class EmailNotVerifiedPage extends HookConsumerWidget {
       final verified =
           FirebaseAuth.instance.currentUser?.emailVerified ?? false;
       if (verified) {
-        Navigation.push(route: nextRoute);
+        Navigation.forward(nextRoute);
       } else {
         Core.stub.showInfoBar(
           icon: Icons.info,

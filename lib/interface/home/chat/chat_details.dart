@@ -47,7 +47,7 @@ void _changeTheme({
                   await Database.firestore.collection('chats').doc(id).update({
                     'theme': color,
                   });
-                  Navigation.pop();
+                  Navigation.backward();
                 },
                 child: Stack(
                   alignment: Alignment.center,
@@ -118,7 +118,7 @@ class ChatDetails extends HookConsumerWidget {
                 splashColor: const Color(0x00000000),
                 onTap: profilePicture == null
                     ? null
-                    : () => Navigation.push(route: ImageView(profilePicture)),
+                    : () => Navigation.forward(ImageView(profilePicture)),
                 child: PersonPicture(
                   profilePicture: profilePicture,
                   radius: 150,
@@ -148,8 +148,8 @@ class ChatDetails extends HookConsumerWidget {
                   Tile(
                     leading: const Icon(Icons.people_alt_outlined),
                     title: Text(locales.members),
-                    onTap: () => Navigation.push(
-                      route: ChatMembersPage(chatId: chat.id),
+                    onTap: () => Navigation.forward(
+                      ChatMembersPage(chatId: chat.id),
                     ),
                   ),
                 ]

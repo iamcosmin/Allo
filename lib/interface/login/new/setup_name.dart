@@ -31,8 +31,8 @@ class SetupName extends HookWidget {
         if (_nameReg.hasMatch(firstNameController.text)) {
           if (secondNameController.text.isNotEmpty) {
             if (_nameReg.hasMatch(secondNameController.text)) {
-              Navigation.push(
-                route: SetupUsername(
+              Navigation.forward(
+                SetupUsername(
                   displayName:
                       '${firstNameController.text} ${secondNameController.text}',
                   email: email,
@@ -43,8 +43,8 @@ class SetupName extends HookWidget {
                   context.locale.specialCharactersNotAllowed;
             }
           } else {
-            Navigation.push(
-              route: SetupUsername(
+            Navigation.forward(
+              SetupUsername(
                 displayName: firstNameController.text,
                 email: email,
               ),

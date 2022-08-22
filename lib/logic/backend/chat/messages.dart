@@ -23,7 +23,7 @@ class Messages {
         .delete();
   }
 
-  Future markAsRead({required String messageId}) async {
+  Future<void> markAsRead({required String messageId}) async {
     // This will mark the message as read.
     await Database.firestore
         .collection('chats')
@@ -35,7 +35,7 @@ class Messages {
     });
   }
 
-  Future sendTextMessage({
+  Future<void> sendTextMessage({
     required String text,
     required String chatName,
     required String chatType,
@@ -51,7 +51,6 @@ class Messages {
     //     .update({'typing': false});
     final db = Database.firestore.collection('chats').doc(chatId);
     final auth = Core.auth;
-    final replyMessageId = modifier?.value?.action.replyMessageId;
     if (modifier?.value == null) {
       await db.collection('messages').add({
         'type': MessageType.text.name,
@@ -61,12 +60,13 @@ class Messages {
         'text': text,
         'time': Timestamp.now(),
       });
-    } else if (modifier?.value?.action.type == ModifierType.reply) {
-      modifier?.value = null;
+    } else if (modifier!.value! is ReplyInputModifier) {
+      final replyMessageId = modifier.value?.id;
+      modifier.value = null;
       await db.collection('messages').add({
         'type': MessageType.text.name,
         'name': auth.user.name,
-        'username': auth.user.usernameProvider,
+        'username': await auth.user.getUsername(),
         'uid': auth.user.userId,
         'reply_to_message': replyMessageId,
         'text': text,
@@ -111,7 +111,7 @@ class Messages {
         await db.collection('messages').add({
           'type': MessageType.image.name,
           'name': auth.user.name,
-          'username': auth.user.usernameProvider,
+          'username': await auth.user.getUsername(),
           'uid': auth.user.userId,
           'link': link,
           'description': description,
@@ -126,7 +126,7 @@ class Messages {
           profilePicture: Core.auth.user.profilePictureUrl,
           photo: link,
         );
-        Navigation.pop();
+        Navigation.backward();
       }
     });
   }
@@ -158,7 +158,8 @@ class Messages {
           'type': chatType,
           'profilePicture': profilePicture,
           'photo': photo,
-        }
+        },
+        'priority': 10,
       }),
     );
   }

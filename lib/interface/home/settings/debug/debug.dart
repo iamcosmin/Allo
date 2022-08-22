@@ -49,7 +49,7 @@ class C extends HookConsumerWidget {
               title: const Text(
                 'Debug Testing',
               ),
-              onTap: () => Navigation.push(route: const TestApp()),
+              onTap: () => Navigation.forward(const TestApp()),
             ),
             Tile(
               title: Text(locales.internalTypingIndicatorDemo),
@@ -77,8 +77,7 @@ class C extends HookConsumerWidget {
             ),
             Tile(
               title: const Text('Test Notifications'),
-              onTap: () =>
-                  Navigation.push(route: const TestNotificationsPage()),
+              onTap: () => Navigation.forward(const TestNotificationsPage()),
             ),
             InkWell(
               onLongPress: () => reactions.delete(context),

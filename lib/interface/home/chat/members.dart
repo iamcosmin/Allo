@@ -63,8 +63,8 @@ class ChatMembersPage extends HookConsumerWidget {
                         member['name'],
                       ),
                     ),
-                    onTap: () => Navigation.push(
-                      route: const UserPreviewPage(),
+                    onTap: () => Navigation.forward(
+                      const UserPreviewPage(),
                     ),
                   );
                 },

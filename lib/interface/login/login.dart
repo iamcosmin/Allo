@@ -23,9 +23,9 @@ class Login extends HookConsumerWidget {
       if (isValid) {
         await login.checkIfAccountExists(controller.text).then((value) {
           if (value) {
-            Navigation.push(route: const EnterPassword());
+            Navigation.forward(const EnterPassword());
           } else if (!value) {
-            Navigation.push(route: SetupName(controller.text));
+            Navigation.forward(SetupName(controller.text));
           }
         });
       }

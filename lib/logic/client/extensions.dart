@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 extension EnhancedContext on BuildContext {
   S get locale => S.of(this);
   ThemeData get theme => Theme.of(this);
+  TextTheme get textTheme => theme.textTheme;
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
   NavigatorState get navigator => Navigator.of(this);
 }

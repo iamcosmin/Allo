@@ -111,8 +111,7 @@ class Tile extends StatelessWidget {
                         DefaultTextStyle(
                           style:
                               Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontFamily: 'Display',
-                                    fontSize: 19,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.normal,
                                   ),
                           child: title,

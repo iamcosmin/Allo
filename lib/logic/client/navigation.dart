@@ -1,39 +1,29 @@
 import 'package:allo/logic/client/theme/animations.dart';
-import 'package:allo/logic/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Material3PageRoute extends MaterialPageRoute {
-  Material3PageRoute({
-    required super.builder,
-    super.settings,
-    super.maintainState,
-    super.fullscreenDialog,
-  });
+const _kNoNavigatorException = '''
+There is no possible way to navigate in the current scope.
+This is because you did not provide the navigator key, or you did not provide the optional widget context
+if you are out of scope.
 
-  @override
-  Duration get transitionDuration =>
-      Duration(milliseconds: const Motion().animationDuration.short4Ms.toInt());
-}
+The simple solution would be to irrigate the method with a BuildContext from the current scope, as reusing a navigatorKey
+is not possible.
+''';
 
 class Navigation {
   const Navigation._();
 
-  static final navigatorKey = GlobalKey<NavigatorState>(
-    debugLabel: 'master_navigator_key',
-  );
-  static const _kDefaultNavigatorError =
-      '''There is neither a BuildContext, not a GlobalKey<NavigatorState>.
-    This can happen if you did not pass a BuildContext, or you haven't initialized the key in 
-    MaterialApp.''';
+  static final navigatorKey = GlobalKey<NavigatorState>();
+  static final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-  static PageRoute pageRoute(Widget route) {
+  static PageRoute _pageRoute(Widget route) {
     switch (ThemeData().platform) {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        return Material3PageRoute(
+        return TiramisuPageRoute(
           builder: (_) => route,
         );
       case TargetPlatform.iOS:
@@ -44,53 +34,64 @@ class Navigation {
     }
   }
 
-  static void pop({BuildContext? context}) async {
+  static NavigatorState _determinePossibleNavigator(BuildContext? context) {
     if (context != null) {
-      context.navigator.pop();
+      return Navigator.of(context);
     } else if (navigatorKey.currentState != null) {
-      navigatorKey.currentState!.pop();
+      return navigatorKey.currentState!;
     } else {
-      throw Exception(_kDefaultNavigatorError);
+      throw Exception(_kNoNavigatorException);
     }
   }
 
-  static void push({
+  /// Navigates to a prior accessed screen, erasing the current screen from memory.
+  /// You can optionally provide a context in case that you are navigating outside the key scope.
+  static void backward({BuildContext? context}) async {
+    _determinePossibleNavigator(context).pop();
+  }
+
+  /// Navigates to a specific page provided into the method.
+  /// You can optionally provide a context in case that you are navigating outside the key scope.
+  static void forward(
+    Widget route, {
+    BuildContext? context,
+  }) {
+    _determinePossibleNavigator(context).push(_pageRoute(route));
+  }
+
+  /// Replaces the current page with the provided page.
+  /// Leaves the other [Navigator] stack intact.
+  ///
+  /// You can optionally provide a context in case you are navigating outside the key scope.
+  static void replaceCurrent(Widget route, {BuildContext? context}) {
+    _determinePossibleNavigator(context).pushReplacement(_pageRoute(route));
+  }
+
+  /// Replaces the current stack with the provided page.
+  /// Erases all the [Navigator] stack.
+  ///
+  /// You can optionally provide a context in case you are navigating outside the key scope.
+  static void replaceStack({
     required Widget route,
     BuildContext? context,
   }) {
-    if (context != null) {
-      context.navigator.push(pageRoute(route));
-    } else if (navigatorKey.currentState != null) {
-      navigatorKey.currentState!.push(pageRoute(route));
-    } else {
-      throw Exception(_kDefaultNavigatorError);
-    }
+    _determinePossibleNavigator(context).pushAndRemoveUntil(
+      _pageRoute(route),
+      (route) => route.isFirst == true,
+    );
   }
+}
 
-  static void pushReplacement(Widget route, {BuildContext? context}) {
-    if (context != null) {
-      context.navigator.pushReplacement(pageRoute(route));
-    } else if (navigatorKey.currentState != null) {
-      navigatorKey.currentState!.pushReplacement(pageRoute(route));
-    } else {
-      throw Exception(_kDefaultNavigatorError);
-    }
-  }
+class TiramisuPageRoute extends MaterialPageRoute {
+  TiramisuPageRoute({
+    required super.builder,
+    super.settings,
+    super.maintainState,
+    super.fullscreenDialog,
+  });
 
-  static void pushPermanent({
-    required Widget route,
-    BuildContext? context,
-  }) {
-    if (context != null) {
-      Navigator.of(context).pushAndRemoveUntil(
-        pageRoute(route),
-        (route) => false,
+  @override
+  Duration get transitionDuration => Duration(
+        milliseconds: const Motion().animationDuration.short4Ms.toInt(),
       );
-    } else if (navigatorKey.currentState != null) {
-      navigatorKey.currentState
-          ?.pushAndRemoveUntil(pageRoute(route), (route) => false);
-    } else {
-      throw Exception(_kDefaultNavigatorError);
-    }
-  }
 }

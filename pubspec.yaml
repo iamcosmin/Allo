@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.3.4+304
+version: 1.3.5+312
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -52,41 +52,52 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-  uses-material-design: true
   generate: true
+  uses-material-design: true
+
   assets:
-    - assets/images/
+   - assets/images/
+
   fonts:
-    - family: Text
+    - family: Jakarta
       fonts:
-        - asset: fonts/text/regular.ttf
-        - asset: fonts/text/italic.ttf
+        - asset: assets/fonts/Jakarta-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Jakarta-ExtraLightItalic.ttf
+          weight: 200
           style: italic
-        - asset: fonts/text/bold.ttf
-          weight: 700
-        - asset: fonts/text/bold-italic.ttf
-          weight: 700
+        - asset: assets/fonts/Jakarta-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Jakarta-LightItalic.ttf
+          weight: 300
           style: italic
-        - asset: fonts/text/medium.ttf
+        - asset: assets/fonts/Jakarta-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Jakarta-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Jakarta-Medium.ttf
           weight: 500
-        - asset: fonts/text/medium-italic.ttf
-          weight: 500
-          style: italic
-    - family: Display
-      fonts:
-        - asset: fonts/display/regular.ttf
-        - asset: fonts/display/italic.ttf
-          style: italic
-        - asset: fonts/display/bold.ttf
-          weight: 700
-        - asset: fonts/display/bold-italic.ttf
-          weight: 700
-          style: italic
-        - asset: fonts/display/medium.ttf
-          weight: 500
-        - asset: fonts/display/medium-italic.ttf
+        - asset: assets/fonts/Jakarta-MediumItalic.ttf
           weight: 500
           style: italic
+        - asset: assets/fonts/Jakarta-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Jakarta-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Jakarta-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Jakarta-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Jakarta-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Jakarta-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+
+
 flutter_intl:
   enabled: true
   main_locale: en

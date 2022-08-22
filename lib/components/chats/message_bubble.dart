@@ -130,7 +130,8 @@ void _deleteMessage({
               Future.delayed(
                 const Duration(seconds: 1),
                 () {
-                  Core.chat(chatId)
+                  Core.chats
+                      .chat(chatId)
                       .messages
                       .deleteMessage(messageId: messageId);
                   Core.stub.showInfoBar(
@@ -163,6 +164,7 @@ void _deleteMessage({
   );
 }
 
+// TODO: Declutter all and replace legacy colors with ColorScheme colors.
 class Bubble extends HookConsumerWidget {
   const Bubble({
     required Key key,
@@ -191,7 +193,7 @@ class Bubble extends HookConsumerWidget {
     final theme = Theme.of(context);
     final selected = useState(false);
     final regexEmoji = RegExp(
-      r'^(\u00a9|\u00ae|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$',
+      r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$',
     );
     final showNameConditionsMet = isNotCurrentUser &&
         Chat.getType(chat) == ChatType.group &&
@@ -237,7 +239,7 @@ class Bubble extends HookConsumerWidget {
     useEffect(
       () {
         if (isNotCurrentUser && message.read == false) {
-          Core.chat(chat.id).messages.markAsRead(messageId: message.id);
+          Core.chats.chat(chat.id).messages.markAsRead(messageId: message.id);
         }
         return;
       },
@@ -246,73 +248,67 @@ class Bubble extends HookConsumerWidget {
 
     return Padding(
       padding: betweenBubblesPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (showNameConditionsMet) ...[
-            Padding(
-              padding: const EdgeInsets.only(left: 55, bottom: 2),
-              child: Text(
-                message.name,
-                style: TextStyle(fontSize: 12, color: theme.hintColor),
-              ),
-            ),
-          ],
-          SwipeTo(
-            animationDuration: const Duration(milliseconds: 140),
-            offsetDx: 0.2,
-            leftSwipeWidget: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Container(
-                height: 35,
-                width: 35,
-                decoration: BoxDecoration(
-                  color: theme.disabledColor.withAlpha(20),
-                  shape: BoxShape.circle,
+      child: SwipeTo(
+        leftSwipeWidget: const _ReplyIcon(),
+        onLeftSwipe: () {
+          modifiers.value = ReplyInputModifier(
+            name: message.name,
+            message: messageBody(),
+            id: message.id,
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (showNameConditionsMet) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 55, bottom: 5),
+                child: Text(
+                  message.name,
+                  style: context.textTheme.bodySmall!.copyWith(
+                    color: context.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                child: const Icon(Icons.reply_rounded),
               ),
-            ),
-            onLeftSwipe: () {
-              modifiers.value = InputModifier(
-                title: message.name,
-                body: messageBody(),
-                icon: Icons.reply_rounded,
-                action: ModifierAction(
-                  type: ModifierType.reply,
-                  replyMessageId: message.id,
-                ),
-              );
-            },
-            child: InkWell(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: isNotCurrentUser
-                    ? MainAxisAlignment.start
-                    : MainAxisAlignment.end,
-                children: [
-                  if (showProfilePictureConditionsMet) ...[
-                    PersonPicture(
-                      radius: 36,
-                      profilePicture:
-                          Core.auth.getProfilePicture(message.userId),
-                      initials: nameInitials,
-                    ),
-                    const Padding(padding: EdgeInsets.only(left: 10)),
-                  ] else if (Chat.getType(chat) == ChatType.private)
-                    ...[]
-                  else ...[
-                    const Padding(padding: EdgeInsets.only(left: 46)),
-                  ],
-                  InkWell(
-                    onTap: messageType == MessageType.image
-                        ? () => Navigation.push(
-                              route: ImageView(
-                                (message as ImageMessage).link,
-                                colorScheme: colorScheme,
-                              ),
-                            )
-                        : () => selected.value = !selected.value,
+            ],
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: isNotCurrentUser
+                  ? MainAxisAlignment.start
+                  : MainAxisAlignment.end,
+              children: [
+                if (showProfilePictureConditionsMet) ...[
+                  PersonPicture(
+                    radius: 35,
+                    profilePicture: Core.auth.getProfilePicture(message.userId),
+                    initials: nameInitials,
+                  ),
+                  const Padding(padding: EdgeInsets.only(left: 10)),
+                ] else if (Chat.getType(chat) == ChatType.private)
+                  ...[]
+                else ...[
+                  const Padding(padding: EdgeInsets.only(left: 45)),
+                ],
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: screenWidth / 1.3),
+                  child: InkWell(
+                    onTap: () {
+                      switch (messageType) {
+                        case MessageType.text:
+                          selected.value = !selected.value;
+                          break;
+                        case MessageType.image:
+                          Navigation.forward(
+                            ImageView(
+                              (message as ImageMessage).link,
+                              colorScheme: context.colorScheme,
+                            ),
+                          );
+                          break;
+                        case MessageType.unsupported:
+                          break;
+                      }
+                    },
                     onLongPress: () => _messageOptions(
                       context,
                       message.id,
@@ -336,38 +332,34 @@ class Bubble extends HookConsumerWidget {
                                 ? colorScheme.secondaryContainer
                                 : colorScheme.primary,
                           ),
-                          constraints:
-                              BoxConstraints(maxWidth: screenWidth / 1.5),
                           padding: messageType != MessageType.image
-                              ? const EdgeInsets.only(
-                                  top: 8,
-                                  bottom: 8,
-                                  left: 10,
-                                  right: 10,
-                                )
+                              ? const EdgeInsets.all(9)
                               : EdgeInsets.zero,
                           key: key,
                           duration: const Duration(milliseconds: 250),
-                          child: Builder(
-                            builder: (context) {
-                              if (messageType == MessageType.image) {
-                                return Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: screenWidth / 1.5,
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: messageRadius,
-                                    child: CachedNetworkImage(
-                                      imageUrl: (message as ImageMessage).link,
+                          child: DefaultTextStyle(
+                            style: TextStyle(
+                              color: isNotCurrentUser
+                                  ? context.colorScheme.onSecondaryContainer
+                                  : context.colorScheme.onPrimary,
+                            ),
+                            child: Builder(
+                              builder: (context) {
+                                if (messageType == MessageType.image) {
+                                  return Container(
+                                    constraints: BoxConstraints(
+                                      maxWidth: screenWidth / 1.5,
                                     ),
-                                  ),
-                                );
-                              } else {
-                                return Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: screenWidth / 1.5,
-                                  ),
-                                  child: Column(
+                                    child: ClipRRect(
+                                      borderRadius: messageRadius,
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            (message as ImageMessage).link,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
@@ -376,22 +368,16 @@ class Bubble extends HookConsumerWidget {
                                         child: message.reply == null
                                             ? null
                                             : Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 5,
-                                                  bottom: 5,
-                                                  left: 5,
-                                                  right: 5,
-                                                ),
+                                                padding:
+                                                    const EdgeInsets.all(2),
                                                 child: Row(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
                                                   children: [
                                                     Container(
                                                       decoration: BoxDecoration(
-                                                        color: isNotCurrentUser
-                                                            ? theme.colorScheme
-                                                                .onSurface
-                                                            : Colors.white,
+                                                        color: theme.colorScheme
+                                                            .onPrimary,
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(
@@ -407,71 +393,43 @@ class Bubble extends HookConsumerWidget {
                                                       ),
                                                     ),
                                                     Flexible(
-                                                      child: Container(
-                                                        height: 40,
-                                                        constraints:
-                                                            BoxConstraints(
-                                                          maxWidth:
-                                                              screenWidth / 1.8,
-                                                          minWidth: 1,
-                                                        ),
-                                                        width: (message
-                                                                        .reply!
-                                                                        .description
-                                                                        .length
-                                                                        .toDouble() >=
-                                                                    message
-                                                                        .reply!
-                                                                        .name
-                                                                        .length
-                                                                        .toDouble()
-                                                                ? message
-                                                                    .reply!
-                                                                    .description
-                                                                    .length
-                                                                    .toDouble()
-                                                                : message.reply!
-                                                                    .name.length
-                                                                    .toDouble()) *
-                                                            9,
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            message.reply
+                                                                    ?.name ??
+                                                                '',
+                                                            style:
+                                                                const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                          ClipRect(
+                                                            child: Text(
                                                               message.reply
-                                                                      ?.name ??
+                                                                      ?.description
+                                                                      .replaceAll(
+                                                                    '\n',
+                                                                    ' ',
+                                                                  ) ??
                                                                   '',
                                                               style:
                                                                   const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
                                                               ),
                                                             ),
-                                                            ClipRect(
-                                                              child: Text(
-                                                                message.reply
-                                                                        ?.description
-                                                                        .replaceAll(
-                                                                      '\n',
-                                                                      ' ',
-                                                                    ) ??
-                                                                    '',
-                                                                style:
-                                                                    const TextStyle(
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     )
                                                   ],
@@ -492,10 +450,12 @@ class Bubble extends HookConsumerWidget {
                                           fontSize:
                                               regexEmoji.hasMatch(messageBody())
                                                   ? 30
-                                                  : 16,
+                                                  : context.textTheme
+                                                      .bodyMedium!.fontSize,
                                           color: isNotCurrentUser
-                                              ? theme.colorScheme.onSurface
-                                              : Colors.white,
+                                              ? context.colorScheme
+                                                  .onSecondaryContainer
+                                              : context.colorScheme.onPrimary,
                                         ),
                                         linkStyle: TextStyle(
                                           decoration: TextDecoration.underline,
@@ -505,10 +465,10 @@ class Bubble extends HookConsumerWidget {
                                         ),
                                       ),
                                     ],
-                                  ),
-                                );
-                              }
-                            },
+                                  );
+                                }
+                              },
+                            ),
                           ),
                         ),
                         AnimatedContainer(
@@ -548,11 +508,36 @@ class Bubble extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReplyIcon extends StatelessWidget {
+  const _ReplyIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.colorScheme.surfaceVariant,
+          shape: BoxShape.circle,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Icon(
+            Icons.reply_rounded,
+            color: context.colorScheme.onSurfaceVariant,
+            size: 24,
           ),
-        ],
+        ),
       ),
     );
   }

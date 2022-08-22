@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:allo/components/space.dart';
 import 'package:allo/logic/backend/authentication/authentication.dart';
-import 'package:allo/logic/backend/chat/chat.dart';
 import 'package:allo/logic/backend/general/general.dart';
 import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/client/validators.dart';
@@ -28,7 +27,6 @@ class Core {
   static final General general = General();
   static ChatsLogic chats = ChatsLogic();
   // TODO(iamcosmin): Move this in ChatsLogic
-  static Chats chat(chatId) => Chats(chatId: chatId);
   static final Stub stub = Stub();
 }
 

@@ -9,8 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'typography.dart';
-
 extension ColorString on Color {
   String toHexString() {
     return '#${(value & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
@@ -84,7 +82,7 @@ ThemeData theme(
     // These parameters will remain even after Material 3 lands.
     platform: iOS ? TargetPlatform.iOS : null,
     applyElevationOverlayColor: true,
-    typography: getTypography(scheme),
+    fontFamily: 'Jakarta',
     iconTheme: IconThemeData(color: scheme.onSurface),
     pageTransitionsTheme: getPageTransitionsTheme(
       reducedMotion: !animations.setting,
