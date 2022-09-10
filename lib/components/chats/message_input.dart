@@ -39,7 +39,7 @@ void _attachMenu({
                 await file!.readAsBytes(),
                 chatId: chatId,
                 chatName: chatName,
-                chatType: chatType.name,
+                chatType: chatType,
                 progress: uploadProgressValue,
               ),
             );
@@ -71,7 +71,7 @@ void _attachMenu({
               await file!.readAsBytes(),
               chatId: chatId,
               chatName: chatName,
-              chatType: chatType.name,
+              chatType: chatType,
               progress: uploadProgressValue,
             ),
           );
@@ -140,7 +140,6 @@ class MessageInput extends HookConsumerWidget {
     final progress = useState<double>(0);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
-      alignment: Alignment.bottomCenter,
       margin: const EdgeInsets.all(5),
       decoration: ShapeDecoration(
         shape: RoundedRectangleBorder(
@@ -149,7 +148,6 @@ class MessageInput extends HookConsumerWidget {
         color: theme.secondaryContainer,
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedSize(
             curve: Curves.fastOutSlowIn,
@@ -163,23 +161,25 @@ class MessageInput extends HookConsumerWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: const EdgeInsets.only(left: 15, right: 10),
+                    padding: const EdgeInsets.only(left: 10, right: 5),
                     width: MediaQuery.of(context).size.width,
                     child: Row(
                       children: [
-                        Icon(modifier.value?.icon),
+                        Icon(
+                          modifier.value?.icon,
+                          color: theme.onSecondaryContainer,
+                        ),
                         const Padding(padding: EdgeInsets.only(left: 15)),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 1.5,
+                        Expanded(
                           child: Column(
-                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 modifier.value?.title ?? '',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  color: theme.onSecondaryContainer,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -187,33 +187,32 @@ class MessageInput extends HookConsumerWidget {
                                 modifier.value?.body.replaceAll('\n', ' ') ??
                                     '',
                                 overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: theme.onSecondaryContainer,
+                                ),
                               )
                             ],
                           ),
                         ),
-                        if (modifier.value != null) ...[
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: const Icon(Icons.close_rounded),
-                                onPressed: () {
-                                  modifier.value = null;
-                                },
-                              ),
-                            ),
-                          )
-                        ]
+                        const Padding(padding: EdgeInsets.only(left: 15)),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded),
+                          padding: EdgeInsets.zero,
+                          color: theme.onSecondaryContainer,
+                          onPressed: () {
+                            modifier.value = null;
+                          },
+                        )
                       ],
                     ),
                   ),
           ),
           Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 iconSize: 25,
                 color: theme.onSecondaryContainer,
+                disabledColor: theme.onSecondaryContainer.withOpacity(0.5),
                 icon: empty.value
                     ? const Icon(Icons.attach_file_outlined)
                     : const Icon(Icons.search_outlined),
@@ -229,27 +228,30 @@ class MessageInput extends HookConsumerWidget {
                           ref: ref,
                         ),
               ),
-              Container(
-                constraints: const BoxConstraints(
-                  maxHeight: 120,
-                  minHeight: 20,
-                ),
-                width: MediaQuery.of(context).size.width - 110,
-                child: TextFormField(
-                  cursorColor: Theme.of(context).colorScheme.outline,
-                  minLines: 1,
-                  focusNode: node,
-                  textCapitalization: TextCapitalization.sentences,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: context.locale.message,
-                    hintStyle: TextStyle(color: theme.onSecondaryContainer),
+              Expanded(
+                child: Container(
+                  constraints: const BoxConstraints(
+                    maxHeight: 120,
+                    minHeight: 45,
                   ),
-                  onChanged: (value) =>
-                      value == '' ? empty.value = true : empty.value = false,
-                  controller: messageController,
+                  child: TextFormField(
+                    cursorColor: Theme.of(context).colorScheme.secondary,
+                    style: TextStyle(color: theme.onSecondaryContainer),
+                    focusNode: node,
+                    textCapitalization: TextCapitalization.sentences,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: context.locale.message,
+                      hintStyle: TextStyle(
+                        color: theme.onSecondaryContainer.withOpacity(0.7),
+                      ),
+                    ),
+                    onChanged: (value) =>
+                        value == '' ? empty.value = true : empty.value = false,
+                    controller: messageController,
+                  ),
                 ),
               ),
               Stack(
@@ -266,14 +268,15 @@ class MessageInput extends HookConsumerWidget {
                   ),
                   IconButton(
                     iconSize: progress.value == 0 ? 23 : 17,
-                    icon: const Icon(Icons.send_outlined),
+                    icon: const Icon(Icons.send_rounded),
                     color: theme.onSecondaryContainer,
+                    disabledColor: theme.onSecondaryContainer.withOpacity(0.5),
                     onPressed: empty.value
                         ? null
                         : () {
                             empty.value = true;
                             Core.chats.chat(chatId).messages.sendTextMessage(
-                                  chatType: chatType.name,
+                                  chatType: chatType,
                                   text: messageController.text,
                                   chatName: chatName,
                                   controller: messageController,
@@ -305,7 +308,7 @@ class UploadImage extends HookWidget {
   final Uint8List imageFileBytes;
   final String chatName;
   final String chatId;
-  final String chatType;
+  final ChatType chatType;
   final ValueNotifier<double> progress;
   @override
   Widget build(BuildContext context) {
@@ -316,7 +319,7 @@ class UploadImage extends HookWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          Navigator.pop(context);
+          Navigation.backward();
           await Core.chats.chat(chatId).messages.sendImageMessage(
                 chatName: chatName,
                 imageFile: imageFile!,

@@ -3,7 +3,7 @@ name: Build Production
 on: 
   push: 
    branches:
-    - main
+    - release
 
 jobs:
   build-web: 

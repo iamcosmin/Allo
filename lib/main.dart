@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:allo/firebase_options.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/interface/email_not_verified.dart';
-import 'package:allo/interface/login/main_setup.dart';
+import 'package:allo/interface/login/intro.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/client/theme/page_transitions/slide_page_transition.dart';
@@ -10,8 +12,6 @@ import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/auth_state.dart';
 import 'package:animations/animations.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,34 +21,20 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'interface/home/tabbed_navigator.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Notifications.setupNotifications();
+
+  // await FirebaseRemoteConfig.instance.fetchAndActivate();
+  // Temporary, once framework fixes SystemUiMode.edgeToEdge, we can return to it.
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.transparent,
       statusBarColor: Colors.transparent,
     ),
   );
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  if (!kIsWeb) {
-    await Notifications.setupNotifications();
-    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
-  }
-  await FirebaseRemoteConfig.instance.fetchAndActivate();
-  // await FirebaseMessaging.instance.requestPermission(
-  //   alert: true,
-  //   announcement: false,
-  //   badge: true,
-  //   carPlay: false,
-  //   criticalAlert: false,
-  //   provisional: false,
-  //   sound: true,
-  // );
-  // await FirebaseMessaging.instance.getToken(
-  //   vapidKey:
-  //       'BAx5uT7szCuYzwq9fLUNwS9-OF-GwOa4eGAb5J3jfl2d3e3L2b354oRm89KQ6sUbiEsK5YLPJoOs0n25ibcGbO8',
-  // );
+
+  // Set up Awesome Notifications before runApp.
   runApp(
     ProviderScope(
       overrides: await Keys.getOverrides(),
@@ -63,13 +49,15 @@ class InnerApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final darkState = useSetting(ref, darkMode);
     final authState = ref.watch(Core.auth.stateProvider);
-    useEffect(
-      () {
-        const Notifications().ensureListenersActive();
-        return;
-      },
-      const [],
-    );
+    if (!kIsWeb) {
+      useEffect(
+        () {
+          Notifications.ensureListenersActive();
+          return;
+        },
+        const [],
+      );
+    }
     return MaterialApp(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
@@ -105,7 +93,7 @@ class InnerApp extends HookConsumerWidget {
                       nextRoute: TabbedNavigator(),
                     );
                   case AuthState.signedOut:
-                    return const Setup();
+                    return const IntroPage();
                   case AuthState.signedIn:
                     return const TabbedNavigator();
                 }
@@ -128,26 +116,6 @@ class InnerApp extends HookConsumerWidget {
           );
         },
       ),
-      // home: StreamBuilder(
-      //   stream: FirebaseAuth.instance.authStateChanges(),
-      //   builder: (context, snap) {
-      //     if (snap.hasData) {
-      //       return const TabbedNavigator();
-      //     } else if (snap.connectionState == ConnectionState.waiting) {
-      //       return const Scaffold(
-      //         body: Center(
-      //           child: SizedBox(
-      //             height: 60,
-      //             width: 60,
-      //             child: CircularProgressIndicator(),
-      //           ),
-      //         ),
-      //       );
-      //     } else {
-      //       return const Setup();
-      //     }
-      //   },
-      // ),
     );
   }
 }

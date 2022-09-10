@@ -1,9 +1,9 @@
-name: Build alpha
+name: Build Master
 
 on: 
   push: 
    branches:
-    - alpha
+    - master
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
     - name: Flutter Setup
       uses: subosito/flutter-action@v1
       with:
-        channel: 'beta'
+        channel: 'stable'
     - name: Expand keystore
       run: |
            cd android/

@@ -8,6 +8,7 @@ import 'package:allo/interface/home/settings/debug/typingbubble.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -44,6 +45,22 @@ class C extends HookConsumerWidget {
                 locales.internalMenuDisclamer,
                 style: TextStyle(color: context.colorScheme.error),
               ),
+            ),
+            FutureBuilder<String?>(
+              future: FirebaseMessaging.instance.getToken(),
+              builder: (context, snapshot) {
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 10,
+                    left: 15,
+                    top: 10,
+                    right: 15,
+                  ),
+                  child: SelectableText(
+                    'ID: ${snapshot.data}',
+                  ),
+                );
+              },
             ),
             Tile(
               title: const Text(

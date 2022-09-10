@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:allo/components/material3/switch-own.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -34,6 +35,8 @@ class TestNotificationsPage extends HookConsumerWidget {
     final name = useState('');
     final chat = useState('');
     final message = useState('');
+    final genGroupKey = useState(Random().nextInt(100).toString());
+    final group = useState(false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Test notifications'),
@@ -56,9 +59,22 @@ class TestNotificationsPage extends HookConsumerWidget {
             ),
             TextField(
               decoration: const InputDecoration(
+                hintText: 'GroupKey',
+              ),
+              onChanged: (value) => genGroupKey.value = value,
+            ),
+            TextField(
+              decoration: const InputDecoration(
                 hintText: 'Message',
               ),
               onChanged: (value) => message.value = value,
+            ),
+            ListTile(
+              title: const Text('Messaging Group'),
+              trailing: AdaptiveSwitch(
+                value: group.value,
+                onChanged: (_) => group.value = _,
+              ),
             ),
           ],
         ),
@@ -68,15 +84,16 @@ class TestNotificationsPage extends HookConsumerWidget {
           await AwesomeNotifications().createNotification(
             content: NotificationContent(
               id: _createUniqueID(),
-              channelKey: 'conversations',
-              groupKey: 'asdfkasdjf',
+              channelKey: 'chats',
+              groupKey: genGroupKey.value,
               roundedLargeIcon: true,
-              fullScreenIntent: true,
               largeIcon: randomIcon(), // User name
               title: name.value,
-              notificationLayout: NotificationLayout.MessagingGroup,
+              notificationLayout: group.value
+                  ? NotificationLayout.MessagingGroup
+                  : NotificationLayout.Messaging,
               category: NotificationCategory.Message,
-              summary: chat.value,
+              summary: group.value ? chat.value : '',
               // Group name kinda.
               body: message.value,
             ),

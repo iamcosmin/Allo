@@ -190,7 +190,6 @@ class Bubble extends HookConsumerWidget {
     final isNotCurrentUser = Core.auth.user.userId != message.userId;
     final nameInitials = Core.auth.returnNameInitials(message.name);
     final screenWidth = MediaQuery.of(context).size.width;
-    final theme = Theme.of(context);
     final selected = useState(false);
     final regexEmoji = RegExp(
       r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$',
@@ -225,6 +224,12 @@ class Bubble extends HookConsumerWidget {
     final messageRadius =
         isNotCurrentUser ? receivedMessageRadius : sentMessageRadius;
     final messageType = MessageType.fromMessage(message);
+    final messageBubbleBackground = isNotCurrentUser
+        ? context.colorScheme.secondaryContainer
+        : context.colorScheme.primary;
+    final messageBubbleForeground = isNotCurrentUser
+        ? context.colorScheme.onSecondaryContainer
+        : context.colorScheme.onPrimary;
     String messageBody() {
       switch (MessageType.fromMessage(message)) {
         case MessageType.text:
@@ -328,9 +333,7 @@ class Bubble extends HookConsumerWidget {
                         AnimatedContainer(
                           decoration: BoxDecoration(
                             borderRadius: messageRadius,
-                            color: isNotCurrentUser
-                                ? colorScheme.secondaryContainer
-                                : colorScheme.primary,
+                            color: messageBubbleBackground,
                           ),
                           padding: messageType != MessageType.image
                               ? const EdgeInsets.all(9)
@@ -339,9 +342,10 @@ class Bubble extends HookConsumerWidget {
                           duration: const Duration(milliseconds: 250),
                           child: DefaultTextStyle(
                             style: TextStyle(
-                              color: isNotCurrentUser
-                                  ? context.colorScheme.onSecondaryContainer
-                                  : context.colorScheme.onPrimary,
+                              color: messageBubbleForeground,
+                              fontFamily: 'Jakarta',
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: context.textTheme.bodyMedium!.fontSize,
                             ),
                             child: Builder(
                               builder: (context) {
@@ -364,28 +368,30 @@ class Bubble extends HookConsumerWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(
-                                        height: message.reply == null ? 0 : 50,
+                                        height: message.reply == null ? 0 : 46,
                                         child: message.reply == null
                                             ? null
                                             : Padding(
-                                                padding:
-                                                    const EdgeInsets.all(2),
+                                                padding: const EdgeInsets.only(
+                                                  top: 5,
+                                                  bottom: 5,
+                                                ),
                                                 child: Row(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
                                                   children: [
                                                     Container(
                                                       decoration: BoxDecoration(
-                                                        color: theme.colorScheme
-                                                            .onPrimary,
+                                                        color:
+                                                            messageBubbleForeground,
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(
                                                           2,
                                                         ),
                                                       ),
-                                                      height: 35,
-                                                      width: 3,
+                                                      height: 32,
+                                                      width: 2,
                                                     ),
                                                     const Padding(
                                                       padding: EdgeInsets.only(
@@ -407,27 +413,16 @@ class Bubble extends HookConsumerWidget {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
                                                             ),
                                                           ),
-                                                          ClipRect(
-                                                            child: Text(
-                                                              message.reply
-                                                                      ?.description
-                                                                      .replaceAll(
-                                                                    '\n',
-                                                                    ' ',
-                                                                  ) ??
-                                                                  '',
-                                                              style:
-                                                                  const TextStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                              ),
-                                                            ),
+                                                          Text(
+                                                            message.reply
+                                                                    ?.description
+                                                                    .replaceAll(
+                                                                  '\n',
+                                                                  ' ',
+                                                                ) ??
+                                                                '',
                                                           ),
                                                         ],
                                                       ),
@@ -452,16 +447,12 @@ class Bubble extends HookConsumerWidget {
                                                   ? 30
                                                   : context.textTheme
                                                       .bodyMedium!.fontSize,
-                                          color: isNotCurrentUser
-                                              ? context.colorScheme
-                                                  .onSecondaryContainer
-                                              : context.colorScheme.onPrimary,
+                                          color: messageBubbleForeground,
                                         ),
                                         linkStyle: TextStyle(
                                           decoration: TextDecoration.underline,
-                                          color: isNotCurrentUser
-                                              ? theme.colorScheme.onSurface
-                                              : Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          color: messageBubbleForeground,
                                         ),
                                       ),
                                     ],
@@ -487,9 +478,9 @@ class Bubble extends HookConsumerWidget {
                                         ? locales.read
                                         : locales.sent)
                                     : locales.received,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey,
+                                  color: context.colorScheme.onSurface,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -497,9 +488,9 @@ class Bubble extends HookConsumerWidget {
                               Text(
                                 DateFormat.Hm()
                                     .format(message.timestamp.toDate()),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey,
+                                  color: context.colorScheme.onSurface,
                                 ),
                               )
                             ],

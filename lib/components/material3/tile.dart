@@ -1,5 +1,5 @@
 import 'package:allo/components/empty.dart';
-import 'package:allo/components/material3/switch.dart';
+import 'package:allo/components/material3/switch-own.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/logic/client/extensions.dart';
 import 'package:flutter/material.dart';

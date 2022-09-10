@@ -5,6 +5,7 @@ import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
+import 'package:allo/logic/client/theme/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,7 +22,7 @@ final navBarLabelsPreference =
 final dynamicColorPreference =
     initSetting('dynamic_color', defaultValue: false);
 final preferredColorPreference =
-    initSetting('accent_color', defaultValue: Colors.blueAccent.value);
+    initSetting('accent_color', defaultValue: kDefaultBrandingColor.value);
 final animationsPreference = initSetting('animations', defaultValue: !kIsWeb);
 
 class PersonalisePage extends HookConsumerWidget {

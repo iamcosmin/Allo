@@ -38,7 +38,7 @@ class Messages {
   Future<void> sendTextMessage({
     required String text,
     required String chatName,
-    required String chatType,
+    required ChatType chatType,
     TextEditingController? controller,
     ValueNotifier<InputModifier?>? modifier,
   }) async {
@@ -88,7 +88,7 @@ class Messages {
     required XFile imageFile,
     required ValueNotifier<double> progress,
     required BuildContext context,
-    required String chatType,
+    required ChatType chatType,
     String? description,
   }) async {
     final auth = Core.auth;
@@ -126,7 +126,6 @@ class Messages {
           profilePicture: Core.auth.user.profilePictureUrl,
           photo: link,
         );
-        Navigation.backward();
       }
     });
   }
@@ -136,7 +135,7 @@ class Messages {
     required String name,
     required String content,
     required String uid,
-    required String chatType,
+    required ChatType chatType,
     required String? profilePicture,
     String? photo,
   }) async {
@@ -144,22 +143,29 @@ class Messages {
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
         'Authorization':
-            'key=AAAA9EHEBh8:APA91bEwgamP8cWZQewq7qkVrydw6BduUEhgeufHV9SZ2pBoRYcJy7GynZ-XZWVzuzDrERK7ZDJlwZiPWZJ4oWaKh9rwjlL8GMnLD0znMKZ6CZw6BPRtjU1xBtGUv-Nds0wydptQcuz6',
+            'key=AAAA9EHEBh8:APA91bEuh4aaXDlyaGFbtmnpm5fzHnKGRgYTXUkBTzZj3TFvWFIEVanDN3KrrpKQobOd4W690lv8C_7xcQ3XNkUelMMMeXuiNECqzcJx71BxFq3Y7Wo53tYVwwMpL1csVAPr5PXtBTRA',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
         'to': '/topics/$chatId',
+        'priority': 'high',
         'data': {
-          'chatName': chatName,
-          'senderName': name,
-          'text': content,
-          'toChat': chatId,
-          'uid': uid,
-          'type': chatType,
-          'profilePicture': profilePicture,
-          'photo': photo,
+          'type': 'message',
+          'version': 1,
+          'message': {
+            'chat': {
+              'name': chatName,
+              'id': chatId,
+              'type': chatType.name,
+              'photoURL': null,
+            },
+            'sender': {'name': name, 'id': uid, 'photoURL': profilePicture},
+            'content': {
+              'type': 'text',
+              'text': content,
+            }
+          },
         },
-        'priority': 10,
       }),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/login/main_setup.dart';
+import 'package:allo/interface/login/intro.dart';
 import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/backend/authentication/errors.dart';
@@ -55,6 +55,23 @@ Future cache({
   }
   return await _getType(type, key);
 }
+
+// class _AuthProvider extends StateNotifier<AuthState> {
+//   _AuthProvider() : super(AuthState.signedOut) {
+//     FirebaseAuth.instance.userChanges().listen((event) {
+//       if (event != null) {
+//         if (event.emailVerified) {
+//           state = AuthState.signedIn;
+//         } else {
+//           state = AuthState.emailNotVerified;
+//         }
+//       } else {
+//         state = AuthState.signedOut;
+//       }
+//       Navigation.first();
+//     });
+//   }
+// }
 
 class Authentication {
   Authentication();
@@ -255,7 +272,7 @@ class Authentication {
     try {
       await FirebaseAuth.instance.signOut();
       ref.invalidate(Core.chats.chatListProvider.future);
-      Navigation.replaceStack(context: context, route: const Setup());
+      Navigation.replaceStack(context: context, route: const IntroPage());
     } catch (e) {
       throw Exception('Something is wrong...');
     }

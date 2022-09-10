@@ -80,6 +80,15 @@ class Navigation {
       (route) => route.isFirst == true,
     );
   }
+
+  /// Navigates to the first screen possible.
+  /// This is used when changing authentication state, as the first route in the navigation stack
+  /// is changing whenever the auth state changes.
+  static void first({BuildContext? context}) {
+    _determinePossibleNavigator(context).popUntil(
+      (route) => route.isFirst == true,
+    );
+  }
 }
 
 class TiramisuPageRoute extends MaterialPageRoute {

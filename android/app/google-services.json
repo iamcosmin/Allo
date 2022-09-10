@@ -36,6 +36,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1049075385887:android:5d91ff67a3a076aff2372a",
+        "android_client_info": {
+          "package_name": "com.relays.messenger.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1049075385887-b94kh0m0pngublccg1adtfek9sv0t1g0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmMz7REpzPdTuKbzDsXg57ZE8DfZ6zgNU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1049075385887-b94kh0m0pngublccg1adtfek9sv0t1g0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1049075385887:android:a4c3a5897e20e388f2372a",
         "android_client_info": {
           "package_name": "com.relays.messenger.dev"

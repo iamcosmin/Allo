@@ -9,6 +9,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+const kDefaultBrandingColor = Color(0xFF6360BF);
+
 extension ColorString on Color {
   String toHexString() {
     return '#${(value & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
@@ -87,6 +89,10 @@ ThemeData theme(
     pageTransitionsTheme: getPageTransitionsTheme(
       reducedMotion: !animations.setting,
       fillColor: scheme.surface,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      isDense: true,
+      border: OutlineInputBorder(),
     ),
     useMaterial3: true,
     colorScheme: scheme,
