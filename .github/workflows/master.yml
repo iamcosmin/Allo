@@ -5,17 +5,18 @@ on:
    branches:
     - master
 jobs:
-  build-android:
+  build-release:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Setup
-      uses: actions/checkout@v1
+    - name: Setup - Checkout
+      uses: actions/checkout@v3
     - name: Java Setup
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
         java-version: '12.x'
-    - name: Flutter Setup
-      uses: subosito/flutter-action@v1
+        distribution: 'microsoft'
+    - name: Setup - Flutter
+      uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
     - name: Expand keystore
@@ -42,7 +43,7 @@ jobs:
       run: | 
           flutter build appbundle --flavor prod
     - name: Play Store - Release
-      uses: r0adkll/upload-google-play@v1.0.15
+      uses: r0adkll/upload-google-play@v1
       with: 
         serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
         packageName: com.relays.messenger
