@@ -49,6 +49,7 @@ jobs:
         packageName: com.relays.messenger
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
         track: alpha
+        status: completed
         whatsNewDirectory: distribution
     - name: Publish Release Notes
       uses: appleboy/telegram-action@master
