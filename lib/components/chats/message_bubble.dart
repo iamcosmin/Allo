@@ -2,6 +2,7 @@ import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/chats/swipe_to.dart';
 import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
+import 'package:allo/components/photo.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
@@ -9,7 +10,6 @@ import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';
 import 'package:allo/logic/models/types.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -349,16 +349,15 @@ class Bubble extends HookConsumerWidget {
                             ),
                             child: Builder(
                               builder: (context) {
-                                if (messageType == MessageType.image) {
+                                if (message is ImageMessage) {
                                   return Container(
                                     constraints: BoxConstraints(
                                       maxWidth: screenWidth / 1.5,
                                     ),
                                     child: ClipRRect(
                                       borderRadius: messageRadius,
-                                      child: CachedNetworkImage(
-                                        imageUrl:
-                                            (message as ImageMessage).link,
+                                      child: Photo(
+                                        url: (message as ImageMessage).link,
                                       ),
                                     ),
                                   );

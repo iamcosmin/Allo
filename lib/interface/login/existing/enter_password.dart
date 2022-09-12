@@ -1,7 +1,6 @@
-import 'package:allo/components/setup_page.dart';
+import 'package:allo/components/setup_view.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/home/tabbed_navigator.dart';
 import 'package:allo/logic/backend/setup/login.dart';
 import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,37 +20,36 @@ class EnterPassword extends HookConsumerWidget {
     final controller = useTextEditingController();
     final locales = S.of(context);
 
-    void onSubmit() async {
-      try {
-        await login.login(controller.text);
-        Navigation.replaceStack(route: const TabbedNavigator());
-      } on FirebaseAuthException catch (e) {
-        switch (e.code) {
-          case 'user-disabled':
-            error.value = locales.errorUserDisabled;
-            break;
-          case 'wrong-password':
-            error.value = locales.errorWrongPassword;
-            break;
-          case 'too-many-requests':
-            error.value = locales.errorTooManyRequests;
-            break;
-          default:
-            error.value = locales.errorUnknown;
-            break;
-        }
-        focusNode.requestFocus();
-      } catch (e) {
-        error.value = e.toString();
-        focusNode.requestFocus();
-      }
-    }
-
-    return SetupPage(
+    return SetupView(
       icon: Icons.password,
       title: Text('${locales.welcomeBack}.'),
-      subtitle: Text(locales.enterPasswordDescription),
-      body: [
+      description: Text(locales.enterPasswordDescription),
+      action: () async {
+        try {
+          await login.login(controller.text);
+          Navigation.first();
+        } on FirebaseAuthException catch (e) {
+          switch (e.code) {
+            case 'user-disabled':
+              error.value = locales.errorUserDisabled;
+              break;
+            case 'wrong-password':
+              error.value = locales.errorWrongPassword;
+              break;
+            case 'too-many-requests':
+              error.value = locales.errorTooManyRequests;
+              break;
+            default:
+              error.value = locales.errorUnknown;
+              break;
+          }
+          focusNode.requestFocus();
+        } catch (e) {
+          error.value = e.toString();
+          focusNode.requestFocus();
+        }
+      },
+      builder: (props) => [
         TextFormField(
           autofillHints: const [AutofillHints.password],
           keyboardType: TextInputType.visiblePassword,
@@ -87,24 +85,24 @@ class EnterPassword extends HookConsumerWidget {
           focusNode: focusNode,
           controller: controller,
           obscureText: obscure.value,
-          onFieldSubmitted: (string) async => onSubmit(),
+          onFieldSubmitted: (string) async => props.callback?.call(),
         ),
         const Space(2),
-        TextButton(
-          style: const ButtonStyle(
-            alignment: Alignment.topLeft,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton(
+            onPressed: () {
+              if (state != null) {
+                Core.auth
+                    .sendPasswordResetEmail(email: state, context: context);
+              } else {
+                throw Exception('There is no email in state.');
+              }
+            },
+            child: Text(locales.forgotPassword),
           ),
-          onPressed: () {
-            if (state != null) {
-              Core.auth.sendPasswordResetEmail(email: state, context: context);
-            } else {
-              throw Exception('There is no email in state.');
-            }
-          },
-          child: Text(locales.forgotPassword),
         )
       ],
-      action: onSubmit,
     );
   }
 }

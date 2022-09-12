@@ -19,9 +19,13 @@ class AdaptiveSwitch extends StatelessWidget {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        return Switch(
-          value: value,
-          onChanged: onChanged,
+        return SizedBox(
+          height: 32,
+          width: 52,
+          child: Switch(
+            value: value,
+            onChanged: onChanged,
+          ),
         );
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:

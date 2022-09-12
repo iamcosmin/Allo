@@ -37,7 +37,6 @@ class ImageView extends HookConsumerWidget {
               child: InteractiveViewer(
                 child: Photo(
                   backgroundColor: colors.surface,
-                  key: key,
                   url: imageUrl,
                 ),
               ),

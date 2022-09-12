@@ -94,6 +94,7 @@ ThemeData theme(
       isDense: true,
       border: OutlineInputBorder(),
     ),
+    visualDensity: VisualDensity.standard,
     useMaterial3: true,
     colorScheme: scheme,
     brightness: brightness,

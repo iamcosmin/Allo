@@ -6,7 +6,6 @@ import 'package:allo/interface/email_not_verified.dart';
 import 'package:allo/interface/login/intro.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
-import 'package:allo/logic/client/theme/page_transitions/slide_page_transition.dart';
 import 'package:allo/logic/client/theme/theme.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/auth_state.dart';
@@ -79,11 +78,7 @@ class InnerApp extends HookConsumerWidget {
         data: (data) {
           return PageTransitionSwitcher(
             transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-              return SlidePageTransition(
-                secondaryAnimation: secondaryAnimation,
-                animation: primaryAnimation,
-                child: child,
-              );
+              return child;
             },
             child: Builder(
               builder: (context) {

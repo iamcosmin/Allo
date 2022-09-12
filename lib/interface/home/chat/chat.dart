@@ -1,6 +1,5 @@
 import 'package:allo/components/chats/chat_messages_list.dart';
 import 'package:allo/components/chats/message_input.dart';
-import 'package:allo/components/empty.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/logic/core.dart';
@@ -109,13 +108,6 @@ class ChatScreen extends HookConsumerWidget {
         builder: (context) {
           return Scaffold(
             appBar: AppBar(
-              leading: (ModalRoute.of(context)!.canPop)
-                  ? const Padding(
-                      padding: EdgeInsets.all(7),
-                      child: BackButton(),
-                    )
-                  : const Empty(),
-              leadingWidth: 40,
               centerTitle: true,
               actions: [
                 Container(

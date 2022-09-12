@@ -28,13 +28,12 @@ class Photo extends HookConsumerWidget {
   /// This widget is the most useful if you have 'gs://' links in you app,
   /// but you do not want to fill your app with [FutureBuilder] to await
   /// the download URL of the Firebase Storage bucket.
-  const Photo({
+  Photo({
     required this.url,
     this.placeholder,
     this.backgroundColor,
     this.errorBuilder = _errorBuilder,
-    super.key,
-  });
+  }) : super(key: ValueKey(url));
   final String url;
   final Widget? placeholder;
   final Color? backgroundColor;
@@ -75,26 +74,25 @@ class Photo extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isGS = url.startsWith('gs://');
-    final isHTTP = url.startsWith('http://') || url.startsWith('https://');
-    if (isGS) {
+    final uri = Uri.parse(url);
+    if (uri.scheme == 'gs') {
       return Image(
+        key: ValueKey(uri),
         image: FirebaseImage(url),
-        key: key,
         errorBuilder: _errorBuilder,
       );
-    } else if (isHTTP) {
+    } else if (uri.scheme == 'http' || uri.scheme == 'https') {
       if (kIsWeb) {
         return Image.network(
           url,
-          key: key,
+          key: ValueKey(uri),
           errorBuilder: _errorBuilder,
         );
       } else if (Platform.isAndroid) {
         return Image(
+          key: ValueKey(uri),
           image: CachedNetworkImageProvider(
             url,
-            cacheKey: key.toString(),
           ),
           errorBuilder: _errorBuilder,
         );

@@ -36,7 +36,6 @@ class PersonPicture extends HookConsumerWidget {
   Widget _child(BuildContext context) {
     if (profilePicture != null && profilePicture != '') {
       return Photo(
-        key: key,
         url: profilePicture!,
         placeholder: AnimatedContainer(
           curve: Curves.fastOutSlowIn,

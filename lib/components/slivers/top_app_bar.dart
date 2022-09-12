@@ -374,8 +374,9 @@ class _MediumScrollUnderFlexibleConfig with _ScrollUnderFlexibleConfig {
       _textTheme.titleLarge?.apply(color: _colors.onSurface);
 
   @override
-  TextStyle? get expandedTextStyle =>
-      _textTheme.headlineSmall?.apply(color: _colors.onSurface);
+  TextStyle? get expandedTextStyle => _textTheme.headlineSmall
+      ?.apply(color: _colors.onSurface)
+      .copyWith(fontWeight: FontWeight.bold);
 
   @override
   EdgeInsetsGeometry? get collapsedTitlePadding =>
@@ -408,8 +409,9 @@ class _LargeScrollUnderFlexibleConfig with _ScrollUnderFlexibleConfig {
       _textTheme.titleLarge?.apply(color: _colors.onSurface);
 
   @override
-  TextStyle? get expandedTextStyle =>
-      _textTheme.headlineMedium?.apply(color: _colors.onSurface);
+  TextStyle? get expandedTextStyle => _textTheme.headlineMedium
+      ?.apply(color: _colors.onSurface)
+      .copyWith(fontWeight: FontWeight.w600);
 
   @override
   EdgeInsetsGeometry? get collapsedTitlePadding =>
