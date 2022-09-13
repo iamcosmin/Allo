@@ -1,8 +1,10 @@
+import 'package:allo/components/chats/chat_messages_list.dart';
 import 'package:allo/logic/backend/chat/messages.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 int calculateIndex(int index, int? lastIndex) {
   if (lastIndex != null) {
@@ -19,8 +21,8 @@ class Chats {
   Messages get messages => Messages(chatId: chatId);
 
   Stream<List<Message>> streamChatMessages({
-    required GlobalKey<AnimatedListState> listKey,
     required BuildContext context,
+    required WidgetRef ref,
     int? limit,
     DocumentSnapshot? startAfter,
 
@@ -55,10 +57,10 @@ class Chats {
                 replyData: replyData,
               );
 
-              listKey.currentState?.insertItem(
-                calculateIndex(docChanges.newIndex, lastIndex),
-                duration: const Duration(milliseconds: 275),
-              );
+              ref.read(animatedListKeyProvider).currentState?.insertItem(
+                    calculateIndex(docChanges.newIndex, lastIndex),
+                    duration: const Duration(milliseconds: 275),
+                  );
               if (message != null) {
                 messages.insert(docChanges.newIndex, message);
               }
@@ -77,7 +79,7 @@ class Chats {
               );
               if (message != null) {
                 // ignore: invalid_use_of_protected_member
-                listKey.currentState?.setState(() {
+                ref.read(animatedListKeyProvider).currentState?.setState(() {
                   final index = calculateIndex(docChanges.newIndex, lastIndex);
                   messages[index] = message;
                 });
@@ -86,19 +88,19 @@ class Chats {
             }
           case DocumentChangeType.removed:
             {
-              listKey.currentState?.removeItem(
-                calculateIndex(docChanges.oldIndex, lastIndex),
-                (context, animation) => SizeTransition(
-                  axisAlignment: -1.0,
-                  sizeFactor: animation,
-                  child: FadeTransition(
-                    opacity: CurvedAnimation(
-                      curve: Curves.easeIn,
-                      parent: animation,
+              ref.read(animatedListKeyProvider).currentState?.removeItem(
+                    calculateIndex(docChanges.oldIndex, lastIndex),
+                    (context, animation) => SizeTransition(
+                      axisAlignment: -1.0,
+                      sizeFactor: animation,
+                      child: FadeTransition(
+                        opacity: CurvedAnimation(
+                          curve: Curves.easeIn,
+                          parent: animation,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
+                  );
               messages.removeAt(docChanges.oldIndex);
               break;
             }

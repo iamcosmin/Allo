@@ -83,6 +83,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 //   }
 // }
 
+final animatedListKeyProvider =
+    StateProvider.autoDispose<GlobalKey<AnimatedListState>>((ref) {
+  return GlobalKey<AnimatedListState>();
+});
+
 class ChatMessagesList extends HookConsumerWidget {
   const ChatMessagesList({
     required this.chat,
@@ -91,8 +96,6 @@ class ChatMessagesList extends HookConsumerWidget {
   });
   final Chat chat;
   final ValueNotifier<InputModifier?> inputModifiers;
-  static final GlobalKey<AnimatedListState> listKey =
-      GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useScrollController();
@@ -104,7 +107,7 @@ class ChatMessagesList extends HookConsumerWidget {
       () {
         Core.chats
             .chat(chatId)
-            .streamChatMessages(listKey: listKey, limit: 30, context: context)
+            .streamChatMessages(limit: 30, context: context, ref: ref)
             .listen((event) {
           streamList.value = event;
         }).onError((e) {
@@ -124,7 +127,7 @@ class ChatMessagesList extends HookConsumerWidget {
           ),
           child: AnimatedList(
             padding: const EdgeInsets.only(top: 10),
-            key: listKey,
+            key: ref.watch(animatedListKeyProvider),
             reverse: true,
             shrinkWrap: true,
             controller: controller,
@@ -156,7 +159,7 @@ class ChatMessagesList extends HookConsumerWidget {
                         Core.chats
                             .chat(chatId)
                             .streamChatMessages(
-                              listKey: listKey,
+                              ref: ref,
                               limit: 20,
                               context: context,
                               lastIndex: data.length - 1,
@@ -220,8 +223,6 @@ class ChatMessagesList extends HookConsumerWidget {
       return const Center(
         child: CircularProgressIndicator(),
       );
-      // } else if (snapshot.hasError) {
-
     } else {
       return Padding(
         padding: const EdgeInsets.only(left: 30, right: 30),

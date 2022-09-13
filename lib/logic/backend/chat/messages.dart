@@ -139,6 +139,11 @@ class Messages {
     required String? profilePicture,
     String? photo,
   }) async {
+    if (profilePicture != null && Uri.parse(profilePicture).scheme == 'gs') {
+      profilePicture = await FirebaseStorage.instance
+          .refFromURL(profilePicture)
+          .getDownloadURL();
+    }
     await post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: <String, String>{
