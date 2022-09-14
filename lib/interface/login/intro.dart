@@ -29,7 +29,7 @@ class IntroPage extends HookWidget {
                     ),
                     const Padding(padding: EdgeInsets.only(top: 50)),
                     Text(
-                      'Welcome to Allo!',
+                      context.locale.setupWelcomeScreenTitle,
                       style: Theme.of(context).textTheme.displaySmall!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),

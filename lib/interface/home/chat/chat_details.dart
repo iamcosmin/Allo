@@ -4,6 +4,7 @@ import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/generated/l10n.dart';
+import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/interface/home/chat/members.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
@@ -95,8 +96,10 @@ class ChatDetails extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final notificationState = ref.watch(currentNotificationState(chat.id));
     final locales = S.of(context);
     final members = useSetting(ref, membersDebug);
+    final notifications = useSetting(ref, eToggleNotifications);
     final profilePicture = Core.auth.getProfilePicture(
       chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
       isGroup: chat is GroupChat ? true : false,
@@ -144,6 +147,16 @@ class ChatDetails extends HookConsumerWidget {
                   onTap: () async =>
                       _changeTheme(context: context, id: chat.id),
                 ),
+                if (notifications.setting) ...[
+                  SwitchTile(
+                    leading: const Icon(Icons.notifications_outlined),
+                    title: Text(locales.notifications),
+                    value: notificationState ?? false,
+                    onChanged: ref
+                        .read(currentNotificationState(chat.id).notifier)
+                        .toggleNotificationState,
+                  ),
+                ],
                 if (members.setting == true) ...[
                   Tile(
                     leading: const Icon(Icons.people_alt_outlined),

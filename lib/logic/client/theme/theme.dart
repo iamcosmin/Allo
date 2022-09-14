@@ -80,11 +80,26 @@ ThemeData theme(
   //     [scheme.surface.toHexString()],
   //   );
   // }
+
+  InteractiveInkFeatureFactory getSplashFactory() {
+    switch (iOS ? TargetPlatform.iOS : platform) {
+      case TargetPlatform.android:
+      case TargetPlatform.fuchsia:
+        return InkSparkle.splashFactory;
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+        return NoSplash.splashFactory;
+    }
+  }
+
   return ThemeData(
     // These parameters will remain even after Material 3 lands.
     platform: iOS ? TargetPlatform.iOS : null,
     applyElevationOverlayColor: true,
     fontFamily: 'Jakarta',
+    splashFactory: getSplashFactory(),
     iconTheme: IconThemeData(color: scheme.onSurface),
     pageTransitionsTheme: getPageTransitionsTheme(
       reducedMotion: !animations.setting,

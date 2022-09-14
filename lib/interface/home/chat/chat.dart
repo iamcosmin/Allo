@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:allo/components/chats/chat_messages_list.dart';
 import 'package:allo/components/chats/message_input.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
+import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
@@ -13,11 +16,55 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../logic/client/theme/theme.dart';
 
+final currentNotificationState =
+    StateNotifierProvider.family.autoDispose<_NotificationState, bool?, String>(
+  (ref, arg) {
+    return _NotificationState(ref: ref, id: arg);
+  },
+);
+
+class _NotificationState extends StateNotifier<bool?> {
+  _NotificationState({required this.ref, required this.id}) : super(null) {
+    final _ =
+        ref.read(preferencesProvider).get('notifications_is_enabled__$id');
+    if (_ == null) {
+      FirebaseMessaging.instance.subscribeToTopic(id);
+      ref.read(preferencesProvider).set('notifications_is_enabled__$id', true);
+      state = true;
+      log(
+        'Notifications enabled by default in state $id',
+        name: 'Notifications',
+      );
+    } else if (_ is bool) {
+      state = _;
+    }
+  }
+  final Ref ref;
+  final String id;
+
+  // ignore: avoid_positional_boolean_parameters
+  void toggleNotificationState(bool value) {
+    if (value == false) {
+      FirebaseMessaging.instance.unsubscribeFromTopic(id);
+    } else if (value == true) {
+      FirebaseMessaging.instance.subscribeToTopic(id);
+    }
+    ref.read(preferencesProvider).set('notifications_is_enabled__$id', value);
+    log('Notifications set to $value in state $id', name: 'Notifications');
+
+    state = value;
+  }
+}
+
 class ChatScreen extends HookConsumerWidget {
   final Chat chat;
   const ChatScreen({required this.chat, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final primaryScrollController = useScrollController();
+    if (!kIsWeb) {
+      ref.read(currentNotificationState(chat.id));
+    }
     final scheme = useState<ColorScheme>(
       ColorScheme.fromSeed(
         seedColor: Colors.blue,
@@ -28,9 +75,6 @@ class ChatScreen extends HookConsumerWidget {
     final brightness = Theme.of(context).brightness;
     useEffect(
       () {
-        if (!kIsWeb) {
-          FirebaseMessaging.instance.subscribeToTopic(chat.id);
-        }
         Database.firestore.collection('chats').doc(chat.id).snapshots().listen(
           (event) {
             scheme.value = ColorScheme.fromSeed(
@@ -106,66 +150,70 @@ class ChatScreen extends HookConsumerWidget {
       data: theme(brightness, ref, context, colorScheme: scheme.value),
       child: Builder(
         builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              actions: [
-                Container(
-                  alignment: Alignment.bottomLeft,
-                  padding: const EdgeInsets.all(10),
-                  child: PersonPicture(
-                    profilePicture: Core.auth.getProfilePicture(
-                      chat is GroupChat
-                          ? chat.id
-                          : chat is PrivateChat
-                              ? (chat as PrivateChat).userId
-                              : '',
-                      isGroup: chat is GroupChat ? true : false,
+          return PrimaryScrollController(
+            controller: primaryScrollController,
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                actions: [
+                  Container(
+                    alignment: Alignment.bottomLeft,
+                    padding: const EdgeInsets.all(10),
+                    child: PersonPicture(
+                      profilePicture: Core.auth.getProfilePicture(
+                        chat is GroupChat
+                            ? chat.id
+                            : chat is PrivateChat
+                                ? (chat as PrivateChat).userId
+                                : '',
+                        isGroup: chat is GroupChat ? true : false,
+                      ),
+                      radius: 35,
+                      initials: Core.auth.returnNameInitials(chat.title),
                     ),
-                    radius: 35,
-                    initials: Core.auth.returnNameInitials(chat.title),
-                  ),
-                ),
-              ],
-              title: InkWell(
-                onTap: () => Navigation.forward(ChatDetails(chat: chat)),
-                child: Column(
-                  children: [
-                    Text(
-                      chat.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    if (chat is GroupChat) ...[
-                      Text(
-                        '${chat.memberUids.length} membri',
-                        style: context.textTheme.labelMedium!.copyWith(
-                          color: context.colorScheme.onSurfaceVariant,
-                        ),
-                      )
-                    ]
-                  ],
-                ),
-              ),
-            ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ChatMessagesList(
-                      key: key,
-                      chat: chat,
-                      inputModifiers: inputModifiers,
-                    ),
-                  ),
-                  MessageInput(
-                    modifier: inputModifiers,
-                    chatId: chat.id,
-                    chatName: chat.title,
-                    chatType:
-                        chat is PrivateChat ? ChatType.private : ChatType.group,
-                    theme: scheme.value,
                   ),
                 ],
+                title: InkWell(
+                  onTap: () => Navigation.forward(ChatDetails(chat: chat)),
+                  child: Column(
+                    children: [
+                      Text(
+                        chat.title,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (chat is GroupChat) ...[
+                        Text(
+                          '${chat.memberUids.length} membri',
+                          style: context.textTheme.labelMedium!.copyWith(
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        )
+                      ]
+                    ],
+                  ),
+                ),
+              ),
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ChatMessagesList(
+                        key: key,
+                        chat: chat,
+                        inputModifiers: inputModifiers,
+                      ),
+                    ),
+                    MessageInput(
+                      modifier: inputModifiers,
+                      chatId: chat.id,
+                      chatName: chat.title,
+                      chatType: chat is PrivateChat
+                          ? ChatType.private
+                          : ChatType.group,
+                      theme: scheme.value,
+                    ),
+                  ],
+                ),
               ),
             ),
           );

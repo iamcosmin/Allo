@@ -277,6 +277,7 @@ class _NotificationController {
         options: DefaultFirebaseOptions.currentPlatform,
       );
       await Core.chats.chat(payload['chatId']).messages.sendTextMessage(
+            scrollController: null,
             text: action.buttonKeyInput,
             chatName: payload['chatName']!,
             chatType: ChatType.fromString(payload['chatType']!),

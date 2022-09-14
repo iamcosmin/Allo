@@ -102,6 +102,7 @@ class SetupPage extends StatelessWidget {
             actions: [
               SetupAction(
                 label: context.locale.setupNext,
+                // ignore: deprecated_member_use_from_same_package
                 onTap: action,
               )
             ],

@@ -98,7 +98,7 @@ class ChatMessagesList extends HookConsumerWidget {
   final ValueNotifier<InputModifier?> inputModifiers;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = useScrollController();
+    final showFab = useState(false);
     final locales = context.locale;
     final streamList = useState<List<Message>?>(null);
     final error = useState<Object?>(null);
@@ -120,17 +120,37 @@ class ChatMessagesList extends HookConsumerWidget {
 
     if (streamList.value != null && streamList.value!.isNotEmpty) {
       final data = streamList.value!;
-      return SafeArea(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-          ),
-          child: AnimatedList(
+      return NotificationListener(
+        onNotification: (notification) {
+          if (notification is ScrollNotification) {
+            if (notification.metrics.pixels > 0.1 && showFab.value == false) {
+              showFab.value = true;
+            } else if (notification.metrics.pixels < 0.1 &&
+                showFab.value == true) {
+              showFab.value = false;
+            }
+          }
+          return true;
+        },
+        child: Scaffold(
+          floatingActionButton: showFab.value
+              ? FloatingActionButton.small(
+                  onPressed: () {
+                    PrimaryScrollController.of(context)?.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.fastOutSlowIn,
+                    );
+                  },
+                  child: const Icon(Icons.arrow_downward_rounded),
+                )
+              : null,
+          body: AnimatedList(
             padding: const EdgeInsets.only(top: 10),
             key: ref.watch(animatedListKeyProvider),
             reverse: true,
             shrinkWrap: true,
-            controller: controller,
+            controller: PrimaryScrollController.of(context),
             initialItemCount: data.length,
             itemBuilder: (context, i, animation) {
               final message = data[i];

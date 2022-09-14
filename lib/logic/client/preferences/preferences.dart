@@ -30,3 +30,7 @@ final emulateIOSBehaviour = initSetting(
   'experimentalEmulateIOSBehaviour',
   defaultValue: false,
 );
+final eToggleNotifications = initSetting(
+  'experient_toggle_notifications',
+  defaultValue: false,
+);

@@ -1,5 +1,4 @@
 import 'package:allo/components/chats/chat_tile.dart';
-import 'package:allo/components/empty.dart';
 import 'package:allo/components/info.dart';
 import 'package:allo/components/shimmer.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
@@ -10,11 +9,11 @@ import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../components/empty.dart';
 import '../../components/person_picture.dart';
 import '../../logic/models/chat.dart';
 import 'chat/chat.dart';
@@ -53,9 +52,6 @@ class Home extends ConsumerWidget {
               tooltip: context.locale.createNewChat,
             ),
       slivers: [
-        CupertinoSliverRefreshControl(
-          onRefresh: () => Future.delayed(const Duration(seconds: 3)),
-        ),
         SliverPadding(
           padding: const EdgeInsets.only(left: 5, right: 5),
           sliver: chatList.when(

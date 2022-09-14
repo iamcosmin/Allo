@@ -26,6 +26,7 @@ class SwitchTile extends StatelessWidget {
       leading: leading,
       title: title,
       subtitle: subtitle,
+      onTap: () => onChanged?.call(!value),
       trailing: AdaptiveSwitch(
         value: value,
         onChanged: onChanged,

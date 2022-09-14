@@ -27,118 +27,128 @@ class C extends HookConsumerWidget {
     final members = useSetting(ref, membersDebug);
     final iOSMode = useSetting(ref, emulateIOSBehaviour);
     final newAccountSettings = useSetting(ref, revampedAccountSettingsDebug);
+    final toggleNotifications = useSetting(ref, eToggleNotifications);
     return SScaffold(
       topAppBar: LargeTopAppBar(
         title: Text(locales.internalMenu),
       ),
       slivers: [
         SliverList(
-          delegate: SliverChildListDelegate.fixed([
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 10,
-                left: 15,
-                top: 10,
-                right: 15,
+          delegate: SliverChildListDelegate.fixed(
+            [
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 10,
+                  left: 15,
+                  top: 10,
+                  right: 15,
+                ),
+                child: Text(
+                  locales.internalMenuDisclamer,
+                  style: TextStyle(color: context.colorScheme.error),
+                ),
               ),
-              child: Text(
-                locales.internalMenuDisclamer,
-                style: TextStyle(color: context.colorScheme.error),
+              FutureBuilder<String?>(
+                future: FirebaseMessaging.instance.getToken(),
+                builder: (context, snapshot) {
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                      left: 15,
+                      top: 10,
+                      right: 15,
+                    ),
+                    child: SelectableText(
+                      'ID: ${snapshot.data}',
+                    ),
+                  );
+                },
               ),
-            ),
-            FutureBuilder<String?>(
-              future: FirebaseMessaging.instance.getToken(),
-              builder: (context, snapshot) {
-                return Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 10,
-                    left: 15,
-                    top: 10,
-                    right: 15,
+              Tile(
+                title: const Text(
+                  'Debug Testing',
+                ),
+                onTap: () => Navigation.forward(const TestApp()),
+              ),
+              Tile(
+                title: Text(locales.internalTypingIndicatorDemo),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ExampleIsTyping(),
                   ),
-                  child: SelectableText(
-                    'ID: ${snapshot.data}',
+                ),
+              ),
+              Tile(
+                title: Text(locales.internalAccountInfo),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AccountInfo(),
                   ),
-                );
-              },
-            ),
-            Tile(
-              title: const Text(
-                'Debug Testing',
-              ),
-              onTap: () => Navigation.forward(const TestApp()),
-            ),
-            Tile(
-              title: Text(locales.internalTypingIndicatorDemo),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ExampleIsTyping(),
                 ),
               ),
-            ),
-            Tile(
-              title: Text(locales.internalAccountInfo),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AccountInfo(),
+              Tile(
+                title: const Text('Example SliverAppBar'),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ExampleSliver(),
+                  ),
                 ),
               ),
-            ),
-            Tile(
-              title: const Text('Example SliverAppBar'),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ExampleSliver(),
+              Tile(
+                title: const Text('Test Notifications'),
+                onTap: () => Navigation.forward(const TestNotificationsPage()),
+              ),
+              InkWell(
+                onLongPress: () => reactions.delete(context),
+                child: SettingTile(
+                  title: locales.reactions,
+                  preference: reactions,
                 ),
               ),
-            ),
-            Tile(
-              title: const Text('Test Notifications'),
-              onTap: () => Navigation.forward(const TestNotificationsPage()),
-            ),
-            InkWell(
-              onLongPress: () => reactions.delete(context),
-              child: SettingTile(
-                title: locales.reactions,
-                preference: reactions,
+              InkWell(
+                onLongPress: () => editMessage.delete(context),
+                child: SettingTile(
+                  title: locales.editMessages,
+                  preference: editMessage,
+                ),
               ),
-            ),
-            InkWell(
-              onLongPress: () => editMessage.delete(context),
-              child: SettingTile(
-                title: locales.editMessages,
-                preference: editMessage,
+              InkWell(
+                onLongPress: () => conversations.delete(context),
+                child: SettingTile(
+                  title: locales.createNewChats,
+                  preference: conversations,
+                ),
               ),
-            ),
-            InkWell(
-              onLongPress: () => conversations.delete(context),
-              child: SettingTile(
-                title: locales.createNewChats,
-                preference: conversations,
+              InkWell(
+                onLongPress: () => members.delete(context),
+                child: SettingTile(
+                  title: locales.enableParticipantsList,
+                  preference: members,
+                ),
               ),
-            ),
-            InkWell(
-              onLongPress: () => members.delete(context),
-              child: SettingTile(
-                title: locales.enableParticipantsList,
-                preference: members,
+              InkWell(
+                onLongPress: () => iOSMode.delete(context),
+                child: SettingTile(
+                  title: 'Cupertino behaviour',
+                  preference: iOSMode,
+                ),
               ),
-            ),
-            InkWell(
-              onLongPress: () => iOSMode.delete(context),
-              child: SettingTile(
-                title: 'Cupertino behaviour',
-                preference: iOSMode,
+              InkWell(
+                onLongPress: () => newAccountSettings.delete(context),
+                child: SettingTile(
+                  title: 'New Account Settings',
+                  preference: newAccountSettings,
+                ),
               ),
-            ),
-            InkWell(
-              onLongPress: () => newAccountSettings.delete(context),
-              child: SettingTile(
-                title: 'New Account Settings',
-                preference: newAccountSettings,
+              InkWell(
+                onLongPress: () => toggleNotifications.delete(context),
+                child: SettingTile(
+                  title: 'Opt-in Notifications',
+                  preference: toggleNotifications,
+                ),
               ),
-            )
-          ]),
+            ],
+          ),
         )
       ],
     );
