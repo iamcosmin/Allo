@@ -43,7 +43,7 @@ Also, we are not supporting Windows, Linux and MacOS because the packages we are
 This app is available on Google Play. Press the icon below to install it on your Android and Chrome OS devices.
 
 <a href="https://play.google.com/store/apps/details?id=com.relays.messenger">
-    <img src="get_it_on_google_play.png" alt="Get it on Google Play" width=200>
+    <img src="assets/readme/get_it_on_google_play.png" alt="Get it on Google Play" width=200>
 </a>
 
 ### Installing as a PWA
@@ -52,7 +52,7 @@ This app is available as a Progressive Web App if you access the site on a compa
 You may need to dig deeper into the menus to install it to your device, I recommend checking [this](https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/) guide.
 
 <a href="https://allo-ms.web.app">
-<img src="launch_as_pwa.svg" alt="Launch as PWA" width=180>
+<img src="assets/readme/launch_as_pwa.svg" alt="Launch as PWA" width=180>
 </a>
 
 ---

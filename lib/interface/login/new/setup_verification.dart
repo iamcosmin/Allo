@@ -23,19 +23,24 @@ class SetupVerification extends HookWidget {
     });
     return SetupPage(
       icon: Icons.email,
-      title: Text(context.locale.setupVerificationScreenTitle),
-      subtitle: Text(context.locale.setupVerificationScreenDescription),
+      title: Text(context.loc.setupVerificationScreenTitle),
+      subtitle: Text(context.loc.setupVerificationScreenDescription),
       action: () async {
         await FirebaseAuth.instance.currentUser?.reload();
         final verified = FirebaseAuth.instance.currentUser!.emailVerified;
         if (verified || _kDebugBypassVerification) {
+          /* TODO: Theoretically, this will not be executed, as the app will automatically redirect the user to the chats
+          screen if the app detects that the email has been verified.*/
+
+          // Awaiting test result for deleting supplimentary configuration.
+          // Another option would be making some banners into the chats screen recommending the user to add a profile picture, etc.
           Navigation.forward(const SetupProfilePicture());
         } else {
           await showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text(context.locale.error),
-              content: Text(context.locale.errorVerificationLinkNotAccessed),
+              title: Text(context.loc.error),
+              content: Text(context.loc.errorVerificationLinkNotAccessed),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),

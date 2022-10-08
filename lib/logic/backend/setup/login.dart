@@ -32,3 +32,45 @@ class _LoginLogic extends StateNotifier<String?> {
     }
   }
 }
+
+class SignupItems {
+  const SignupItems({
+    required this.email,
+    required this.name,
+    required this.username,
+  });
+  final String? email;
+  final String? name;
+  final String? username;
+
+  factory SignupItems.nullByDefault() {
+    return const SignupItems(name: null, username: null, email: null);
+  }
+
+  SignupItems copyWith({
+    String? email,
+    String? name,
+    String? username,
+  }) {
+    return SignupItems(
+      name: name ?? this.name,
+      username: username ?? this.username,
+      email: email ?? this.email,
+    );
+  }
+}
+
+final signupState =
+    StateNotifierProvider.autoDispose<_SignupLogic, SignupItems>((ref) {
+  return _SignupLogic();
+});
+
+class _SignupLogic extends StateNotifier<SignupItems> {
+  _SignupLogic() : super(SignupItems.nullByDefault());
+
+  void addEmail(String? email) => state = state.copyWith(email: email);
+
+  void addName(String? name) => state = state.copyWith(name: name);
+  void addUsername(String? username) =>
+      state = state.copyWith(username: username);
+}

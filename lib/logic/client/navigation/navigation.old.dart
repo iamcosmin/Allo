@@ -1,6 +1,9 @@
-import 'package:allo/logic/client/theme/animations.dart';
+import 'dart:developer';
+
+import 'package:allo/logic/client/navigation/routing.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 const _kNoNavigatorException = '''
 There is no possible way to navigate in the current scope.
@@ -12,10 +15,15 @@ is not possible.
 ''';
 
 class Navigation {
-  const Navigation._();
-
-  static final navigatorKey = GlobalKey<NavigatorState>();
   static final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
+  static GoRouter get contextless {
+    if (rootNavigatorKey.currentContext != null) {
+      return GoRouter.of(rootNavigatorKey.currentContext!);
+    } else {
+      throw Exception(_kNoNavigatorException);
+    }
+  }
 
   static PageRoute _pageRoute(Widget route) {
     switch (ThemeData().platform) {
@@ -23,7 +31,7 @@ class Navigation {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        return TiramisuPageRoute(
+        return MaterialPageRoute(
           builder: (_) => route,
         );
       case TargetPlatform.iOS:
@@ -35,23 +43,24 @@ class Navigation {
   }
 
   static NavigatorState _determinePossibleNavigator(BuildContext? context) {
+    log(
+      'Note that this way of navigating is obsolete. Please use Navigator 2.0.',
+      name: 'Navigation',
+    );
     if (context != null) {
       return Navigator.of(context);
-    } else if (navigatorKey.currentState != null) {
-      return navigatorKey.currentState!;
+    } else if (rootNavigatorKey.currentState != null) {
+      return rootNavigatorKey.currentState!;
     } else {
       throw Exception(_kNoNavigatorException);
     }
   }
 
-  /// Navigates to a prior accessed screen, erasing the current screen from memory.
-  /// You can optionally provide a context in case that you are navigating outside the key scope.
-  static void backward({BuildContext? context}) async {
-    _determinePossibleNavigator(context).pop();
-  }
-
   /// Navigates to a specific page provided into the method.
   /// You can optionally provide a context in case that you are navigating outside the key scope.
+  @Deprecated(
+    'This will be removed soon.',
+  )
   static void forward(
     Widget route, {
     BuildContext? context,
@@ -63,44 +72,10 @@ class Navigation {
   /// Leaves the other [Navigator] stack intact.
   ///
   /// You can optionally provide a context in case you are navigating outside the key scope.
+  @Deprecated(
+    'This is an outdated method of navigating. Please upgrade this code to support Navigator 2.0.',
+  )
   static void replaceCurrent(Widget route, {BuildContext? context}) {
     _determinePossibleNavigator(context).pushReplacement(_pageRoute(route));
   }
-
-  /// Replaces the current stack with the provided page.
-  /// Erases all the [Navigator] stack.
-  ///
-  /// You can optionally provide a context in case you are navigating outside the key scope.
-  static void replaceStack({
-    required Widget route,
-    BuildContext? context,
-  }) {
-    _determinePossibleNavigator(context).pushAndRemoveUntil(
-      _pageRoute(route),
-      (route) => route.isFirst == true,
-    );
-  }
-
-  /// Navigates to the first screen possible.
-  /// This is used when changing authentication state, as the first route in the navigation stack
-  /// is changing whenever the auth state changes.
-  static void first({BuildContext? context}) {
-    _determinePossibleNavigator(context).popUntil(
-      (route) => route.isFirst == true,
-    );
-  }
-}
-
-class TiramisuPageRoute extends MaterialPageRoute {
-  TiramisuPageRoute({
-    required super.builder,
-    super.settings,
-    super.maintainState,
-    super.fullscreenDialog,
-  });
-
-  @override
-  Duration get transitionDuration => Duration(
-        milliseconds: const Motion().animationDuration.short4Ms.toInt(),
-      );
 }

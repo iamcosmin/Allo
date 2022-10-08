@@ -61,21 +61,21 @@ class CurrentUser {
   ) async {
     try {
       await firebaseUser.updateEmail(newEmail);
-      Navigation.backward();
+      Navigation.contextless.pop();
     } on FirebaseException catch (e) {
       final code = UpdateEmailError.fromString(e.code);
       switch (code) {
         case UpdateEmailError.invalidEmail:
-          error.value = context.locale.errorThisIsInvalid(context.locale.email);
+          error.value = context.loc.errorThisIsInvalid(context.loc.email);
           break;
         case UpdateEmailError.emailAlreadyInUse:
-          error.value = context.locale.errorEmailAlreadyInUse;
+          error.value = context.loc.errorEmailAlreadyInUse;
           break;
         case UpdateEmailError.requiresRecentLogin:
           error.value = 'This operation requires identity verification';
           break;
         case UpdateEmailError.unknownError:
-          error.value = context.locale.errorUnknown;
+          error.value = context.loc.errorUnknown;
       }
     }
   }
@@ -119,7 +119,7 @@ class CurrentUser {
     void cancel() {
       Core.stub.showInfoBar(
         icon: Icons.cancel,
-        text: context.locale.canceledOperation,
+        text: context.loc.canceledOperation,
       );
     }
 
@@ -143,7 +143,7 @@ class CurrentUser {
               statusBarColor: context.colorScheme.surface,
               toolbarColor: context.colorScheme.surface,
               toolbarWidgetColor: context.colorScheme.onSurface,
-              toolbarTitle: '${context.locale.edit} ${context.locale.image}',
+              toolbarTitle: '${context.loc.edit} ${context.loc.image}',
               cropGridColor: context.colorScheme.onSurface,
               cropFrameColor: context.colorScheme.onSurface,
             ),
@@ -177,7 +177,7 @@ class CurrentUser {
               if (route != null) {
                 Navigation.forward(route);
               } else {
-                Navigation.backward();
+                Navigation.contextless.pop();
               }
               break;
             case TaskState.canceled:

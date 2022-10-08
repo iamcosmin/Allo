@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:allo/components/empty.dart';
 import 'package:allo/logic/core.dart';
+import 'package:animated_progress/animated_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import 'material3/filled_button.dart';
 
 final setupButtonTheme = ButtonStyle(
   minimumSize: const MaterialStatePropertyAll(
@@ -90,14 +91,17 @@ class SetupView extends HookConsumerWidget {
                     child: description,
                   ),
                   const Padding(padding: EdgeInsets.only(top: 10)),
-                  // TODO: Implement the loading animation in the button instead of the bottom of the title.
-                  // Update: considering to leave the progress indicator as it is.
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    height: progressState.value ? 5 : 0,
-                    child: LinearProgressIndicator(
-                      value: progressState.value ? null : 0,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          child: progressState.value
+                              ? SizedBox.fromSize(child: const ProgressBar())
+                              : const Empty(),
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -124,21 +128,20 @@ class SetupView extends HookConsumerWidget {
               ],
               Row(
                 children: [
-                  if (ModalRoute.of(context)?.canPop ?? false) ...[
+                  if (context.canPop()) ...[
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => Navigation.backward(),
+                      child: FilledButton.tonalIcon(
+                        onPressed: () => context.pop(),
                         icon: const Icon(Icons.navigate_before_rounded),
                         label: const Text('Back'),
-                        style: filledTonalButtonStyle(context)
-                            .merge(setupButtonTheme),
+                        style: setupButtonTheme,
                       ),
                     ),
                     const Padding(padding: EdgeInsets.only(left: 10)),
                   ],
                   Expanded(
-                    child: ElevatedButton(
-                      style: filledButtonStyle(context).merge(setupButtonTheme),
+                    child: FilledButton(
+                      style: setupButtonTheme,
                       onPressed: preparedCallback,
                       child: const Text('Continuă'),
                     ),

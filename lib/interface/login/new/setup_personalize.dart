@@ -19,11 +19,11 @@ class SetupPersonalize extends HookConsumerWidget {
 
     return SetupPage(
       icon: Icons.brush,
-      title: Text(context.locale.setupPersonalizeScreenTitle),
-      subtitle: Text(context.locale.setupPersonalizeScreenDescription),
+      title: Text(context.loc.setupPersonalizeScreenTitle),
+      subtitle: Text(context.loc.setupPersonalizeScreenDescription),
       body: [
         SettingTile(
-          title: context.locale.darkMode,
+          title: context.loc.darkMode,
           preference: dark,
         )
       ],

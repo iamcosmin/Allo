@@ -1,15 +1,15 @@
 import 'package:allo/components/builders.dart';
 import 'package:allo/components/info.dart';
 import 'package:allo/components/slivers/sliver_center.dart';
-import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
+import 'package:animated_progress/animated_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
-import '../../../../components/person_picture.dart';
-import '../../../../components/slivers/sliver_scaffold.dart';
-import '../../../../components/slivers/top_app_bar.dart';
+import '../../../../../components/person_picture.dart';
+import '../../../../../components/slivers/sliver_scaffold.dart';
+import '../../../../../components/slivers/top_app_bar.dart';
 
 class _User {
   const _User(this.username, this.uid);
@@ -22,7 +22,6 @@ class CreateChat extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locales = S.of(context);
     final error = useState<String?>(null);
     final usernameController = useTextEditingController();
     final found = useState(<_User>[]);
@@ -30,12 +29,12 @@ class CreateChat extends HookWidget {
       body: FutureWidget<Map<String, dynamic>?>(
         future: Core.general.user.getUsernamePairs(),
         loading: () {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: ProgressRing());
         },
         success: (data) {
           return SScaffold(
             topAppBar: LargeTopAppBar(
-              title: Text(locales.createNewChat),
+              title: Text(context.loc.createNewChat),
             ),
             pinnedSlivers: [
               SliverPinnedHeader(
@@ -58,7 +57,7 @@ class CreateChat extends HookWidget {
                           color: context.colorScheme.onSecondaryContainer,
                         ),
                         errorText: error.value,
-                        hintText: context.locale.search,
+                        hintText: context.loc.search,
                         border: InputBorder.none,
                       ),
                       onChanged: (value) {
@@ -157,7 +156,7 @@ class CreateChat extends HookWidget {
               //                     ? SizedBox(
               //                         height: 23,
               //                         width: 23,
-              //                         child: CircularProgressIndicator(
+              //                         child: ProgressRing(
               //                           color: Theme.of(context)
               //                               .colorScheme
               //                               .onPrimary,

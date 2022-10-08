@@ -3,6 +3,7 @@ import 'package:allo/components/slivers/sliver_center.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/interface/home/chat/chat_preview.dart';
+import 'package:animated_progress/animated_progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -22,13 +23,13 @@ class ChatMembersPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SScaffold(
-      topAppBar: LargeTopAppBar(title: Text(context.locale.members)),
+      topAppBar: LargeTopAppBar(title: Text(context.loc.members)),
       slivers: [
         FutureWidget<DocumentSnapshot<Map<String, dynamic>>>(
           future: returnChatInfo(id: chatId),
           loading: () {
             return const SliverCenter(
-              child: CircularProgressIndicator(),
+              child: ProgressRing(),
             );
           },
           error: (error) {
@@ -46,7 +47,7 @@ class ChatMembersPage extends HookConsumerWidget {
                     title: Text(
                       member['uid'] != Core.auth.user.userId
                           ? member['name']
-                          : context.locale.me,
+                          : context.loc.me,
                     ),
                     contentPadding: const EdgeInsets.only(
                       top: 5,

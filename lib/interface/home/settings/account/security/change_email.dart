@@ -29,15 +29,15 @@ class UpdateEmailPage extends HookConsumerWidget {
             contentPadding: const EdgeInsets.all(10),
             errorText: error.value,
             errorStyle: const TextStyle(fontSize: 14),
-            labelText: context.locale.email,
+            labelText: context.loc.email,
             border: const OutlineInputBorder(),
           ),
           autofocus: true,
           onFieldSubmitted: (_) async => await onSubmit(),
           onChanged: (value) {
             if (!EmailValidator.validate(value)) {
-              final errorString = context.locale.errorThisIsInvalid(
-                context.locale.email.toLowerCase(),
+              final errorString = context.loc.errorThisIsInvalid(
+                context.loc.email.toLowerCase(),
               );
               if (error.value != errorString) {
                 error.value = errorString;

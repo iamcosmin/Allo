@@ -33,8 +33,8 @@ class VerifyIdentity extends HookWidget {
 
     return SetupPage(
       icon: Icons.security_outlined,
-      title: Text(context.locale.verifyYourIdentity),
-      subtitle: Text(context.locale.enterPasswordDescription),
+      title: Text(context.loc.verifyYourIdentity),
+      subtitle: Text(context.loc.enterPasswordDescription),
       body: [
         TextFormField(
           autofillHints: const [AutofillHints.password],
@@ -43,7 +43,7 @@ class VerifyIdentity extends HookWidget {
             contentPadding: const EdgeInsets.all(10),
             errorText: error.value,
             errorStyle: const TextStyle(fontSize: 14),
-            labelText: context.locale.password,
+            labelText: context.loc.password,
             border: const OutlineInputBorder(),
             suffix: Padding(
               padding: const EdgeInsets.all(5),

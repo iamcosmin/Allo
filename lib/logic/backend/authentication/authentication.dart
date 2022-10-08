@@ -1,9 +1,7 @@
-import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/login/intro.dart';
-import 'package:allo/interface/login/new/setup_password.dart';
 import 'package:allo/interface/login/new/setup_verification.dart';
 import 'package:allo/logic/backend/authentication/errors.dart';
 import 'package:allo/logic/backend/authentication/user.dart';
+import 'package:allo/logic/backend/setup/login.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/auth_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -56,23 +54,6 @@ Future cache({
   return await _getType(type, key);
 }
 
-// class _AuthProvider extends StateNotifier<AuthState> {
-//   _AuthProvider() : super(AuthState.signedOut) {
-//     FirebaseAuth.instance.userChanges().listen((event) {
-//       if (event != null) {
-//         if (event.emailVerified) {
-//           state = AuthState.signedIn;
-//         } else {
-//           state = AuthState.emailNotVerified;
-//         }
-//       } else {
-//         state = AuthState.signedOut;
-//       }
-//       Navigation.first();
-//     });
-//   }
-// }
-
 class Authentication {
   Authentication();
   final CurrentUser user = CurrentUser();
@@ -109,22 +90,22 @@ class Authentication {
       final code = SignInError.fromString(e.code);
       switch (code) {
         case SignInError.userDisabled:
-          error.value = context.locale.errorUserDisabled;
+          error.value = context.loc.errorUserDisabled;
           break;
         case SignInError.wrongPassword:
-          error.value = context.locale.errorWrongPassword;
+          error.value = context.loc.errorWrongPassword;
           break;
         case SignInError.tooManyRequests:
-          error.value = context.locale.errorTooManyRequests;
+          error.value = context.loc.errorTooManyRequests;
           break;
         case SignInError.invalidEmail:
-          error.value = context.locale.errorThisIsInvalid(context.locale.email);
+          error.value = context.loc.errorThisIsInvalid(context.loc.email);
           break;
         case SignInError.userNotFound:
-          error.value = context.locale.errorUserNotFount;
+          error.value = context.loc.errorUserNotFount;
           break;
         case SignInError.unknownError:
-          error.value = context.locale.errorUnknown;
+          error.value = context.loc.errorUnknown;
       }
     }
   }
@@ -141,7 +122,6 @@ class Authentication {
     required BuildContext context,
   }) async {
     error.value = null;
-    final locales = S.of(context);
     try {
       FocusScope.of(context).unfocus();
       if (password != '' && confirmPassword != '') {
@@ -175,31 +155,31 @@ class Authentication {
             });
             Navigation.forward(const SetupVerification());
           } else {
-            error.value = locales.errorPasswordRequirements;
+            error.value = context.loc.errorPasswordRequirements;
           }
         } else {
-          error.value = locales.errorPasswordMismatch;
+          error.value = context.loc.errorPasswordMismatch;
         }
       } else {
-        error.value = locales.errorEmptyFields;
+        error.value = context.loc.errorEmptyFields;
       }
     } on FirebaseAuthException catch (e) {
       final code = SignUpError.fromString(e.code);
       switch (code) {
         case SignUpError.emailAlreadyInUse:
-          error.value = context.locale.errorEmailAlreadyInUse;
+          error.value = context.loc.errorEmailAlreadyInUse;
           break;
         case SignUpError.invalidEmail:
-          error.value = context.locale.errorThisIsInvalid(context.locale.email);
+          error.value = context.loc.errorThisIsInvalid(context.loc.email);
           break;
         case SignUpError.operationNotAllowed:
-          error.value = context.locale.errorOperationNotAllowed;
+          error.value = context.loc.errorOperationNotAllowed;
           break;
         case SignUpError.weakPassword:
-          error.value = context.locale.errorWeakPassword;
+          error.value = context.loc.errorWeakPassword;
           break;
         case SignUpError.unknownError:
-          error.value = context.locale.errorUnknown;
+          error.value = context.loc.errorUnknown;
           break;
       }
     }
@@ -211,8 +191,7 @@ class Authentication {
     required String username,
     required ValueNotifier<String?> error,
     required BuildContext context,
-    required String displayName,
-    required String email,
+    required WidgetRef ref,
     required FocusNode focusNode,
   }) async {
     error.value = null;
@@ -227,24 +206,18 @@ class Authentication {
     if (username != '') {
       if (usernameReg.hasMatch(username)) {
         if (!usernames.containsKey(username)) {
-          Navigation.forward(
-            SetupPassword(
-              displayName: displayName,
-              username: username,
-              email: email,
-            ),
-          );
+          ref.read(signupState.notifier).addUsername('username');
+          Navigation.contextless.go('/start/signup/password');
         } else {
-          error.value = context.locale.errorUsernameTaken;
+          error.value = context.loc.errorUsernameTaken;
           focusNode.requestFocus();
         }
       } else {
-        error.value =
-            context.locale.errorThisIsInvalid(context.locale.username);
+        error.value = context.loc.errorThisIsInvalid(context.loc.username);
         focusNode.requestFocus();
       }
     } else {
-      error.value = context.locale.errorFieldEmpty;
+      error.value = context.loc.errorFieldEmpty;
       focusNode.requestFocus();
     }
   }
@@ -268,14 +241,9 @@ class Authentication {
     }
   }
 
-  Future<void> signOut(BuildContext context, WidgetRef ref) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      ref.invalidate(Core.chats.chatListProvider.future);
-      Navigation.replaceStack(context: context, route: const IntroPage());
-    } catch (e) {
-      throw Exception('Something is wrong...');
-    }
+  Future<void> signOut(WidgetRef ref) async {
+    await FirebaseAuth.instance.signOut();
+    ref.invalidate(Core.chats.chatListProvider);
   }
 
   // TODO: Rebuild function but change username from the usernames document as well.
@@ -346,7 +314,7 @@ class Authentication {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     Core.stub.showInfoBar(
       icon: Icons.mail_outline,
-      text: context.locale.resetLinkSent,
+      text: context.loc.resetLinkSent,
     );
   }
 
@@ -374,16 +342,16 @@ class Authentication {
           error.value = 'Credential mismatch. Contact administrator.';
           break;
         case ReauthenticationError.userNotFound:
-          error.value = context.locale.errorUserNotFount;
+          error.value = context.loc.errorUserNotFount;
           break;
         case ReauthenticationError.invalidCredential:
           error.value = 'Invalid Credential';
           break;
         case ReauthenticationError.invalidEmail:
-          error.value = context.locale.errorThisIsInvalid(context.locale.email);
+          error.value = context.loc.errorThisIsInvalid(context.loc.email);
           break;
         case ReauthenticationError.wrongPassword:
-          error.value = context.locale.errorWrongPassword;
+          error.value = context.loc.errorWrongPassword;
           break;
         case ReauthenticationError.invalidVerificationCode:
           error.value = 'Invalid Verification Code';
@@ -392,10 +360,10 @@ class Authentication {
           error.value = 'Invalid Verification Id';
           break;
         case ReauthenticationError.tooManyRequests:
-          error.value = context.locale.errorTooManyRequests;
+          error.value = context.loc.errorTooManyRequests;
           break;
         case ReauthenticationError.unknownError:
-          error.value = context.locale.errorUnknown;
+          error.value = context.loc.errorUnknown;
       }
     }
   }

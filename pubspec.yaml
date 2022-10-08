@@ -1,51 +1,49 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.3.5+317
+version: 1.3.5+324
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
-  animations: ^2.0.3
-  awesome_notifications: #^0.7.0.beta-6
-    git:
-      ref: "4d56686"
-      url: https://github.com/rafaelsetragni/awesome_notifications
+  animations: ^2.0.5
+  awesome_notifications: ^0.7.1
   animated_progress:
     git: https://github.com/iamcosmin/animated_progress
-  cached_network_image: ^3.2.1
-  cloud_firestore: ^3.4.5
-  device_info_plus: ^4.1.2
+  cached_network_image: ^3.2.2
+  cloud_firestore: ^3.5.0
+  device_info_plus: ^5.0.5
   dynamic_color: ^1.5.3
-  firebase_auth: ^3.6.4
-  firebase_core: ^1.21.0
+  firebase_auth: ^3.11.0
+  firebase_core: ^1.24.0
   firebase_messaging: ^13.0.0
-  firebase_remote_config: ^2.0.16
-  firebase_storage: ^10.3.6
+  firebase_remote_config: ^2.0.19
+  firebase_storage: ^10.3.10
   firebase_image:
     path: ./packages/firebase_image
   flutter:
     sdk: flutter
-  flutter_hooks: ^0.18.5+1
-  flutter_linkify: ^5.0.2
   flutter_localizations:
     sdk: flutter
-  hooks_riverpod: ^2.0.0-dev.7
+  flutter_hooks: ^0.18.5+1
+  flutter_linkify: ^5.0.2
+  hooks_riverpod: ^2.0.0
   http: ^0.13.4
-  image_cropper: ^2.0.2
+  image_cropper: ^3.0.0
   image_picker: ^0.8.5+3
   # in_app_update: ^2.0.0 // Some bugs do not permit for this to run. We will remove it temporarily as it is not used either.
   intl: ^0.17.0
   package_info_plus: ^1.4.2
   shared_preferences: ^2.0.15
-  url_launcher: ^6.1.2
-  material_color_utilities: ^0.1.4
+  url_launcher: ^6.1.6
+  material_color_utilities: ^0.2.0
   shimmer: ^2.0.0
-  sliver_tools: ^0.2.7
+  sliver_tools: ^0.2.8
   flutter_staggered_animations: ^1.1.1
   snap_scroll_physics: ^0.0.1+3
-  flutter_local_notifications: ^9.8.0+1
+  just_audio: ^0.9.29
+  go_router: ^5.0.5
   # logger: ^1.1.0
   # logger_flutter: ^0.7.1
 
@@ -60,6 +58,7 @@ flutter:
 
   assets:
    - assets/images/
+   - assets/audio/
 
   fonts:
     - family: Jakarta
@@ -99,8 +98,3 @@ flutter:
         - asset: assets/fonts/Jakarta-ExtraBoldItalic.ttf
           weight: 800
           style: italic
-
-
-flutter_intl:
-  enabled: true
-  main_locale: en

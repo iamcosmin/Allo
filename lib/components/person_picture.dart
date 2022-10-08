@@ -2,7 +2,6 @@ import 'package:allo/components/photo.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-// ignore: must_be_immutable
 class PersonPicture extends HookConsumerWidget {
   final double radius;
   final String initials;

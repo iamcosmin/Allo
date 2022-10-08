@@ -16,6 +16,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../logic/client/theme/theme.dart';
 
+// TODO: Input modifiers as Providers.
+
 final currentNotificationState =
     StateNotifierProvider.family.autoDispose<_NotificationState, bool?, String>(
   (ref, arg) {
@@ -56,6 +58,8 @@ class _NotificationState extends StateNotifier<bool?> {
   }
 }
 
+// TODO: Optionally provide a String of chatId in case of navigating via link.
+// If opening from the chat list, for economy purposes, use the chat object.
 class ChatScreen extends HookConsumerWidget {
   final Chat chat;
   const ChatScreen({required this.chat, super.key});
@@ -147,7 +151,7 @@ class ChatScreen extends HookConsumerWidget {
     // );
 
     return Theme(
-      data: theme(brightness, ref, context, colorScheme: scheme.value),
+      data: theme(brightness, ref, colorScheme: scheme.value),
       child: Builder(
         builder: (context) {
           return PrimaryScrollController(
@@ -174,7 +178,10 @@ class ChatScreen extends HookConsumerWidget {
                   ),
                 ],
                 title: InkWell(
-                  onTap: () => Navigation.forward(ChatDetails(chat: chat)),
+                  onTap: () =>
+                      // TODO: Implement once https://github.com/flutter/flutter/issues/111961 is fixed.
+                      // context.go('/chat/${chat.id}/details', extra: chat),
+                      Navigation.forward(ChatDetails(chat: chat)),
                   child: Column(
                     children: [
                       Text(

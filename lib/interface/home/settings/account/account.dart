@@ -11,6 +11,7 @@ import 'package:allo/interface/home/settings/account/security/verify_identity.da
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../components/tile_card.dart';
 import '../../../../logic/core.dart';
 import 'name.dart';
 
@@ -21,7 +22,7 @@ class AccountSettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final username = ref.watch(Core.auth.user.usernameProvider);
     return SScaffold(
-      topAppBar: LargeTopAppBar(title: Text(context.locale.account)),
+      topAppBar: LargeTopAppBar(title: Text(context.loc.account)),
       slivers: [
         SliverScroll(
           children: [
@@ -72,53 +73,61 @@ class AccountSettingsPage extends ConsumerWidget {
             ),
             const Space(1),
             const TileHeading('Info'),
-            Tile(
-              leading: const Icon(Icons.perm_identity_outlined),
-              title: Text(context.locale.name),
-              onTap: () {
-                Navigation.forward(
-                  const ChangeNamePage(),
-                );
-              },
-            ),
-            Tile(
-              disabled: true,
-              leading: const Icon(Icons.alternate_email_outlined),
-              title: Text(
-                context.locale.username,
-              ),
-            ),
-            Tile(
-              leading: const Icon(Icons.image_outlined),
-              title: Text(context.locale.profilePicture),
-              onTap: () => Navigation.forward(
-                const ProfilePictureSettings(),
-              ),
+            TileCard(
+              [
+                Tile(
+                  leading: const Icon(Icons.perm_identity_outlined),
+                  title: Text(context.loc.name),
+                  onTap: () {
+                    Navigation.forward(
+                      const ChangeNamePage(),
+                    );
+                  },
+                ),
+                Tile(
+                  disabled: true,
+                  leading: const Icon(Icons.alternate_email_outlined),
+                  title: Text(
+                    context.loc.username,
+                  ),
+                ),
+                Tile(
+                  leading: const Icon(Icons.image_outlined),
+                  title: Text(context.loc.profilePicture),
+                  onTap: () => Navigation.forward(
+                    const ProfilePictureSettings(),
+                  ),
+                ),
+              ],
             ),
             const TileHeading('Security'),
-            const Tile(
-              leading: Icon(Icons.privacy_tip_outlined),
-              title: Text('Privacy'),
-              disabled: true,
-            ),
-            Tile(
-              leading: const Icon(Icons.email_outlined),
-              title: const Text('Email'),
-              onTap: () => Navigation.forward(
-                const VerifyIdentity(
-                  UpdateEmailPage(),
+            TileCard(
+              [
+                const Tile(
+                  leading: Icon(Icons.privacy_tip_outlined),
+                  title: Text('Privacy'),
+                  disabled: true,
                 ),
-              ),
-            ),
-            const Tile(
-              leading: Icon(Icons.password_outlined),
-              title: Text('Password'),
-              disabled: true,
-            ),
-            const Tile(
-              leading: Icon(Icons.delete_outline),
-              title: Text('Delete Account'),
-              disabled: true,
+                Tile(
+                  leading: const Icon(Icons.email_outlined),
+                  title: const Text('Email'),
+                  onTap: () => Navigation.forward(
+                    const VerifyIdentity(
+                      UpdateEmailPage(),
+                    ),
+                  ),
+                ),
+                const Tile(
+                  leading: Icon(Icons.password_outlined),
+                  title: Text('Password'),
+                  disabled: true,
+                ),
+                const Tile(
+                  leading: Icon(Icons.delete_outline),
+                  title: Text('Delete Account'),
+                  disabled: true,
+                ),
+              ],
             ),
           ],
         )

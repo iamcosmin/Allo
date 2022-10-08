@@ -8,18 +8,44 @@ abstract class TopAppBar extends StatelessWidget {
     required this.title,
     required this.collapsedHeight,
     required this.expandedHeight,
+    this.leading,
+    this.actions,
     super.key,
   });
 
   final Widget title;
   final double collapsedHeight;
+  final Widget? leading;
+  final List<Widget>? actions;
   final double expandedHeight;
 
   @override
   SliverAppBar build(BuildContext context);
 }
 
-extension on BuildContext {
+Widget backButton(BuildContext context) {
+  if (ModalRoute.of(context)!.canPop) {
+    return const Padding(
+      padding: EdgeInsets.only(top: 10),
+      child: Align(
+        child: SizedBox(
+          height: 40,
+          width: 40,
+          child: ClipOval(
+            child: Material(
+              color: Colors.transparent,
+              child: BackButton(),
+            ),
+          ),
+        ),
+      ),
+    );
+  } else {
+    return const Empty();
+  }
+}
+
+extension _Extenstion on BuildContext {
   T? inherit<T extends InheritedWidget>() {
     return dependOnInheritedWidgetOfExactType<T>();
   }
@@ -30,16 +56,14 @@ class SmallTopAppBar extends TopAppBar {
     required super.title,
     super.collapsedHeight = 64,
     super.expandedHeight = 64,
-    this.leading,
-    this.actions,
+    super.leading,
+    super.actions,
     super.key,
   });
 
-  final Widget? leading;
-  final List<Widget>? actions;
-
   @override
   SliverAppBar build(BuildContext context) {
+    final leading = this.leading ?? backButton(context);
     return SliverAppBar(
       toolbarHeight: 64,
       pinned: true,
@@ -55,18 +79,20 @@ class MediumTopAppBar extends TopAppBar {
     required super.title,
     super.collapsedHeight = _MediumScrollUnderFlexibleConfig.collapsedHeight,
     super.expandedHeight = _MediumScrollUnderFlexibleConfig.expandedHeight,
-    this.leading,
+    super.leading,
+    super.actions,
     super.key,
   });
-  final Widget? leading;
 
   @override
   SliverAppBar build(BuildContext context) {
+    final leading = this.leading ?? backButton(context);
+
     return SliverAppBar(
       expandedHeight: expandedHeight,
       collapsedHeight: collapsedHeight,
+      leading: leading,
       pinned: true,
-      leading: const Empty(),
       flexibleSpace: _M3FlexibleSpaceBar(
         title: title,
         type: _TopAppBarType.medium,
@@ -80,17 +106,19 @@ class LargeTopAppBar extends TopAppBar {
     required super.title,
     super.collapsedHeight = _LargeScrollUnderFlexibleConfig.collapsedHeight,
     super.expandedHeight = _LargeScrollUnderFlexibleConfig.expandedHeight,
-    this.leading,
+    super.leading,
+    super.actions,
     super.key,
   });
-  final Widget? leading;
   @override
   SliverAppBar build(BuildContext context) {
+    final leading = this.leading ?? backButton(context);
+
     return SliverAppBar(
       expandedHeight: expandedHeight,
       collapsedHeight: collapsedHeight,
+      leading: leading,
       pinned: true,
-      leading: const Empty(),
       flexibleSpace: _M3FlexibleSpaceBar(
         title: title,
         type: _TopAppBarType.large,
@@ -128,13 +156,11 @@ class _M3FlexibleSpaceBar extends StatelessWidget {
     required this.title,
     required this.type,
     // ignore: unused_element
-    this.leading = const BackButton(),
-    // ignore: unused_element
     super.key,
   });
-  final Widget leading;
   final Widget title;
   final _TopAppBarType type;
+
   @override
   Widget build(context) {
     final settings = context.inherit<FlexibleSpaceBarSettings>() ??
@@ -153,7 +179,7 @@ class _M3FlexibleSpaceBar extends StatelessWidget {
         config = _LargeScrollUnderFlexibleConfig(context);
     }
     // This is a variable for the token defaults.
-    final tokens = _TokenDefaultsM3(context);
+    final tokens = _AppBarDefaultsM3(context);
 
     //? [VALUES]
     // [systemPadding] is a collection of EdgeInsets that actually show the system insets, such as
@@ -251,35 +277,28 @@ class _M3FlexibleSpaceBar extends StatelessWidget {
             child: ColoredBox(
               color: backgroundColor,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(5, systemPadding.top, 5, 0),
+                padding: EdgeInsets.fromLTRB(16, systemPadding.top, 16, 0),
                 child: Row(
                   children: [
-                    if (ModalRoute.of(context)!.canPop) ...[
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                          height: 40,
-                          width: 40,
-                          child: ClipOval(
-                            child: Material(
-                              color: Colors.transparent,
-                              child: leading,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
+                    Expanded(
                       child: Align(
                         alignment: centerTitle()
                             ? Alignment.center
                             : Alignment.centerLeft,
-                        child: Opacity(
-                          opacity: collapsedTitleOpacity,
-                          child: DefaultTextStyle(
-                            style: config.collapsedTextStyle!,
-                            child: title,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: centerTitle()
+                                ? 0
+                                : ModalRoute.of(context)!.canPop
+                                    ? 40
+                                    : 0,
+                          ),
+                          child: Opacity(
+                            opacity: collapsedTitleOpacity,
+                            child: DefaultTextStyle(
+                              style: config.collapsedTextStyle!,
+                              child: title,
+                            ),
                           ),
                         ),
                       ),
@@ -308,15 +327,17 @@ mixin _ScrollUnderFlexibleConfig {
   EdgeInsetsGeometry? get expandedTitlePadding;
 }
 
-// BEGIN GENERATED TOKEN PROPERTIES
+// BEGIN GENERATED TOKEN PROPERTIES - AppBar
 
-// Generated code to the end of this file. Do not edit by hand.
-// These defaults are generated from the Material Design Token
-// database by the script dev/tools/gen_defaults/bin/gen_defaults.dart.
+// Do not edit by hand. The code between the "BEGIN GENERATED" and
+// "END GENERATED" comments are generated from data in the Material
+// Design token database by the script:
+//   dev/tools/gen_defaults/bin/gen_defaults.dart.
 
-// Generated version v0_98
-class _TokenDefaultsM3 extends AppBarTheme {
-  _TokenDefaultsM3(this.context)
+// Token database version: v0_132
+
+class _AppBarDefaultsM3 extends AppBarTheme {
+  _AppBarDefaultsM3(this.context)
       : super(
           elevation: 0.0,
           scrolledUnderElevation: 3.0,
@@ -336,6 +357,9 @@ class _TokenDefaultsM3 extends AppBarTheme {
   Color? get foregroundColor => _colors.onSurface;
 
   @override
+  Color? get shadowColor => Colors.transparent;
+
+  @override
   Color? get surfaceTintColor => _colors.surfaceTint;
 
   @override
@@ -351,7 +375,7 @@ class _TokenDefaultsM3 extends AppBarTheme {
       );
 
   @override
-  TextStyle? get toolbarTextStyle => _textTheme.bodyText2;
+  TextStyle? get toolbarTextStyle => _textTheme.bodyMedium;
 
   @override
   TextStyle? get titleTextStyle => _textTheme.titleLarge;
@@ -374,9 +398,8 @@ class _MediumScrollUnderFlexibleConfig with _ScrollUnderFlexibleConfig {
       _textTheme.titleLarge?.apply(color: _colors.onSurface);
 
   @override
-  TextStyle? get expandedTextStyle => _textTheme.headlineSmall
-      ?.apply(color: _colors.onSurface)
-      .copyWith(fontWeight: FontWeight.bold);
+  TextStyle? get expandedTextStyle =>
+      _textTheme.headlineSmall?.apply(color: _colors.onSurface);
 
   @override
   EdgeInsetsGeometry? get collapsedTitlePadding =>
@@ -399,9 +422,7 @@ class _LargeScrollUnderFlexibleConfig with _ScrollUnderFlexibleConfig {
   late final ColorScheme _colors = _theme.colorScheme;
   late final TextTheme _textTheme = _theme.textTheme;
 
-  // ignore: unused_field
   static const double collapsedHeight = 64.0;
-  // ignore: unused_field
   static const double expandedHeight = 152.0;
 
   @override
@@ -409,9 +430,8 @@ class _LargeScrollUnderFlexibleConfig with _ScrollUnderFlexibleConfig {
       _textTheme.titleLarge?.apply(color: _colors.onSurface);
 
   @override
-  TextStyle? get expandedTextStyle => _textTheme.headlineMedium
-      ?.apply(color: _colors.onSurface)
-      .copyWith(fontWeight: FontWeight.w600);
+  TextStyle? get expandedTextStyle =>
+      _textTheme.headlineMedium?.apply(color: _colors.onSurface);
 
   @override
   EdgeInsetsGeometry? get collapsedTitlePadding =>
@@ -426,4 +446,4 @@ class _LargeScrollUnderFlexibleConfig with _ScrollUnderFlexibleConfig {
       const EdgeInsets.fromLTRB(16, 0, 16, 28);
 }
 
-// END GENERATED TOKEN PROPERTIES
+// END GENERATED TOKEN PROPERTIES - AppBar

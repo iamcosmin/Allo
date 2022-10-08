@@ -3,7 +3,7 @@ import 'package:allo/components/material3/tile.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
 import 'package:allo/components/space.dart';
-import 'package:allo/generated/l10n.dart';
+import 'package:allo/components/tile_card.dart';
 import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/interface/home/chat/members.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
@@ -12,6 +12,7 @@ import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../components/slivers/sliver_scaffold.dart';
@@ -29,12 +30,12 @@ void _changeTheme({
   final currentTheme = info.data()!['theme'];
   await showMagicBottomSheet(
     context: context,
-    title: context.locale.theme,
+    title: context.loc.theme,
     children: [
       if (!colors.contains(currentTheme)) ...[
         Padding(
           padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-          child: Text(context.locale.themeNotAvailable),
+          child: Text(context.loc.themeNotAvailable),
         )
       ],
       Wrap(
@@ -48,7 +49,7 @@ void _changeTheme({
                   await Database.firestore.collection('chats').doc(id).update({
                     'theme': color,
                   });
-                  Navigation.backward();
+                  () => context.pop();
                 },
                 child: Stack(
                   alignment: Alignment.center,
@@ -97,16 +98,14 @@ class ChatDetails extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notificationState = ref.watch(currentNotificationState(chat.id));
-    final locales = S.of(context);
     final members = useSetting(ref, membersDebug);
-    final notifications = useSetting(ref, eToggleNotifications);
     final profilePicture = Core.auth.getProfilePicture(
       chat is PrivateChat ? (chat as PrivateChat).userId : chat.id,
       isGroup: chat is GroupChat ? true : false,
     );
     return SScaffold(
-      topAppBar: LargeTopAppBar(
-        title: Text(locales.chatInfo),
+      topAppBar: MediumTopAppBar(
+        title: Text(context.loc.chatInfo),
       ),
       slivers: [
         SliverList(
@@ -139,28 +138,28 @@ class ChatDetails extends HookConsumerWidget {
               ),
             ),
             const Space(4),
-            Column(
-              children: [
+            TileCard(
+              [
                 Tile(
                   leading: const Icon(Icons.brush_outlined),
-                  title: Text(locales.theme),
+                  title: Text(context.loc.theme),
                   onTap: () async =>
                       _changeTheme(context: context, id: chat.id),
                 ),
-                if (notifications.setting) ...[
-                  SwitchTile(
-                    leading: const Icon(Icons.notifications_outlined),
-                    title: Text(locales.notifications),
-                    value: notificationState ?? false,
-                    onChanged: ref
-                        .read(currentNotificationState(chat.id).notifier)
-                        .toggleNotificationState,
-                  ),
-                ],
+                SwitchTile(
+                  leading: const Icon(Icons.notifications_outlined),
+                  title: Text(context.loc.notifications),
+                  value: notificationState ?? false,
+                  enabledIcon: Icons.notifications_active,
+                  disabledIcon: Icons.notifications_off,
+                  onChanged: ref
+                      .read(currentNotificationState(chat.id).notifier)
+                      .toggleNotificationState,
+                ),
                 if (members.setting == true) ...[
                   Tile(
                     leading: const Icon(Icons.people_alt_outlined),
-                    title: Text(locales.members),
+                    title: Text(context.loc.members),
                     onTap: () => Navigation.forward(
                       ChatMembersPage(chatId: chat.id),
                     ),

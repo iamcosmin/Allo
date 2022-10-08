@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:allo/components/show_bottom_sheet.dart';
-import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:animated_progress/animated_progress.dart';
@@ -19,16 +18,15 @@ void _attachMenu({
   required ColorScheme colorScheme,
   required WidgetRef ref,
 }) {
-  final locales = S.of(context);
   XFile? file;
   showMagicBottomSheet(
     colorScheme: colorScheme,
     context: context,
-    title: locales.attach,
+    title: context.loc.attach,
     children: [
       ListTile(
         leading: const Icon(Icons.camera_alt_outlined),
-        title: Text(locales.camera),
+        title: Text(context.loc.camera),
         onTap: () async {
           try {
             Navigator.of(context).pop();
@@ -47,7 +45,7 @@ void _attachMenu({
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 behavior: SnackBarBehavior.floating,
-                content: Text(locales.noCameraAvailable),
+                content: Text(context.loc.noCameraAvailable),
                 action: SnackBarAction(
                   label: 'OK',
                   onPressed: () {
@@ -61,7 +59,7 @@ void _attachMenu({
       ),
       ListTile(
         leading: const Icon(Icons.image_outlined),
-        title: Text(locales.gallery),
+        title: Text(context.loc.gallery),
         onTap: () async {
           Navigator.of(context).pop();
           file = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -243,7 +241,7 @@ class MessageInput extends HookConsumerWidget {
                     keyboardType: TextInputType.multiline,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: context.locale.message,
+                      hintText: context.loc.message,
                       hintStyle: TextStyle(
                         color: theme.onSecondaryContainer.withOpacity(0.7),
                       ),
@@ -260,10 +258,9 @@ class MessageInput extends HookConsumerWidget {
                   SizedBox(
                     height: 30,
                     width: 30,
-                    child: AnimatedCircularProgressIndicator(
+                    child: ProgressRing(
                       strokeWidth: 3,
-                      value: progress.value,
-                      color: theme.primary,
+                      value: progress.value * 100,
                     ),
                   ),
                   IconButton(
@@ -321,7 +318,7 @@ class UploadImage extends HookWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          Navigation.backward();
+          Navigator.of(context).pop();
           await Core.chats.chat(chatId).messages.sendImageMessage(
                 chatName: chatName,
                 imageFile: imageFile!,

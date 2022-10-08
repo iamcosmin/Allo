@@ -1,4 +1,5 @@
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -18,7 +19,14 @@ const kCompatibleServerTypes = <Type>[String, bool, int, double];
 
 final sharedPreferencesProvider = runtimeProvider<SharedPreferences>();
 final androidSdkVersionProvider = runtimeProvider<AndroidBuildVersion>();
-final dynamicColorsProvider = runtimeProvider<CorePalette?>();
+
+final corePaletteProvider = FutureProvider<CorePalette?>((ref) {
+  return DynamicColorPlugin.getCorePalette();
+});
+
+final accentColorProvider = FutureProvider<Color?>((ref) {
+  return DynamicColorPlugin.getAccentColor();
+});
 
 Provider<T> runtimeProvider<T>() {
   return Provider<T>(
@@ -30,8 +38,9 @@ Provider<T> runtimeProvider<T>() {
 
 final preferencesProvider = Provider<Preferences>(
   (ref) {
-    final sharedPreferences = ref.read(sharedPreferencesProvider);
-    return Preferences(sharedPreferences: sharedPreferences);
+    return Preferences(
+      sharedPreferences: ref.read(sharedPreferencesProvider),
+    );
   },
 );
 
@@ -242,7 +251,7 @@ class SettingManager<T> extends StateNotifier<T> {
         : _updateState(defaultValue);
     Core.stub.showInfoBar(
       icon: Icons.info,
-      text: context.locale.preferenceCleared,
+      text: context.loc.preferenceCleared,
     );
   }
 }

@@ -1,7 +1,7 @@
-import 'package:allo/components/empty.dart';
-import 'package:allo/components/material3/switch-own.dart';
+import 'package:allo/components/material3/switch_own.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/logic/client/extensions.dart';
+import 'package:allo/logic/client/theme/animations.dart';
 import 'package:flutter/material.dart';
 
 class SwitchTile extends StatelessWidget {
@@ -11,6 +11,8 @@ class SwitchTile extends StatelessWidget {
     this.leading,
     this.subtitle,
     this.onChanged,
+    this.disabledIcon,
+    this.enabledIcon,
     super.key,
   });
 
@@ -18,6 +20,8 @@ class SwitchTile extends StatelessWidget {
   final Widget? subtitle;
   final Widget? leading;
   final bool value;
+  final IconData? disabledIcon;
+  final IconData? enabledIcon;
   final void Function(bool)? onChanged;
 
   @override
@@ -28,31 +32,10 @@ class SwitchTile extends StatelessWidget {
       subtitle: subtitle,
       onTap: () => onChanged?.call(!value),
       trailing: AdaptiveSwitch(
+        disabledIcon: disabledIcon,
+        enabledIcon: enabledIcon,
         value: value,
         onChanged: onChanged,
-      ),
-    );
-  }
-}
-
-class TileHeading extends StatelessWidget {
-  const TileHeading(this.text, {super.key});
-  final String text;
-  @override
-  Widget build(context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 10, 24, 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            text,
-            style: context.theme.textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.w600,
-              color: context.colorScheme.primary,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -77,88 +60,85 @@ class Tile extends StatelessWidget {
   final void Function()? onTap;
 
   Duration get animationDuration => const Duration(milliseconds: 250);
+  Curve get animationCurve => Motion.animation.emphasized;
   @override
   Widget build(context) {
+    // ignore: dead_code
+    if (false) {
+      return ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+        leading: leading,
+        subtitle: subtitle,
+        minLeadingWidth: 25,
+        title: title,
+        trailing: trailing,
+        enabled: !disabled,
+        onTap: onTap,
+      );
+    }
     return InkWell(
       onTap: onTap,
       child: AnimatedOpacity(
+        curve: animationCurve,
         duration: animationDuration,
-        opacity: disabled ? 0.7 : 1.0,
+        opacity: disabled ? 0.5 : 1.0,
         child: AnimatedContainer(
+          constraints: const BoxConstraints(minHeight: 53),
+          padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
           duration: animationDuration,
-          constraints: const BoxConstraints(minHeight: 56),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 12, 20, 12),
-            child: Row(
-              children: [
+          curve: animationCurve,
+          child: Row(
+            children: [
+              if (leading != null) ...[
                 IconTheme(
                   data: IconThemeData(
-                    size: 27,
+                    size: 24,
                     color: context.colorScheme.onSurface,
                   ),
-                  child: leading != null
-                      ? Padding(
-                          padding: const EdgeInsets.only(right: 24),
-                          child: leading,
-                        )
-                      : const Empty(),
-                ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        DefaultTextStyle(
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                          child: title,
-                        ),
-                        DefaultTextStyle(
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                          child: AnimatedSize(
-                            duration: animationDuration,
-                            child: Column(
-                              children: [
-                                if (subtitle != null) ...[
-                                  const Space(0.5),
-                                  subtitle!
-                                ] else ...[
-                                  const SizedBox(
-                                    width: double.infinity,
-                                  )
-                                ]
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: leading,
                   ),
                 ),
-                const Space(
-                  1.2,
-                  direction: Direction.horizontal,
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: DefaultTextStyle(
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                    child: trailing ?? Container(),
-                  ),
-                )
               ],
-            ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DefaultTextStyle(
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: context.colorScheme.onSurface,
+                          ),
+                      child: title,
+                    ),
+                    if (subtitle != null) ...[
+                      const Space(0.3),
+                      DefaultTextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                        child: subtitle!,
+                      )
+                    ],
+                  ],
+                ),
+              ),
+              const Space(
+                1.2,
+                direction: Direction.horizontal,
+              ),
+              Align(
+                child: DefaultTextStyle(
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  child: trailing ?? Container(),
+                ),
+              )
+            ],
           ),
         ),
       ),

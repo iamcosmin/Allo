@@ -6,7 +6,6 @@ import 'package:allo/logic/backend/general/general.dart';
 import 'package:allo/logic/client/extensions.dart';
 import 'package:allo/logic/client/validators.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,7 +16,7 @@ import 'client/preferences/manager.dart';
 
 export 'backend/database.dart';
 export 'client/extensions.dart';
-export 'client/navigation.dart';
+export 'client/navigation/navigation.old.dart';
 export 'client/notifications.dart';
 
 // TODO: Migrate some of the items from Core to their own things.
@@ -47,9 +46,6 @@ class Keys {
         androidSdkVersionProvider.overrideWithValue(
           (await DeviceInfoPlugin().androidInfo).version,
         ),
-        dynamicColorsProvider.overrideWithValue(
-          await DynamicColorPlugin.getCorePalette(),
-        )
       ]
     ];
   }
@@ -140,7 +136,7 @@ class Stub {
       context: context,
       dialogBuilder: DialogBuilder(
         icon: Icons.error,
-        title: context.locale.error,
+        title: context.loc.error,
         body: Text(error),
         actions: [
           TextButton(

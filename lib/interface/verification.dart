@@ -8,10 +8,8 @@ import '../components/setup_page.dart';
 
 class EmailNotVerifiedPage extends HookConsumerWidget {
   const EmailNotVerifiedPage({
-    required this.nextRoute,
     super.key,
   });
-  final Widget nextRoute;
 
   @override
   Widget build(context, ref) {
@@ -19,9 +17,7 @@ class EmailNotVerifiedPage extends HookConsumerWidget {
       await FirebaseAuth.instance.currentUser?.reload();
       final verified =
           FirebaseAuth.instance.currentUser?.emailVerified ?? false;
-      if (verified) {
-        Navigation.forward(nextRoute);
-      } else {
+      if (!verified) {
         Core.stub.showInfoBar(
           icon: Icons.info,
           text:
@@ -47,10 +43,10 @@ class EmailNotVerifiedPage extends HookConsumerWidget {
       ),
       actions: SetupActions(
         actions: [
-          SetupAction(label: context.locale.setupNext, onTap: onSubmit),
+          SetupAction(label: context.loc.setupNext, onTap: onSubmit),
           SetupAction(
             label: 'Log off',
-            onTap: () async => await Core.auth.signOut(context, ref),
+            onTap: () async => await Core.auth.signOut(ref),
             fill: ActionFill.empty,
           )
         ],

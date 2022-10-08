@@ -4,7 +4,7 @@ class Motion {
   const Motion();
   final currentVersion = 0.101;
   final animationDuration = const _Duration();
-  final animation = const _Animation();
+  static const animation = _Animation();
 }
 
 class _Duration {

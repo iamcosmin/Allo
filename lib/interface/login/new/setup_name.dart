@@ -1,16 +1,17 @@
 import 'package:allo/components/setup_page.dart';
-import 'package:allo/interface/login/new/setup_username.dart';
+import 'package:allo/logic/backend/setup/login.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final _nameReg = RegExp(r'^[a-zA-Z]+$');
 
-class SetupName extends HookWidget {
-  const SetupName(this.email, {super.key});
-  final String email;
+class SetupName extends HookConsumerWidget {
+  const SetupName({super.key});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final firstFieldError = useState<String?>(null);
     final secondFieldError = useState<String?>(null);
     final firstNameController = useTextEditingController();
@@ -19,7 +20,7 @@ class SetupName extends HookWidget {
 
     void validateName(String name, ValueNotifier<String?> error) {
       if (name.isNotEmpty && !_nameReg.hasMatch(name)) {
-        error.value = context.locale.specialCharactersNotAllowed;
+        error.value = context.loc.specialCharactersNotAllowed;
       } else {
         error.value = null;
       }
@@ -31,37 +32,29 @@ class SetupName extends HookWidget {
         if (_nameReg.hasMatch(firstNameController.text)) {
           if (secondNameController.text.isNotEmpty) {
             if (_nameReg.hasMatch(secondNameController.text)) {
-              Navigation.forward(
-                SetupUsername(
-                  displayName:
-                      '${firstNameController.text} ${secondNameController.text}',
-                  email: email,
-                ),
-              );
+              ref.read(signupState.notifier).addName(
+                    '${firstNameController.text} ${secondNameController.text}',
+                  );
+              context.go('/start/signup/username');
             } else {
-              secondFieldError.value =
-                  context.locale.specialCharactersNotAllowed;
+              secondFieldError.value = context.loc.specialCharactersNotAllowed;
             }
           } else {
-            Navigation.forward(
-              SetupUsername(
-                displayName: firstNameController.text,
-                email: email,
-              ),
-            );
+            ref.read(signupState.notifier).addName(firstNameController.text);
+            context.go('/start/signup/username');
           }
         } else {
-          firstFieldError.value = context.locale.specialCharactersNotAllowed;
+          firstFieldError.value = context.loc.specialCharactersNotAllowed;
         }
       } else {
-        firstFieldError.value = context.locale.errorFieldEmpty;
+        firstFieldError.value = context.loc.errorFieldEmpty;
       }
     }
 
     return SetupPage(
       icon: Icons.person,
-      title: Text(context.locale.setupNameScreenTitle),
-      subtitle: Text(context.locale.setupNameScreenDescription),
+      title: Text(context.loc.setupNameScreenTitle),
+      subtitle: Text(context.loc.setupNameScreenDescription),
       body: [
         Column(
           children: [
@@ -70,7 +63,7 @@ class SetupName extends HookWidget {
                 contentPadding: const EdgeInsets.all(10),
                 errorText: firstFieldError.value,
                 errorStyle: const TextStyle(fontSize: 14),
-                labelText: context.locale.firstName,
+                labelText: context.loc.firstName,
                 border: const OutlineInputBorder(),
               ),
               autofocus: true,
@@ -92,7 +85,7 @@ class SetupName extends HookWidget {
                 contentPadding: const EdgeInsets.all(10),
                 errorText: secondFieldError.value,
                 errorStyle: const TextStyle(fontSize: 14),
-                labelText: context.locale.lastName,
+                labelText: context.loc.lastName,
                 border: const OutlineInputBorder(),
               ),
               onChanged: (_) {

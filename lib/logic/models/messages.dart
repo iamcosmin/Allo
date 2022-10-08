@@ -121,12 +121,12 @@ class ReplyMessageData {
     } else if (message is ImageMessage) {
       return ReplyMessageData(
         name: message.name,
-        description: context.locale.image,
+        description: context.loc.image,
       );
     } else {
       return ReplyMessageData(
         name: message.name,
-        description: context.locale.unsupported,
+        description: context.loc.unsupported,
       );
     }
   }

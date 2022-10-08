@@ -26,6 +26,7 @@ class SScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: floatingActionButton,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       body: NestedScrollView(
         physics: SnapScrollPhysics(
           snaps: [

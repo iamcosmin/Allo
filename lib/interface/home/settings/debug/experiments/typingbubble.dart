@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:allo/components/material3/switch-own.dart';
-import 'package:allo/generated/l10n.dart';
+import 'package:allo/components/material3/switch_own.dart';
+import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 
 class ExampleIsTyping extends StatefulWidget {
@@ -18,11 +18,10 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
 
   @override
   Widget build(BuildContext context) {
-    final locales = S.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(locales.internalTypingIndicatorDemo),
+        title: Text(context.loc.internalTypingIndicatorDemo),
       ),
       body: Column(
         children: [
@@ -32,7 +31,9 @@ class _ExampleIsTypingState extends State<ExampleIsTyping> {
           Align(
             alignment: Alignment.bottomLeft,
             child: TypingIndicator(
-              bubbleColor: Colors.grey.shade500,
+              bubbleColor: colors.onInverseSurface,
+              flashingCircleBrightColor: colors.onSurfaceVariant,
+              flashingCircleDarkColor: colors.surfaceVariant,
               showIndicator: _isSomeoneTyping,
             ),
           ),

@@ -1,10 +1,9 @@
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../components/material3/filled_button.dart';
 import '../../components/setup_view.dart';
-import 'login.dart';
 
 class IntroPage extends HookWidget {
   const IntroPage({super.key});
@@ -29,7 +28,7 @@ class IntroPage extends HookWidget {
                     ),
                     const Padding(padding: EdgeInsets.only(top: 50)),
                     Text(
-                      context.locale.setupWelcomeScreenTitle,
+                      context.loc.setupWelcomeScreenTitle,
                       style: Theme.of(context).textTheme.displaySmall!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -40,9 +39,9 @@ class IntroPage extends HookWidget {
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton.icon(
-                      style: setupButtonTheme.merge(filledButtonStyle(context)),
-                      onPressed: () => Navigation.forward(const LoginPage()),
+                    child: FilledButton.icon(
+                      style: setupButtonTheme,
+                      onPressed: () => context.go('/start/login'),
                       icon: const Icon(Icons.navigate_next_rounded),
                       label: const Text('Next'),
                     ),

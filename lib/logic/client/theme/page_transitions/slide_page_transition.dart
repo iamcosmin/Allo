@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:allo/logic/client/extensions.dart';
+import 'package:allo/logic/client/theme/animations.dart';
 import 'package:flutter/material.dart';
-
-const _kDefaultCurve = Curves.fastOutSlowIn;
-const _kDefaultInCurve = _kDefaultCurve;
-const _kDefaultOutCurve = _kDefaultCurve;
 
 /// Used by [PageTransitionsTheme] to define a page route transition animation
 /// in which outgoing and incoming elements share a fade transition.
@@ -26,10 +22,10 @@ const _kDefaultOutCurve = _kDefaultCurve;
 ///     pageTransitionsTheme: PageTransitionsTheme(
 ///       builders: {
 ///         TargetPlatform.android: SlidePageTransitionsBuilder(
-///           transitionType: SlidePageTransitionType.horizontal,
+///           transitionType: SlideTransitionType.horizontal,
 ///         ),
 ///         TargetPlatform.iOS: SlidePageTransitionsBuilder(
-///           transitionType: SlidePageTransitionType.horizontal,
+///           transitionType: SlideTransitionType.horizontal,
 ///         ),
 ///       },
 ///     ),
@@ -66,7 +62,14 @@ const _kDefaultOutCurve = _kDefaultCurve;
 /// ```
 class SlidePageTransitionsBuilder extends PageTransitionsBuilder {
   /// Construct a [SlidePageTransitionsBuilder].
-  const SlidePageTransitionsBuilder();
+  const SlidePageTransitionsBuilder({
+    this.fillColor,
+  });
+
+  /// The color to use for the background color during the transition.
+  ///
+  /// This defaults to the [Theme]'s [ThemeData.canvasColor].
+  final Color? fillColor;
 
   @override
   Widget buildTransitions<T>(
@@ -79,6 +82,7 @@ class SlidePageTransitionsBuilder extends PageTransitionsBuilder {
     return SlidePageTransition(
       animation: animation,
       secondaryAnimation: secondaryAnimation,
+      fillColor: fillColor,
       child: child,
     );
   }
@@ -118,10 +122,10 @@ class SlidePageTransitionsBuilder extends PageTransitionsBuilder {
 ///         Animation<double> primaryAnimation,
 ///         Animation<double> secondaryAnimation,
 ///       ) {
-///         return SlidePageTransition(
+///         return SlideTransition(
 ///           animation: primaryAnimation,
 ///           secondaryAnimation: secondaryAnimation,
-///           transitionType: SlidePageTransitionType.horizontal,
+///           transitionType: SlideTransitionType.horizontal,
 ///           child: child,
 ///         );
 ///       },
@@ -164,10 +168,10 @@ class SlidePageTransition extends StatelessWidget {
   /// The [animation] and [secondaryAnimation] argument are required and must
   /// not be null.
   const SlidePageTransition({
-    required this.secondaryAnimation,
     required this.animation,
-    this.fillColor,
+    required this.secondaryAnimation,
     super.key,
+    this.fillColor,
     this.child,
   });
 
@@ -188,16 +192,20 @@ class SlidePageTransition extends StatelessWidget {
   ///    property when the it is used as a page transition.
   final Animation<double> secondaryAnimation;
 
+  /// The color to use for the background color during the transition.
+  ///
+  /// This defaults to the [Theme]'s [ThemeData.canvasColor].
+  final Color? fillColor;
+
   /// The widget below this widget in the tree.
   ///
   /// This widget will transition in and out as driven by [animation] and
   /// [secondaryAnimation].
   final Widget? child;
 
-  final Color? fillColor;
-
   @override
   Widget build(BuildContext context) {
+    final color = fillColor ?? Theme.of(context).colorScheme.surface;
     return DualTransitionBuilder(
       animation: animation,
       forwardBuilder: (
@@ -217,8 +225,8 @@ class SlidePageTransition extends StatelessWidget {
       ) {
         return _ExitTransition(
           animation: animation,
-          fillColor: fillColor,
           reverse: true,
+          fillColor: color,
           child: child,
         );
       },
@@ -242,7 +250,7 @@ class SlidePageTransition extends StatelessWidget {
         ) {
           return _ExitTransition(
             animation: animation,
-            fillColor: fillColor,
+            fillColor: color,
             child: child,
           );
         },
@@ -263,76 +271,89 @@ class _EnterTransition extends StatelessWidget {
   final Widget? child;
   final bool reverse;
 
+  static final Animatable<double> _fadeInTransition = CurveTween(
+    curve: Motion.animation.emphasizedDecelerate,
+  ).chain(CurveTween(curve: const Interval(0.3, 1.0)));
+
   @override
   Widget build(BuildContext context) {
     final slideInTransition = Tween<Offset>(
       begin: Offset(!reverse ? 30.0 : -30.0, 0.0),
       end: Offset.zero,
-    ).chain(CurveTween(curve: _kDefaultInCurve));
-    final fadeTransition = Tween<double>(begin: 0.0, end: 1.0)
-        .chain(CurveTween(curve: _kDefaultCurve))
-        .chain(CurveTween(curve: const Interval(0.2, 0.8)));
+    ).chain(CurveTween(curve: Motion.animation.standard));
 
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return FadeTransition(
-          opacity: reverse
-              ? const AlwaysStoppedAnimation(1)
-              : fadeTransition.animate(animation),
-          child: Transform.translate(
+    return FadeTransition(
+      opacity: _fadeInTransition.animate(animation),
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) {
+          return Transform.translate(
             offset: slideInTransition.evaluate(animation),
             child: child,
-          ),
-        );
-      },
-      child: child,
+          );
+        },
+        child: child,
+      ),
     );
   }
 }
 
-// The animation when pressing back.
 class _ExitTransition extends StatelessWidget {
   const _ExitTransition({
     required this.animation,
-    this.fillColor,
+    required this.fillColor,
     this.reverse = false,
     this.child,
   });
 
   final Animation<double> animation;
-  final Color? fillColor;
   final bool reverse;
+  final Color fillColor;
   final Widget? child;
+
+  static final Animatable<double> _fadeOutTransition = _FlippedCurveTween(
+    curve: Motion.animation.emphasizedAccelerate,
+  ).chain(CurveTween(curve: const Interval(0.0, 0.3)));
 
   @override
   Widget build(BuildContext context) {
     final slideOutTransition = Tween<Offset>(
       begin: Offset.zero,
       end: Offset(!reverse ? -30.0 : 30.0, 0.0),
-    ).chain(CurveTween(curve: _kDefaultOutCurve));
-    final fadeTransition = Tween<double>(begin: 1.0, end: 0.0)
-        .chain(CurveTween(curve: _kDefaultCurve))
-        .chain(CurveTween(curve: const Interval(0.2, 0.8)));
+    ).chain(CurveTween(curve: Motion.animation.standard));
 
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return FadeTransition(
-          // OPACITY ONE ON ENTER, _FADEOUTTRANSITION ON EXIT
-          opacity: reverse
-              ? fadeTransition.animate(animation)
-              : const AlwaysStoppedAnimation(1),
-          child: Transform.translate(
-            offset: slideOutTransition.evaluate(animation),
-            child: ColoredBox(
-              color: fillColor ?? context.colorScheme.surface,
+    return FadeTransition(
+      opacity: _fadeOutTransition.animate(animation),
+      child: ColoredBox(
+        color: fillColor,
+        child: AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) {
+            return Transform.translate(
+              offset: slideOutTransition.evaluate(animation),
               child: child,
-            ),
-          ),
-        );
-      },
-      child: child,
+            );
+          },
+          child: child,
+        ),
+      ),
     );
   }
+}
+
+/// Enables creating a flipped [CurveTween].
+///
+/// This creates a [CurveTween] that evaluates to a result that flips the
+/// tween vertically.
+///
+/// This tween sequence assumes that the evaluated result has to be a double
+/// between 0.0 and 1.0.
+class _FlippedCurveTween extends CurveTween {
+  /// Creates a vertically flipped [CurveTween].
+  _FlippedCurveTween({
+    required super.curve,
+  });
+
+  @override
+  double transform(double t) => 1.0 - super.transform(t);
 }

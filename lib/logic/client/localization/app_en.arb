@@ -36,6 +36,14 @@
   "errorPasswordRequirements": "Your password does not respect the requirements.",
   "errorSuccess": "Success.",
   "errorThisIsInvalid": "This {field} is invalid.",
+  "@errorThisIsInvalid": {
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "email"
+      }
+    }
+  },
   "errorTooManyRequests": "Your requests have been blocked temporarily.",
   "errorUnknown": "Unknown error.",
   "errorUserDisabled": "This account has been banned.",
@@ -141,5 +149,6 @@
   "animations": "Animations",
   "back": "Back",
   "finish": "Finish",
-  "verifyYourIdentity": "Verify your Identity"
+  "verifyYourIdentity": "Verify your Identity",
+  "startingApp": "Starting Allo..."
 }

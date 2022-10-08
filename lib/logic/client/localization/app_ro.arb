@@ -35,7 +35,15 @@
   "errorPasswordMismatch": "Parolele trebuie să se potrivească.",
   "errorPasswordRequirements": "Parola ta nu respectă cerințele.",
   "errorSuccess": "Succes.",
-  "errorThisIsInvalid": "{field} invalid.",
+  "errorThisIsInvalid": "Acest {field} este invalid.",
+  "@errorThisIsInvalid": {
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "email"
+      }
+    }
+  },
   "errorTooManyRequests": "Cererile tale au fost blocate temporar.",
   "errorUnknown": "Eroare necunoscută.",
   "errorUserDisabled": "Acest cont a fost banat.",
@@ -139,5 +147,6 @@
   "animations": "Animații",
   "back": "Înapoi",
   "finish": "Terminare",
-  "verifyYourIdentity": "Verifică-ți identitatea"
+  "verifyYourIdentity": "Verifică-ți identitatea",
+  "startingApp": "Pornește Allo..."
 }

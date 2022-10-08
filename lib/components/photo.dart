@@ -50,7 +50,7 @@ class Photo extends HookConsumerWidget {
         context: context,
         dialogBuilder: DialogBuilder(
           icon: Icons.error,
-          title: context.locale.error,
+          title: context.loc.error,
           body: SelectableText(error.toString()),
           actions: [
             TextButton(

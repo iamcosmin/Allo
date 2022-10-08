@@ -22,15 +22,7 @@ final membersDebug = initSetting(
   'alloParticipantsDebug',
   defaultValue: false,
 );
-final revampedAccountSettingsDebug = initSetting(
-  'revamped_account_settings_debug',
-  defaultValue: false,
-);
 final emulateIOSBehaviour = initSetting(
   'experimentalEmulateIOSBehaviour',
-  defaultValue: false,
-);
-final eToggleNotifications = initSetting(
-  'experient_toggle_notifications',
   defaultValue: false,
 );

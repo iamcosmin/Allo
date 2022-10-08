@@ -4,7 +4,6 @@ import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/photo.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
-import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
@@ -31,22 +30,21 @@ void _messageOptions(
   ColorScheme colorScheme,
 ) {
   final editMessage = useSetting(ref, editMessageDebug);
-  final locales = S.of(context);
   showMagicBottomSheet(
     colorScheme: colorScheme,
     context: context,
-    title: locales.messageOptions,
+    title: context.loc.messageOptions,
     children: [
       if (!isImage) ...[
         ListTile(
           leading: const Icon(Icons.copy_outlined),
-          title: Text(locales.copy),
+          title: Text(context.loc.copy),
           onTap: () {
             Navigator.of(context).pop();
             Clipboard.setData(ClipboardData(text: messageText));
             Core.stub.showInfoBar(
               icon: Icons.copy_outlined,
-              text: locales.messageCopied,
+              text: context.loc.messageCopied,
             );
           },
         ),
@@ -54,12 +52,12 @@ void _messageOptions(
       if (editMessage.setting && isSentByUser) ...[
         ListTile(
           leading: const Icon(Icons.edit_outlined),
-          title: Text(locales.edit),
+          title: Text(context.loc.edit),
           onTap: () {
             Navigator.of(context).pop();
             Core.stub.showInfoBar(
               icon: Icons.info_outlined,
-              text: locales.comingSoon,
+              text: context.loc.comingSoon,
             );
           },
         ),
@@ -67,7 +65,7 @@ void _messageOptions(
       if (isSentByUser) ...[
         ListTile(
           leading: const Icon(Icons.delete_outlined),
-          title: Text(locales.delete),
+          title: Text(context.loc.delete),
           onTap: () {
             Navigator.of(context).pop();
             _deleteMessage(
@@ -91,72 +89,57 @@ void _deleteMessage({
   required ColorScheme colorScheme,
   required WidgetRef ref,
 }) {
-  final locales = S.of(context);
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      alignment: Alignment.center,
-      actionsAlignment: MainAxisAlignment.center,
-      backgroundColor: colorScheme.surface,
-      title: Column(
-        children: [
-          Icon(
-            Icons.delete_outlined,
-            color: colorScheme.error,
-          ),
-          const Padding(padding: EdgeInsets.only(bottom: 10)),
-          Text(
-            locales.deleteMessageTitle,
-            style: TextStyle(color: colorScheme.onSurface),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      icon: Icon(
+        Icons.delete_outlined,
+        color: colorScheme.error,
       ),
-      content: Text(
-        locales.deleteMessageDescription,
+      actionsAlignment: MainAxisAlignment.center,
+      title: Text(
+        context.loc.deleteMessageTitle,
         style: TextStyle(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),
-      actionsPadding: const EdgeInsets.only(left: 20, right: 20),
+      content: Text(
+        context.loc.deleteMessageDescription,
+        style: TextStyle(color: colorScheme.onSurface),
+      ),
+      backgroundColor: colorScheme.surface,
       actions: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 1.5,
-          child: ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(colorScheme.error),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-              Future.delayed(
-                const Duration(seconds: 1),
-                () {
-                  Core.chats
-                      .chat(chatId)
-                      .messages
-                      .deleteMessage(messageId: messageId);
-                  Core.stub.showInfoBar(
-                    icon: Icons.delete_outline,
-                    text: locales.messageDeleted,
-                  );
-                },
-              );
-            },
-            child: Text(
-              locales.delete,
-              style: TextStyle(color: colorScheme.onError),
-            ),
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(colorScheme.error),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            Future.delayed(
+              const Duration(seconds: 1),
+              () {
+                Core.chats
+                    .chat(chatId)
+                    .messages
+                    .deleteMessage(messageId: messageId);
+                Core.stub.showInfoBar(
+                  icon: Icons.delete_outline,
+                  text: context.loc.messageDeleted,
+                );
+              },
+            );
+          },
+          child: Text(
+            context.loc.delete,
+            style: TextStyle(color: colorScheme.onError),
           ),
         ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 1.5,
-          child: TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text(
-              locales.cancel,
-              style: TextStyle(color: colorScheme.onSurface),
-            ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(
+            context.loc.cancel,
+            style: TextStyle(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -185,7 +168,6 @@ class Bubble extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locales = S.of(context);
     final isNotCurrentUser = Core.auth.user.userId != message.userId;
     final nameInitials = Core.auth.returnNameInitials(message.name);
     final screenWidth = MediaQuery.of(context).size.width;
@@ -234,9 +216,9 @@ class Bubble extends HookConsumerWidget {
         case MessageType.text:
           return (message as TextMessage).text;
         case MessageType.image:
-          return context.locale.image;
+          return context.loc.image;
         case MessageType.unsupported:
-          return context.locale.unsupportedMessage;
+          return context.loc.unsupportedMessage;
       }
     }
 
@@ -477,9 +459,9 @@ class Bubble extends HookConsumerWidget {
                               Text(
                                 !isNotCurrentUser
                                     ? (message.read
-                                        ? locales.read
-                                        : locales.sent)
-                                    : locales.received,
+                                        ? context.loc.read
+                                        : context.loc.sent)
+                                    : context.loc.received,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: context.colorScheme.onSurface,

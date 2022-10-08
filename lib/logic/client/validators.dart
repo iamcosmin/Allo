@@ -10,10 +10,10 @@ class Validators {
       if (_nameReg.hasMatch(name)) {
         return null;
       } else {
-        return context.locale.specialCharactersNotAllowed;
+        return context.loc.specialCharactersNotAllowed;
       }
     } else {
-      return context.locale.errorFieldEmpty;
+      return context.loc.errorFieldEmpty;
     }
   }
 }

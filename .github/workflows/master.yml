@@ -1,4 +1,4 @@
-name: Build Master
+name: Release Master
 
 on: 
   push: 
@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Setup - Checkout
       uses: actions/checkout@v3
-    - name: Java Setup
+    - name: Setup - Java
       uses: actions/setup-java@v3
       with:
         java-version: '17'
@@ -18,8 +18,8 @@ jobs:
     - name: Setup - Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
-    - name: Expand keystore
+        channel: 'beta'
+    - name: Setup - Signing
       run: |
            cd android/
            echo "${{ secrets.KEYSTORE }}" > release.jks.asc
@@ -28,7 +28,7 @@ jobs:
            cd ..
     - name: Web - Build
       run: |
-          flutter build web --web-renderer canvaskit
+          flutter build web
     - name: Web - Deploy
       uses: FirebaseExtended/action-hosting-deploy@v0
       with:
@@ -51,7 +51,7 @@ jobs:
         track: alpha
         status: completed
         whatsNewDirectory: distribution
-    - name: Publish Release Notes
+    - name: Publish release notes
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO_CHANNEL }}

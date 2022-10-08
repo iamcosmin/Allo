@@ -1,19 +1,16 @@
 import 'package:allo/components/setup_view.dart';
-import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/login/existing/enter_password.dart';
-import 'package:allo/interface/login/new/setup_name.dart';
 import 'package:allo/logic/backend/setup/login.dart';
 import 'package:allo/logic/client/email_validator.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locales = S.of(context);
     final login = ref.watch(loginState.notifier);
     final error = useState<String?>(null);
     final controller = useTextEditingController();
@@ -23,9 +20,10 @@ class LoginPage extends HookConsumerWidget {
       if (isValid) {
         await login.checkIfAccountExists(controller.text).then((value) {
           if (value) {
-            Navigation.forward(const EnterPassword());
+            context.go('/start/login/password');
           } else if (!value) {
-            Navigation.forward(SetupName(controller.text));
+            ref.read(signupState.notifier).addEmail(controller.text);
+            context.go('/start/signup');
           }
         });
       }
@@ -33,8 +31,8 @@ class LoginPage extends HookConsumerWidget {
 
     return SetupView(
       icon: Icons.login,
-      title: Text(locales.loginScreenTitle),
-      description: Text(locales.loginScreenDescription),
+      title: Text(context.loc.loginScreenTitle),
+      description: Text(context.loc.loginScreenDescription),
       action: onSubmit,
       builder: (props) {
         return [
@@ -43,14 +41,14 @@ class LoginPage extends HookConsumerWidget {
             autofillHints: const [AutofillHints.email],
             decoration: InputDecoration(
               errorText: error.value,
-              labelText: locales.email,
+              labelText: context.loc.email,
             ),
             autofocus: true,
             onFieldSubmitted: (_) async => onSubmit(),
             onChanged: (value) {
               if (!EmailValidator.validate(value)) {
-                final errorString = context.locale.errorThisIsInvalid(
-                  context.locale.email.toLowerCase(),
+                final errorString = context.loc.errorThisIsInvalid(
+                  context.loc.email.toLowerCase(),
                 );
                 if (error.value != errorString) {
                   error.value = errorString;

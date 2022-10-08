@@ -23,8 +23,7 @@ class FutureWidget<T> extends StatelessWidget {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.data != null) {
-          // ignore: null_check_on_nullable_type_parameter
-          return success(snapshot.data!);
+          return success(snapshot.data as T);
         } else if (snapshot.connectionState == ConnectionState.waiting) {
           return loading();
         } else if (snapshot.hasError) {

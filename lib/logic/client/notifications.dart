@@ -12,22 +12,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../firebase_options.dart';
 import '../../interface/home/chat/chat.dart';
+import '../backend/firebase_options.dart';
 import '../core.dart';
-
-/// Returns the title of the conversation (distinguish from group and private)
-String _title({
-  required String? type,
-  required String chatName,
-  required String senderName,
-}) {
-  if (ChatType.fromString(type ?? 'group') == ChatType.private) {
-    return senderName;
-  } else {
-    return chatName;
-  }
-}
 
 @pragma('vm:entry-point')
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
@@ -143,83 +130,84 @@ Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-Future<void> oldFirebaseBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  final String? uid = message.data['uid'];
-  final String? senderName = message.data['senderName'];
-  final String? text = message.data['text'];
-  final String? profilePicture = message.data['profilePicture'];
-  final String? sentPicture = message.data['photo'];
-  final String? chatId = message.data['toChat'];
-  final String smallNotificationText =
-      ChatType.fromString(message.data['type']) == ChatType.group
-          ? message.data['chatName']
-          : '';
-  final notificationLayout =
-      ChatType.fromString(message.data['type']) == ChatType.group
-          ? NotificationLayout.MessagingGroup
-          : NotificationLayout.Messaging;
-  // ignore: omit_local_variable_types
-  final Map<String, String> suplimentaryInfo = {
-    'profilePicture': profilePicture ?? '',
-    'chatId': chatId ?? '',
-    'chatName': _title(
-      type: message.data['type'],
-      chatName: message.data['chatName'],
-      senderName: message.data['senderName'],
-    ),
-    'chatType': message.data['type'] ?? 'group',
-    'uid': uid ?? 'no-uid'
-  };
-  if (uid != Core.auth.user.userId) {
-    // Decompile profile picture
-    Future<Uri?> profilePictureUri() async {
-      if (profilePicture != null) {
-        final schema = Uri.parse(profilePicture);
-        if (schema.scheme == 'http' || schema.scheme == 'https') {
-          return schema;
-        } else if (schema.scheme == 'gs') {
-          return Uri.parse(
-            await FirebaseStorage.instance
-                .refFromURL(schema.toString())
-                .getDownloadURL(),
-          );
-        }
-      }
-      return null;
-    }
+// TODO: Ensure migration is done, then remove this old handler.
+// Future<void> oldFirebaseBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp(
+//     options: DefaultFirebaseOptions.currentPlatform,
+//   );
+//   final String? uid = message.data['uid'];
+//   final String? senderName = message.data['senderName'];
+//   final String? text = message.data['text'];
+//   final String? profilePicture = message.data['profilePicture'];
+//   final String? sentPicture = message.data['photo'];
+//   final String? chatId = message.data['toChat'];
+//   final String smallNotificationText =
+//       ChatType.fromString(message.data['type']) == ChatType.group
+//           ? message.data['chatName']
+//           : '';
+//   final notificationLayout =
+//       ChatType.fromString(message.data['type']) == ChatType.group
+//           ? NotificationLayout.MessagingGroup
+//           : NotificationLayout.Messaging;
+//   // ignore: omit_local_variable_types
+//   final Map<String, String> suplimentaryInfo = {
+//     'profilePicture': profilePicture ?? '',
+//     'chatId': chatId ?? '',
+//     'chatName': _title(
+//       type: message.data['type'],
+//       chatName: message.data['chatName'],
+//       senderName: message.data['senderName'],
+//     ),
+//     'chatType': message.data['type'] ?? 'group',
+//     'uid': uid ?? 'no-uid'
+//   };
+//   if (uid != Core.auth.user.userId) {
+//     // Decompile profile picture
+//     Future<Uri?> profilePictureUri() async {
+//       if (profilePicture != null) {
+//         final schema = Uri.parse(profilePicture);
+//         if (schema.scheme == 'http' || schema.scheme == 'https') {
+//           return schema;
+//         } else if (schema.scheme == 'gs') {
+//           return Uri.parse(
+//             await FirebaseStorage.instance
+//                 .refFromURL(schema.toString())
+//                 .getDownloadURL(),
+//           );
+//         }
+//       }
+//       return null;
+//     }
 
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: Random().nextInt(AwesomeNotifications.maxID),
-        title: senderName,
-        body: sentPicture != null ? 'Imagine' : text,
-        channelKey: 'chats',
-        roundedLargeIcon: true,
-        largeIcon: (await profilePictureUri()).toString(),
-        notificationLayout: notificationLayout,
-        category: NotificationCategory.Message,
-        // bigPicture: sentPicture,
-        groupKey: chatId,
-        // Summary is the chat name. Chat name should be null if the chat is private.
-        summary: smallNotificationText,
-        payload: suplimentaryInfo,
-      ),
-      actionButtons: [
-        if (true == false) ...[
-          NotificationActionButton(
-            key: 'input',
-            actionType: ActionType.SilentBackgroundAction,
-            requireInputText: true,
-            label: 'Reply',
-          )
-        ],
-      ],
-    );
-  }
-}
+//     await AwesomeNotifications().createNotification(
+//       content: NotificationContent(
+//         id: Random().nextInt(AwesomeNotifications.maxID),
+//         title: senderName,
+//         body: sentPicture != null ? 'Imagine' : text,
+//         channelKey: 'chats',
+//         roundedLargeIcon: true,
+//         largeIcon: (await profilePictureUri()).toString(),
+//         notificationLayout: notificationLayout,
+//         category: NotificationCategory.Message,
+//         // bigPicture: sentPicture,
+//         groupKey: chatId,
+//         // Summary is the chat name. Chat name should be null if the chat is private.
+//         summary: smallNotificationText,
+//         payload: suplimentaryInfo,
+//       ),
+//       actionButtons: [
+//         if (true == false) ...[
+//           NotificationActionButton(
+//             key: 'input',
+//             actionType: ActionType.SilentBackgroundAction,
+//             requireInputText: true,
+//             label: 'Reply',
+//           )
+//         ],
+//       ],
+//     );
+//   }
+// }
 
 class Notifications {
   const Notifications();
@@ -256,9 +244,11 @@ class Notifications {
   }
 }
 
+// TODO: Notification Controller: @pragma("vm:entry-point")
+
 /// This function sets up the notification system.
 /// TODO (iamcosmin): Refactor this function, this is very cluttered.
-/// TODO: Probably with a data class.
+///  Probably with a data class.
 class _NotificationController {
   static Future<void> onActionReceivedMethod(ReceivedAction action) async {
     final payload = action.payload!;

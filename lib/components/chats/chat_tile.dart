@@ -22,9 +22,7 @@ class ChatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimationConfiguration.staggeredList(
       position: index,
-      duration: const Duration(milliseconds: 275),
       child: SlideAnimation(
-        verticalOffset: 30,
         child: FadeInAnimation(
           child: Material(
             color: Colors.transparent,

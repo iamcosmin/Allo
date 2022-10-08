@@ -2,20 +2,17 @@ import 'package:allo/components/setup_page.dart';
 import 'package:allo/logic/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final _usernameReg = RegExp(r'^[a-zA-Z0-9_\.]+$');
 
-class SetupUsername extends HookWidget {
+class SetupUsername extends HookConsumerWidget {
   const SetupUsername({
-    required this.displayName,
-    required this.email,
     super.key,
   });
-  final String displayName;
-  final String email;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context, ref) {
     final controller = useTextEditingController();
     final focusNode = useFocusNode();
     final error = useState<String?>(null);
@@ -25,16 +22,15 @@ class SetupUsername extends HookWidget {
         username: controller.text,
         error: error,
         context: context,
-        displayName: displayName,
-        email: email,
         focusNode: focusNode,
+        ref: ref,
       );
     }
 
     return SetupPage(
       icon: Icons.person_search,
-      title: Text(context.locale.setupUsernameScreenTitle),
-      subtitle: Text(context.locale.setupUsernameScreenDescription),
+      title: Text(context.loc.setupUsernameScreenTitle),
+      subtitle: Text(context.loc.setupUsernameScreenDescription),
       body: [
         TextFormField(
           focusNode: focusNode,
@@ -44,13 +40,13 @@ class SetupUsername extends HookWidget {
             prefix: const Text('@'),
             errorText: error.value,
             errorStyle: const TextStyle(fontSize: 14),
-            labelText: context.locale.username,
+            labelText: context.loc.username,
             border: const OutlineInputBorder(),
           ),
           onChanged: (_) {
             if (!_usernameReg.hasMatch(_)) {
-              error.value = context.locale.errorThisIsInvalid(
-                context.locale.username.toLowerCase(),
+              error.value = context.loc.errorThisIsInvalid(
+                context.loc.username.toLowerCase(),
               );
             } else {
               error.value = null;
@@ -61,7 +57,7 @@ class SetupUsername extends HookWidget {
         ),
         const Padding(padding: EdgeInsets.only(bottom: 10)),
         Text(
-          context.locale.setupUsernameRequirements,
+          context.loc.setupUsernameRequirements,
           style: const TextStyle(color: Colors.grey),
         )
       ],

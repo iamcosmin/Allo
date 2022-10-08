@@ -3,160 +3,197 @@ import 'package:allo/components/info.dart';
 import 'package:allo/components/shimmer.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
-import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/home/settings/debug/create_chat.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
+import 'package:flutter/rendering.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../components/empty.dart';
 import '../../components/person_picture.dart';
 import '../../logic/models/chat.dart';
-import 'chat/chat.dart';
 
 String type(Chat chat, BuildContext context) {
-  final locales = S.of(context);
   if (chat is GroupChat) {
-    return locales.group;
+    return context.loc.group;
   } else if (chat is PrivateChat) {
-    return locales.private;
+    return context.loc.private;
   } else {
-    return locales.unknown;
+    return context.loc.unknown;
   }
 }
 
-class Home extends ConsumerWidget {
+class HomeFAB extends FloatingActionButton {
+  const HomeFAB({
+    required super.isExtended,
+    super.key,
+  }) : super(child: null, onPressed: null);
+
+  @override
+  Widget build(context) {
+    if (isExtended) {
+      return FloatingActionButton.extended(
+        onPressed: () => context.go('/create'),
+        label: Text(context.loc.createNewChat),
+        icon: const Icon(Icons.edit),
+      );
+    } else {
+      return FloatingActionButton(
+        onPressed: () => context.go('/create'),
+        child: const Icon(Icons.edit),
+      );
+    }
+  }
+}
+
+class Home extends HookConsumerWidget {
   const Home({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    useAutomaticKeepAlive();
     final createChat = useSetting(ref, privateConversations);
     final chatList = ref.watch(Core.chats.chatListProvider);
-    return SScaffold(
-      refreshIndicator: RefreshIndicator(
-        onRefresh: () => ref.refresh(Core.chats.chatListProvider.future),
-        child: const Empty(),
-      ),
-      topAppBar: LargeTopAppBar(
-        title: Text(context.locale.chats),
-      ),
-      floatingActionButton: !createChat.setting
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () => Navigation.forward(const CreateChat()),
-              label: Text(context.locale.createNewChat),
-              icon: const Icon(Icons.create),
-              tooltip: context.locale.createNewChat,
-            ),
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.only(left: 5, right: 5),
-          sliver: chatList.when(
-            loading: () {
-              return SliverPadding(
-                padding: const EdgeInsets.all(5.0),
-                sliver: AnimationLimiter(
-                  child: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return ChatTile(
-                          index: index,
-                          leading: const ClipOval(
-                            child: LoadingContainer(
-                              height: 60,
-                              width: 60,
+    final fabIsExtended = useState(false);
+    return NotificationListener(
+      onNotification: (notification) {
+        if (notification is UserScrollNotification) {
+          if (notification.direction == ScrollDirection.forward &&
+              fabIsExtended.value != false) {
+            fabIsExtended.value = false;
+          } else if ((notification.direction == ScrollDirection.reverse ||
+                  notification.direction == ScrollDirection.idle) &&
+              fabIsExtended.value != true) {
+            fabIsExtended.value = true;
+          }
+        }
+        return true;
+      },
+      child: SScaffold(
+        refreshIndicator: RefreshIndicator(
+          onRefresh: () => ref.refresh(Core.chats.chatListProvider.future),
+          child: const Empty(),
+        ),
+        topAppBar: LargeTopAppBar(
+          title: Text(context.loc.chats),
+        ),
+        floatingActionButton: !createChat.setting
+            ? null
+            : HomeFAB(
+                isExtended: fabIsExtended.value,
+                key: UniqueKey(),
+              ),
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            sliver: chatList.when(
+              loading: () {
+                return SliverPadding(
+                  padding: const EdgeInsets.all(5.0),
+                  sliver: AnimationLimiter(
+                    child: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return ChatTile(
+                            index: index,
+                            leading: const ClipOval(
+                              child: LoadingContainer(
+                                height: 60,
+                                width: 60,
+                              ),
                             ),
-                          ),
-                          title: const LoadingContainer(
-                            height: 18,
-                            width: 100,
-                          ),
-                          subtitle: const Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: LoadingContainer(
-                              height: 12,
-                              width: 200,
+                            title: const LoadingContainer(
+                              height: 18,
+                              width: 100,
                             ),
-                          ),
-                        );
-                      },
-                      childCount: MediaQuery.of(context).size.height ~/ 65,
+                            subtitle: const Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: LoadingContainer(
+                                height: 12,
+                                width: 200,
+                              ),
+                            ),
+                          );
+                        },
+                        childCount: MediaQuery.of(context).size.height ~/ 65,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-            data: (data) {
-              if (data.isEmpty) {
-                return SliverFillRemaining(
-                  child: InfoWidget(
-                    text: context.locale.noChats,
-                  ),
                 );
-              } else {
-                return AnimationLimiter(
-                  child: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final chat = data[index];
-                        return ChatTile(
-                          index: index,
-                          title: Text(
-                            chat.title,
-                            style: context.theme.textTheme.titleLarge!.copyWith(
-                              fontSize: 20,
-                              color: context.colorScheme.onSurface,
-                            ),
-                          ),
-                          subtitle: Text(
-                            '${type(chat, context)} (${chat.id})',
-                            style: context.theme.textTheme.labelLarge!
-                                .copyWith(color: context.colorScheme.outline),
-                          ),
-                          leading: PersonPicture(
-                            profilePicture: chat.picture,
-                            radius: 60,
-                            initials: Core.auth.returnNameInitials(
+              },
+              data: (data) {
+                if (data.isEmpty) {
+                  return SliverFillRemaining(
+                    child: InfoWidget(
+                      text: context.loc.noChats,
+                    ),
+                  );
+                } else {
+                  return AnimationLimiter(
+                    child: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final chat = data[index];
+                          return ChatTile(
+                            index: index,
+                            title: Text(
                               chat.title,
+                              style:
+                                  context.theme.textTheme.titleLarge!.copyWith(
+                                fontSize: 20,
+                                color: context.colorScheme.onSurface,
+                              ),
                             ),
-                          ),
-                          onTap: () => Navigation.forward(
-                            ChatScreen(
-                              chat: chat,
+                            subtitle: Text(
+                              '${type(chat, context)} (${chat.id})',
+                              style:
+                                  context.theme.textTheme.labelLarge!.copyWith(
+                                color: context.colorScheme.outline,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      childCount: data.length,
+                            leading: PersonPicture(
+                              profilePicture: chat.picture,
+                              radius: 60,
+                              initials: Core.auth.returnNameInitials(
+                                chat.title,
+                              ),
+                            ),
+                            onTap: () =>
+                                context.go('/chat/${chat.id}', extra: chat),
+                          );
+                        },
+                        childCount: data.length,
+                      ),
+                    ),
+                  );
+                }
+              },
+              error: (error, stackTrace) {
+                final errorMessage =
+                    '${context.loc.anErrorOccurred}\n${(error is FirebaseException) ? 'Code: ${error.code}'
+                        '\n'
+                        'Element: ${error.plugin}'
+                        '\n\n'
+                        '${error.message}' : error.toString()}';
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 30, right: 30),
+                    child: Center(
+                      child: SelectableText(
+                        errorMessage,
+                      ),
                     ),
                   ),
                 );
-              }
-            },
-            error: (error, stackTrace) {
-              final errorMessage =
-                  '${context.locale.anErrorOccurred}\n${(error is FirebaseException) ? 'Code: ${error.code}'
-                      '\n'
-                      'Element: ${error.plugin}'
-                      '\n\n'
-                      '${error.message}' : error.toString()}';
-              return SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 30, right: 30),
-                  child: Center(
-                    child: SelectableText(
-                      errorMessage,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        )
-      ],
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }

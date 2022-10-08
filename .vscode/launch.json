@@ -22,6 +22,11 @@
                 "--web-port=1000",
                 "--flavor=dev"
             ]
+        },
+        {
+            "name": "Allo Attach",
+            "request": "attach",
+            "type": "dart",
         }
     ]
 }

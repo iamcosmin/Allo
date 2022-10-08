@@ -56,13 +56,19 @@ class Chats {
                 documentSnapshot: docChanges.doc,
                 replyData: replyData,
               );
-
               ref.read(animatedListKeyProvider).currentState?.insertItem(
                     calculateIndex(docChanges.newIndex, lastIndex),
                     duration: const Duration(milliseconds: 275),
                   );
+
               if (message != null) {
                 messages.insert(docChanges.newIndex, message);
+                // if (docChanges.newIndex == 0) {
+                //   final audio = AudioPlayer();
+                //   await audio.setAsset('assets/audio/1569.mp3');
+                //   await audio.play();
+                //   await audio.dispose();
+                // }
               }
               break;
             }
@@ -100,6 +106,7 @@ class Chats {
                         ),
                       ),
                     ),
+                    duration: const Duration(milliseconds: 275),
                   );
               messages.removeAt(docChanges.oldIndex);
               break;

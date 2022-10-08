@@ -1,6 +1,5 @@
 import 'package:allo/components/setup_view.dart';
 import 'package:allo/components/space.dart';
-import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/backend/setup/login.dart';
 import 'package:allo/logic/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,29 +17,27 @@ class EnterPassword extends HookConsumerWidget {
     final login = ref.watch(loginState.notifier);
     final state = ref.watch(loginState);
     final controller = useTextEditingController();
-    final locales = S.of(context);
 
     return SetupView(
       icon: Icons.password,
-      title: Text('${locales.welcomeBack}.'),
-      description: Text(locales.enterPasswordDescription),
+      title: Text('${context.loc.welcomeBack}.'),
+      description: Text(context.loc.enterPasswordDescription),
       action: () async {
         try {
           await login.login(controller.text);
-          Navigation.first();
         } on FirebaseAuthException catch (e) {
           switch (e.code) {
             case 'user-disabled':
-              error.value = locales.errorUserDisabled;
+              error.value = context.loc.errorUserDisabled;
               break;
             case 'wrong-password':
-              error.value = locales.errorWrongPassword;
+              error.value = context.loc.errorWrongPassword;
               break;
             case 'too-many-requests':
-              error.value = locales.errorTooManyRequests;
+              error.value = context.loc.errorTooManyRequests;
               break;
             default:
-              error.value = locales.errorUnknown;
+              error.value = context.loc.errorUnknown;
               break;
           }
           focusNode.requestFocus();
@@ -57,7 +54,7 @@ class EnterPassword extends HookConsumerWidget {
             contentPadding: const EdgeInsets.all(10),
             errorText: error.value,
             errorStyle: const TextStyle(fontSize: 14),
-            labelText: locales.password,
+            labelText: context.loc.password,
             border: const OutlineInputBorder(),
             suffix: Padding(
               padding: const EdgeInsets.all(5),
@@ -99,7 +96,7 @@ class EnterPassword extends HookConsumerWidget {
                 throw Exception('There is no email in state.');
               }
             },
-            child: Text(locales.forgotPassword),
+            child: Text(context.loc.forgotPassword),
           ),
         )
       ],

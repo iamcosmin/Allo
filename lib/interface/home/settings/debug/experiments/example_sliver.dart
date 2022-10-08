@@ -10,7 +10,7 @@ class ExampleSliver extends HookConsumerWidget {
   Widget build(context, ref) {
     return Scaffold(
       body: SScaffold(
-        topAppBar: const SmallTopAppBar(
+        topAppBar: const LargeTopAppBar(
           title: Text('Acasa'),
         ),
         slivers: <Widget>[

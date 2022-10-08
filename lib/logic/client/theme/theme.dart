@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:allo/interface/home/settings/personalise.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/client/theme/page_transitions/page_transitions.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -17,43 +14,49 @@ extension ColorString on Color {
   }
 }
 
+extension MatchTheme on ThemeMode {
+  ThemeMode matchSetting(String setting) {
+    return ThemeMode.values
+        .firstWhere((element) => element.toString() == setting);
+  }
+}
+
 ThemeData theme(
   Brightness brightness,
-  WidgetRef ref,
-  BuildContext context, {
+  WidgetRef ref, {
   ColorScheme? colorScheme,
 }) {
-  int? sdkInt;
-  if (!kIsWeb && Platform.isAndroid) {
-    sdkInt = ref.read(androidSdkVersionProvider).sdkInt;
-  }
-  final dynamic12 = sdkInt != null && sdkInt >= 31;
   final themeColor = useSetting(ref, preferredColorPreference);
   final animations = useSetting(ref, animationsPreference);
   final platform = ThemeData().platform;
 
   ColorScheme getColorScheme() {
-    final defaultColorScheme = ColorScheme.fromSeed(
+    final systemTheme = ref.watch(customAccentPreference);
+    final defaultScheme = ColorScheme.fromSeed(
       seedColor: Color(themeColor.setting),
       brightness: brightness,
     );
+
     if (colorScheme != null) {
       return colorScheme;
-    } else {
-      if (!kIsWeb && Platform.isAndroid) {
-        final dynamicColor = useSetting(ref, dynamicColorPreference);
-        if (dynamic12 && dynamicColor.setting) {
-          final deviceColorScheme = ref
-              .read(dynamicColorsProvider)
-              ?.toColorScheme(brightness: brightness);
-          return deviceColorScheme ?? defaultColorScheme;
-        } else {
-          return defaultColorScheme;
-        }
-      } else {
-        return defaultColorScheme;
+    }
+
+    if (systemTheme) {
+      final androidScheme = ref.watch(corePaletteProvider);
+      final otherScheme = ref.watch(accentColorProvider);
+
+      if (androidScheme.value != null) {
+        return androidScheme.value!.toColorScheme(brightness: brightness)!;
+      }
+
+      if (otherScheme.value != null) {
+        return ColorScheme.fromSeed(
+          seedColor: otherScheme.value!,
+          brightness: brightness,
+        );
       }
     }
+    return defaultScheme;
   }
 
   final scheme = getColorScheme();
@@ -97,7 +100,6 @@ ThemeData theme(
   return ThemeData(
     // These parameters will remain even after Material 3 lands.
     platform: iOS ? TargetPlatform.iOS : null,
-    applyElevationOverlayColor: true,
     fontFamily: 'Jakarta',
     splashFactory: getSplashFactory(),
     iconTheme: IconThemeData(color: scheme.onSurface),
@@ -111,20 +113,18 @@ ThemeData theme(
     ),
     visualDensity: VisualDensity.standard,
     useMaterial3: true,
-    colorScheme: scheme,
     brightness: brightness,
-    errorColor: scheme.error,
     // These parameters are here just to emulate some of the Material 3 changes that haven't landed yet into the framework.
     shadowColor: scheme.shadow,
     scaffoldBackgroundColor: scheme.surface,
-    backgroundColor: scheme.surface,
+    splashColor: scheme.onInverseSurface.withOpacity(0.5),
     // Backward compatibility
     listTileTheme: ListTileThemeData(
       textColor: scheme.onSurface,
       iconColor: scheme.onSurface,
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: scheme.surfaceVariant.withOpacity(0.9),
+      backgroundColor: scheme.surfaceVariant,
       actionTextColor: scheme.onSurfaceVariant,
       behavior: SnackBarBehavior.floating,
       contentTextStyle: TextStyle(
@@ -132,6 +132,8 @@ ThemeData theme(
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ),
-    toggleableActiveColor: scheme.primary,
+    colorScheme: scheme
+        .copyWith(background: scheme.surface)
+        .copyWith(error: scheme.error),
   );
 }

@@ -4,6 +4,7 @@ import 'package:allo/components/info.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/messages.dart';
+import 'package:animated_progress/animated_progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -99,7 +100,7 @@ class ChatMessagesList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showFab = useState(false);
-    final locales = context.locale;
+    final locales = context.loc;
     final streamList = useState<List<Message>?>(null);
     final error = useState<Object?>(null);
     final chatId = chat.id;
@@ -123,9 +124,9 @@ class ChatMessagesList extends HookConsumerWidget {
       return NotificationListener(
         onNotification: (notification) {
           if (notification is ScrollNotification) {
-            if (notification.metrics.pixels > 0.1 && showFab.value == false) {
+            if (notification.metrics.pixels > 100 && showFab.value == false) {
               showFab.value = true;
-            } else if (notification.metrics.pixels < 0.1 &&
+            } else if (notification.metrics.pixels < 10 &&
                 showFab.value == true) {
               showFab.value = false;
             }
@@ -197,7 +198,7 @@ class ChatMessagesList extends HookConsumerWidget {
                   SizeTransition(
                     axisAlignment: -1,
                     sizeFactor: CurvedAnimation(
-                      curve: Curves.easeInOutCirc,
+                      curve: Curves.fastOutSlowIn,
                       parent: animation,
                     ),
                     child: Bubble(
@@ -241,7 +242,7 @@ class ChatMessagesList extends HookConsumerWidget {
       );
     } else if (streamList.value == null) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: ProgressRing(),
       );
     } else {
       return Padding(

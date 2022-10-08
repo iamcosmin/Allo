@@ -1,8 +1,8 @@
-import 'package:allo/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 extension EnhancedContext on BuildContext {
-  S get locale => S.of(this);
+  AppLocalizations get loc => AppLocalizations.of(this);
   ThemeData get theme => Theme.of(this);
   TextTheme get textTheme => theme.textTheme;
   ColorScheme get colorScheme => Theme.of(this).colorScheme;

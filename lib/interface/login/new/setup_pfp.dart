@@ -17,8 +17,8 @@ class SetupProfilePicture extends HookWidget {
 
     return SetupPage(
       icon: Icons.landscape,
-      title: Text(context.locale.setupProfilePictureScreenTitle),
-      subtitle: Text(context.locale.setupProfilePictureScreenDescription),
+      title: Text(context.loc.setupProfilePictureScreenTitle),
+      subtitle: Text(context.loc.setupProfilePictureScreenDescription),
       body: [
         Column(
           children: [
@@ -31,7 +31,7 @@ class SetupProfilePicture extends HookWidget {
                   SizedBox(
                     height: 110,
                     width: 110,
-                    child: AnimatedCircularProgressIndicator(
+                    child: ProgressRing(
                       value: percentage.value,
                     ),
                   ),
@@ -44,7 +44,7 @@ class SetupProfilePicture extends HookWidget {
               ),
             ),
             ListTile(
-              title: Text(context.locale.uploadPicture),
+              title: Text(context.loc.uploadPicture),
               onTap: () async => await Core.auth.user.updateProfilePicture(
                 percentage: percentage,
                 context: context,

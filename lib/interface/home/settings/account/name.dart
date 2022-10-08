@@ -19,14 +19,14 @@ class ChangeNamePage extends HookConsumerWidget {
 
     void validateName(String name, ValueNotifier<String?> error) {
       if (name.isNotEmpty && !_nameReg.hasMatch(name)) {
-        error.value = context.locale.specialCharactersNotAllowed;
+        error.value = context.loc.specialCharactersNotAllowed;
       } else {
         error.value = null;
       }
     }
 
     void onSubmit() async {
-      final locales = context.locale;
+      final locales = context.loc;
       FocusScope.of(context).unfocus();
       firstNameError.value = null;
       secondNameError.value = null;
@@ -56,14 +56,14 @@ class ChangeNamePage extends HookConsumerWidget {
 
     return SetupPage(
       icon: Icons.person,
-      title: Text(context.locale.accountChangeNameTitle),
+      title: Text(context.loc.accountChangeNameTitle),
       body: [
         TextFormField(
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             errorText: firstNameError.value,
             errorStyle: const TextStyle(fontSize: 14),
-            labelText: context.locale.firstName,
+            labelText: context.loc.firstName,
             border: const OutlineInputBorder(),
           ),
           autofocus: true,
@@ -80,7 +80,7 @@ class ChangeNamePage extends HookConsumerWidget {
             errorText: secondNameError.value,
             errorStyle: const TextStyle(fontSize: 14),
             labelText:
-                '${context.locale.lastName} (${context.locale.optional.toLowerCase()})',
+                '${context.loc.lastName} (${context.loc.optional.toLowerCase()})',
             border: const OutlineInputBorder(),
           ),
           controller: secondNameController,
