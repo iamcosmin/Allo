@@ -114,6 +114,7 @@ ThemeData theme(
     visualDensity: VisualDensity.standard,
     useMaterial3: true,
     brightness: brightness,
+    applyElevationOverlayColor: true,
     // These parameters are here just to emulate some of the Material 3 changes that haven't landed yet into the framework.
     shadowColor: scheme.shadow,
     scaffoldBackgroundColor: scheme.surface,

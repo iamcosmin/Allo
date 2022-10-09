@@ -36,8 +36,9 @@ class PersonalisePage extends HookConsumerWidget {
     final animations = useSetting(ref, animationsPreference);
 
     bool customColorSchemeCompatible() {
-      if (ref.watch(corePaletteProvider).hasValue ||
-          ref.watch(accentColorProvider).hasValue) {
+      final corePalette = ref.read(corePaletteProvider);
+      final accentColor = ref.read(accentColorProvider);
+      if (corePalette.valueOrNull != null || accentColor.valueOrNull != null) {
         return true;
       }
       return false;
@@ -54,8 +55,8 @@ class PersonalisePage extends HookConsumerWidget {
               TileCard(
                 [
                   Tile(
-                    leading: const Icon(Icons.dark_mode_outlined),
-                    title: Text(context.loc.darkMode),
+                    leading: const Icon(Icons.brush_outlined),
+                    title: Text(context.loc.theme),
                     trailing: DropdownButton(
                       isDense: true,
                       borderRadius: BorderRadius.circular(20),
@@ -72,15 +73,15 @@ class PersonalisePage extends HookConsumerWidget {
                       items: [
                         DropdownMenuItem(
                           value: ThemeMode.light.toString(),
-                          child: const Text('Light'),
+                          child: Text(context.loc.light),
                         ),
                         DropdownMenuItem(
                           value: ThemeMode.dark.toString(),
-                          child: const Text('Dark'),
+                          child: Text(context.loc.dark),
                         ),
                         DropdownMenuItem(
                           value: ThemeMode.system.toString(),
-                          child: const Text('System'),
+                          child: Text(context.loc.system),
                         ),
                       ],
                     ),
@@ -150,13 +151,14 @@ class PersonalisePage extends HookConsumerWidget {
                     title: context.loc.animations,
                     preference: animations,
                   ),
-                  if (customColorSchemeCompatible()) ...[
-                    SettingTile(
-                      leading: const Icon(Icons.palette_outlined),
-                      title: context.loc.useSystemColor,
-                      preference: customAccent,
-                    ),
-                  ],
+                  SettingTile(
+                    leading: const Icon(Icons.palette_outlined),
+                    title: context.loc.useSystemColor,
+                    preference: customAccent,
+                    enabled: customColorSchemeCompatible(),
+                    disabledExplanation:
+                        'Your platform does not support this feature.',
+                  ),
                 ],
               ),
             ],

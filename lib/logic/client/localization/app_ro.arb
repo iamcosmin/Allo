@@ -148,5 +148,15 @@
   "back": "Înapoi",
   "finish": "Terminare",
   "verifyYourIdentity": "Verifică-ți identitatea",
-  "startingApp": "Pornește Allo..."
+  "startingApp": "Pornește Allo...",
+  "browser": "Browser",
+  "agent": "Agent",
+  "platform": "Platformă",
+  "brand": "Brand",
+  "model": "Model",
+  "device": "Dispozitiv",
+  "sdk": "SDK",
+  "light": "Luminos",
+  "dark": "Întunecat",
+  "system": "Sistem"
 }

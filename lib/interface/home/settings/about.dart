@@ -81,50 +81,50 @@ class AboutPage extends HookConsumerWidget {
                   [
                     if (kIsWeb) ...[
                       Tile(
-                        title: const Text('Browser'),
+                        title: Text(context.loc.browser),
                         trailing: Text(
                           deviceInfo['browserName'].toString().split('.')[1],
                         ),
                       ),
                       Tile(
-                        title: const Text('Browser agent'),
+                        title: Text(context.loc.agent),
                         subtitle: Text(
                           deviceInfo['userAgent'].toString(),
                         ),
                       ),
                       Tile(
-                        title: const Text('Platform'),
+                        title: Text(context.loc.platform),
                         trailing: Text(
                           deviceInfo['platform'].toString(),
                         ),
                       )
                     ] else if (Platform.isAndroid) ...[
                       Tile(
-                        title: const Text('Model'),
+                        title: Text(context.loc.model),
                         trailing: Text(
                           deviceInfo['model'].toString(),
                         ),
                       ),
                       Tile(
-                        title: const Text('Brand'),
+                        title: Text(context.loc.brand),
                         trailing: Text(
                           deviceInfo['brand'].toString(),
                         ),
                       ),
                       Tile(
-                        title: const Text('Device'),
+                        title: Text(context.loc.device),
                         trailing: Text(
                           deviceInfo['device'].toString(),
                         ),
                       ),
                       Tile(
-                        title: const Text('Version'),
+                        title: Text(context.loc.version),
                         trailing: Text(
                           deviceInfo['version']['release'].toString(),
                         ),
                       ),
                       Tile(
-                        title: const Text('SDK'),
+                        title: Text(context.loc.sdk),
                         trailing: Text(
                           deviceInfo['version']['sdkInt'].toString(),
                         ),

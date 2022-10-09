@@ -1,4 +1,4 @@
-import 'package:allo/components/chats/chat_messages_list.dart';
+import 'package:allo/components/chat/chat_messages_list.dart';
 import 'package:allo/logic/backend/chat/messages.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';

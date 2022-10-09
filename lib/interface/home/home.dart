@@ -1,4 +1,4 @@
-import 'package:allo/components/chats/chat_tile.dart';
+import 'package:allo/components/chat/chat_tile.dart';
 import 'package:allo/components/info.dart';
 import 'package:allo/components/shimmer.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';

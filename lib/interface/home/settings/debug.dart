@@ -10,6 +10,7 @@ import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:animated_progress/animated_progress.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,6 +18,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../components/material3/tile.dart';
 import '../../../components/settings_tile.dart';
 import '../../../components/slivers/sliver_scaffold.dart';
+
+const vapid =
+    'BO7JSk4Qa_IVmG5QkFbpZEsEVw6ALNxig9fBudpuG9ZgXhnmR-RuxgUiPWjQXX5EMwoB50H8ZN8fHfsBOqKD_Vo';
 
 class DebugPage extends HookConsumerWidget {
   const DebugPage({super.key});
@@ -27,7 +31,13 @@ class DebugPage extends HookConsumerWidget {
     final editMessage = useSetting(ref, editMessageDebug);
     final members = useSetting(ref, membersDebug);
     final iOSMode = useSetting(ref, emulateIOSBehaviour);
-    final notifId = useFuture(FirebaseMessaging.instance.getToken());
+    final gradientMessages = useSetting(ref, gradientMessageBubble);
+    AsyncSnapshot<String?>? notifId;
+    if (!kIsWeb) {
+      notifId = useFuture(
+        FirebaseMessaging.instance.getToken(),
+      );
+    }
     return SScaffold(
       topAppBar: LargeTopAppBar(
         title: Text(context.loc.internalMenu),
@@ -44,21 +54,23 @@ class DebugPage extends HookConsumerWidget {
                     style: TextStyle(color: context.colorScheme.error),
                   ),
                 ),
-                if (notifId.hasData) ...[
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: SelectableText(
-                      'ID: ${notifId.data}',
-                      style: TextStyle(
-                        color: context.colorScheme.onSurfaceVariant,
+                if (notifId != null) ...[
+                  if (!notifId.hasData) ...[
+                    const Padding(
+                      padding: EdgeInsets.all(15),
+                      child: ProgressBar(),
+                    ),
+                  ] else ...[
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: SelectableText(
+                        'ID: ${notifId.data.toString()}',
+                        style: TextStyle(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                  ),
-                ] else ...[
-                  const Padding(
-                    padding: EdgeInsets.all(15),
-                    child: ProgressBar(),
-                  ),
+                  ],
                 ],
               ]),
               const TileHeading('Experiments'),
@@ -134,6 +146,13 @@ class DebugPage extends HookConsumerWidget {
                   child: SettingTile(
                     title: 'Cupertino behaviour',
                     preference: iOSMode,
+                  ),
+                ),
+                InkWell(
+                  onLongPress: () => gradientMessages.delete(context),
+                  child: SettingTile(
+                    title: 'Gradient Message Bubbles',
+                    preference: gradientMessages,
                   ),
                 ),
               ]),

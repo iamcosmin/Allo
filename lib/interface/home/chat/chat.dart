@@ -1,7 +1,7 @@
 import 'dart:developer';
 
-import 'package:allo/components/chats/chat_messages_list.dart';
-import 'package:allo/components/chats/message_input.dart';
+import 'package:allo/components/chat/chat_messages_list.dart';
+import 'package:allo/components/chat/message_input.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
@@ -18,8 +18,9 @@ import '../../../logic/client/theme/theme.dart';
 
 // TODO: Input modifiers as Providers.
 
+// TODO: Add autoDispose argument back.
 final currentNotificationState =
-    StateNotifierProvider.family.autoDispose<_NotificationState, bool?, String>(
+    StateNotifierProvider.family<_NotificationState, bool?, String>(
   (ref, arg) {
     return _NotificationState(ref: ref, id: arg);
   },
@@ -27,18 +28,27 @@ final currentNotificationState =
 
 class _NotificationState extends StateNotifier<bool?> {
   _NotificationState({required this.ref, required this.id}) : super(null) {
-    final _ =
-        ref.read(preferencesProvider).get('notifications_is_enabled__$id');
-    if (_ == null) {
-      FirebaseMessaging.instance.subscribeToTopic(id);
-      ref.read(preferencesProvider).set('notifications_is_enabled__$id', true);
-      state = true;
+    if (!kIsWeb) {
+      final notificationEnabled =
+          ref.read(preferencesProvider).get('notifications_is_enabled__$id');
+      if (notificationEnabled == null) {
+        FirebaseMessaging.instance.subscribeToTopic(id);
+        ref
+            .read(preferencesProvider)
+            .set('notifications_is_enabled__$id', true);
+        state = true;
+        log(
+          'Notifications enabled by default in state $id',
+          name: 'Notifications',
+        );
+      } else if (notificationEnabled is bool) {
+        state = notificationEnabled;
+      }
+    } else {
       log(
-        'Notifications enabled by default in state $id',
+        'Notifications are not supported on this platform.',
         name: 'Notifications',
       );
-    } else if (_ is bool) {
-      state = _;
     }
   }
   final Ref ref;
@@ -46,15 +56,22 @@ class _NotificationState extends StateNotifier<bool?> {
 
   // ignore: avoid_positional_boolean_parameters
   void toggleNotificationState(bool value) {
-    if (value == false) {
-      FirebaseMessaging.instance.unsubscribeFromTopic(id);
-    } else if (value == true) {
-      FirebaseMessaging.instance.subscribeToTopic(id);
-    }
-    ref.read(preferencesProvider).set('notifications_is_enabled__$id', value);
-    log('Notifications set to $value in state $id', name: 'Notifications');
+    if (!kIsWeb) {
+      if (value == false) {
+        FirebaseMessaging.instance.unsubscribeFromTopic(id);
+      } else if (value == true) {
+        FirebaseMessaging.instance.subscribeToTopic(id);
+      }
+      ref.read(preferencesProvider).set('notifications_is_enabled__$id', value);
+      log('Notifications set to $value in state $id', name: 'Notifications');
 
-    state = value;
+      state = value;
+    } else {
+      log(
+        'Notifications are not supported on this platform.',
+        name: 'Notifications',
+      );
+    }
   }
 }
 
@@ -66,9 +83,6 @@ class ChatScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final primaryScrollController = useScrollController();
-    if (!kIsWeb) {
-      ref.read(currentNotificationState(chat.id));
-    }
     final scheme = useState<ColorScheme>(
       ColorScheme.fromSeed(
         seedColor: Colors.blue,
@@ -79,6 +93,8 @@ class ChatScreen extends HookConsumerWidget {
     final brightness = Theme.of(context).brightness;
     useEffect(
       () {
+        ref.read(currentNotificationState(chat.id));
+
         Database.firestore.collection('chats').doc(chat.id).snapshots().listen(
           (event) {
             scheme.value = ColorScheme.fromSeed(

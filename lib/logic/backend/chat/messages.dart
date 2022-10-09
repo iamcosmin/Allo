@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../components/chats/message_input.dart';
+import '../../../components/chat/message_input.dart';
 
 class Messages {
   Messages({required this.chatId});

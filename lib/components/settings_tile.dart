@@ -34,6 +34,8 @@ class SettingTile extends HookConsumerWidget {
       return SwitchTile(
         leading: leading,
         title: Text(title),
+        disabled: !enabled,
+        subtitle: !enabled ? Text(disabledExplanation!) : null,
         value: preference!.setting,
         onChanged: preference!.update,
       );

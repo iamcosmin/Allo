@@ -13,6 +13,7 @@ class SwitchTile extends StatelessWidget {
     this.onChanged,
     this.disabledIcon,
     this.enabledIcon,
+    this.disabled = false,
     super.key,
   });
 
@@ -20,6 +21,7 @@ class SwitchTile extends StatelessWidget {
   final Widget? subtitle;
   final Widget? leading;
   final bool value;
+  final bool disabled;
   final IconData? disabledIcon;
   final IconData? enabledIcon;
   final void Function(bool)? onChanged;
@@ -30,12 +32,13 @@ class SwitchTile extends StatelessWidget {
       leading: leading,
       title: title,
       subtitle: subtitle,
-      onTap: () => onChanged?.call(!value),
+      disabled: disabled,
+      onTap: disabled ? null : () => onChanged?.call(!value),
       trailing: AdaptiveSwitch(
         disabledIcon: disabledIcon,
         enabledIcon: enabledIcon,
         value: value,
-        onChanged: onChanged,
+        onChanged: disabled ? null : onChanged,
       ),
     );
   }

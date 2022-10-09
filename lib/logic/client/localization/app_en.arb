@@ -150,5 +150,15 @@
   "back": "Back",
   "finish": "Finish",
   "verifyYourIdentity": "Verify your Identity",
-  "startingApp": "Starting Allo..."
+  "startingApp": "Starting Allo...",
+  "browser": "Browser",
+  "agent": "Agent",
+  "platform": "Platform",
+  "brand": "Brand",
+  "model": "Model",
+  "device": "Device",
+  "sdk": "SDK",
+  "light": "Light",
+  "dark": "Dark",
+  "system": "System"
 }

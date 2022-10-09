@@ -152,6 +152,12 @@ class ChatDetails extends HookConsumerWidget {
                   value: notificationState ?? false,
                   enabledIcon: Icons.notifications_active,
                   disabledIcon: Icons.notifications_off,
+                  disabled: notificationState == null,
+                  subtitle: notificationState != null
+                      ? null
+                      : const Text(
+                          'Notifications are not supported on this platform.',
+                        ),
                   onChanged: ref
                       .read(currentNotificationState(chat.id).notifier)
                       .toggleNotificationState,

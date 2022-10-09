@@ -1,5 +1,5 @@
-import 'package:allo/components/chats/message_bubble.dart';
-import 'package:allo/components/chats/message_input.dart';
+import 'package:allo/components/chat/message/bubble.dart';
+import 'package:allo/components/chat/message_input.dart';
 import 'package:allo/components/info.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
@@ -84,8 +84,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 //   }
 // }
 
+// TODO: Add autoDispose back.
 final animatedListKeyProvider =
-    StateProvider.autoDispose<GlobalKey<AnimatedListState>>((ref) {
+    StateProvider<GlobalKey<AnimatedListState>>((ref) {
   return GlobalKey<AnimatedListState>();
 });
 
@@ -202,7 +203,6 @@ class ChatMessagesList extends HookConsumerWidget {
                       parent: animation,
                     ),
                     child: Bubble(
-                      colorScheme: Theme.of(context).colorScheme,
                       chat: chat,
                       isNextSenderSame: isNextSenderSame,
                       isPreviousSenderSame: isPreviousSenderSame,

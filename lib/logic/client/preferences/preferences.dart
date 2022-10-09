@@ -26,3 +26,7 @@ final emulateIOSBehaviour = initSetting(
   'experimentalEmulateIOSBehaviour',
   defaultValue: false,
 );
+final gradientMessageBubble = initSetting(
+  'experimental_message_gradient_bubble',
+  defaultValue: false,
+);
