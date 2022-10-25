@@ -25,10 +25,9 @@ class AboutPage extends HookConsumerWidget {
     void b() {
       a.value++;
       if (a.value == 10) {
-        // TODO: Implement once https://github.com/flutter/flutter/issues/111961 is fixed.
-
-        // context.go('/settings/about/debug');
-        Navigation.forward(const DebugPage());
+        // context.push('/settings/about/debug');
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const DebugPage()));
         a.value = 0;
       }
     }

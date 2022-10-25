@@ -1,3 +1,4 @@
+import 'package:allo/logic/models/messages.dart';
 import 'package:allo/logic/models/types.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -9,11 +10,13 @@ abstract class Chat {
     required this.id,
     required this.picture,
     required this.memberUids,
+    required this.lastMessage,
   });
   final String title;
   final String id;
   final String picture;
   final List<dynamic> memberUids;
+  final Message? lastMessage;
 
   static ChatType getType(Chat chat) {
     switch (chat.runtimeType) {
@@ -33,6 +36,7 @@ class UnsupportedChat extends Chat {
     super.id = '',
     super.picture = '',
     super.memberUids = const [],
+    super.lastMessage,
   });
 }
 
@@ -42,13 +46,17 @@ class PrivateChat extends Chat {
     required this.userId,
     required super.id,
     required super.memberUids,
+    required super.lastMessage,
   }) : super(
           title: name,
           picture: 'gs://allo-ms.appspot.com/profilePictures/$userId.png',
         );
   final String userId;
 
-  factory PrivateChat.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+  factory PrivateChat.fromDocumentSnapshot(
+    DocumentSnapshot snapshot, {
+    required Message? lastMessage,
+  }) {
     // TODO: Convert this chunk to support the new log.
     final data = snapshot.data();
     if (data != null && data is Map<String, dynamic>) {
@@ -74,6 +82,7 @@ class PrivateChat extends Chat {
           userId: uid,
           id: snapshot.id,
           memberUids: memberUids,
+          lastMessage: lastMessage,
         );
       } else {
         throw Exception(
@@ -93,17 +102,22 @@ class GroupChat extends Chat {
     required super.title,
     required super.id,
     required super.memberUids,
+    required super.lastMessage,
   }) : super(
           picture: 'gs://allo-ms.appspot.com/chats/$id.png',
         );
 
-  factory GroupChat.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+  factory GroupChat.fromDocumentSnapshot(
+    DocumentSnapshot snapshot, {
+    required Message? lastMessage,
+  }) {
     final data = snapshot.data.call();
     if (data != null && data is Map) {
       return GroupChat(
         title: data['title'],
         id: snapshot.id,
         memberUids: data['participants'],
+        lastMessage: lastMessage,
       );
     } else {
       throw Exception(

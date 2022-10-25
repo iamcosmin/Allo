@@ -19,11 +19,6 @@ final setupButtonTheme = ButtonStyle(
   ),
 );
 
-typedef SetupViewChildBuilder = List<Widget> Function(
-  BuildContext context,
-  FutureOr<void> Function()? callback,
-);
-
 /// A class member that is mostly passed by [SetupView]'s [builder] method, to help keep the
 /// parameter passing clean and to add parameters on demand, based on requests, without modifying
 /// the method.
@@ -128,7 +123,7 @@ class SetupView extends HookConsumerWidget {
               ],
               Row(
                 children: [
-                  if (context.canPop()) ...[
+                  if (ModalRoute.of(context)?.canPop ?? false) ...[
                     Expanded(
                       child: FilledButton.tonalIcon(
                         onPressed: () => context.pop(),

@@ -1,6 +1,5 @@
+import 'package:allo/components/chat/message/swipe_action.dart';
 import 'package:allo/components/chat/message_input.dart';
-import 'package:allo/components/chat/swipe_to.dart';
-import 'package:allo/components/image_view.dart';
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/photo.dart';
 import 'package:allo/components/show_bottom_sheet.dart';
@@ -19,6 +18,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../logic/models/chat.dart';
+import '../../image_view.dart';
 import 'background.dart';
 
 const _kBubbleNormalRadius = Radius.circular(20);
@@ -246,296 +246,309 @@ class Bubble extends HookConsumerWidget {
 
     return Padding(
       padding: betweenBubblesPadding,
-      child: SwipeTo(
-        leftSwipeWidget: const _ReplyIcon(),
-        onLeftSwipe: () {
-          modifiers.value = ReplyInputModifier(
-            name: message.name,
-            message: messageBody(),
-            id: message.id,
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (showNameConditionsMet) ...[
-              Padding(
-                padding: const EdgeInsets.only(left: 55, bottom: 5),
-                child: Text(
-                  message.name,
-                  style: context.textTheme.bodySmall!.copyWith(
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: isNotCurrentUser
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.end,
+        children: [
+          Row(
+            mainAxisAlignment: isNotCurrentUser
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (showProfilePictureConditionsMet) ...[
+                PersonPicture(
+                  radius: 35,
+                  profilePicture: Core.auth.getProfilePicture(message.userId),
+                  initials: nameInitials,
                 ),
-              ),
-            ],
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: isNotCurrentUser
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.end,
-              children: [
-                if (showProfilePictureConditionsMet) ...[
-                  PersonPicture(
-                    radius: 35,
-                    profilePicture: Core.auth.getProfilePicture(message.userId),
-                    initials: nameInitials,
-                  ),
-                  const Padding(padding: EdgeInsets.only(left: 10)),
-                ] else if (Chat.getType(chat) == ChatType.private)
-                  ...[]
-                else ...[
-                  const Padding(padding: EdgeInsets.only(left: 45)),
-                ],
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: screenWidth / 1.3),
+                const Padding(padding: EdgeInsets.only(left: 10)),
+              ] else if (isNotCurrentUser && chat is GroupChat) ...[
+                const Padding(padding: EdgeInsets.only(left: 45)),
+              ],
+              Expanded(
+                child: SwipeAction(
+                  alignment: isNotCurrentUser
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
+                  action: const Icon(Icons.reply),
+                  callback: () {
+                    modifiers.value = ReplyInputModifier(
+                      name: message.name,
+                      message: messageBody(),
+                      id: message.id,
+                    );
+                  },
                   child: Column(
-                    crossAxisAlignment: isNotCurrentUser
-                        ? CrossAxisAlignment.start
-                        : CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: messageRadius,
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: InkWell(
-                            onTap: () {
-                              switch (message.runtimeType) {
-                                case TextMessage:
-                                  selected.value = !selected.value;
-                                  break;
-                                case ImageMessage:
-                                  Navigation.forward(
-                                    ImageView(
-                                      (message as ImageMessage).link,
-                                      colorScheme: context.colorScheme,
-                                    ),
-                                  );
-                                  break;
-                                case UnsupportedMessage:
-                                  break;
-                              }
-                            },
-                            onLongPress: () => _messageOptions(
-                              context,
-                              message.id,
-                              chat.id,
-                              messageBody(),
-                              ref,
-                              !isNotCurrentUser,
-                              message is ImageMessage,
-                              context.colorScheme,
-                            ),
-                            child: BubbleBackground(
-                              colors: bubbleColors,
-                              child: AnimatedContainer(
-                                padding: message is! ImageMessage
-                                    ? const EdgeInsets.all(9)
-                                    : EdgeInsets.zero,
-                                key: key,
-                                duration: const Duration(milliseconds: 250),
-                                child: DefaultTextStyle(
-                                  style: TextStyle(
-                                    color: messageBubbleForeground,
-                                    fontFamily: 'Jakarta',
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize:
-                                        context.textTheme.bodyMedium!.fontSize,
-                                  ),
-                                  child: Builder(
-                                    builder: (context) {
-                                      if (message is ImageMessage) {
-                                        return Container(
-                                          constraints: BoxConstraints(
-                                            maxWidth: screenWidth / 1.5,
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius: messageRadius,
-                                            child: Photo(
-                                              url: (message as ImageMessage)
-                                                  .link,
-                                            ),
+                      if (showNameConditionsMet) ...[_Name(message.name)],
+                      ConstrainedBox(
+                        constraints:
+                            BoxConstraints(maxWidth: screenWidth / 1.5),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: isNotCurrentUser
+                              ? CrossAxisAlignment.start
+                              : CrossAxisAlignment.end,
+                          children: [
+                            ClipRRect(
+                              borderRadius: messageRadius,
+                              child: Material(
+                                type: MaterialType.transparency,
+                                child: InkWell(
+                                  onTap: () {
+                                    switch (message.runtimeType) {
+                                      case TextMessage:
+                                        selected.value = !selected.value;
+                                        break;
+                                      case ImageMessage:
+                                        Navigation.forward(
+                                          ImageView(
+                                            (message as ImageMessage).link,
+                                            colorScheme: context.colorScheme,
                                           ),
                                         );
-                                      } else {
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(
-                                              height: message.reply == null
-                                                  ? 0
-                                                  : 46,
-                                              child: message.reply == null
-                                                  ? null
-                                                  : Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                        top: 5,
-                                                        bottom: 5,
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color:
-                                                                  messageBubbleForeground,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                2,
-                                                              ),
-                                                            ),
-                                                            height: 32,
-                                                            width: 2,
-                                                          ),
-                                                          const Padding(
+                                        break;
+                                      case UnsupportedMessage:
+                                        break;
+                                    }
+                                  },
+                                  onLongPress: () => _messageOptions(
+                                    context,
+                                    message.id,
+                                    chat.id,
+                                    messageBody(),
+                                    ref,
+                                    !isNotCurrentUser,
+                                    message is ImageMessage,
+                                    context.colorScheme,
+                                  ),
+                                  child: BubbleBackground(
+                                    colors: bubbleColors,
+                                    child: AnimatedContainer(
+                                      padding: message is! ImageMessage
+                                          ? const EdgeInsets.all(9)
+                                          : EdgeInsets.zero,
+                                      key: key,
+                                      duration:
+                                          const Duration(milliseconds: 250),
+                                      child: DefaultTextStyle(
+                                        style: TextStyle(
+                                          color: messageBubbleForeground,
+                                          fontFamily: 'Jakarta',
+                                          overflow: TextOverflow.ellipsis,
+                                          fontSize: context
+                                              .textTheme.bodyMedium!.fontSize,
+                                        ),
+                                        child: Builder(
+                                          builder: (context) {
+                                            if (message is ImageMessage) {
+                                              return Container(
+                                                constraints: BoxConstraints(
+                                                  maxWidth: screenWidth / 1.5,
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius: messageRadius,
+                                                  child: Photo(
+                                                    url: (message
+                                                            as ImageMessage)
+                                                        .link,
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              return Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    height:
+                                                        message.reply == null
+                                                            ? 0
+                                                            : 46,
+                                                    child: message.reply == null
+                                                        ? null
+                                                        : Padding(
                                                             padding:
-                                                                EdgeInsets.only(
-                                                              right: 10,
+                                                                const EdgeInsets
+                                                                    .only(
+                                                              top: 5,
+                                                              bottom: 5,
                                                             ),
-                                                          ),
-                                                          Flexible(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
+                                                            child: Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
                                                               children: [
-                                                                Text(
-                                                                  message.reply
-                                                                          ?.name ??
-                                                                      '',
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color:
+                                                                        messageBubbleForeground,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(
+                                                                      2,
+                                                                    ),
+                                                                  ),
+                                                                  height: 32,
+                                                                  width: 2,
+                                                                ),
+                                                                const Padding(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .only(
+                                                                    right: 10,
                                                                   ),
                                                                 ),
-                                                                Text(
-                                                                  message.reply
-                                                                          ?.description
-                                                                          .replaceAll(
-                                                                        '\n',
-                                                                        ' ',
-                                                                      ) ??
-                                                                      '',
-                                                                ),
+                                                                Flexible(
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                        message.reply?.name ??
+                                                                            '',
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        message.reply?.description.replaceAll(
+                                                                              '\n',
+                                                                              ' ',
+                                                                            ) ??
+                                                                            '',
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                )
                                                               ],
                                                             ),
-                                                          )
-                                                        ],
-                                                      ),
+                                                          ),
+                                                  ),
+                                                  Linkify(
+                                                    text: messageBody(),
+                                                    onOpen: (link) async {
+                                                      final uri =
+                                                          Uri.parse(link.url);
+                                                      if (await canLaunchUrl(
+                                                        uri,
+                                                      )) {
+                                                        await launchUrl(
+                                                          uri,
+                                                          mode: LaunchMode
+                                                              .externalApplication,
+                                                        );
+                                                      } else {
+                                                        throw 'Could not launch $link';
+                                                      }
+                                                    },
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          regexEmoji.hasMatch(
+                                                        messageBody(),
+                                                      )
+                                                              ? 30
+                                                              : context
+                                                                  .textTheme
+                                                                  .bodyMedium!
+                                                                  .fontSize,
+                                                      color:
+                                                          messageBubbleForeground,
                                                     ),
-                                            ),
-                                            Linkify(
-                                              text: messageBody(),
-                                              onOpen: (link) async {
-                                                final uri = Uri.parse(link.url);
-                                                if (await canLaunchUrl(uri)) {
-                                                  await launchUrl(
-                                                    uri,
-                                                    mode: LaunchMode
-                                                        .externalApplication,
-                                                  );
-                                                } else {
-                                                  throw 'Could not launch $link';
-                                                }
-                                              },
-                                              style: TextStyle(
-                                                fontSize: regexEmoji
-                                                        .hasMatch(messageBody())
-                                                    ? 30
-                                                    : context.textTheme
-                                                        .bodyMedium!.fontSize,
-                                                color: messageBubbleForeground,
-                                              ),
-                                              linkStyle: TextStyle(
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                fontWeight: FontWeight.w600,
-                                                color: messageBubbleForeground,
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      }
-                                    },
+                                                    linkStyle: TextStyle(
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color:
+                                                          messageBubbleForeground,
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
-                        curve: Motion.animation.emphasized,
-                        padding: const EdgeInsets.only(left: 10, right: 10),
-                        height: selected.value || showReadIndicator ? 20 : 0,
-                        child: Row(
-                          mainAxisAlignment: isNotCurrentUser
-                              ? MainAxisAlignment.start
-                              : MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              !isNotCurrentUser
-                                  ? (message.read
-                                      ? context.loc.read
-                                      : context.loc.sent)
-                                  : context.loc.received,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: context.colorScheme.onSurface,
-                                fontWeight: FontWeight.bold,
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 150),
+                              curve: Motion.animation.emphasized,
+                              padding:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              height:
+                                  selected.value || showReadIndicator ? 20 : 0,
+                              child: Row(
+                                mainAxisAlignment: isNotCurrentUser
+                                    ? MainAxisAlignment.start
+                                    : MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    !isNotCurrentUser
+                                        ? (message.read
+                                            ? context.loc.read
+                                            : context.loc.sent)
+                                        : context.loc.received,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: context.colorScheme.onSurface,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 3),
+                                  ),
+                                  Text(
+                                    DateFormat.Hm()
+                                        .format(message.timestamp.toDate()),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: context.colorScheme.onSurface,
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            const Padding(padding: EdgeInsets.only(left: 3)),
-                            Text(
-                              DateFormat.Hm()
-                                  .format(message.timestamp.toDate()),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: context.colorScheme.onSurface,
-                              ),
-                            )
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-class _ReplyIcon extends StatelessWidget {
-  const _ReplyIcon();
+class _Name extends StatelessWidget {
+  const _Name(this.name);
+
+  final String name;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: context.colorScheme.surfaceVariant,
-          shape: BoxShape.circle,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: Icon(
-            Icons.reply_rounded,
-            color: context.colorScheme.onSurfaceVariant,
-            size: 24,
-          ),
+      padding: const EdgeInsets.fromLTRB(10, 0, 0, 5),
+      child: Text(
+        name,
+        style: context.textTheme.bodySmall!.copyWith(
+          color: context.colorScheme.onSurfaceVariant,
         ),
       ),
     );

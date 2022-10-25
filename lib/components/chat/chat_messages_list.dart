@@ -84,9 +84,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 //   }
 // }
 
-// TODO: Add autoDispose back.
 final animatedListKeyProvider =
-    StateProvider<GlobalKey<AnimatedListState>>((ref) {
+    StateProvider.autoDispose<GlobalKey<AnimatedListState>>((ref) {
   return GlobalKey<AnimatedListState>();
 });
 

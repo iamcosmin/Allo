@@ -2,8 +2,11 @@ import 'package:allo/logic/backend/chat/chat.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
 import 'package:allo/logic/models/types.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../models/messages.dart';
 
 class ChatsLogic {
   ChatsLogic();
@@ -74,6 +77,26 @@ class ChatsLogic {
     return Core.chats.getChatsList();
   });
 
+  @Deprecated('Yes')
+  Future<Message?> getLastMessage(String chatId) async {
+    final query = await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('time', descending: true)
+        .limit(1)
+        .get();
+    if (query.docs.length > 1) {
+      throw Exception(
+        'Limitations imply that there should be only one document returned from the query.',
+      );
+    }
+    return Message.get(
+      documentSnapshot: query.docs[0],
+      replyData: null,
+    );
+  }
+
   Future<List<Chat>> getChatsList() async {
     final currentUid = Core.auth.user.userId;
     final chats = <Chat>[];
@@ -87,6 +110,8 @@ class ChatsLogic {
     if (rawChats.docs.isNotEmpty) {
       for (final rawChat in rawChats.docs) {
         final rawChatInfo = rawChat.data();
+        // final lastMessage = await getLastMessage(rawChat.id);
+        const lastMessage = null;
         final chatType = ChatType.values.firstWhere(
           (element) => element.name == rawChatInfo['type'],
         );
@@ -97,12 +122,22 @@ class ChatsLogic {
               final memberUid = member['uid'];
 
               if (memberUid != null && memberUid != currentUid) {
-                chats.add(PrivateChat.fromDocumentSnapshot(rawChat));
+                chats.add(
+                  PrivateChat.fromDocumentSnapshot(
+                    rawChat,
+                    lastMessage: lastMessage,
+                  ),
+                );
               }
             }
             break;
           case ChatType.group:
-            chats.add(GroupChat.fromDocumentSnapshot(rawChat));
+            chats.add(
+              GroupChat.fromDocumentSnapshot(
+                rawChat,
+                lastMessage: lastMessage,
+              ),
+            );
             break;
           case ChatType.unsupported:
             break;

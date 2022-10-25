@@ -18,9 +18,8 @@ import '../../../logic/client/theme/theme.dart';
 
 // TODO: Input modifiers as Providers.
 
-// TODO: Add autoDispose argument back.
 final currentNotificationState =
-    StateNotifierProvider.family<_NotificationState, bool?, String>(
+    StateNotifierProvider.autoDispose.family<_NotificationState, bool?, String>(
   (ref, arg) {
     return _NotificationState(ref: ref, id: arg);
   },
@@ -194,10 +193,15 @@ class ChatScreen extends HookConsumerWidget {
                   ),
                 ],
                 title: InkWell(
-                  onTap: () =>
-                      // TODO: Implement once https://github.com/flutter/flutter/issues/111961 is fixed.
-                      // context.go('/chat/${chat.id}/details', extra: chat),
-                      Navigation.forward(ChatDetails(chat: chat)),
+                  onTap: () {
+                    Navigation.forward(
+                      ChatDetails(chat: chat),
+                    );
+                    //   context.go(
+                    //   '/chat/${chat.id}/details',
+                    //   extra: chat,
+                    // );
+                  },
                   child: Column(
                     children: [
                       Text(

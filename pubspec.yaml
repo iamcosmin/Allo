@@ -1,7 +1,7 @@
 name: allo
 description: Chat app
 publish_to: 'none'
-version: 1.3.5+325
+version: 1.3.5+328
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -43,11 +43,13 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
   snap_scroll_physics: ^0.0.1+3
   just_audio: ^0.9.29
-  go_router: ^5.0.5
+  go_router: ^5.1.1
+  stack_trace: ^1.10.0
   # logger: ^1.1.0
   # logger_flutter: ^0.7.1
 
 dev_dependencies:
+  dart_code_metrics: ^4.21.2
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter

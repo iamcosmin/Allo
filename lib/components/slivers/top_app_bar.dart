@@ -24,7 +24,7 @@ abstract class TopAppBar extends StatelessWidget {
 }
 
 Widget backButton(BuildContext context) {
-  if (ModalRoute.of(context)!.canPop) {
+  if (ModalRoute.of(context)?.canPop ?? false) {
     return const Padding(
       padding: EdgeInsets.only(top: 10),
       child: Align(
@@ -203,13 +203,9 @@ class _M3FlexibleSpaceBar extends StatelessWidget {
     final expandedTitleOpacity = (settings.currentExtent - settings.minExtent) /
         (settings.maxExtent - settings.minExtent);
     // Explanation of the formula. This formula is the complete opposite of the formula
-    // above. With trial and error, I discovered that, if inversing minExtent and maxExtent
-    // substraction, we will get an inversed operation. Adding 1 is just so the operation
-    // is positive.
-    final collapsedTitleOpacity =
-        ((settings.currentExtent - settings.minExtent) /
-                (settings.minExtent - settings.maxExtent)) +
-            1;
+    // above. Because the interval of opacity is 0 - 1, substracting the biggest value gives us
+    // the oposite.
+    final collapsedTitleOpacity = 1.0 - expandedTitleOpacity;
     // Explanation of the formula. In the native behavior, while scrolling, the collapsed title
     // as well as the backgroundColor of the collapsed space have the same gradual opacity changes.
     // So, I have written the elevationLevel in a way that it's completely linked to the collapsed

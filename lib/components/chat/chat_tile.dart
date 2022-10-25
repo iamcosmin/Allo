@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -9,6 +10,7 @@ class ChatTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.index,
+    this.transitionKey,
     this.onTap,
     super.key,
   });
@@ -16,6 +18,7 @@ class ChatTile extends StatelessWidget {
   final Widget title;
   final Widget subtitle;
   final int index;
+  final Key? transitionKey;
   final void Function()? onTap;
 
   @override
@@ -44,7 +47,35 @@ class ChatTile extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [title, const Space(0.1), subtitle],
+                        children: [
+                          title,
+                          const Space(0.1),
+                          PageTransitionSwitcher(
+                            layoutBuilder: (entries) {
+                              return Stack(
+                                children: entries,
+                              );
+                            },
+                            transitionBuilder: (
+                              child,
+                              primaryAnimation,
+                              secondaryAnimation,
+                            ) {
+                              return SharedAxisTransition(
+                                animation: primaryAnimation,
+                                secondaryAnimation: secondaryAnimation,
+                                fillColor: const Color(0x00000000),
+                                transitionType:
+                                    SharedAxisTransitionType.vertical,
+                                child: child,
+                              );
+                            },
+                            child: SizedBox(
+                              key: transitionKey,
+                              child: subtitle,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   ],

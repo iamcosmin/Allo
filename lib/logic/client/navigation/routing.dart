@@ -1,4 +1,3 @@
-import 'package:allo/components/space.dart';
 import 'package:allo/interface/home/chat/chat.dart';
 import 'package:allo/interface/home/home.dart';
 import 'package:allo/interface/home/navigation_view.dart';
@@ -8,7 +7,6 @@ import 'package:allo/interface/home/settings/account/account.dart';
 import 'package:allo/interface/home/settings/debug.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/experiments/create_chat.dart';
-import 'package:allo/interface/home/settings/debug/experiments/example.dart';
 import 'package:allo/interface/home/settings/debug/experiments/example_sliver.dart';
 import 'package:allo/interface/home/settings/debug/experiments/typingbubble.dart';
 import 'package:allo/interface/home/settings/debug/test_notifications.dart';
@@ -23,7 +21,6 @@ import 'package:allo/interface/verification.dart';
 import 'package:allo/logic/backend/setup/login.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/auth_state.dart';
-import 'package:animated_progress/animated_progress.dart';
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -38,8 +35,6 @@ final rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'Root Navigator Key');
 final _navbarNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'Navigation Bar Navigator Key');
-final workaroundNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'Workaroung Navigator Key');
 const _trustedEmails = ['i.am.cosmin.bicc@gmail.com', 'nutua29@gmail.com'];
 
 class Routes {
@@ -75,57 +70,27 @@ class NavigationBarPage extends CustomTransitionPage {
 final routing = Provider<GoRouter>(
   (ref) {
     final routes = <RouteBase>[
-      GoRoute(
-        path: '/loading',
-        builder: (context, state) {
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    context.loc.startingApp,
-                    style: context.textTheme.titleMedium!.copyWith(
-                      color: context.colorScheme.onSurface,
-                    ),
-                  ),
-                  const Space(0.5),
-                  const ProgressBar(),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
       ShellRoute(
         navigatorKey: _navbarNavigatorKey,
         builder: (context, state, child) {
           return NavigationView(
-            child,
             key: state.pageKey,
+            child: child,
           );
         },
         routes: [
           GoRoute(
-            path: '/',
-            redirect: (context, state) {
-              final authState = ref.read(Core.auth.stateProvider).value;
-              switch (authState) {
-                case AuthState.signedOut:
-                  return '/start';
-                case AuthState.emailNotVerified:
-                  return '/verification';
-                default:
-                  return null;
-              }
+            path: '/chats',
+            parentNavigatorKey: _navbarNavigatorKey,
+            pageBuilder: (context, state) {
+              return NavigationBarPage(
+                const Home(),
+                key: state.pageKey,
+              );
             },
-            pageBuilder: (context, state) => NavigationBarPage(
-              const Home(),
-              key: state.pageKey,
-            ),
             routes: [
               GoRoute(
-                path: 'chat/:id',
+                path: ':id',
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
                   if (state.extra! is Chat) {
@@ -145,7 +110,6 @@ final routing = Provider<GoRouter>(
                     name: Routes.chatDetails,
                     builder: (context, state) {
                       if (state.extra! is Chat) {
-                        // ignore: cast_nullable_to_non_nullable
                         return ChatDetails(
                           chat: state.extra! as Chat,
                         );
@@ -167,6 +131,7 @@ final routing = Provider<GoRouter>(
           ),
           GoRoute(
             path: '/settings',
+            parentNavigatorKey: _navbarNavigatorKey,
             pageBuilder: (context, state) => NavigationBarPage(
               const Settings(),
               key: state.pageKey,
@@ -175,8 +140,12 @@ final routing = Provider<GoRouter>(
               GoRoute(
                 path: 'account',
                 parentNavigatorKey: rootNavigatorKey,
-                builder: (context, state) {
-                  return const AccountSettingsPage();
+                pageBuilder: (context, state) {
+                  return MaterialPage(
+                    key: state.pageKey,
+                    name: 'Account',
+                    child: const AccountSettingsPage(),
+                  );
                 },
               ),
               GoRoute(
@@ -186,16 +155,24 @@ final routing = Provider<GoRouter>(
                 routes: [
                   GoRoute(
                     path: 'debug',
-                    builder: (context, state) => const DebugPage(),
+                    pageBuilder: (context, state) {
+                      return const MaterialPage(
+                        key: ValueKey('DEBUG PUSHED!'),
+                        child: DebugPage(
+                          key: ValueKey('HERE IS DEBUG!'),
+                        ),
+                        name: 'Debug',
+                      );
+                    },
                     redirect: (context, state) => _trustedEmails
                             .contains(FirebaseAuth.instance.currentUser?.email)
                         ? null
-                        : '/',
+                        : '/chats',
                     routes: [
-                      GoRoute(
-                        path: 'testapp',
-                        builder: (context, state) => const TestApp(),
-                      ),
+                      // GoRoute(
+                      //   path: 'testapp',
+                      //   builder: (context, state) => MyApp(),
+                      // ),
                       GoRoute(
                         path: 'typing',
                         builder: (context, state) => const ExampleIsTyping(),
@@ -229,17 +206,6 @@ final routing = Provider<GoRouter>(
       GoRoute(
         path: '/start',
         builder: (context, state) => const IntroPage(),
-        redirect: (context, state) {
-          final authState = ref.read(Core.auth.stateProvider).value;
-          switch (authState) {
-            case AuthState.signedIn:
-              return '/';
-            case AuthState.emailNotVerified:
-              return '/verification';
-            default:
-              return null;
-          }
-        },
         routes: [
           GoRoute(
             path: 'login',
@@ -290,7 +256,7 @@ final routing = Provider<GoRouter>(
       navigatorKey: rootNavigatorKey,
       refreshListenable: _RouterNotifier(ref),
       debugLogDiagnostics: kDebugMode ? true : false,
-      initialLocation: '/loading',
+      initialLocation: '/chats',
       routes: routes,
       redirect: (context, state) {
         final authState = ref.read(Core.auth.stateProvider);
@@ -303,14 +269,11 @@ final routing = Provider<GoRouter>(
             authState.value == AuthState.emailNotVerified) {
           return '/verification';
         }
-        if (!path.startsWith('/loading') && authState.value == null) {
-          return '/loading';
-        }
         if ((path.startsWith('/start') ||
                 path.startsWith('/verification') ||
                 path.startsWith('/loading')) &&
             authState.value == AuthState.signedIn) {
-          return '/';
+          return '/chats';
         }
         return null;
       },

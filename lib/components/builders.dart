@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-typedef AsyncSuccessData<T> = Widget Function(BuildContext context, T data);
-typedef AsyncErrorData = Widget? Function(BuildContext context, Object? error)?;
-
 class FutureWidget<T> extends StatelessWidget {
   const FutureWidget({
     required this.future,

@@ -7,14 +7,28 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class NavigationView extends HookConsumerWidget {
-  const NavigationView(this.child, {super.key});
+  const NavigationView({required this.child, super.key});
   final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Gets the index in the navigation bar of a location, based on whether it's a custom one or the current location the user
+    //  is located in.
+    int getLocationIndex({String? location}) {
+      location ??= GoRouter.of(context).location;
+      switch (location) {
+        case '/chats':
+          return 0;
+        case '/settings':
+          return 1;
+        default:
+          return -1;
+      }
+    }
+
     final labels = useSetting(ref, navBarLabelsPreference);
     final width = MediaQuery.of(context).size.width;
-    useAutomaticKeepAlive();
+    final selectedIndex = useState(getLocationIndex());
     NavigationRailLabelType? labelType() {
       if (!labels.setting && width < 1300) {
         return NavigationRailLabelType.all;
@@ -23,14 +37,16 @@ class NavigationView extends HookConsumerWidget {
       }
     }
 
-    final selectedIndex = GoRouter.of(context).location == '/' ? 0 : 1;
-
-    void onDestinationSelected(int i) {
-      if (i == 0) {
-        context.go('/');
-      }
-      if (i == 1) {
-        context.go('/settings');
+    void onDestinationSelected(int index) {
+      switch (index) {
+        case 0:
+          selectedIndex.value = 0;
+          context.go('/chats');
+          break;
+        case 1:
+          selectedIndex.value = 1;
+          context.go('/settings');
+          break;
       }
     }
 
@@ -55,7 +71,7 @@ class NavigationView extends HookConsumerWidget {
                   selectedIcon: const Icon(Icons.settings),
                 )
               ],
-              selectedIndex: selectedIndex,
+              selectedIndex: selectedIndex.value,
               onDestinationSelected: onDestinationSelected,
             ),
           ],
@@ -86,8 +102,8 @@ class NavigationView extends HookConsumerWidget {
                   selectedIcon: const Icon(Icons.settings),
                 ).unsplashable(context)
               ],
-              selectedIndex: selectedIndex,
               onDestinationSelected: onDestinationSelected,
+              selectedIndex: selectedIndex.value,
             )
           : null,
     );

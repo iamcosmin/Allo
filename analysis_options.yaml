@@ -1,5 +1,11 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  plugins:
+    - dart_code_metrics
+
+dart_code_metrics:
+
 linter: 
   rules:
    - omit_local_variable_types
@@ -36,7 +42,3 @@ linter:
    - use_enums
   #  - unnecessary_await_in_return - problems with Future<void>
   #  - prefer_expression_function_bodies
-
-analyzer:
-  exclude: 
-    - 'lib/generated/**'

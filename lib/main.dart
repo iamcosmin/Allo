@@ -4,20 +4,19 @@ import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/client/theme/theme.dart';
 import 'package:allo/logic/core.dart';
+import 'package:animated_progress/animated_progress.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-// ignore: depend_on_referenced_packages
-import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-// ignore: depend_on_referenced_packages
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
+
+import 'components/space.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Notifications.setupNotifications();
   await FirebaseRemoteConfig.instance.fetchAndActivate();
@@ -41,13 +40,14 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(context, ref) {
+    Notifications.ensureListenersActive();
+    final darkState = useSetting(ref, darkMode);
+    ref.watch(Core.auth.stateProvider);
     FlutterError.demangleStackTrace = (stack) {
       if (stack is stack_trace.Trace) return stack.vmTrace;
       if (stack is stack_trace.Chain) return stack.toTrace().vmTrace;
       return stack;
     };
-    Notifications.ensureListenersActive();
-    final darkState = useSetting(ref, darkMode);
     return MaterialApp.router(
       title: 'Allo',
       debugShowCheckedModeBanner: false,
@@ -59,7 +59,40 @@ class App extends ConsumerWidget {
       darkTheme: theme(Brightness.dark, ref),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      routerConfig: ref.watch(routing),
+
+      /// ROUTER
+      routerConfig: ref.read(routing),
+      builder: (context, child) {
+        return ref.watch(Core.auth.stateProvider).when(
+          data: (data) {
+            return child!;
+          },
+          error: (error, stack) {
+            return Center(
+              child: Text(error.toString()),
+            );
+          },
+          loading: () {
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      context.loc.startingApp,
+                      style: context.textTheme.titleMedium!.copyWith(
+                        color: context.colorScheme.onSurface,
+                      ),
+                    ),
+                    const Space(0.5),
+                    const ProgressBar(),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

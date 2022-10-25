@@ -77,7 +77,7 @@ class Settings extends ConsumerWidget {
                   Tile(
                     leading: const Icon(Icons.info_outline),
                     title: Text(context.loc.about),
-                    onTap: () => context.go('/settings/about'),
+                    onTap: () => context.push('/settings/about'),
                   ),
                   Tile(
                     leading: const Icon(Icons.logout_rounded),

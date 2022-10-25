@@ -318,12 +318,14 @@ class _NotificationController {
         userId: payload['uid'] ?? '???',
         id: payload['chatId'] ?? '???',
         memberUids: [],
+        lastMessage: null,
       );
     } else if (chatType == ChatType.group) {
       return GroupChat(
         title: payload['chatName'] ?? '???',
         id: payload['chatId'] ?? '???',
         memberUids: [],
+        lastMessage: null,
       );
     } else {
       throw Exception('This chatType is not defined.');

@@ -14,13 +14,6 @@ extension ColorString on Color {
   }
 }
 
-extension MatchTheme on ThemeMode {
-  ThemeMode matchSetting(String setting) {
-    return ThemeMode.values
-        .firstWhere((element) => element.toString() == setting);
-  }
-}
-
 ThemeData theme(
   Brightness brightness,
   WidgetRef ref, {

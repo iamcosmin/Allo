@@ -14,6 +14,9 @@ The simple solution would be to irrigate the method with a BuildContext from the
 is not possible.
 ''';
 
+@Deprecated(
+  'After https://github.com/flutter/flutter/issues/111961 will be fixed, this class will be removed. Please use go_router.',
+)
 class Navigation {
   static final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -58,9 +61,6 @@ class Navigation {
 
   /// Navigates to a specific page provided into the method.
   /// You can optionally provide a context in case that you are navigating outside the key scope.
-  @Deprecated(
-    'This will be removed soon.',
-  )
   static void forward(
     Widget route, {
     BuildContext? context,
@@ -72,9 +72,6 @@ class Navigation {
   /// Leaves the other [Navigator] stack intact.
   ///
   /// You can optionally provide a context in case you are navigating outside the key scope.
-  @Deprecated(
-    'This is an outdated method of navigating. Please upgrade this code to support Navigator 2.0.',
-  )
   static void replaceCurrent(Widget route, {BuildContext? context}) {
     _determinePossibleNavigator(context).pushReplacement(_pageRoute(route));
   }

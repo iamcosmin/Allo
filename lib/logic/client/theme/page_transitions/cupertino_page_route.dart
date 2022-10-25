@@ -255,13 +255,6 @@ typedef SwipeableTransitionBuilder = Widget Function(
   Widget child,
 );
 
-extension BuildContextSwipeablePageRoute on BuildContext {
-  SwipeablePageRoute<T>? getSwipeablePageRoute<T>() {
-    final route = ModalRoute.of<T>(this);
-    return route is SwipeablePageRoute<T> ? route : null;
-  }
-}
-
 // Mostly copies and modified variations of the private widgets related to
 // [CupertinoPageRoute].
 

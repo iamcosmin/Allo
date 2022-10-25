@@ -1,8 +1,8 @@
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/components/tile_card.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
-import 'package:allo/interface/home/settings/debug/experiments/example.dart';
 import 'package:allo/interface/home/settings/debug/experiments/example_sliver.dart';
+import 'package:allo/interface/home/settings/debug/experiments/physics.dart';
 import 'package:allo/interface/home/settings/debug/experiments/typingbubble.dart';
 import 'package:allo/interface/home/settings/debug/test_notifications.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
@@ -10,9 +10,7 @@ import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:animated_progress/animated_progress.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../components/material3/tile.dart';
@@ -21,6 +19,10 @@ import '../../../components/slivers/sliver_scaffold.dart';
 
 const vapid =
     'BO7JSk4Qa_IVmG5QkFbpZEsEVw6ALNxig9fBudpuG9ZgXhnmR-RuxgUiPWjQXX5EMwoB50H8ZN8fHfsBOqKD_Vo';
+
+final notidProvider = FutureProvider<String?>((ref) {
+  return FirebaseMessaging.instance.getToken(vapidKey: vapid);
+});
 
 class DebugPage extends HookConsumerWidget {
   const DebugPage({super.key});
@@ -32,12 +34,7 @@ class DebugPage extends HookConsumerWidget {
     final members = useSetting(ref, membersDebug);
     final iOSMode = useSetting(ref, emulateIOSBehaviour);
     final gradientMessages = useSetting(ref, gradientMessageBubble);
-    AsyncSnapshot<String?>? notifId;
-    if (!kIsWeb) {
-      notifId = useFuture(
-        FirebaseMessaging.instance.getToken(),
-      );
-    }
+    final notId = ref.watch(notidProvider);
     return SScaffold(
       topAppBar: LargeTopAppBar(
         title: Text(context.loc.internalMenu),
@@ -54,24 +51,36 @@ class DebugPage extends HookConsumerWidget {
                     style: TextStyle(color: context.colorScheme.error),
                   ),
                 ),
-                if (notifId != null) ...[
-                  if (!notifId.hasData) ...[
-                    const Padding(
-                      padding: EdgeInsets.all(15),
-                      child: ProgressBar(),
-                    ),
-                  ] else ...[
-                    Padding(
+                notId.when(
+                  data: (data) {
+                    return Padding(
                       padding: const EdgeInsets.all(15),
                       child: SelectableText(
-                        'ID: ${notifId.data.toString()}',
+                        'ID: ${data.toString()}',
                         style: TextStyle(
                           color: context.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                    ),
-                  ],
-                ],
+                    );
+                  },
+                  error: (error, stack) {
+                    return Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: SelectableText(
+                        'ID: ${error.toString()}',
+                        style: TextStyle(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    );
+                  },
+                  loading: () {
+                    return const Padding(
+                      padding: EdgeInsets.all(15),
+                      child: ProgressBar(),
+                    );
+                  },
+                )
               ]),
               const TileHeading('Experiments'),
               TileCard([
@@ -79,7 +88,6 @@ class DebugPage extends HookConsumerWidget {
                   title: const Text('Debug Testing'),
                   onTap: () {
                     // context.go('/settings/about/debug/testapp');
-                    Navigation.forward(const TestApp());
                   },
                 ),
                 Tile(
@@ -109,6 +117,10 @@ class DebugPage extends HookConsumerWidget {
                     Navigation.forward(const TestNotificationsPage());
                     // context.go('/settings/about/debug/notifications');
                   },
+                ),
+                Tile(
+                  title: const Text('Physics Simulation'),
+                  onTap: () => Navigation.forward(const PhysicsCardDragDemo()),
                 ),
               ]),
               const TileHeading('A/B Testing'),

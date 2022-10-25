@@ -6,7 +6,8 @@ import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:allo/logic/models/messages.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -138,8 +139,40 @@ class Home extends HookConsumerWidget {
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           final chat = data[index];
+                          String getMessage() {
+                            final message = chat.lastMessage;
+                            if (message != null) {
+                              if (message is TextMessage) {
+                                return chat is GroupChat ||
+                                        message.userId !=
+                                            FirebaseAuth
+                                                .instance.currentUser?.uid
+                                    ? '${message.name}: ${message.text}'
+                                    : message.text;
+                              } else if (message is ImageMessage) {
+                                return chat is GroupChat ||
+                                        message.userId !=
+                                            FirebaseAuth
+                                                .instance.currentUser?.uid
+                                    ? '${message.name}: ${context.loc.image}'
+                                    : context.loc.image;
+                              } else {
+                                return chat is GroupChat ||
+                                        message.userId !=
+                                            FirebaseAuth
+                                                .instance.currentUser?.uid
+                                    ? '${message.name}: ${context.loc.unsupportedMessage}'
+                                    : context.loc.unsupportedMessage;
+                              }
+                            } else {
+                              return '${type(chat, context)} (${chat.id})';
+                            }
+                          }
+
                           return ChatTile(
                             index: index,
+                            key: ValueKey(chat.id),
+                            transitionKey: ValueKey(getMessage()),
                             title: Text(
                               chat.title,
                               style:
@@ -149,7 +182,8 @@ class Home extends HookConsumerWidget {
                               ),
                             ),
                             subtitle: Text(
-                              '${type(chat, context)} (${chat.id})',
+                              getMessage().replaceAll('\n', '  '),
+                              key: ValueKey(getMessage()),
                               style:
                                   context.theme.textTheme.labelLarge!.copyWith(
                                 color: context.colorScheme.outline,
@@ -163,7 +197,7 @@ class Home extends HookConsumerWidget {
                               ),
                             ),
                             onTap: () =>
-                                context.go('/chat/${chat.id}', extra: chat),
+                                context.go('/chats/${chat.id}', extra: chat),
                           );
                         },
                         childCount: data.length,
