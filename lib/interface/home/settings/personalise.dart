@@ -1,170 +1,39 @@
-import 'package:allo/components/settings_tile.dart';
-import 'package:allo/components/show_bottom_sheet.dart';
-import 'package:allo/components/slivers/top_app_bar.dart';
-import 'package:allo/logic/client/preferences/preferences.dart';
-import 'package:allo/logic/client/theme/theme.dart';
+import 'package:allo/generated/l10n.dart';
 import 'package:allo/logic/core.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' hide SliverAppBar;
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../components/material3/tile.dart';
-import '../../../components/slivers/sliver_scaffold.dart';
-import '../../../components/tile_card.dart';
-import '../../../logic/client/preferences/manager.dart';
-
-const colors = Colors.accents;
+import '../../../logic/preferences.dart';
 
 /// Personalisation preferences
-final navBarLabelsPreference =
-    initSetting('personalisation_nav_bar_labels', defaultValue: false);
-final customAccentPreference =
-    initSetting('custom_accent', defaultValue: false);
-final preferredColorPreference =
-    initSetting('accent_color', defaultValue: kDefaultBrandingColor.value);
-final animationsPreference = initSetting('animations', defaultValue: !kIsWeb);
+final navBarLabels = preference('personalisation_nav_bar_labels');
 
 class PersonalisePage extends HookConsumerWidget {
-  const PersonalisePage({super.key});
+  const PersonalisePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dark = useSetting(ref, darkMode);
-    final labels = useSetting(ref, navBarLabelsPreference);
-    final customAccent = useSetting(ref, customAccentPreference);
-    final themeColor = useSetting(ref, preferredColorPreference);
-    final animations = useSetting(ref, animationsPreference);
-
-    bool customColorSchemeCompatible() {
-      final corePalette = ref.read(corePaletteProvider);
-      final accentColor = ref.read(accentColorProvider);
-      if (corePalette.valueOrNull != null || accentColor.valueOrNull != null) {
-        return true;
-      }
-      return false;
-    }
-
-    return SScaffold(
-      topAppBar: LargeTopAppBar(
-        title: Text(context.loc.personalise),
+    final dark = usePreference(ref, darkMode);
+    final locales = S.of(context);
+    final labels = usePreference(ref, navBarLabels);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(locales.personalise),
       ),
-      slivers: [
-        SliverList(
-          delegate: SliverChildListDelegate.fixed(
-            [
-              TileCard(
-                [
-                  Tile(
-                    leading: const Icon(Icons.brush_outlined),
-                    title: Text(context.loc.theme),
-                    trailing: DropdownButton(
-                      isDense: true,
-                      borderRadius: BorderRadius.circular(20),
-                      elevation: 1,
-                      dropdownColor: ElevationOverlay.applySurfaceTint(
-                        Theme.of(context).colorScheme.surface,
-                        Theme.of(context).colorScheme.primary,
-                        1,
-                      ),
-                      value: dark.setting,
-                      onChanged: (value) {
-                        dark.update(value.toString());
-                      },
-                      items: [
-                        DropdownMenuItem(
-                          value: ThemeMode.light.toString(),
-                          child: Text(context.loc.light),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.dark.toString(),
-                          child: Text(context.loc.dark),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.system.toString(),
-                          child: Text(context.loc.system),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SettingTile(
-                    leading: const Icon(Icons.menu_open_outlined),
-                    title: context.loc.personaliseHideNavigationHints,
-                    preference: labels,
-                  ),
-                  SettingTile(
-                    leading: const Icon(Icons.format_color_fill_rounded),
-                    enabled: !customAccent.setting,
-                    disabledExplanation:
-                        context.loc.themeColorDisabledExplanation,
-                    title: context.loc.themeColor,
-                    onTap: () => showMagicBottomSheet(
-                      context: context,
-                      title: context.loc.themeColor,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: [
-                              for (var color in colors) ...[
-                                ClipOval(
-                                  child: InkWell(
-                                    onTap: () {
-                                      themeColor.update(color.value);
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Container(
-                                          height: 60,
-                                          width: 60,
-                                          color: color,
-                                        ),
-                                        if (color.value ==
-                                            themeColor.setting) ...[
-                                          Container(
-                                            height: 60,
-                                            width: 60,
-                                            color:
-                                                Colors.black.withOpacity(0.5),
-                                            child: const Icon(
-                                              Icons.check,
-                                              size: 40,
-                                            ),
-                                          )
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  SettingTile(
-                    leading: const Icon(Icons.animation),
-                    title: context.loc.animations,
-                    preference: animations,
-                  ),
-                  SettingTile(
-                    leading: const Icon(Icons.palette_outlined),
-                    title: context.loc.useSystemColor,
-                    preference: customAccent,
-                    enabled: customColorSchemeCompatible(),
-                    disabledExplanation:
-                        'Your platform does not support this feature.',
-                  ),
-                ],
-              ),
-            ],
+      body: ListView(
+        children: [
+          SwitchListTile.adaptive(
+            title: Text(locales.darkMode),
+            value: dark.preference,
+            onChanged: (value) => dark.switcher(ref, context),
           ),
-        )
-      ],
+          SwitchListTile.adaptive(
+            title: Text(locales.personaliseHideNavigationHints),
+            value: labels.preference,
+            onChanged: (value) => labels.switcher(ref, context),
+          ),
+        ],
+      ),
     );
   }
 }

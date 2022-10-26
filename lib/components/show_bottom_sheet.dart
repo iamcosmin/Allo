@@ -41,81 +41,75 @@ Future<dynamic> showMagicBottomSheet({
           maxChildSize: insets.maxChildSize,
           expand: false,
           builder: (context, controller) {
-            return SafeArea(
-              child: Column(
-                children: [
-                  const Padding(padding: EdgeInsets.only(top: 10)),
-                  Container(
-                    height: 5,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: colors.surfaceVariant,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+            return Column(
+              children: [
+                const Padding(padding: EdgeInsets.only(top: 10)),
+                Container(
+                  height: 5,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: colors.surfaceVariant,
+                    borderRadius: BorderRadius.circular(5),
                   ),
-                  Container(
-                    padding: const EdgeInsets.only(top: 15, bottom: 20),
-                    child: Text(
-                      title,
-                      style: TextStyle(
+                ),
+                Container(
+                  padding: const EdgeInsets.only(top: 15, bottom: 20),
+                  child: Text(
+                    title,
+                    style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
-                        color: colors.onSurface,
-                      ),
+                        color: colors.onSurface),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => children[index],
+                      itemCount: children.length,
+                      controller: controller,
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) => children[index],
-                        itemCount: children.length,
-                        controller: controller,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         );
       } else {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Padding(padding: EdgeInsets.only(top: 10)),
-              Container(
-                height: 5,
-                width: 50,
-                decoration: BoxDecoration(
-                  color: colors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(5),
-                ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(padding: EdgeInsets.only(top: 10)),
+            Container(
+              height: 5,
+              width: 50,
+              decoration: BoxDecoration(
+                color: colors.surfaceVariant,
+                borderRadius: BorderRadius.circular(5),
               ),
-              Container(
-                padding: const EdgeInsets.only(top: 15, bottom: 20),
-                child: Text(
-                  title,
-                  style: TextStyle(
+            ),
+            Container(
+              padding: const EdgeInsets.only(top: 15, bottom: 20),
+              child: Text(
+                title,
+                style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: colors.onSurface,
-                  ),
-                ),
+                    color: colors.onSurface),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Column(
-                  children: children,
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Column(
+                children: children,
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 10),
-              ),
-            ],
-          ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 10),
+            ),
+          ],
         );
       }
     },

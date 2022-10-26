@@ -1,63 +1,9 @@
-name: Release Master
+name: Build beta
 
 on: 
   push: 
    branches:
     - beta
-jobs:
-  build-release:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup - Checkout
-      uses: actions/checkout@v3
-    - name: Setup - Java
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'microsoft'
-    - name: Setup - Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: 'beta'
-    - name: Setup - Signing
-      run: |
-           cd android/
-           echo "${{ secrets.KEYSTORE }}" > release.jks.asc
-           gpg -d --passphrase "${{ secrets.PASS_PHRASE }}" --batch release.jks.asc > app/release.jks
-           echo "${{ secrets.KEYSTORE_PASS }}" > key.properties
-           cd ..
-    - name: Web - Build
-      run: |
-          flutter build web
-    - name: Web - Deploy
-      uses: FirebaseExtended/action-hosting-deploy@v0
-      with:
-        repoToken: '${{ secrets.GITHUB_TOKEN }}'
-        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALLO_MS }}'
-        projectId: allo-ms
-        channelId: live
-        target: beta
-      env:
-        FIREBASE_CLI_PREVIEWS: hostingchannels
-    - name: Play Store - Build
-      run: | 
-          flutter build appbundle --flavor prod
-    - name: Play Store - Release
-      uses: r0adkll/upload-google-play@v1
-      with: 
-        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
-        packageName: com.relays.messenger
-        releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
-        track: alpha
-        status: completed
-        whatsNewDirectory: distribution
-    - name: Publish release notes
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
-        token: ${{ secrets.TELEGRAM_BOT_ID }}
-        format: markdown
-        message: "beta ${{ github.event.head_commit.message }}\n\n*Actualizarea este disponibilă pe allobeta.web.app și va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți testerii beta din Magazin Play.*"
 
 jobs:
   build-android:

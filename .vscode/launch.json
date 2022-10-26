@@ -5,27 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Allo Profile",
+            "name": "Allo",
             "request": "launch",
             "type": "dart",
             "args": [
                 "--web-port=1000",
-                "--flavor=dev",
-                "--profile"
-            ]
-        },
-        {
-            "name": "Allo Debug",
-            "request": "launch",
-            "type": "dart",
-            "args": [
                 "--flavor=dev"
             ]
-        },
-        {
-            "name": "Allo Attach",
-            "request": "attach",
-            "type": "dart",
         }
     ]
 }

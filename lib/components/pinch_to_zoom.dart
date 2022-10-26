@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_null_aware_method_calls
-
 import 'package:flutter/material.dart';
 
 class PinchZoom extends StatefulWidget {
@@ -25,20 +23,20 @@ class PinchZoom extends StatefulWidget {
   /// * [onZoomStart] called when the widget goes to its zoomed state.
   ///
   /// * [onZoomEnd] called when the widget is back to its idle state.
-  const PinchZoom({
-    required this.child,
-    super.key,
-    this.resetDuration = const Duration(milliseconds: 100),
-    // This default maxScale value is eyeballed as reasonable limit for common
-    // use cases.
-    this.maxScale = 3.0,
-    this.zoomEnabled = true,
-    this.onZoomStart,
-    this.onZoomEnd,
-  });
+  const PinchZoom(
+      {Key? key,
+      required this.child,
+      this.resetDuration = const Duration(milliseconds: 100),
+      // This default maxScale value is eyeballed as reasonable limit for common
+      // use cases.
+      this.maxScale = 3.0,
+      this.zoomEnabled = true,
+      this.onZoomStart,
+      this.onZoomEnd})
+      : super(key: key);
 
   @override
-  State<PinchZoom> createState() => _PinchZoomState();
+  _PinchZoomState createState() => _PinchZoomState();
 }
 
 class _PinchZoomState extends State<PinchZoom>
@@ -55,6 +53,7 @@ class _PinchZoomState extends State<PinchZoom>
       height: double.maxFinite,
       width: double.maxFinite,
       child: InteractiveViewer(
+        child: widget.child,
         scaleEnabled: widget.zoomEnabled,
         maxScale: widget.maxScale,
         panEnabled: false,
@@ -71,7 +70,6 @@ class _PinchZoomState extends State<PinchZoom>
             : null,
         onInteractionEnd: (_) => _animateResetInitialize(),
         transformationController: _transformationController,
-        child: widget.child,
       ),
     );
   }
