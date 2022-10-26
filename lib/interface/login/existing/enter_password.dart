@@ -1,88 +1,105 @@
-import 'package:allo/components/oobe_page.dart';
-import 'package:allo/generated/l10n.dart';
+import 'package:allo/components/setup_view.dart';
+import 'package:allo/components/space.dart';
+import 'package:allo/logic/backend/setup/login.dart';
 import 'package:allo/logic/core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class EnterPassword extends HookWidget {
-  final String email;
-  const EnterPassword({required this.email, Key? key}) : super(key: key);
+class EnterPassword extends HookConsumerWidget {
+  const EnterPassword({super.key});
   @override
-  Widget build(BuildContext context) {
-    final error = useState('');
+  Widget build(BuildContext context, WidgetRef ref) {
+    final error = useState<String?>(null);
     final obscure = useState(true);
+    final focusNode = useFocusNode();
+    final login = ref.watch(loginState.notifier);
+    final state = ref.watch(loginState);
     final controller = useTextEditingController();
-    final locales = S.of(context);
-    return SetupPage(
-      alignment: CrossAxisAlignment.start,
-      header: [
-        Text(
-          '${locales.welcomeBack}, ',
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          '$email!',
-          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-        ),
-        Text(
-          locales.enterPasswordDescription,
-          style: const TextStyle(fontSize: 17, color: Colors.grey),
-        ),
-      ],
-      body: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: TextFormField(
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(10),
-              errorText: error.value == '' ? null : error.value,
-              errorStyle: const TextStyle(fontSize: 14),
-              labelText: locales.password,
-              border: const OutlineInputBorder(),
-              suffix: InkWell(
-                onTap: () {
-                  if (obscure.value) {
-                    obscure.value = false;
-                  } else {
-                    obscure.value = true;
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: Icon(
-                    obscure.value ? Icons.visibility_off : Icons.visibility,
-                  ),
+
+    return SetupView(
+      icon: Icons.password,
+      title: Text('${context.loc.welcomeBack}.'),
+      description: Text(context.loc.enterPasswordDescription),
+      action: () async {
+        try {
+          await login.login(controller.text);
+        } on FirebaseAuthException catch (e) {
+          switch (e.code) {
+            case 'user-disabled':
+              error.value = context.loc.errorUserDisabled;
+              break;
+            case 'wrong-password':
+              error.value = context.loc.errorWrongPassword;
+              break;
+            case 'too-many-requests':
+              error.value = context.loc.errorTooManyRequests;
+              break;
+            default:
+              error.value = context.loc.errorUnknown;
+              break;
+          }
+          focusNode.requestFocus();
+        } catch (e) {
+          error.value = e.toString();
+          focusNode.requestFocus();
+        }
+      },
+      builder: (props) => [
+        TextFormField(
+          autofillHints: const [AutofillHints.password],
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(10),
+            errorText: error.value,
+            errorStyle: const TextStyle(fontSize: 14),
+            labelText: context.loc.password,
+            border: const OutlineInputBorder(),
+            suffix: Padding(
+              padding: const EdgeInsets.all(5),
+              child: SizedBox(
+                height: 20,
+                width: 20,
+                child: IconButton(
+                  iconSize: 25,
+                  // ignore: use_named_constants
+                  padding: const EdgeInsets.all(0),
+                  color: context.colorScheme.primary,
+                  icon: obscure.value
+                      ? const Icon(
+                          Icons.visibility,
+                        )
+                      : const Icon(
+                          Icons.visibility_off,
+                        ),
+                  onPressed: () => obscure.value = !obscure.value,
                 ),
               ),
             ),
-            controller: controller,
-            obscureText: true,
           ),
+          autofocus: true,
+          focusNode: focusNode,
+          controller: controller,
+          obscureText: obscure.value,
+          onFieldSubmitted: (string) async => props.callback?.call(),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
+        const Space(2),
+        Align(
+          alignment: Alignment.centerLeft,
           child: TextButton(
-            style: const ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                alignment: Alignment.topLeft),
             onPressed: () {
-              Core.auth.sendPasswordResetEmail(email: email, context: context);
+              if (state != null) {
+                Core.auth
+                    .sendPasswordResetEmail(email: state, context: context);
+              } else {
+                throw Exception('There is no email in state.');
+              }
             },
-            child: Text(locales.forgotPassword),
+            child: Text(context.loc.forgotPassword),
           ),
         )
       ],
-      onButtonPress: () async {
-        await Core.auth.signIn(
-            email: email,
-            password: controller.text,
-            context: context,
-            error: error);
-      },
-      isAsync: true,
     );
   }
 }

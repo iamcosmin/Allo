@@ -1,4 +1,5 @@
-arb-dir: lib/l10n
-template-arb-file: intl_en.arb
-untranslated-messages-file: untranslated.txt
+arb-dir: lib/logic/client/localization
+template-arb-file: app_en.arb
+untranslated-messages-file: lib/logic/client/localization/untranslated.txt
 output-localization-file: app_localizations.dart
+nullable-getter: false

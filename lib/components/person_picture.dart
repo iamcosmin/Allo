@@ -1,152 +1,76 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:allo/components/photo.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:firebase_image/firebase_image.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-enum _PersonPictureType { profilePicture, initials, determine }
-
-// ignore: must_be_immutable
-class PersonPicture extends HookWidget {
+class PersonPicture extends HookConsumerWidget {
   final double radius;
-  final _PersonPictureType _type;
-  Color? color;
-  Gradient? gradient;
-  String? profilePicture;
-  String? initials;
-  String? stringKey;
+  final String initials;
+  final String? profilePicture;
 
-  PersonPicture.profilePicture(
-      {required this.radius, required this.profilePicture, Key? key})
-      : _type = _PersonPictureType.profilePicture,
-        super(key: key);
-
-  PersonPicture.initials(
-      {Key? key,
-      required this.radius,
-      required this.initials,
-      this.color,
-      this.gradient})
-      : _type = _PersonPictureType.initials,
-        super(key: key);
-
-  PersonPicture.determine(
-      {Key? key,
-      required this.radius,
-      required this.profilePicture,
-      required this.initials,
-      this.stringKey,
-      this.color,
-      this.gradient})
-      : _type = _PersonPictureType.determine,
-        super(key: key);
+  const PersonPicture({
+    required this.initials,
+    required this.profilePicture,
+    required this.radius,
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    if (_type == _PersonPictureType.profilePicture) {
-      return ClipOval(
-        child: SizedBox(
-          height: radius,
-          width: radius,
-          child: Image.network(profilePicture!),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ClipOval(
+      child: AnimatedContainer(
+        curve: Curves.fastOutSlowIn,
+        color: Theme.of(context).colorScheme.surfaceVariant,
+        duration: const Duration(milliseconds: 250),
+        key: key,
+        height: radius,
+        width: radius,
+        alignment: Alignment.center,
+        child: Center(
+          child: _child(context),
         ),
-      );
-    } else if (_type == _PersonPictureType.initials) {
-      return ClipOval(
-        child: AnimatedContainer(
+      ),
+    );
+  }
+
+  Widget _child(BuildContext context) {
+    if (profilePicture != null && profilePicture != '') {
+      return Photo(
+        url: profilePicture!,
+        placeholder: AnimatedContainer(
+          curve: Curves.fastOutSlowIn,
           duration: const Duration(milliseconds: 250),
-          height: radius,
-          width: radius,
-          decoration: BoxDecoration(
-              color: (color == null && gradient == null)
-                  ? Theme.of(context).colorScheme.primary
-                  : color,
-              gradient: gradient),
-          child: Center(
-            child: Text(
-              initials!,
-              style: TextStyle(
-                fontSize: radius / 2,
-                color: (color == null && gradient == null)
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : null,
-              ),
+          color: Theme.of(context).colorScheme.primaryContainer,
+          child: Text(
+            initials,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              fontSize: radius / 2,
             ),
           ),
         ),
-      );
-    } else if (_type == _PersonPictureType.determine) {
-      return ClipOval(
-        key: key,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          key: key,
-          height: radius,
-          width: radius,
-          alignment: Alignment.center,
-          child: Builder(
-            key: key,
-            builder: (context) {
-              if (profilePicture != null && profilePicture!.isNotEmpty) {
-                return Image(
-                  key: key,
-                  image: profilePicture!.startsWith('gs://')
-                      ? FirebaseImage(profilePicture!)
-                      : CachedNetworkImageProvider(profilePicture!)
-                          as ImageProvider,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    key: key,
-                    height: radius,
-                    width: radius,
-                    decoration: BoxDecoration(
-                        color: (color == null && gradient == null)
-                            ? Theme.of(context).colorScheme.primary
-                            : color,
-                        gradient: gradient),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        initials!,
-                        style: TextStyle(
-                          fontSize: radius / 2,
-                          color: (color == null && gradient == null)
-                              ? Theme.of(context).colorScheme.onPrimary
-                              : null,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              } else {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  key: key,
-                  height: radius,
-                  width: radius,
-                  decoration: BoxDecoration(
-                      color: (color == null && gradient == null)
-                          ? Theme.of(context).colorScheme.primary
-                          : color,
-                      gradient: gradient),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      initials!,
-                      style: TextStyle(
-                          fontSize: radius / 2,
-                          color: (color == null && gradient == null)
-                              ? Theme.of(context).colorScheme.onPrimary
-                              : null),
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
-        ),
+        errorBuilder: (context, error, stacktrace) {
+          return AnimatedContainer(
+            curve: Curves.fastOutSlowIn,
+            duration: const Duration(milliseconds: 250),
+            color: Theme.of(context).colorScheme.primaryContainer,
+            child: Text(
+              initials,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontSize: radius / 2,
+              ),
+            ),
+          );
+        },
       );
     } else {
-      throw Exception(
-          'Please use the underlying submethods for choosing how to display your person picture, as this class does not have a default.');
+      return Text(
+        initials,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          fontSize: radius / 2,
+        ),
+      );
     }
   }
 }
