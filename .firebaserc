@@ -10,6 +10,9 @@
         ],
         "stable": [
           "allo-ms"
+        ],
+        "beta": [
+          "allo-beta"
         ]
       }
     }
