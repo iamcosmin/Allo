@@ -1,4 +1,4 @@
-name: Release Master
+name: Release Beta
 
 on: 
   push: 
@@ -48,7 +48,7 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
         packageName: com.relays.messenger
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
-        track: alpha
+        track: beta
         status: completed
         whatsNewDirectory: distribution
     - name: Publish release notes

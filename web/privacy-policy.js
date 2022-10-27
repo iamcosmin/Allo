@@ -1,4 +1,4 @@
-The state of Allo, by Relays.
+/* The state of Allo, by Relays.
 
 PRIVACY POLICY
 
@@ -9,4 +9,4 @@ Allo collects some user data, such as their real name, email address and a virtu
 You cannot delete your information by yourself (yet), though you can email us at lilcosminbs@gmail.com to request deletion of your entire account. Sent messages will not be deleted, but your personal data will not be associated with them anymore (just the name you set).
 
 If you have any questions, do not hesitate to contact us at the provided emails.
-Thank you!
+Thank you! */
