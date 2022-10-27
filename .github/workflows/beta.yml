@@ -1,4 +1,4 @@
-name: Release Master
+name: Release Beta
 
 on: 
   push: 
@@ -18,7 +18,7 @@ jobs:
     - name: Setup - Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        channel: 'beta'
     - name: Setup - Signing
       run: |
            cd android/
@@ -58,43 +58,3 @@ jobs:
         token: ${{ secrets.TELEGRAM_BOT_ID }}
         format: markdown
         message: "beta ${{ github.event.head_commit.message }}\n\n*Actualizarea este disponibilă pe allobeta.web.app și va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți testerii beta din Magazin Play.*"
-
-jobs:
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Setup
-      uses: actions/checkout@v1
-    - name: Java Setup
-      uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-    - name: Flutter Setup
-      uses: subosito/flutter-action@v1
-      with:
-        channel: 'stable'
-    - name: Expand keystore
-      run: |
-           cd android/
-           echo "${{ secrets.KEYSTORE }}" > release.jks.asc
-           gpg -d --passphrase "${{ secrets.PASS_PHRASE }}" --batch release.jks.asc > app/release.jks
-           echo "${{ secrets.KEYSTORE_PASS }}" > key.properties
-           cd ..
-    - name: Play Store - Build
-      run: | 
-          flutter build appbundle --flavor prod
-    - name: Play Store - Release
-      uses: r0adkll/upload-google-play@v1.0.15
-      with: 
-        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
-        packageName: com.relays.messenger
-        releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
-        track: beta
-        whatsNewDirectory: distribution
-    - name: Publish Release Notes
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
-        token: ${{ secrets.TELEGRAM_BOT_ID }}
-        format: markdown
-        message: "beta ${{ github.event.head_commit.message }}\n\n*Actualizarea va fi disponibilă în cca. 1 oră de la publicarea mesajului pentru toți participanții canalului beta.*"
