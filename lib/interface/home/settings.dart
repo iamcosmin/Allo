@@ -1,103 +1,95 @@
-import 'package:allo/generated/l10n.dart';
-import 'package:allo/interface/home/settings/about.dart';
-import 'package:allo/interface/home/settings/debug/debug.dart';
-import 'package:allo/interface/home/settings/account.dart';
-import 'package:allo/interface/home/settings/personalise.dart';
-import 'package:allo/logic/core.dart';
-import 'package:allo/logic/preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:allo/components/slivers/sliver_scaffold.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
+import 'package:allo/components/space.dart';
+import 'package:allo/components/tile_card.dart';
+import 'package:allo/logic/core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart' hide SliverAppBar;
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Settings extends HookConsumerWidget {
-  const Settings({Key? key}) : super(key: key);
+import '../../components/material3/tile.dart';
+
+class Settings extends ConsumerWidget {
+  const Settings({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locales = S.of(context);
     final name = FirebaseAuth.instance.currentUser!.displayName!;
-    // DO NOT REMOVE
-    final _a = useState(0);
-    void _b() {
-      _a.value++;
-      if (_a.value == 9) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const C()));
-        _a.value = 0;
-      }
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: GestureDetector(
-          onTap: () => _b(),
-          child: Text(locales.settings),
-        ),
+    return SScaffold(
+      topAppBar: LargeTopAppBar(
+        title: Text(context.loc.settings),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(10),
-        children: [
-          InkWell(
-            onTap: () {
-              Core.navigation
-                  .push(context: context, route: const AccountSettings());
-            },
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),
-                  child: PersonPicture.determine(
-                      radius: 60,
-                      profilePicture: Core.auth.user.profilePicture,
-                      initials: Core.auth.user.nameInitials),
-                ),
-                const Padding(padding: EdgeInsets.only(left: 15)),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+      slivers: [
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              TileCard([
+                InkWell(
+                  onTap: () => context.go('/settings/account'),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: PersonPicture(
+                            radius: 60,
+                            profilePicture: Core.auth.user.profilePictureUrl,
+                            initials: Core.auth.user.nameInitials,
+                          ),
+                        ),
+                        const Space(
+                          0.5,
+                          direction: Direction.horizontal,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: context.textTheme.headlineSmall!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: context.colorScheme.onSurface,
+                              ),
+                            ),
+                            const Padding(padding: EdgeInsets.only(top: 2)),
+                            Text(
+                              context.loc.customizeYourAccount,
+                              style: context.textTheme.labelLarge!.copyWith(
+                                color: context.colorScheme.outline,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
                     ),
-                    const Padding(padding: EdgeInsets.only(top: 5)),
-                    Text(
-                      locales.customizeYourAccount,
-                      style: const TextStyle(color: Colors.grey),
-                    )
-                  ],
+                  ),
                 ),
-                const Padding(padding: EdgeInsets.only(bottom: 10))
-              ],
-            ),
+              ]),
+              TileCard(
+                [
+                  Tile(
+                    leading: const Icon(Icons.palette_outlined),
+                    title: Text(context.loc.personalise),
+                    onTap: () => context.go('/settings/personalise'),
+                  ),
+                  Tile(
+                    leading: const Icon(Icons.info_outline),
+                    title: Text(context.loc.about),
+                    onTap: () => context.push('/settings/about'),
+                  ),
+                  Tile(
+                    leading: const Icon(Icons.logout_rounded),
+                    title: Text(context.loc.logOut),
+                    onTap: () async => await Core.auth.signOut(ref),
+                  ),
+                ],
+              ),
+            ],
           ),
-          const Padding(padding: EdgeInsets.only(top: 20)),
-          ListTile(
-            leading: const Icon(Icons.brush),
-            title:
-                Text(locales.personalise, style: const TextStyle(fontSize: 18)),
-            onTap: () => Core.navigation
-                .push(context: context, route: const PersonalisePage()),
-          ),
-          // ListTile(
-          //   leading: const Icon(Icons.info),
-          //   title: Text(locales.about, style: const TextStyle(fontSize: 18)),
-          //   onTap: () => Core.navigation
-          //       .push(context: context, route: const AboutPage()),
-          // ),
-          ListTile(
-            leading: const Icon(Icons.logout, size: 27),
-            minLeadingWidth: 40,
-            title: Text(locales.logOut, style: const TextStyle(fontSize: 18)),
-            onTap: () async => await Core.auth.signOut(context),
-          ),
-        ],
-      ),
+        )
+      ],
     );
   }
 }

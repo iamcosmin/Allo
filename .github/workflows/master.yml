@@ -1,34 +1,25 @@
-name: Build master
+name: Release Alpha
 
 on: 
   push: 
    branches:
     - master
-
 jobs:
-  build-web: 
+  build-release:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Setup
-      uses: actions/checkout@v1
-    - name: Flutter Setup
-      uses: subosito/flutter-action@v1
+    - name: Setup - Checkout
+      uses: actions/checkout@v3
+    - name: Setup - Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'microsoft'
+    - name: Setup - Flutter
+      uses: subosito/flutter-action@v2
       with:
         channel: 'beta'
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Setup
-      uses: actions/checkout@v1
-    - name: Java Setup
-      uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-    - name: Flutter Setup
-      uses: subosito/flutter-action@v1
-      with:
-        channel: 'beta'
-    - name: Expand keystore
+    - name: Setup - Signing
       run: |
            cd android/
            echo "${{ secrets.KEYSTORE }}" > release.jks.asc
@@ -52,14 +43,15 @@ jobs:
       run: | 
           flutter build appbundle --flavor prod
     - name: Play Store - Release
-      uses: r0adkll/upload-google-play@v1.0.15
+      uses: r0adkll/upload-google-play@v1
       with: 
         serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SECURITY_KEY }}
         packageName: com.relays.messenger
         releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
         track: alpha
+        status: completed
         whatsNewDirectory: distribution
-    - name: Publish Release Notes
+    - name: Publish release notes
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO_CHANNEL }}
