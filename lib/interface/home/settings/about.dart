@@ -1,77 +1,148 @@
-import 'package:allo/generated/l10n.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:allo/components/slivers/sliver_scaffold.dart';
+import 'package:allo/components/slivers/top_app_bar.dart';
+import 'package:allo/components/tile_card.dart';
+import 'package:allo/interface/home/settings/debug.dart';
+import 'package:allo/logic/backend/info.dart';
+import 'package:allo/logic/core.dart';
+import 'package:animated_progress/animated_progress.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' hide SliverAppBar;
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
-class AppInfo {
-  final BaseDeviceInfo deviceInfo;
-  final PackageInfo packageInfo;
-
-  const AppInfo({required this.deviceInfo, required this.packageInfo});
-}
-
-Future<AppInfo> getInfo() async {
-  final deviceInfo = await DeviceInfoPlugin().deviceInfo;
-  final packageInfo = await PackageInfo.fromPlatform();
-  return AppInfo(deviceInfo: deviceInfo, packageInfo: packageInfo);
-}
+import '../../../components/material3/tile.dart';
 
 class AboutPage extends HookConsumerWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locales = S.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(locales.about),
+    final infoProvider = ref.watch(Info.infoProvider);
+    // DO NOT REMOVE
+    final a = useState(0);
+    void b() {
+      a.value++;
+      if (a.value == 10) {
+        // context.push('/settings/about/debug');
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const DebugPage()));
+        a.value = 0;
+      }
+    }
+
+    return SScaffold(
+      topAppBar: LargeTopAppBar(
+        title: Text(context.loc.about),
       ),
-      body: FutureBuilder<AppInfo>(
-        future: getInfo(),
-        builder: (context, snapshot) {
-          if (snapshot.data != null) {
-            final packageInfo = snapshot.data!.packageInfo;
-            final deviceInfo = snapshot.data!.deviceInfo;
-            return ListView(
-              shrinkWrap: true,
-              children: [
-                ListTile(
-                  title: Text(locales.name),
-                  trailing: Text(packageInfo.appName),
-                ),
-                ListTile(
-                  title: Text(locales.version),
-                  trailing: Text(packageInfo.version),
-                ),
-                ListTile(
-                  title: Text(locales.buildNumber),
-                  trailing: Text(packageInfo.buildNumber),
-                ),
-                ListTile(
-                  title: Text(locales.packageName),
-                  trailing: Text(packageInfo.packageName),
-                ),
-                const Padding(padding: EdgeInsets.only(top: 20)),
-                ListTile()
-              ],
-            );
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
+      slivers: [
+        infoProvider.when(
+          loading: () {
+            return const SliverFillRemaining(
               child: Center(
-                child: SelectableText(
-                  snapshot.error.toString(),
-                ),
+                child: ProgressBar(),
               ),
             );
-          }
-        },
-      ),
+          },
+          // ignore: avoid_types_on_closure_parameters
+          data: (data) {
+            final packageInfo = data.packageInfo;
+            final deviceInfo = data.deviceInfo.toMap();
+            return SliverList(
+              delegate: SliverChildListDelegate([
+                TileHeading(context.loc.appInfo),
+                TileCard(
+                  [
+                    Tile(
+                      title: Text(context.loc.name),
+                      trailing: Text(packageInfo.appName),
+                    ),
+                    Tile(
+                      title: Text(context.loc.version),
+                      trailing: Text(packageInfo.version),
+                    ),
+                    Tile(
+                      title: Text(context.loc.buildNumber),
+                      trailing: Text(packageInfo.buildNumber),
+                      onTap: () => b(),
+                    ),
+                    if (!kIsWeb) ...[
+                      Tile(
+                        title: Text(context.loc.packageName),
+                        subtitle: Text(packageInfo.packageName),
+                      ),
+                    ],
+                  ],
+                ),
+                TileHeading(context.loc.deviceInfo),
+                TileCard(
+                  [
+                    if (kIsWeb) ...[
+                      Tile(
+                        title: Text(context.loc.browser),
+                        trailing: Text(
+                          deviceInfo['browserName'].toString().split('.')[1],
+                        ),
+                      ),
+                      Tile(
+                        title: Text(context.loc.agent),
+                        subtitle: Text(
+                          deviceInfo['userAgent'].toString(),
+                        ),
+                      ),
+                      Tile(
+                        title: Text(context.loc.platform),
+                        trailing: Text(
+                          deviceInfo['platform'].toString(),
+                        ),
+                      )
+                    ] else if (Platform.isAndroid) ...[
+                      Tile(
+                        title: Text(context.loc.model),
+                        trailing: Text(
+                          deviceInfo['model'].toString(),
+                        ),
+                      ),
+                      Tile(
+                        title: Text(context.loc.brand),
+                        trailing: Text(
+                          deviceInfo['brand'].toString(),
+                        ),
+                      ),
+                      Tile(
+                        title: Text(context.loc.device),
+                        trailing: Text(
+                          deviceInfo['device'].toString(),
+                        ),
+                      ),
+                      Tile(
+                        title: Text(context.loc.version),
+                        trailing: Text(
+                          deviceInfo['version']['release'].toString(),
+                        ),
+                      ),
+                      Tile(
+                        title: Text(context.loc.sdk),
+                        trailing: Text(
+                          deviceInfo['version']['sdkInt'].toString(),
+                        ),
+                      ),
+                    ],
+                  ],
+                )
+              ]),
+            );
+          },
+          error: (error, stackTrace) {
+            return SliverFillRemaining(
+              child: Center(
+                child: Text(error.toString()),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
