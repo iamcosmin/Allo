@@ -158,5 +158,31 @@
   "sdk": "SDK",
   "light": "Luminos",
   "dark": "Întunecat",
-  "system": "Sistem"
+  "system": "Sistem",
+  "noResult": "Niciun rezultat",
+  "cannotCreateChat": "Nu se poate crea conversația",
+  "typeToShowResults": "Scrie pentru a afișa rezultate.",
+  "chatCreatedSuccessfully": "Conversație creată cu succes.",
+  "createChat": "Creează convesație",
+  "createChatWith": "Începi conversație cu {redacted}?",
+  "@createChatWith": {
+    "placeholders": {
+      "redacted": {
+        "type": "String",
+        "example": "John" 
+      }
+    }
+  },
+  "createChatWithDescription": "Vrei să creezi o conversație cu {redacted}? Utilizatorul va vedea conversația când deschide aplicația.",
+  "@createChatWithDescription": {
+    "placeholders": {
+      "redacted": {
+        "type":"String",
+        "example": "John"
+      }
+    }
+  },
+  "cannotCreateSelfChat": "Nu poți crea o conversație cu tine încă.",
+  "existingChatConflict": "Deja există o conversație cu acest utilizator.",
+  "reason": "Motiv"
 }

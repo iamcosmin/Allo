@@ -150,7 +150,6 @@ class ChatMessagesList extends HookConsumerWidget {
             padding: const EdgeInsets.only(top: 10),
             key: ref.watch(animatedListKeyProvider),
             reverse: true,
-            shrinkWrap: true,
             controller: PrimaryScrollController.of(context),
             initialItemCount: data.length,
             itemBuilder: (context, i, animation) {
@@ -173,7 +172,9 @@ class ChatMessagesList extends HookConsumerWidget {
 
               return Column(
                 children: [
-                  if (i == data.length - 1) ...[
+                  if (i == data.length - 1 &&
+                      streamList.value != null &&
+                      streamList.value!.length >= 30) ...[
                     const Padding(padding: EdgeInsets.only(top: 20)),
                     ElevatedButton(
                       onPressed: () {

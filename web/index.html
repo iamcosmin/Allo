@@ -70,14 +70,6 @@
     }
   </script>
   <script>
-    // As flutter injects code in the following querySelectors, we are preventing the back swipe
-    // on Safari using e.preventDefault().
-    document.querySelectorAll("html").addEventListener("touchstart", (e) => e.preventDefault())
-    document.querySelectorAll("body").addEventListener("touchstart", (e) => e.preventDefault())
-    document.querySelectorAll("script").addEventListener("touchstart", (e) => e.preventDefault())
-    document.querySelectorAll("div").addEventListener("touchstart", (e) => e.preventDefault())
-  </script>
-  <script>
     window.addEventListener('load', function (ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
@@ -88,6 +80,13 @@
         return engineInitializer.initializeEngine();
       }).then(function (appRunner) {
         return appRunner.runApp();
+      }).then(function (_) {
+        // Code to try and disable safari navigation.
+        const flutterRoot = document.getElementsByTagName("flt-glass-pane").item(0);
+        flutterRoot.addEventListener('touchstart', (e) => {
+          // if (e.pageX > 24 && e.pageX < window.innerWidth - 24) return;
+          e.preventDefault();
+        })
       });
     });
   </script>

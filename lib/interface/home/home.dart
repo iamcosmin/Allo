@@ -1,6 +1,5 @@
 import 'package:allo/components/chat/chat_tile.dart';
 import 'package:allo/components/info.dart';
-import 'package:allo/components/shimmer.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
@@ -9,7 +8,6 @@ import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/messages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
-import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
@@ -31,24 +29,21 @@ String type(Chat chat, BuildContext context) {
 
 class HomeFAB extends FloatingActionButton {
   const HomeFAB({
-    required super.isExtended,
+    // required super.isExtended,
     super.key,
   }) : super(child: null, onPressed: null);
 
   @override
   Widget build(context) {
-    if (isExtended) {
-      return FloatingActionButton.extended(
-        onPressed: () => context.go('/create'),
-        label: Text(context.loc.createNewChat),
-        icon: const Icon(Icons.edit),
-      );
-    } else {
-      return FloatingActionButton(
-        onPressed: () => context.go('/create'),
-        child: const Icon(Icons.edit),
-      );
-    }
+    // if (isExtended) {
+    return FloatingActionButton.extended(
+      onPressed: () => context.go('/chats/create'),
+      label: Text(context.loc.createNewChat),
+      icon: const Icon(Icons.edit),
+    );
+    // } else {
+
+    // }
   }
 }
 
@@ -59,21 +54,21 @@ class Home extends HookConsumerWidget {
     useAutomaticKeepAlive();
     final createChat = useSetting(ref, privateConversations);
     final chatList = ref.watch(Core.chats.chatListProvider);
-    final fabIsExtended = useState(false);
+    // final fabIsExtended = useState(false);
     return NotificationListener(
-      onNotification: (notification) {
-        if (notification is UserScrollNotification) {
-          if (notification.direction == ScrollDirection.forward &&
-              fabIsExtended.value != false) {
-            fabIsExtended.value = false;
-          } else if ((notification.direction == ScrollDirection.reverse ||
-                  notification.direction == ScrollDirection.idle) &&
-              fabIsExtended.value != true) {
-            fabIsExtended.value = true;
-          }
-        }
-        return true;
-      },
+      // onNotification: (notification) {
+      //   if (notification is UserScrollNotification) {
+      //     if (notification.direction == ScrollDirection.forward &&
+      //         fabIsExtended.value != false) {
+      //       fabIsExtended.value = false;
+      //     } else if ((notification.direction == ScrollDirection.reverse ||
+      //             notification.direction == ScrollDirection.idle) &&
+      //         fabIsExtended.value != true) {
+      //       fabIsExtended.value = true;
+      //     }
+      //   }
+      //   return true;
+      // },
       child: SScaffold(
         refreshIndicator: RefreshIndicator(
           onRefresh: () => ref.refresh(Core.chats.chatListProvider.future),
@@ -84,10 +79,9 @@ class Home extends HookConsumerWidget {
         ),
         floatingActionButton: !createChat.setting
             ? null
-            : HomeFAB(
-                isExtended: fabIsExtended.value,
-                key: UniqueKey(),
-              ),
+            : const HomeFAB(
+                // isExtended: fabIsExtended.value,
+                ),
         slivers: [
           SliverPadding(
             padding: const EdgeInsets.only(left: 5, right: 5),
@@ -99,25 +93,8 @@ class Home extends HookConsumerWidget {
                     child: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          return ChatTile(
+                          return ChatTile.placeholder(
                             index: index,
-                            leading: const ClipOval(
-                              child: LoadingContainer(
-                                height: 60,
-                                width: 60,
-                              ),
-                            ),
-                            title: const LoadingContainer(
-                              height: 18,
-                              width: 100,
-                            ),
-                            subtitle: const Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: LoadingContainer(
-                                height: 12,
-                                width: 200,
-                              ),
-                            ),
                           );
                         },
                         childCount: MediaQuery.of(context).size.height ~/ 65,
@@ -213,7 +190,7 @@ class Home extends HookConsumerWidget {
                         'Element: ${error.plugin}'
                         '\n\n'
                         '${error.message}' : error.toString()}';
-                return SliverToBoxAdapter(
+                return SliverFillRemaining(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 30, right: 30),
                     child: Center(

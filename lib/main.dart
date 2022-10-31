@@ -10,6 +10,8 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
 
@@ -17,6 +19,8 @@ import 'components/space.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // For removing the # in the Flutter Web path.
+  usePathUrlStrategy();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Notifications.setupNotifications();
   await FirebaseRemoteConfig.instance.fetchAndActivate();

@@ -60,7 +60,7 @@ class AccountSettingsPage extends ConsumerWidget {
                         ),
                       );
                     },
-                    error: (error, stackTrace) => throw Exception(error),
+                    error: (error, stackTrace) => Container(),
                     loading: () {
                       return LoadingContainer(
                         height: context.theme.textTheme.bodyLarge!.fontSize!,

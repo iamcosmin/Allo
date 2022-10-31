@@ -16,8 +16,6 @@ class SetupName extends HookConsumerWidget {
     final secondFieldError = useState<String?>(null);
     final firstNameController = useTextEditingController();
     final secondNameController = useTextEditingController();
-    final focusController = useFocusNode();
-
     void validateName(String name, ValueNotifier<String?> error) {
       if (name.isNotEmpty && !_nameReg.hasMatch(name)) {
         error.value = context.loc.specialCharactersNotAllowed;
@@ -67,20 +65,14 @@ class SetupName extends HookConsumerWidget {
                 border: const OutlineInputBorder(),
               ),
               autofocus: true,
+              textInputAction: TextInputAction.next,
               onChanged: (_) {
                 validateName(_, firstFieldError);
-              },
-              onFieldSubmitted: (_) {
-                validateName(_, firstFieldError);
-                if (firstFieldError.value == null) {
-                  focusController.requestFocus();
-                }
               },
               controller: firstNameController,
             ),
             const Padding(padding: EdgeInsets.only(bottom: 10)),
             TextFormField(
-              focusNode: focusController,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(10),
                 errorText: secondFieldError.value,

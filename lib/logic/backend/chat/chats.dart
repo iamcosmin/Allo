@@ -33,9 +33,8 @@ class ChatsLogic {
     if (type == ChatType.private) {
       final query = await Database.firestore
           .collection('chats')
-          .where('type', isEqualTo: 'private')
-          .where('participants', arrayContains: uid)
-          .where('participants', arrayContains: Core.auth.user.userId)
+          .where('type', isEqualTo: type.name)
+          .where('participants', isEqualTo: [uid, Core.auth.user.userId])
           .limit(1)
           .get();
       if (query.docs.isNotEmpty) {
@@ -50,28 +49,28 @@ class ChatsLogic {
     }
   }
 
-  Future<void> createNewChat({
-    required String uid,
-    ChatType type = ChatType.private,
-  }) async {
-    if (type == ChatType.private) {
-      if (await _checkIfChatAlreadyExists(uid: uid, type: type)) {
-        await Database.firestore.collection('chats').add(
-          {
-            'type': 'private',
-            'participants': [
-              uid,
-              Core.auth.user.userId,
-            ],
-          },
-        );
-      }
-    } else {
-      throw Exception(
-        "Hmm... For now, you can't create group chats, only private ones.",
-      );
-    }
-  }
+  // Future<void> createNewChat({
+  //   required String uid,
+  //   ChatType type = ChatType.private,
+  // }) async {
+  //   if (type == ChatType.private) {
+  //     if (await _checkIfChatAlreadyExists(uid: uid, type: type)) {
+  //       await Database.firestore.collection('chats').add(
+  //         {
+  //           'type': 'private',
+  //           'participants': [
+  //             uid,
+  //             Core.auth.user.userId,
+  //           ],
+  //         },
+  //       );
+  //     }
+  //   } else {
+  //     throw Exception(
+  //       "Hmm... For now, you can't create group chats, only private ones.",
+  //     );
+  //   }
+  // }
 
   final chatListProvider = FutureProvider<List<Chat>>((ref) {
     return Core.chats.getChatsList();
@@ -146,4 +145,77 @@ class ChatsLogic {
     }
     return chats;
   }
+
+  Future<void> createNewChat({
+    required ChatType chatType,
+
+    /// List of user id's of the participants
+    required List<Participant> participants,
+  }) async {
+    // In Allo, chats have the following structure in the database:
+    /*
+      (chatId) --------------- [messages] ----------------- (list of messages)
+      
+      params:
+        members: array of map that mandatory contains name and uid.
+        participants: array of string that resembles participants' uid
+        theme: integer with hex value of chosen theme color
+        type: private | group, mandatory
+    */
+
+    if (chatType == ChatType.unsupported) {
+      throw Exception('Cannot create a chat of unsupported type.');
+    }
+
+    if (chatType == ChatType.group || participants.length > 1) {
+      throw Exception('Creating a group chat is unsupported for now.');
+    }
+
+    if (FirebaseAuth.instance.currentUser?.uid == null) {
+      throw Exception(
+        'Cannot create a chat that does not contain the current user.',
+      );
+    }
+
+    if (await _checkIfChatAlreadyExists(uid: participants[0].uid)) {
+      throw Exception('One user can only have one chat with another user.');
+    }
+
+    final db = FirebaseFirestore.instance;
+    final chat = {
+      'type': chatType.name,
+      'participants': [
+        FirebaseAuth.instance.currentUser!.uid,
+        for (var participant in participants) ...[participant.uid]
+      ],
+      'members': [
+        {
+          'name': FirebaseAuth.instance.currentUser?.displayName,
+          'uid': FirebaseAuth.instance.currentUser?.uid,
+        },
+        for (var participant in participants) ...[
+          {'name': participant.name, 'uid': participant.uid}
+        ]
+      ]
+    };
+    await db.collection('chats').add(chat);
+  }
+
+  // Please note that creating a chat does not notify the other user, as it hasn't subscribed yet to the chat.
+}
+
+class CreateChatException implements Exception {
+  const CreateChatException(this.cause);
+  final CreateChatExceptionCause cause;
+}
+
+enum CreateChatExceptionCause {
+  selfChatNotAllowed,
+  chatAlreadyExists,
+}
+
+class Participant {
+  const Participant({required this.name, required this.uid});
+  final String name;
+  final String uid;
 }

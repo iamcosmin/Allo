@@ -52,11 +52,13 @@ class Messages {
     //     .update({'typing': false});
     final db = Database.firestore.collection('chats').doc(chatId);
     final auth = Core.auth;
-    await scrollController?.animateTo(
-      0,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.fastOutSlowIn,
-    );
+    if (scrollController != null && scrollController.hasClients) {
+      await scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.fastOutSlowIn,
+      );
+    }
     if (modifier?.value == null) {
       await db.collection('messages').add({
         'type': MessageType.text.name,

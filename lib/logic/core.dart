@@ -70,8 +70,6 @@ class Stub {
     required IconData icon,
     required String text,
     bool selectableText = false,
-    @Deprecated('This function does not require context anymore, as it relies on ScaffoldMessengerState key.')
-        BuildContext? context,
   }) {
     final key = Keys.scaffoldMessengerKey.currentState;
     if (key != null) {

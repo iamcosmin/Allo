@@ -90,6 +90,11 @@ final routing = Provider<GoRouter>(
             },
             routes: [
               GoRoute(
+                path: 'create',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) => const CreateChat(),
+              ),
+              GoRoute(
                 path: ':id',
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
@@ -122,11 +127,6 @@ final routing = Provider<GoRouter>(
                   )
                 ],
               ),
-              GoRoute(
-                path: 'create',
-                parentNavigatorKey: rootNavigatorKey,
-                builder: (context, state) => const CreateChat(),
-              )
             ],
           ),
           GoRoute(
@@ -157,10 +157,7 @@ final routing = Provider<GoRouter>(
                     path: 'debug',
                     pageBuilder: (context, state) {
                       return const MaterialPage(
-                        key: ValueKey('DEBUG PUSHED!'),
-                        child: DebugPage(
-                          key: ValueKey('HERE IS DEBUG!'),
-                        ),
+                        child: DebugPage(),
                         name: 'Debug',
                       );
                     },

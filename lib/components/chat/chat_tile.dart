@@ -1,3 +1,4 @@
+import 'package:allo/components/shimmer.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -20,6 +21,29 @@ class ChatTile extends StatelessWidget {
   final int index;
   final Key? transitionKey;
   final void Function()? onTap;
+
+  factory ChatTile.placeholder({required int index}) {
+    return ChatTile(
+      index: index,
+      leading: const ClipOval(
+        child: LoadingContainer(
+          height: 60,
+          width: 60,
+        ),
+      ),
+      title: const LoadingContainer(
+        height: 18,
+        width: 100,
+      ),
+      subtitle: const Padding(
+        padding: EdgeInsets.only(top: 10),
+        child: LoadingContainer(
+          height: 12,
+          width: 200,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

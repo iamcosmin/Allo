@@ -160,5 +160,31 @@
   "sdk": "SDK",
   "light": "Light",
   "dark": "Dark",
-  "system": "System"
+  "system": "System",
+  "noResult": "No Result",
+  "cannotCreateChat": "Couldn't Create Chat",
+  "typeToShowResults": "Type to show results.",
+  "chatCreatedSuccessfully": "Chat created successfully.",
+  "createChat": "Create Chat",
+  "createChatWith": "Create chat with {redacted}?",
+  "@createChatWith": {
+    "placeholders": {
+      "redacted": {
+        "type": "String",
+        "example": "John" 
+      }
+    }
+  },
+  "createChatWithDescription": "Do you want to create a chat with {redacted}? The user will see the chat when opening the app.",
+  "@createChatWithDescription": {
+    "placeholders": {
+      "redacted": {
+        "type":"String",
+        "example": "John"
+      }
+    }
+  },
+  "cannotCreateSelfChat": "You can't create a chat with yourself yet.",
+  "existingChatConflict": "There's an existing chat with this user.",
+  "reason": "Reason"
 }

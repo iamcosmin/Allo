@@ -60,8 +60,7 @@ class SignupItems {
   }
 }
 
-final signupState =
-    StateNotifierProvider.autoDispose<_SignupLogic, SignupItems>((ref) {
+final signupState = StateNotifierProvider<_SignupLogic, SignupItems>((ref) {
   return _SignupLogic();
 });
 

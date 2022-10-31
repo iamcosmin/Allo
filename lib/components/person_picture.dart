@@ -36,29 +36,19 @@ class PersonPicture extends HookConsumerWidget {
     if (profilePicture != null && profilePicture != '') {
       return Photo(
         url: profilePicture!,
-        placeholder: AnimatedContainer(
-          curve: Curves.fastOutSlowIn,
-          duration: const Duration(milliseconds: 250),
-          color: Theme.of(context).colorScheme.primaryContainer,
-          child: Text(
-            initials,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontSize: radius / 2,
-            ),
+        placeholder: Text(
+          initials,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: radius / 2,
           ),
         ),
         errorBuilder: (context, error, stacktrace) {
-          return AnimatedContainer(
-            curve: Curves.fastOutSlowIn,
-            duration: const Duration(milliseconds: 250),
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: Text(
-              initials,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontSize: radius / 2,
-              ),
+          return Text(
+            initials,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: radius / 2,
             ),
           );
         },
