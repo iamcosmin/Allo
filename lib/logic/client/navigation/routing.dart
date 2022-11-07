@@ -4,6 +4,10 @@ import 'package:allo/interface/home/navigation_view.dart';
 import 'package:allo/interface/home/settings.dart';
 import 'package:allo/interface/home/settings/about.dart';
 import 'package:allo/interface/home/settings/account/account.dart';
+import 'package:allo/interface/home/settings/account/name.dart';
+import 'package:allo/interface/home/settings/account/profile_picture.dart';
+import 'package:allo/interface/home/settings/account/security/change_email.dart';
+import 'package:allo/interface/home/settings/account/security/verify_identity.dart';
 import 'package:allo/interface/home/settings/debug.dart';
 import 'package:allo/interface/home/settings/debug/account_info.dart';
 import 'package:allo/interface/home/settings/debug/experiments/create_chat.dart';
@@ -99,7 +103,6 @@ final routing = Provider<GoRouter>(
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
                   if (state.extra! is Chat) {
-                    // ignore: cast_nullable_to_non_nullable
                     return ChatScreen(
                       chat: state.extra! as Chat,
                     );
@@ -112,7 +115,7 @@ final routing = Provider<GoRouter>(
                 routes: [
                   GoRoute(
                     path: 'details',
-                    name: Routes.chatDetails,
+                    parentNavigatorKey: rootNavigatorKey,
                     builder: (context, state) {
                       if (state.extra! is Chat) {
                         return ChatDetails(
@@ -147,6 +150,28 @@ final routing = Provider<GoRouter>(
                     child: const AccountSettingsPage(),
                   );
                 },
+                routes: [
+                  GoRoute(
+                    path: 'name',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (context, state) {
+                      return const ChangeNamePage();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'picture',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (context, state) {
+                      return const ProfilePictureSettings();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'email',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (context, state) =>
+                        const VerifyIdentity(UpdateEmailPage()),
+                  )
+                ],
               ),
               GoRoute(
                 path: 'about',
@@ -155,6 +180,7 @@ final routing = Provider<GoRouter>(
                 routes: [
                   GoRoute(
                     path: 'debug',
+                    parentNavigatorKey: rootNavigatorKey,
                     pageBuilder: (context, state) {
                       return const MaterialPage(
                         child: DebugPage(),
@@ -172,18 +198,22 @@ final routing = Provider<GoRouter>(
                       // ),
                       GoRoute(
                         path: 'typing',
+                        parentNavigatorKey: rootNavigatorKey,
                         builder: (context, state) => const ExampleIsTyping(),
                       ),
                       GoRoute(
                         path: 'account-info',
+                        parentNavigatorKey: rootNavigatorKey,
                         builder: (context, state) => const AccountInfo(),
                       ),
                       GoRoute(
                         path: 'slivers',
+                        parentNavigatorKey: rootNavigatorKey,
                         builder: (context, state) => const ExampleSliver(),
                       ),
                       GoRoute(
                         path: 'notifications',
+                        parentNavigatorKey: rootNavigatorKey,
                         builder: (context, state) =>
                             const TestNotificationsPage(),
                       )

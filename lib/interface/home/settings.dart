@@ -1,5 +1,6 @@
 import 'package:allo/components/person_picture.dart';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
+import 'package:allo/components/slivers/sliver_scroll.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/components/space.dart';
 import 'package:allo/components/tile_card.dart';
@@ -21,73 +22,74 @@ class Settings extends ConsumerWidget {
         title: Text(context.loc.settings),
       ),
       slivers: [
-        SliverList(
-          delegate: SliverChildListDelegate(
-            [
-              TileCard([
-                InkWell(
-                  onTap: () => context.go('/settings/account'),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
+        SliverScroll(
+          children: [
+            TileCard([
+              InkWell(
+                onTap: () => context.go('/settings/account'),
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Hero(
+                          tag: 'PROFILE-PICTURE',
                           child: PersonPicture(
                             radius: 60,
                             profilePicture: Core.auth.user.profilePictureUrl,
                             initials: Core.auth.user.nameInitials,
                           ),
                         ),
-                        const Space(
-                          0.5,
-                          direction: Direction.horizontal,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              name,
-                              style: context.textTheme.headlineSmall!.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: context.colorScheme.onSurface,
-                              ),
+                      ),
+                      const Space(
+                        0.5,
+                        direction: Direction.horizontal,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: context.textTheme.headlineSmall!.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: context.colorScheme.onSurface,
                             ),
-                            const Padding(padding: EdgeInsets.only(top: 2)),
-                            Text(
-                              context.loc.customizeYourAccount,
-                              style: context.textTheme.labelLarge!.copyWith(
-                                color: context.colorScheme.outline,
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          const Padding(padding: EdgeInsets.only(top: 2)),
+                          Text(
+                            context.loc.customizeYourAccount,
+                            style: context.textTheme.labelLarge!.copyWith(
+                              color: context.colorScheme.outline,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ]),
-              TileCard(
-                [
-                  Tile(
-                    leading: const Icon(Icons.palette_outlined),
-                    title: Text(context.loc.personalise),
-                    onTap: () => context.go('/settings/personalise'),
-                  ),
-                  Tile(
-                    leading: const Icon(Icons.info_outline),
-                    title: Text(context.loc.about),
-                    onTap: () => context.push('/settings/about'),
-                  ),
-                  Tile(
-                    leading: const Icon(Icons.logout_rounded),
-                    title: Text(context.loc.logOut),
-                    onTap: () async => await Core.auth.signOut(ref),
-                  ),
-                ],
               ),
-            ],
-          ),
+            ]),
+            TileCard(
+              [
+                Tile(
+                  leading: const Icon(Icons.palette_outlined),
+                  title: Text(context.loc.personalise),
+                  onTap: () => context.go('/settings/personalise'),
+                ),
+                Tile(
+                  leading: const Icon(Icons.info_outline),
+                  title: Text(context.loc.about),
+                  onTap: () => context.push('/settings/about'),
+                ),
+                Tile(
+                  leading: const Icon(Icons.logout_rounded),
+                  title: Text(context.loc.logOut),
+                  onTap: () async => await Core.auth.signOut(ref),
+                ),
+              ],
+            ),
+          ],
         )
       ],
     );

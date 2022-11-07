@@ -121,10 +121,13 @@ class ChatDetails extends HookConsumerWidget {
                 onTap: profilePicture == null
                     ? null
                     : () => Navigation.forward(ImageView(profilePicture)),
-                child: PersonPicture(
-                  profilePicture: profilePicture,
-                  radius: 150,
-                  initials: Core.auth.returnNameInitials(chat.title),
+                child: Hero(
+                  tag: '${chat.id}-PICTURE',
+                  child: PersonPicture(
+                    profilePicture: profilePicture,
+                    radius: 150,
+                    initials: Core.auth.returnNameInitials(chat.title),
+                  ),
                 ),
               ),
             ),

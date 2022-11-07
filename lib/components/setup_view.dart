@@ -8,17 +8,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final setupButtonTheme = ButtonStyle(
-  minimumSize: const MaterialStatePropertyAll(
-    Size.fromHeight(40),
-  ),
-  shape: MaterialStatePropertyAll(
-    RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(15),
-    ),
-  ),
-);
-
 /// A class member that is mostly passed by [SetupView]'s [builder] method, to help keep the
 /// parameter passing clean and to add parameters on demand, based on requests, without modifying
 /// the method.
@@ -35,14 +24,14 @@ class SetupProps {
 /// Note: the action you are going
 class SetupView extends HookConsumerWidget {
   const SetupView({
-    required this.icon,
     required this.title,
     required this.description,
+    this.icon,
     this.action,
     this.builder,
     super.key,
   });
-  final IconData icon;
+  final IconData? icon;
   final Widget title;
   final Widget description;
   final FutureOr<void> Function()? action;
@@ -124,23 +113,20 @@ class SetupView extends HookConsumerWidget {
               Row(
                 children: [
                   if (ModalRoute.of(context)?.canPop ?? false) ...[
-                    Expanded(
-                      child: FilledButton.tonalIcon(
-                        onPressed: () => context.pop(),
-                        icon: const Icon(Icons.navigate_before_rounded),
-                        label: const Text('Back'),
-                        style: setupButtonTheme,
-                      ),
+                    FilledButton.tonalIcon(
+                      onPressed: () => context.pop(),
+                      icon: const Icon(Icons.navigate_before_rounded),
+                      label: Text(context.loc.back),
                     ),
                     const Padding(padding: EdgeInsets.only(left: 10)),
                   ],
-                  Expanded(
-                    child: FilledButton(
-                      style: setupButtonTheme,
-                      onPressed: preparedCallback,
-                      child: const Text('Continuă'),
-                    ),
-                  )
+                  const Expanded(
+                    child: SizedBox(),
+                  ),
+                  FilledButton(
+                    onPressed: preparedCallback,
+                    child: Text(context.loc.setupNext),
+                  ),
                 ],
               )
             ],

@@ -335,7 +335,13 @@ class Authentication {
         EmailAuthProvider.credential(email: email!, password: password),
       );
       // Replace with non-nested route (make reauthentication a base route, so that it will not be shown again when popping.)
-      Navigation.replaceCurrent(nextRoute);
+      if (context.mounted) {
+        await Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => nextRoute,
+          ),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       final code = ReauthenticationError.fromString(e.code);
       switch (code) {

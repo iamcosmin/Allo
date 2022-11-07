@@ -1,16 +1,13 @@
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/components/tile_card.dart';
-import 'package:allo/interface/home/settings/debug/account_info.dart';
-import 'package:allo/interface/home/settings/debug/experiments/example_sliver.dart';
 import 'package:allo/interface/home/settings/debug/experiments/physics.dart';
-import 'package:allo/interface/home/settings/debug/experiments/typingbubble.dart';
-import 'package:allo/interface/home/settings/debug/test_notifications.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/client/preferences/preferences.dart';
 import 'package:allo/logic/core.dart';
 import 'package:animated_progress/animated_progress.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../components/material3/tile.dart';
@@ -85,37 +82,27 @@ class DebugPage extends HookConsumerWidget {
               const TileHeading('Experiments'),
               TileCard([
                 Tile(
-                  title: const Text('Debug Testing'),
-                  onTap: () {
-                    // context.go('/settings/about/debug/testapp');
-                  },
-                ),
-                Tile(
                   title: Text(context.loc.internalTypingIndicatorDemo),
                   onTap: () {
-                    Navigation.forward(const ExampleIsTyping());
-                    // context.go('/settings/about/debug/typing');
+                    context.go('/settings/about/debug/typing');
                   },
                 ),
                 Tile(
                   title: Text(context.loc.internalAccountInfo),
                   onTap: () {
-                    Navigation.forward(const AccountInfo());
-                    // context.go('/settings/about/debug/account-info');
+                    context.go('/settings/about/debug/account-info');
                   },
                 ),
                 Tile(
                   title: const Text('Example SliverAppBar'),
                   onTap: () {
-                    Navigation.forward(const ExampleSliver());
-                    // context.go('/settings/about/debug/slivers');
+                    context.go('/settings/about/debug/slivers');
                   },
                 ),
                 Tile(
                   title: const Text('Test Notifications'),
                   onTap: () {
-                    Navigation.forward(const TestNotificationsPage());
-                    // context.go('/settings/about/debug/notifications');
+                    context.go('/settings/about/debug/notifications');
                   },
                 ),
                 Tile(

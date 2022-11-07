@@ -13,7 +13,6 @@ class EnterPassword extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final error = useState<String?>(null);
     final obscure = useState(true);
-    final focusNode = useFocusNode();
     final login = ref.watch(loginState.notifier);
     final state = ref.watch(loginState);
     final controller = useTextEditingController();
@@ -40,10 +39,10 @@ class EnterPassword extends HookConsumerWidget {
               error.value = context.loc.errorUnknown;
               break;
           }
-          focusNode.requestFocus();
+          FocusScope.of(context).requestFocus();
         } catch (e) {
           error.value = e.toString();
-          focusNode.requestFocus();
+          FocusScope.of(context).requestFocus();
         }
       },
       builder: (props) => [
@@ -55,7 +54,6 @@ class EnterPassword extends HookConsumerWidget {
             errorText: error.value,
             errorStyle: const TextStyle(fontSize: 14),
             labelText: context.loc.password,
-            border: const OutlineInputBorder(),
             suffix: Padding(
               padding: const EdgeInsets.all(5),
               child: SizedBox(
@@ -79,7 +77,6 @@ class EnterPassword extends HookConsumerWidget {
             ),
           ),
           autofocus: true,
-          focusNode: focusNode,
           controller: controller,
           obscureText: obscure.value,
           onFieldSubmitted: (string) async => props.callback?.call(),

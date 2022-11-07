@@ -44,7 +44,7 @@ class LoginPage extends HookConsumerWidget {
               labelText: context.loc.email,
             ),
             autofocus: true,
-            onFieldSubmitted: (_) async => onSubmit(),
+            onFieldSubmitted: (_) => props.callback?.call(),
             onChanged: (value) {
               if (!EmailValidator.validate(value)) {
                 final errorString = context.loc.errorThisIsInvalid(

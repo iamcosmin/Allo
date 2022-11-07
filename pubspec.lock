@@ -460,10 +460,12 @@ packages:
   go_router:
     dependency: "direct main"
     description:
-      name: go_router
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.1.1"
+      path: "packages/go_router"
+      ref: parent-navigator-key
+      resolved-ref: "2bee9e99b633f88cc734d8d57d62fae5b0ed0e4b"
+      url: "https://github.com/davidmigloz/flutter_packages.git"
+    source: git
+    version: "5.1.6"
   hooks_riverpod:
     dependency: "direct main"
     description:

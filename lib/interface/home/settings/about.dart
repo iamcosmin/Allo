@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:allo/components/slivers/sliver_scaffold.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/components/tile_card.dart';
-import 'package:allo/interface/home/settings/debug.dart';
 import 'package:allo/logic/backend/info.dart';
 import 'package:allo/logic/core.dart';
 import 'package:animated_progress/animated_progress.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SliverAppBar;
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../components/material3/tile.dart';
@@ -25,9 +25,7 @@ class AboutPage extends HookConsumerWidget {
     void b() {
       a.value++;
       if (a.value == 10) {
-        // context.push('/settings/about/debug');
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const DebugPage()));
+        context.go('/settings/about/debug');
         a.value = 0;
       }
     }

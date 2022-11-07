@@ -5,15 +5,12 @@ import 'package:allo/components/slivers/sliver_scaffold.dart';
 import 'package:allo/components/slivers/sliver_scroll.dart';
 import 'package:allo/components/slivers/top_app_bar.dart';
 import 'package:allo/components/space.dart';
-import 'package:allo/interface/home/settings/account/profile_picture.dart';
-import 'package:allo/interface/home/settings/account/security/change_email.dart';
-import 'package:allo/interface/home/settings/account/security/verify_identity.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../components/tile_card.dart';
 import '../../../../logic/core.dart';
-import 'name.dart';
 
 class AccountSettingsPage extends ConsumerWidget {
   const AccountSettingsPage({super.key});
@@ -30,10 +27,13 @@ class AccountSettingsPage extends ConsumerWidget {
               padding: const EdgeInsets.only(top: 10),
               child: Column(
                 children: [
-                  PersonPicture(
-                    initials: Core.auth.user.nameInitials,
-                    profilePicture: Core.auth.user.profilePictureUrl,
-                    radius: 120,
+                  Hero(
+                    tag: 'PROFILE-PICTURE',
+                    child: PersonPicture(
+                      initials: Core.auth.user.nameInitials,
+                      profilePicture: Core.auth.user.profilePictureUrl,
+                      radius: 120,
+                    ),
                   ),
                   const Space(2),
                   Text(
@@ -78,11 +78,7 @@ class AccountSettingsPage extends ConsumerWidget {
                 Tile(
                   leading: const Icon(Icons.perm_identity_outlined),
                   title: Text(context.loc.name),
-                  onTap: () {
-                    Navigation.forward(
-                      const ChangeNamePage(),
-                    );
-                  },
+                  onTap: () => context.go('/settings/account/name'),
                 ),
                 Tile(
                   disabled: true,
@@ -94,9 +90,7 @@ class AccountSettingsPage extends ConsumerWidget {
                 Tile(
                   leading: const Icon(Icons.image_outlined),
                   title: Text(context.loc.profilePicture),
-                  onTap: () => Navigation.forward(
-                    const ProfilePictureSettings(),
-                  ),
+                  onTap: () => context.go('/settings/account/picture'),
                 ),
               ],
             ),
@@ -111,11 +105,7 @@ class AccountSettingsPage extends ConsumerWidget {
                 Tile(
                   leading: const Icon(Icons.email_outlined),
                   title: const Text('Email'),
-                  onTap: () => Navigation.forward(
-                    const VerifyIdentity(
-                      UpdateEmailPage(),
-                    ),
-                  ),
+                  onTap: () => context.go('/settings/account/email'),
                 ),
                 const Tile(
                   leading: Icon(Icons.password_outlined),

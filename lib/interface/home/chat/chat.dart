@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:allo/components/chat/chat_messages_list.dart';
 import 'package:allo/components/chat/message_input.dart';
 import 'package:allo/components/person_picture.dart';
-import 'package:allo/interface/home/chat/chat_details.dart';
 import 'package:allo/logic/client/preferences/manager.dart';
 import 'package:allo/logic/core.dart';
 import 'package:allo/logic/models/chat.dart';
@@ -12,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../logic/client/theme/theme.dart';
@@ -178,29 +178,29 @@ class ChatScreen extends HookConsumerWidget {
                   Container(
                     alignment: Alignment.bottomLeft,
                     padding: const EdgeInsets.all(10),
-                    child: PersonPicture(
-                      profilePicture: Core.auth.getProfilePicture(
-                        chat is GroupChat
-                            ? chat.id
-                            : chat is PrivateChat
-                                ? (chat as PrivateChat).userId
-                                : '',
-                        isGroup: chat is GroupChat ? true : false,
+                    child: Hero(
+                      tag: '${chat.id}-PICTURE',
+                      child: PersonPicture(
+                        profilePicture: Core.auth.getProfilePicture(
+                          chat is GroupChat
+                              ? chat.id
+                              : chat is PrivateChat
+                                  ? (chat as PrivateChat).userId
+                                  : '',
+                          isGroup: chat is GroupChat ? true : false,
+                        ),
+                        radius: 35,
+                        initials: Core.auth.returnNameInitials(chat.title),
                       ),
-                      radius: 35,
-                      initials: Core.auth.returnNameInitials(chat.title),
                     ),
                   ),
                 ],
                 title: InkWell(
                   onTap: () {
-                    Navigation.forward(
-                      ChatDetails(chat: chat),
+                    context.go(
+                      '/chats/${chat.id}/details',
+                      extra: chat,
                     );
-                    //   context.go(
-                    //   '/chat/${chat.id}/details',
-                    //   extra: chat,
-                    // );
                   },
                   child: Column(
                     children: [

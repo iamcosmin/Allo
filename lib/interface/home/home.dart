@@ -166,11 +166,14 @@ class Home extends HookConsumerWidget {
                                 color: context.colorScheme.outline,
                               ),
                             ),
-                            leading: PersonPicture(
-                              profilePicture: chat.picture,
-                              radius: 60,
-                              initials: Core.auth.returnNameInitials(
-                                chat.title,
+                            leading: Hero(
+                              tag: '${chat.id}-PICTURE',
+                              child: PersonPicture(
+                                profilePicture: chat.picture,
+                                radius: 60,
+                                initials: Core.auth.returnNameInitials(
+                                  chat.title,
+                                ),
                               ),
                             ),
                             onTap: () =>

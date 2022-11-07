@@ -100,9 +100,12 @@ ThemeData theme(
       reducedMotion: !animations.setting,
       fillColor: scheme.surface,
     ),
-    inputDecorationTheme: const InputDecorationTheme(
+    inputDecorationTheme: InputDecorationTheme(
       isDense: true,
-      border: OutlineInputBorder(),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      contentPadding: const EdgeInsets.all(10),
     ),
     visualDensity: VisualDensity.standard,
     useMaterial3: true,
